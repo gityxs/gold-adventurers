@@ -593,6 +593,13 @@
     margin-top: 10px;
     border: 1px solid #ddd;
 }
+#customDialog {
+    z-index: 2000 !important; /* 确保高于其他元素 */
+}
+
+#dialogOverlay {
+    z-index: 1999 !important;
+}
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -609,16 +616,16 @@
         <div class="log">
             <h4>游戏公告介绍</h4>
             <p>QQ群：864788026  有问题可以进群问</p>
-            <p>1. 转生系统：玩家可以通过转生重置游戏进度，并获得转生币，用于提升转生属性（转生要求必须普通装备10000级）。</p>
+            <p>1. 转生系统：玩家可以通过转生重置游戏进度，并获得转生币，用于提升转生属性（转生要求必须普通装备10000+转生次数*20）。</p>
             <p>   转生币等级兑换比例：普通10000=1  稀有5000=1 史诗1000=1 传说300=1 远古200=1 神圣125=1 奥术100=1 天空33=1 地狱20=1 星界12.5=1  原初10=1 超凡3=1 量子2=1 究极1=1  混沌1=3 永恒1=5 虚无1=10 创世1=20 神域1=30 终焉1=40 星辰1=50 起源1=60 时光1=70 造物1=80 银河1=90 天界1=100 星云1=200 星河1=300 纪元1=400 鸿蒙1=500 星穹1=600 亘古1=700 万象1=800 太虚1=900 九垓1=1000 </p>
             <p>2. 宠物系统：玩家可以通过升级宠物来提升装备属性加成。</p>
-            <p>3. 离线系统：现在离线也能银行和股票，彩票更新（下线前最好把100倍加速自动开宝箱关了）。</p>
+            <p>3. 离线系统：现在离线也能奥秘经验和银行和股票，彩票更新，升级装备（下线前最好把100倍加速自动开宝箱关了）。</p>
             <p>4. 新增股票系统，显示实时股价和持有情况，每10分钟股价随机波动±1%~10%，离线时间自动计算股价波动，所有交易使用转生币结算，实时显示价格变化趋势</p>
             <p>5. 彩票系统：购买到心仪的数字就可以，1小时开奖1次。刮刮卡：直接生效，开奖结果看获取！</p>
             <p>6. 银行系统：存钱每6分钟0.02%收益！</p>
             <p>7. 副本装备系统：副本装备可以提升第一页装备的全属性，使用洗炼石（材料宝箱或者打怪掉）可以重铸副本装备的成长属性或者分解重新获取。成长数值上限：废品0.05%，倚天剑10%，青龙枪15%，白虎斧20%，朱雀弓25%，玄武盾30%，麒麟杖35%，凤凰剑40%，饕餮刀45%，穷奇戟50%，烛龙枪60%，白泽剑70%，混沌斧80%，太初刃90%   后续加深颜色多10%  比如：☆=100%★=110% ○=200% ●=210%  ◇=300%  ◆=310%  □=400%  ■=410%  △=500%  ▲=510%</p>
             <p>8. 魂环系统：魂环可以永久提升装备属性，通过打怪掉落或消耗转生币升级。</p>
-            <p>9. 打怪模式：逃跑等于重置关卡消耗最大关卡*10转生币（加入扫荡：收取20%手续费）（如果第一次打不了买1次功法秘笈宝箱，或者点逃跑）。</p>
+            <p>9. 打怪模式：逃跑等于重置关卡消耗最大关卡*10转生币（取消扫荡增加自动扫荡4秒1次！！！）（如果第一次打不了买1次功法秘笈宝箱，或者点逃跑）。</p>
             <p>10. 升级属性：第一次加载要转生一次，在点洗点就正常了（总数和实际不一样点一下洗点）。</p>
             <p>11. 功法秘籍：后期比较强，加成属性直接算到玩家属性乘于里面（如果突然没效果了开一个秘法宝箱就好了，正常不会有问题）</p>
             <p>11. 世界BOSS系统：20转才能打比较难，有连击后期简单。</p>
@@ -628,9 +635,10 @@
             <p>14. 官职系统：增加总和攻击，一共60级。</p>
             <p>15. 伴侣系统：大幅度增加属性。天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒（伴侣钥匙和玫瑰花：打怪或者材料宝箱掉落）。</p>
             <p>16. 通天塔：只要通过每一层加1点玩家属性，每一层加0.1倍GPS,还有对应称号（100转才能打）。</p>
-            <p>17. 存档问题：换设备后存档导入一开始进去VIP和伴侣是空的，你直接退出在重新进就恢复了（点了导出按钮，会自动复制，你黏贴就可以了）</p>
+            <p>17. 存档问题：换设备后存档导入一开始进去VIP和伴侣是空的，你直接退出在重新进就恢复了或者刷新页面（点了导出按钮，会自动复制，你黏贴就可以了）</p>
             <p>18. 网页存档问题：建议每一小时保存导出存档，游戏容易炸档（群里的版本没出现过炸档，就网页有）</p>
-           <p>19. 奥秘系统：每阶段只生效第一个效果。</p>
+            <p>19. 奥秘系统：每阶段只生效第一个效果。</p>
+            <p>20. 基金系统：投入的越多波动的幅度越大10-30%，1分钟刷新一次 ，10分钟不能实时卖出，如果跌到总价值20%以下 就全部没收清零。</p>
         </div>
     </div>
 </div>
@@ -675,37 +683,22 @@
 
     <button onclick="clickGold()">点击获取金币</button>
     <button onclick="reincarnate()">转生</button>
+    <button onclick="toggleAutoReincarnation()" style="margin-left: 10px;">自动转生: <span id="autoReincarnationStatus">关闭</span></button>
+    <button onclick="toggleShopUI()">打开宝箱商店</button>
+    <button onclick="buyMaterialChest()">材料宝箱（<span id="materialChestCost">1</span>钻石）</button>
+    <button onclick="buyTechniqueChest()">功法秘籍宝箱（<span id="techniqueChestCost">1</span>转生币）</button>
     <button onclick="toggleMonsterUI()">打怪模式</button>
     <button onclick="toggleTowerUI()">通天塔</button>
     <button onclick="toggleWorldBossUI()" style="background: linear-gradient(to bottom, #d4af37, #a67c00); color: #000; font-weight: bold; padding: 6px 12px; font-size: 12px;">世界BOSS</button>
-    <button onclick="buyChest(1)">普通宝箱（100金币）</button>
-    <button onclick="buyChest(2)">高级宝箱（10钻石）</button>
-    <button onclick="buyChest(3)">稀有宝箱（1钛晶石）</button>
-    <button onclick="buyChest(4)">史诗宝箱（1星耀石）</button>
-    <button onclick="buyChest(5)">传说宝箱（1宇宙石）</button>
-    <button onclick="buyChest(6)">混沌宝箱（1超能石）</button>
-    <button onclick="buyChest(7)">终焉宝箱（1异界石）</button>
-    <button onclick="buyChest(8)">星辰宝箱（1星界石）</button>
-    <button onclick="buyChest(9)">银河宝箱（1混沌石）</button>
-    <button onclick="buyChest(10)">星云宝箱（1灵髓石）</button>
-    <button onclick="buyChest(11)">鸿蒙宝箱（1幻空石）</button>
-    <button onclick="buyChest(12)">太虚宝箱（1冥源石）</button>
-    
-    <button onclick="buyMaterialChest()">材料宝箱（<span id="materialChestCost">1</span>钻石）</button>
-    <button onclick="buyTechniqueChest()">功法秘籍宝箱（<span id="techniqueChestCost">1</span>转生币）</button>
-    <button onclick="showActivationCodeDialog()">激活码兑换</button>
+
     <button onclick="toggleClassSystem()">职业系统</button>
     <button onclick="showTitleDialog()">称号系统</button>
     <button onclick="toggleOfficialSystem()">官职系统</button>
     <button onclick="openCompanionSystem()" style="margin-left: 10px;">伴侣系统</button>
     <button onclick="toggleMysterySystem()">奥秘系统</button>
-    <button onclick="showRenameDialog()">名字修改</button>
-    
-    <button onclick="saveGame()">保存游戏</button>
-    <button onclick="loadGame()">加载游戏</button>
-    <button onclick="exportSave()">导出存档</button>
-    <button onclick="importSave()">导入存档</button>
-    <button onclick="resetGame()">重置游戏</button>
+    <button onclick="toggleFundSystem()">基金系统</button>
+    <button onclick="toggleSettingsUI()">设置</button>
+
 
     <h3>自动购买设置</h3>
     <div class="auto-buy-container">
@@ -1002,7 +995,7 @@
         <div class="battle-controls">
             <button onclick="attackMonster()">攻击</button>
             <button onclick="fleeFromBattle()">逃跑</button>
-            <button onclick="sweepStages()">扫荡</button>
+            <button onclick="toggleAutoSweep()">自动扫荡: <span id="autoSweepStatus">关</span></button>
             <input type="number" id="jumpStage" placeholder="第一次打点逃跑" min="1">
             <button onclick="jumpToStage()">必看</button>
         </div>
@@ -1119,7 +1112,7 @@
         <select id="decomposeRarity" style="padding: 5px; margin-right: 10px;">
             <option value="white">普通(白色)</option>
             <option value="blue">稀有(蓝色)</option>
-            <option value="purple">史诗(紫色)</option>
+            <option value="epic">史诗(紫色)</option>
             <option value="pink">卓越(粉色)</option>
             <option value="orange">完美(橙色)</option>
             <option value="red">神赐(红色)</option>
@@ -1130,7 +1123,7 @@
     <select id="autoDecomposeBelowRarity" style="padding: 5px; margin-right: 10px;">
         <option value="white">普通(白色)及以下</option>
         <option value="blue">稀有(蓝色)及以下</option>
-        <option value="purple">史诗(紫色)及以下</option>
+        <option value="epic">史诗(紫色)及以下</option>
         <option value="pink">卓越(粉色)及以下</option>
         <option value="orange">完美(橙色)及以下</option>
         <option value="red">神赐(红色)及以下</option>
@@ -1215,6 +1208,61 @@
         <button onclick="toggleMysterySystem()">关闭</button>
     </div>
 </div>
+<!-- 基金系统界面 -->
+<div id="fundSystem" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 800px; background: #fff; border: 2px solid #333; border-radius: 10px; padding: 20px; z-index: 1001;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>基金系统</h2>
+          <h3>投入的越多波动的幅度越大10-30%。1分钟刷新一次 ，10分钟不能实时卖出，最后4分钟不能投入，如果跌到总价值20%以下 就全部没收清零。如果对现在的价格不满意可以点右边重置基金！</h3> <button onclick="resetFundData()" style="padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">重置基金</button>
+        <button onclick="toggleFundSystem()" style="padding: 5px 10px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer;">关闭</button>
+     <button onclick="updateFundDisplay()" style="padding: 5px 10px; margin-right: 10px; background: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">刷新</button>
+    </div>
+    
+    <div style="max-height: 500px; overflow-y: auto; padding-right: 10px;">
+        <div id="fundsContainer"></div>
+    </div>
+    
+   <!-- 基金遮罩层 -->
+<div id="fundOverlay" style="display: none;"></div>
+</div><!-- 基金遮罩层 -->
+<!-- 商店界面HTML (添加到body标签内任意位置) -->
+<div id="shopUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid #333; border-radius: 10px; z-index: 1000; max-width: 500px; max-height: 80vh; overflow-y: auto;">
+    <h2>商店</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <button onclick="buyChest(1)">普通宝箱（100金币）</button>
+        <button onclick="buyChest(2)">高级宝箱（10钻石）</button>
+        <button onclick="buyChest(3)">稀有宝箱（1钛晶石）</button>
+        <button onclick="buyChest(4)">史诗宝箱（1星耀石）</button>
+        <button onclick="buyChest(5)">传说宝箱（1宇宙石）</button>
+        <button onclick="buyChest(6)">混沌宝箱（1超能石）</button>
+        <button onclick="buyChest(7)">终焉宝箱（1异界石）</button>
+        <button onclick="buyChest(8)">星辰宝箱（1星界石）</button>
+        <button onclick="buyChest(9)">银河宝箱（1混沌石）</button>
+        <button onclick="buyChest(10)">星云宝箱（1灵髓石）</button>
+        <button onclick="buyChest(11)">鸿蒙宝箱（1幻空石）</button>
+        <button onclick="buyChest(12)">太虚宝箱（1冥源石）</button>
+    </div>
+    <button onclick="toggleShopUI()" style="margin-top: 20px; padding: 10px 20px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer;">关闭商店</button>
+</div>
+<!-- 半透明背景遮罩 (添加到body标签内) -->
+<div id="shopOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
+<!-- 设置界面对话框 -->
+<div id="settingsDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ccc; z-index: 1000; text-align: center;">
+    <h3>游戏设置</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <button onclick="showRenameDialog()">名字修改</button>
+        <button onclick="showActivationCodeDialog()">激活码兑换</button>
+        <button onclick="saveGame()">保存游戏</button>
+        <button onclick="loadGame()">加载游戏</button>
+        <button onclick="exportSave()">导出存档（自动复制）</button>
+        <button onclick="importSave()">导入存档</button>
+        <button onclick="resetGame()" style="background-color: #ff4444; color: white; border: none;">重置游戏</button>
+    </div>
+    <button onclick="toggleSettingsUI()">关闭设置</button>
+</div>
+
+<!-- 半透明遮罩层 -->
+<div id="settingsOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
+
 
 
 
@@ -1330,6 +1378,7 @@
         bonus: 1, // 默认加成1倍
         lastUpdateTime: Date.now() // 添加这个字段
     },
+    autoReincarnation: false, // 新增自动转生状态
     officialLevel: 0, // 官职等级，初始为0
     officialBonus: 1, // 初始加成1倍
     vip: {
@@ -1790,6 +1839,17 @@ tower: {
                 ],
                 lastStockUpdate: Date.now()
             },
+     fundData: {
+    funds: [
+        { name: "稳健型基金", netValue: 1.00, maxInvestment: 100000, investment: 0, lastUpdate: Date.now(), redemptionTime: 0, returnRate: 0 },
+        { name: "平衡型基金", netValue: 1.00, maxInvestment: 1000000, investment: 0, lastUpdate: Date.now(), redemptionTime: 0, returnRate: 0 },
+        { name: "成长型基金", netValue: 1.00, maxInvestment: 100000000, investment: 0, lastUpdate: Date.now(), redemptionTime: 0, returnRate: 0 },
+        { name: "进取型基金", netValue: 1.00, maxInvestment: 1e15, investment: 0, lastUpdate: Date.now(), redemptionTime: 0, returnRate: 0 },
+        { name: "激进型基金", netValue: 1.00, maxInvestment: 1e30, investment: 0, lastUpdate: Date.now(), redemptionTime: 0, returnRate: 0 },
+        { name: "风险型基金", netValue: 1.00, maxInvestment: 1e50, investment: 0, lastUpdate: Date.now(), redemptionTime: 0, returnRate: 0 }
+    ],
+    lastFundUpdate: Date.now()
+},
             lotteryResults: [],
             traditionalLotteryNumbers: [],
             lastLotteryDraw: Date.now(),
@@ -2200,17 +2260,17 @@ const vipConfig = [
     { level: 17, requiredPower: 70000, bonus: 1000000000000000 },
     { level: 18, requiredPower: 80000, bonus: 10000000000000000 },
     { level: 19, requiredPower: 90000, bonus: 100000000000000000 },
-    { level: 20, requiredPower: 100000, bonus: 100000000000000000000 },
-    { level: 21, requiredPower: 125000, bonus: 1000000000000000000000 },
-    { level: 22, requiredPower: 150000, bonus: 10000000000000000000000 },
-    { level: 23, requiredPower: 200000, bonus: 100000000000000000000000 },
-    { level: 24, requiredPower: 250000, bonus: 1000000000000000000000000 },
-    { level: 25, requiredPower: 300000, bonus: 10000000000000000000000000 },
-    { level: 26, requiredPower: 400000, bonus: 100000000000000000000000000 },
-    { level: 27, requiredPower: 500000, bonus: 1000000000000000000000000000 },
-    { level: 28, requiredPower: 600000, bonus: 10000000000000000000000000000 },
-    { level: 29, requiredPower: 750000, bonus: 100000000000000000000000000000 },
-    { level: 30, requiredPower: 1000000, bonus: 1000000000000000000000000000000 }
+    { level: 20, requiredPower: 100000, bonus: 10000000000000000000 },
+    { level: 21, requiredPower: 125000, bonus: 100000000000000000000 },
+    { level: 22, requiredPower: 150000, bonus: 1000000000000000000000 },
+    { level: 23, requiredPower: 200000, bonus: 10000000000000000000000 },
+    { level: 24, requiredPower: 250000, bonus: 100000000000000000000000 },
+    { level: 25, requiredPower: 300000, bonus: 1000000000000000000000000 },
+    { level: 26, requiredPower: 400000, bonus: 10000000000000000000000000 },
+    { level: 27, requiredPower: 500000, bonus: 100000000000000000000000000 },
+    { level: 28, requiredPower: 600000, bonus: 1000000000000000000000000000 },
+    { level: 29, requiredPower: 750000, bonus: 10000000000000000000000000000 },
+    { level: 30, requiredPower: 1000000, bonus: 100000000000000000000000000000 }
 ];
         // 道具配置
         const itemEffects = {
@@ -2234,7 +2294,7 @@ const vipConfig = [
     shadowHand: { name: '无影闪击手', effect: 5.00, description: '增加全部装备属性 +500%' },
     quantumHand: { name: '量子跃迁快手', effect: 10.00, description: '增加全部装备属性 +1000%' },
     lightningHand: { name: '闪电连点器之手', effect: 100.00, description: '增加全部装备属性 +10000%' },
-    divineHand: { name: '天神之手', effect: 1000.00, description: '增加全部装备属性 +100000%' }
+    divineHand: { name: '天神之手', effect: 5000.00, description: '增加全部装备属性 +500000%' }
 };
 
         // 材料宝箱掉落概率配置
@@ -2339,21 +2399,21 @@ const mysteryConfig = [
           genesis: { name: '创世', gps: 5000000000000000000, click: 6000000000000000000000, prob: 0.01, growthRate: 2.50 },
           divineRealm: { name: '神域', gps: 6000000000000000000, click: 8000000000000000000000, prob: 0.01, growthRate: 2.70 },
           apocalypse: { name: '终焉', gps: 10000000000000000000, click: 20000000000000000000000, prob: 0.01, growthRate: 3.00 },
-         yeyu1: { name: '星辰', gps: 50000000000000000000000000, click: 50000000000000000000000000000, prob: 0.0001, growthRate: 3.20 },
-         yeyu2: { name: '起源', gps: 60000000000000000000000000, click: 60000000000000000000000000000, prob: 0.00005, growthRate: 3.50 },
-         yeyu3: { name: '时光', gps: 100000000000000000000000000, click: 200000000000000000000000000000, prob: 0.00001, growthRate: 4.00 },
-         yeyu4: { name: '造物', gps: 50000000000000000000000000000000, click: 50000000000000000000000000000000000, prob: 0.000005, growthRate: 4.20 },
-         yeyu5: { name: '银河', gps: 60000000000000000000000000000000, click: 60000000000000000000000000000000000, prob: 0.000001, growthRate: 4.50 },
-         yeyu6: { name: '天界', gps: 100000000000000000000000000000000, click: 100000000000000000000000000000000000, prob: 0.0000001, growthRate: 5.00 },
-         yeyu7: { name: '星云', gps: 50000000000000000000000000000000000000, click: 50000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 5.50 },
-         yeyu8: { name: '星河', gps: 60000000000000000000000000000000000000, click: 60000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 6.00 },
-         yeyu9: { name: '纪元', gps: 100000000000000000000000000000000000000, click: 100000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 6.50 }, 
-         yeyu10: { name: '鸿蒙', gps: 50000000000000000000000000000000000000000000, click: 5000000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 7.00 },
-         yeyu11: { name: '星穹', gps: 60000000000000000000000000000000000000000000, click: 6000000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 7.50 },
-         yeyu12: { name: '亘古', gps: 100000000000000000000000000000000000000000000, click: 10000000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.00 },
-         yeyu13: { name: '万象', gps: 50000000000000000000000000000000000000000000000000, click: 50000000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.50 },
-         yeyu14: { name: '太虚', gps: 60000000000000000000000000000000000000000000000000, click: 60000000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.00 },
-         yeyu15: { name: '九垓', gps: 100000000000000000000000000000000000000000000000000, click: 100000000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.50 }
+         yeyu1: { name: '星辰', gps: 500000000000000000000000, click: 500000000000000000000000000, prob: 0.0001, growthRate: 3.20 },
+         yeyu2: { name: '起源', gps: 600000000000000000000000, click: 600000000000000000000000000, prob: 0.00005, growthRate: 3.50 },
+         yeyu3: { name: '时光', gps: 1000000000000000000000000, click: 2000000000000000000000000000, prob: 0.00001, growthRate: 4.00 },
+         yeyu4: { name: '造物', gps: 500000000000000000000000000000, click: 500000000000000000000000000000000, prob: 0.000005, growthRate: 4.20 },
+         yeyu5: { name: '银河', gps: 600000000000000000000000000000, click: 600000000000000000000000000000000, prob: 0.000001, growthRate: 4.50 },
+         yeyu6: { name: '天界', gps: 1000000000000000000000000000000, click: 1000000000000000000000000000000000, prob: 0.0000001, growthRate: 5.00 },
+         yeyu7: { name: '星云', gps: 500000000000000000000000000000000000, click: 500000000000000000000000000000000000000, prob: 0.0000001, growthRate: 5.50 },
+         yeyu8: { name: '星河', gps: 600000000000000000000000000000000000, click: 600000000000000000000000000000000000000, prob: 0.0000001, growthRate: 6.00 },
+         yeyu9: { name: '纪元', gps: 1000000000000000000000000000000000000, click: 1000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 6.50 }, 
+         yeyu10: { name: '鸿蒙', gps: 50000000000000000000000000000000000000000, click: 5000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 7.00 },
+         yeyu11: { name: '星穹', gps: 60000000000000000000000000000000000000000, click: 6000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 7.50 },
+         yeyu12: { name: '亘古', gps: 100000000000000000000000000000000000000000, click: 10000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.00 },
+         yeyu13: { name: '万象', gps: 5000000000000000000000000000000000000000000000, click: 50000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.50 },
+         yeyu14: { name: '太虚', gps: 6000000000000000000000000000000000000000000000, click: 60000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.00 },
+         yeyu15: { name: '九垓', gps: 10000000000000000000000000000000000000000000000, click: 100000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.50 }
        
         };
 
@@ -2620,19 +2680,222 @@ const mysteryConfig = [
     'ultimate49', 
     'ultimate50'
 ];
-        // 转生系统
-        function reincarnate() {
-    // 检查是否存在普通装备且等级≥10000
-    const hasValidCommon = player.equipment.some(eq => 
-        eq.rarity === 'common' && eq.level >= 10000
-    );
 
-    if (!hasValidCommon) {
-        logAction("转生需要至少一件普通装备达到10000级！", "error");
+// 切换自动转生状态
+function toggleAutoReincarnation() {
+    player.autoReincarnation = !player.autoReincarnation;
+    document.getElementById('autoReincarnationStatus').textContent = player.autoReincarnation ? '开启' : '关闭';
+    logAction(`自动转生已${player.autoReincarnation ? '开启' : '关闭'}`, 'info');
+}
+
+// 切换自动转生状态
+function toggleAutoReincarnation() {
+    player.autoReincarnation = !player.autoReincarnation;
+    document.getElementById('autoReincarnationStatus').textContent = player.autoReincarnation ? '开启' : '关闭';
+    logAction(`自动转生已${player.autoReincarnation ? '开启' : '关闭'}`, 'info');
+}
+
+// 检查自动转生条件
+function checkAutoReincarnation() {
+    if (!player.autoReincarnation) return;
+    
+    // 计算当前转生所需的总等级
+    const requiredLevel = 10000 + player.reincarnationCount * 20;
+    
+    // 计算所有普通装备的总等级
+    const totalCommonLevel = player.equipment
+        .filter(eq => eq.rarity === 'common')
+        .reduce((sum, eq) => sum + eq.level, 0);
+    
+    if (totalCommonLevel >= requiredLevel) {
+        // 直接执行转生逻辑，不弹出确认对话框
+        autoReincarnate();
+    }
+}
+
+// 自动转生逻辑（不弹出确认对话框）
+function autoReincarnate() {
+    // 计算当前转生所需的总等级
+    const requiredLevel = 10000 + player.reincarnationCount * 20;
+    
+    // 计算所有普通装备的总等级
+    const totalCommonLevel = player.equipment
+        .filter(eq => eq.rarity === 'common')
+        .reduce((sum, eq) => sum + eq.level, 0);
+    
+    if (totalCommonLevel < requiredLevel) {
+        logAction(`自动转生失败：普通装备总等级不足（需要${requiredLevel}级，当前${totalCommonLevel}级）`, "error");
         return;
     }
 
-    showCustomConfirm('确定要转生吗？需要普通装备≥10000级，所有装备等级将重置为1级，金币、钻石、钛晶石、星耀石、宇宙石、异界石、星界石和混沌石将被清空！', (confirmed) => {
+    let totalReincarnationCoin = 0;
+
+    // 计算转生币奖励
+    player.equipment.forEach(eq => {
+        switch (eq.rarity) {
+            case 'common':
+                totalReincarnationCoin += eq.level * 0.0001;
+                break;
+            case 'rare':
+                totalReincarnationCoin += eq.level * 0.0002;
+                break;
+            case 'epic':
+                totalReincarnationCoin += eq.level * 0.001;
+                break;
+            case 'legendary':
+                totalReincarnationCoin += eq.level * 0.003;
+                break;
+            case 'ancient':
+                totalReincarnationCoin += eq.level * 0.005;
+                break;
+            case 'divine':
+                totalReincarnationCoin += eq.level * 0.008;
+                break;
+            case 'arcane':
+                totalReincarnationCoin += eq.level * 0.01;
+                break;
+            case 'celestial':
+                totalReincarnationCoin += eq.level * 0.03;
+                break;
+            case 'infernal':
+                totalReincarnationCoin += eq.level * 0.05;
+                break;
+            case 'astral':
+                totalReincarnationCoin += eq.level * 0.08;
+                break;
+            case 'primeval':
+                totalReincarnationCoin += eq.level * 0.1;
+                break;
+            case 'transcendental':
+                totalReincarnationCoin += eq.level * 0.3;
+                break;
+            case 'quantum':
+                totalReincarnationCoin += eq.level * 0.5;
+                break;
+            case 'ultimate':
+                totalReincarnationCoin += eq.level * 1.0;
+                break;
+            case 'chaos':
+                totalReincarnationCoin += eq.level * 3.0;
+                break;
+            case 'eternal':
+                totalReincarnationCoin += eq.level * 5.0;
+                break;
+            case 'void':
+                totalReincarnationCoin += eq.level * 10.0;
+                break;
+            case 'genesis':
+                totalReincarnationCoin += eq.level * 20.0;
+                break;
+            case 'divineRealm':
+                totalReincarnationCoin += eq.level * 30.0;
+                break;
+            case 'apocalypse':
+                totalReincarnationCoin += eq.level * 40.0;
+                break;
+            case 'yeyu1':
+                totalReincarnationCoin += eq.level * 50.0;
+                break;
+            case 'yeyu2':
+                totalReincarnationCoin += eq.level * 60.0;
+                break;
+            case 'yeyu3':
+                totalReincarnationCoin += eq.level * 70.0;
+                break;
+            case 'yeyu4':
+                totalReincarnationCoin += eq.level * 80.0;
+                break;
+            case 'yeyu5':
+                totalReincarnationCoin += eq.level * 90.0;
+                break;
+            case 'yeyu6':
+                totalReincarnationCoin += eq.level * 100.0;
+                break;
+            case 'yeyu7':
+                totalReincarnationCoin += eq.level * 200.0;
+                break;
+            case 'yeyu8':
+                totalReincarnationCoin += eq.level * 300.0;
+                break;
+            case 'yeyu9':
+                totalReincarnationCoin += eq.level * 400.0;
+                break;
+            case 'yeyu10':
+                totalReincarnationCoin += eq.level * 400.0;
+                break;
+            case 'yeyu11':
+                totalReincarnationCoin += eq.level * 600.0;
+                break;
+            case 'yeyu12':
+                totalReincarnationCoin += eq.level * 700.0;
+                break;
+            case 'yeyu13':
+                totalReincarnationCoin += eq.level * 800.0;
+                break;
+            case 'yeyu14':
+                totalReincarnationCoin += eq.level * 900.0;
+                break;
+            case 'yeyu15':
+                totalReincarnationCoin += eq.level * 1000.0;
+                break;
+        }
+    });
+
+    // 重置装备等级
+    player.equipment.forEach(eq => {
+        eq.level = 1 + player.reincarnationStats.equipmentLevelBonus.level * 200; // 转生属性加成
+        eq.gps = equipmentTypes[eq.rarity].gps * (1 + player.reincarnationStats.gpsBonus.level); // 每级装备属性乘以100%
+        eq.click = equipmentTypes[eq.rarity].click * (1 + player.reincarnationStats.gpsBonus.level); // 每级装备属性乘以100%
+    });
+
+    // 清空货币
+    player.gold = 0;
+    player.diamond = 0;
+    player.titanium = 0;
+    player.starstone = 0;
+    player.cosmicstone = 0;
+    player.superstone = 0;
+    player.otherworldstone = 0;
+    player.xingjiestone = 0;
+    player.hundunstone = 0;
+    player.lingtone = 0;
+    player.huangtone = 0;
+    player.mingtone = 0;
+
+    // 增加转生币
+    player.reincarnationCoin += totalReincarnationCoin;
+    player.reincarnationCount++;
+
+    // 修改属性点计算逻辑
+    player.attributes.totalPoints = player.reincarnationCount * 1 + player.battle.maxStage * 10 + player.tower.currentFloor * 1;
+    player.attributes.remainingPoints += 1; // 每次转生增加1点剩余属性点
+
+    // 检查转生成就
+    checkReincarnationAchievements();
+
+    logAction(`自动转生成功！获得转生币: ${totalReincarnationCoin.toFixed(4)}`, 'success');
+    updateDisplay();
+    updateTechniqueBonuses(); // 转生后更新功法加成
+    updatePlayerBattleStats(); // 更新战斗属性
+}
+
+
+        // 转生系统
+        function reincarnate() {
+   // 计算当前转生所需的总等级
+    const requiredLevel = 10000 + player.reincarnationCount * 20;
+    
+    // 计算所有普通装备的总等级
+    const totalCommonLevel = player.equipment
+        .filter(eq => eq.rarity === 'common')
+        .reduce((sum, eq) => sum + eq.level, 0);
+    
+    if (totalCommonLevel < requiredLevel) {
+        logAction(`转生需要普通装备总等级达到${requiredLevel}级（当前${totalCommonLevel}级）！`, "error");
+        return;
+    }
+
+    showCustomConfirm(`确定要转生吗？需要普通装备总等级≥${requiredLevel}级，所有装备等级将重置为1级，货币将被清空！`, (confirmed) => {
         if (confirmed) {
             let totalReincarnationCoin = 0;
 
@@ -3073,9 +3336,9 @@ if (speedBoostBtn) {
 // 计算离线分钟数
         const offlineMinutes = Math.floor(offlineSeconds / 60);
         
-        // 每分钟为每件装备增加200级
+        // 每分钟为每件装备增加500级
         player.equipment.forEach(eq => {
-            eq.level += offlineMinutes * 200;
+            eq.level += offlineMinutes * 500;
         });
                 // 模拟离线期间的自动购买
                 simulateOfflineAutoBuy(offlineSeconds);
@@ -5144,7 +5407,7 @@ function confirmRename() {
     document.getElementById("materialChestCost").textContent = display(player.materialChestCost);
 
         // 更新宝箱成本显示
-     document.getElementById("techniqueChestCost").textContent = player.techniqueChestCost;
+     document.getElementById("techniqueChestCost").textContent = display(player.techniqueChestCost);
 
     // 更新怪物生命和攻击显示
     if (player.battle.monster) {
@@ -5162,7 +5425,7 @@ function confirmRename() {
     div.className = `equipment ${eq.rarity}`;
     div.innerHTML = `
         ${getEquipmentName(eq)} Lv.${eq.level}
-        (GPS +${eq.gps.toFixed(1)} 点击 +${eq.click.toFixed(1)})
+        (GPS +${eq.gps.toExponential(3)} 点击 +${eq.click.toExponential(3)})
         <button onclick="useGem(${index}, 'primaryGem')">使用初级宝石</button>
         <button onclick="useAllGems(${index}, 'primaryGem')">一键使用初级宝石</button>
         <button onclick="useGem(${index}, 'advancedGem')">使用高级宝石</button>
@@ -5873,6 +6136,9 @@ function confirmRename() {
     checkAutoBuy(); 
     updateStockPrices(); 
     calculateBankInterest(); 
+   updateFundValues(); // 添加这一行 
+ checkAutoReincarnation(); // 检查自动转生
+ updateCompanionDisplay();
     updateDisplay();
 }, 1000);
         updateDisplay();
@@ -5895,6 +6161,31 @@ function confirmRename() {
             document.querySelectorAll('.log-tab').forEach(t => t.classList.remove('active'));
             document.querySelector(`.log-tab[onclick="switchLogTab(${page})"]`).classList.add('active');
         }
+
+function toggleShopUI() {
+    const shopUI = document.getElementById('shopUI');
+    const overlay = document.getElementById('shopOverlay');
+    
+    if (shopUI.style.display === 'none') {
+        shopUI.style.display = 'block';
+        overlay.style.display = 'block';
+    } else {
+        shopUI.style.display = 'none';
+        overlay.style.display = 'none';
+    }
+}
+function toggleSettingsUI() {
+    const dialog = document.getElementById('settingsDialog');
+    const overlay = document.getElementById('settingsOverlay');
+    
+    if (dialog.style.display === 'none') {
+        dialog.style.display = 'block';
+        overlay.style.display = 'block';
+    } else {
+        dialog.style.display = 'none';
+        overlay.style.display = 'none';
+    }
+}
 
         // 新增：打怪模式逻辑
         function toggleMonsterUI() {
@@ -6088,7 +6379,10 @@ function generateMonster() {
         damageTakenMultiplier: damageTakenMultiplier
     };
 }
+    function updateAutoSweepStatus() {
+    document.getElementById('autoSweepStatus').textContent = isAutoSweeping ? '开' : '关';
 
+}
        function updateMonsterUI() {
     document.getElementById('playerHealth').textContent = player.battle.playerHealth.toExponential(3);
     document.getElementById('playerAttack').textContent = player.battle.playerAttack.toExponential(3);
@@ -6106,6 +6400,7 @@ function generateMonster() {
     // 显示怪物词条
     const modifiers = player.battle.monster.modifiers.join(', ');
     document.getElementById('monsterModifiers').textContent = ` ${modifiers}`;
+     updateAutoSweepStatus();
 }
        function attackMonster() {
     const monster = player.battle.monster;
@@ -6693,7 +6988,113 @@ function simulateItemDrop(stage) {
         logContainer.removeChild(logContainer.lastChild);
     }
 }
- 
+ let autoSweepInterval = null;
+let isAutoSweeping = false;
+
+// 添加自动扫荡控制函数
+function toggleAutoSweep() {
+    if (isAutoSweeping) {
+        // 停止自动扫荡
+        clearInterval(autoSweepInterval);
+        autoSweepInterval = null;
+        isAutoSweeping = false;
+        logBattleAction("自动扫荡已停止");
+          updateOfficialSystemDisplay();
+        updateMonsterUI(); 
+    } else {
+        // 检查是否满足开启条件
+        if (player.reincarnationCount < 2) {
+            alert("需要达到2转才能开启自动扫荡！");
+            return;
+        }
+        // 开始自动扫荡
+        isAutoSweeping = true;
+        logBattleAction("自动扫荡已开启，每4秒执行一次");
+        autoSweepInterval = setInterval(autoSweepProcess, 4000);
+        // 立即执行一次
+        autoSweepProcess();
+        updateOfficialSystemDisplay();
+        updateMonsterUI(); 
+    }
+}
+
+// 自动扫荡处理流程
+function autoSweepProcess() {
+    // 检查是否需要重置关卡
+    if (player.battle.currentStage >= Math.max(1, player.battle.maxStage - 1)) {
+        // 重置关卡到0
+        player.battle.currentStage = 0;
+        logBattleAction("已自动重置关卡到初始位置");
+    }
+    
+    // 执行扫荡
+    const currentStage = player.battle.currentStage;
+    const maxStage = player.battle.maxStage;
+    const targetStage = Math.max(1, maxStage - 1);
+    
+    if (currentStage >= targetStage) {
+        logBattleAction("自动扫荡：没有可扫荡的关卡，将重置关卡");
+        return;
+    }
+    
+    const cost = (targetStage - currentStage) * 12;
+    if (player.reincarnationCoin < cost) {
+        logBattleAction(`自动扫荡：转生币不足（需要${cost}），已停止`);
+        toggleAutoSweep(); // 停止自动扫荡
+        return;
+    }
+    
+    // 自动执行扫荡（无需确认）
+    player.reincarnationCoin -= cost;
+    
+    const originalStage = player.battle.currentStage;
+    let totalDrops = 0;
+    let dungeonEquipmentDrops = 0;
+    let soulRingDrops = 0;
+    let itemDrops = 0;
+    
+    // 模拟扫荡过程
+    for (let stage = currentStage; stage < targetStage; stage++) {
+        player.battle.currentStage = stage;
+        
+        // 固定掉落3个副本装备
+        for (let i = 0; i < 3; i++) {
+            const dungeonDrops = getDropRatesByStage(stage);
+            const rand = Math.random();
+            let cumulativeProb = 0;
+            
+            for (const [rarity, prob] of Object.entries(dungeonDrops)) {
+                cumulativeProb += prob;
+                if (rand < cumulativeProb) {
+                    addDungeonEquipment(rarity);
+                    dungeonEquipmentDrops++;
+                    break;
+                }
+            }
+        }
+        
+        // 魂环掉落
+        const soulRingResult = simulateSoulRingDrop(stage);
+        if (soulRingResult) {
+            soulRingDrops++;
+        }
+        
+        // 道具掉落
+        const itemResult = simulateItemDrop(stage);
+        if (itemResult) {
+            itemDrops++;
+        }
+    }
+
+    // 扫荡完成后停留在目标关卡
+    player.battle.currentStage = targetStage;
+    generateMonster();
+    
+    logBattleAction(`自动扫荡完成！从第${originalStage + 1}关到第${targetStage}关`);
+    logBattleAction(`获得副本装备: ${dungeonEquipmentDrops}件，魂环: ${soulRingDrops}个，道具: ${itemDrops}个`);
+      updateOfficialSystemDisplay();
+        updateMonsterUI(); 
+}
   function addAttributePoint(attribute, amount) {
     // 计算实际要加的点数
     let pointsToAdd = 0;
@@ -7080,7 +7481,259 @@ function upgradeMysteryMaxPossible() {
         updateDisplay();
     }
 }
+function resetFundData() {
+    showCustomConfirm('确定要重置所有基金数据吗？这将清空所有投资和收益！', (confirmed) => {
+        if (confirmed) {
+            player.fundData = {
+                funds: [
+                    { name: "稳健型基金", netValue: 1.00, maxInvestment: 100000, investment: 0, lastUpdate: Date.now(), redemptionTime: 0, returnRate: 0 },
+                    { name: "平衡型基金", netValue: 1.00, maxInvestment: 1000000, investment: 0, lastUpdate: Date.now(), redemptionTime: 0, returnRate: 0 },
+                    { name: "成长型基金", netValue: 1.00, maxInvestment: 100000000, investment: 0, lastUpdate: Date.now(), redemptionTime: 0, returnRate: 0 },
+                    { name: "进取型基金", netValue: 1.00, maxInvestment: 1e15, investment: 0, lastUpdate: Date.now(), redemptionTime: 0, returnRate: 0 },
+                    { name: "激进型基金", netValue: 1.00, maxInvestment: 1e30, investment: 0, lastUpdate: Date.now(), redemptionTime: 0, returnRate: 0 },
+                    { name: "风险型基金", netValue: 1.00, maxInvestment: 1e50, investment: 0, lastUpdate: Date.now(), redemptionTime: 0, returnRate: 0 }
+                ],
+                lastFundUpdate: Date.now()
+            };
+            
+            logAction("基金数据已重置到初始状态", "success");
+            updateFundDisplay();
+        }
+    });
+}
+// 切换基金系统显示状态
+function toggleFundSystem() {
+    const fundSystem = document.getElementById('fundSystem');
+    const overlay = document.getElementById('fundOverlay');
+    const isVisible = fundSystem.style.display !== 'none';
+    
+    fundSystem.style.display = isVisible ? 'none' : 'block';
+    overlay.style.display = isVisible ? 'none' : 'block';
+    
+    if (!isVisible) {
+        updateFundDisplay();
+    }
+}
 
+// 更新基金显示
+function updateFundDisplay() {
+    const container = document.getElementById('fundsContainer');
+    container.innerHTML = player.fundData.funds.map((fund, index) => {
+        const currentValue = fund.investment * fund.netValue;
+        const changeRate = ((fund.netValue - 1) * 100).toFixed(2);
+        const isPositive = changeRate >= 0;
+        const canRedeem = Date.now() >= fund.redemptionTime;
+        const redemptionLeft = canRedeem ? 0 : Math.ceil((fund.redemptionTime - Date.now()) / 1000);
+        
+        return `
+            <div style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+                <h3>${fund.name}</h3>
+                <p>当前净值: ${fund.netValue.toFixed(4)}</p>
+                <p>收益率: <span style="color: ${fund.returnRate >= 0 ? 'green' : 'red'}">${fund.returnRate >= 0 ? '+' : ''}${fund.returnRate}%</span></p>
+                <p>最大投资: ${formatNumber(fund.maxInvestment)} 转生币</p>
+                <p>你的投资: ${formatNumber(fund.investment)} 转生币</p>
+                <p>当前价值: ${formatNumber(currentValue)} 转生币</p>
+                <p>涨幅度: <span style="color: ${isPositive ? 'green' : 'red'}">${isPositive ? '+' : ''}${changeRate}%</span></p>
+                
+                ${!canRedeem ? `<p>赎回倒计时: ${Math.floor(redemptionLeft / 60)}分${redemptionLeft % 60}秒</p>` : ''}
+                
+                <div style="margin-top: 10px;">
+                    <input type="number" id="fundAmount${index}" placeholder="投资金额" min="1" style="width: 120px; margin-right: 10px;">
+                    <button onclick="investFund(${index})" ${fund.investment >= fund.maxInvestment ? 'disabled' : ''}>投资</button>
+                    <button onclick="redeemFund(${index})" ${fund.investment <= 0 || !canRedeem ? 'disabled' : ''}>赎回</button>
+                    <button onclick="investAllFund(${index})" ${fund.investment >= fund.maxInvestment ? 'disabled' : ''}>一键投资</button>
+                    <button onclick="redeemAllFund(${index})" ${fund.investment <= 0 || !canRedeem ? 'disabled' : ''}>一键赎回</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+// 投资基金
+function investFund(index) {
+   const fund = player.fundData.funds[index];
+// 检查是否在赎回前4分钟内
+    const now = Date.now();
+    const redemptionTime = fund.redemptionTime;
+    if (redemptionTime && now > redemptionTime - 4 * 60 * 1000 && now < redemptionTime) {
+        logAction("赎回前最后4分钟内禁止投资！", "error");
+        return;
+    }
+    
+    const amount = parseInt(document.getElementById(`fundAmount${index}`).value) || 0;
+    
+    if (amount <= 0) {
+        logAction("请输入有效的投资金额", "error");
+        return;
+    }
+    
+    if (fund.investment + amount > fund.maxInvestment) {
+        logAction(`投资金额超过基金上限${formatNumber(fund.maxInvestment)}`, "error");
+        return;
+    }
+    
+    if (player.reincarnationCoin < amount) {
+        logAction("转生币不足！", "error");
+        return;
+    }
+    
+    player.reincarnationCoin -= amount;
+    fund.investment += amount;
+    
+    // 设置赎回时间为10分钟后
+    if (fund.redemptionTime < Date.now()) {
+        fund.redemptionTime = Date.now() + 10 * 60 * 1000;
+    }
+    
+    logAction(`成功投资${fund.name} ${amount}转生币`, "success");
+    updateFundDisplay();
+}
+
+// 赎回基金
+function redeemFund(index) {
+    const fund = player.fundData.funds[index];
+    const amount = parseInt(document.getElementById(`fundAmount${index}`).value) || 0;
+    
+    if (amount <= 0) {
+        logAction("请输入有效的赎回金额", "error");
+        return;
+    }
+    
+    if (fund.investment < amount) {
+        logAction("投资金额不足！", "error");
+        return;
+    }
+    
+    const redeemValue = amount * fund.netValue;
+    player.reincarnationCoin += redeemValue;
+    fund.investment -= amount;
+    
+    logAction(`成功赎回${fund.name} ${amount}转生币，获得${redeemValue.toFixed(2)}转生币`, "success");
+    
+    if (fund.investment === 0) {
+        fund.redemptionTime = 0;
+    }
+    
+    updateFundDisplay();
+}
+
+// 一键投资
+function investAllFund(index) {
+    const fund = player.fundData.funds[index];
+    const redeemedTime = Date.now() - fund.redemptionStart;
+// 检查是否在赎回前4分钟内
+    const now = Date.now();
+    const redemptionTime = fund.redemptionTime;
+    if (redemptionTime && now > redemptionTime - 4 * 60 * 1000 && now < redemptionTime) {
+        logAction("赎回前最后4分钟内禁止投资！", "error");
+        return;
+    }
+    const maxCanInvest = fund.maxInvestment - fund.investment;
+    const amount = Math.min(player.reincarnationCoin, maxCanInvest);
+    
+    if (amount <= 0) {
+        logAction("没有可投资的转生币或已达投资上限", "error");
+        return;
+    }
+    
+    player.reincarnationCoin -= amount;
+    fund.investment += amount;
+    
+    // 设置赎回时间为10分钟后
+    if (fund.redemptionTime < Date.now()) {
+        fund.redemptionTime = Date.now() + 10 * 60 * 1000;
+    }
+    
+    logAction(`成功全额投资${fund.name} ${amount}转生币`, "success");
+    updateFundDisplay();
+}
+
+// 一键赎回
+function redeemAllFund(index) {
+    const fund = player.fundData.funds[index];
+    
+    if (fund.investment <= 0) {
+        logAction("没有可赎回的投资", "error");
+        return;
+    }
+    
+    if (Date.now() < fund.redemptionTime) {
+        logAction("未到赎回时间", "error");
+        return;
+    }
+    
+    const redeemValue = fund.investment * fund.netValue;
+    player.reincarnationCoin += redeemValue;
+    
+    logAction(`成功全额赎回${fund.name}，获得${redeemValue.toFixed(2)}转生币`, "success");
+    
+    fund.investment = 0;
+    fund.redemptionTime = 0;
+    
+    updateFundDisplay();
+}
+
+// 更新基金净值
+function updateFundValues() {
+    const now = Date.now();
+    const elapsed = now - player.fundData.lastFundUpdate;
+    const intervals = Math.floor(elapsed / (60 * 1000)); // 每分钟更新一次
+    
+    if (intervals > 0) {
+        player.fundData.funds.forEach(fund => {
+            // 计算投资比例（0-1）
+            const investmentRatio = fund.maxInvestment > 0 ? Math.min(fund.investment / fund.maxInvestment, 1) : 0;
+            
+            // 根据投资比例计算波动幅度（10%-30%）
+            const baseVolatility = 0.1 + (0.2 * investmentRatio);
+            
+            // 跌的概率比涨高10-20%
+            const riseProbability = 0.50 - (0.1 * investmentRatio); // 50%基础上涨概率，随投资增加降低
+            
+            let newNetValue = fund.netValue;
+            for (let i = 0; i < intervals; i++) {
+                const willRise = Math.random() < riseProbability;
+                const volatility = willRise ? 
+                    Math.random() * baseVolatility : 
+                    -Math.random() * baseVolatility;
+                
+                newNetValue *= (1 + volatility);
+                
+                // 检查是否跌到20%以下，若是则清零
+                if (newNetValue <= 0.2) {
+                    logAction(`${fund.name}已退市，投资已清零`, "error");
+                    fund.investment = 0;
+                    newNetValue = 1.00;
+                    fund.redemptionTime = 0;
+                    break;
+                }
+            }
+            
+            // 计算收益率（新增）
+            const returnRate = ((newNetValue / fund.netValue - 1) * 100).toFixed(2);
+            fund.returnRate = parseFloat(returnRate);
+            
+            // 更新净值
+            fund.netValue = newNetValue;
+        });
+        
+        player.fundData.lastFundUpdate = now - (elapsed % (60 * 1000));
+        
+        // 如果基金面板打开则更新显示
+        if (document.getElementById('fundSystem').style.display !== 'none') {
+            updateFundDisplay();
+        }
+    }
+}
+
+
+// 添加格式化大数字的辅助函数
+function formatNumber(num) {
+    if (num >= 1e30) return (num / 1e30).toFixed(2) + 'e30';
+    if (num >= 1e15) return (num / 1e15).toFixed(2) + 'e15';
+    if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+    if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+    return num.toFixed(2);
+}
 
 
 // 称号配置（按分支分组）
@@ -7334,7 +7987,7 @@ const companionRarities = {
         talentRange: [0, 4], // 初级到圣级
         decomposeRose: 20
     },
-    purple: { 
+    epic: { 
         name: "史诗", 
         color: "#800080", 
         baseScore: 1000,
@@ -7422,7 +8075,7 @@ const companionNames = ["闫闫", "茶茶", "沈砚山", "苏绾月", "林清瑶
 const drawProbabilities = [
     {rarity: "white", prob: 0.8},
     {rarity: "blue", prob: 0.15},
-    {rarity: "purple", prob: 0.01889},
+    {rarity: "epic", prob: 0.01889},
     {rarity: "pink", prob: 0.001},
     {rarity: "orange", prob: 0.0001},
     {rarity: "red", prob: 0.00001}
@@ -7644,7 +8297,7 @@ function getRarityName(rarity) {
     const names = {
         'white': '普通(白色)',
         'blue': '稀有(蓝色)',
-        'purple': '史诗(紫色)',
+        'epic': '史诗(紫色)',
         'pink': '卓越(粉色)',
         'orange': '完美(橙色)',
         'red': '神赐(红色)'
@@ -7656,7 +8309,7 @@ function getRarityName(rarity) {
 function checkAutoDecompose() {
     if (!player.autoDecompose.enabled) return;
 
-    const rarityOrder = ['white', 'blue', 'purple', 'pink', 'orange', 'red'];
+    const rarityOrder = ['white', 'blue', 'epic', 'pink', 'orange', 'red'];
     const targetIndex = rarityOrder.indexOf(player.autoDecompose.belowRarity);
     if (targetIndex === -1) return;
 
