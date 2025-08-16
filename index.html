@@ -1212,7 +1212,7 @@
 <div id="fundSystem" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 800px; background: #fff; border: 2px solid #333; border-radius: 10px; padding: 20px; z-index: 1001;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2>基金系统</h2>
-          <h3>投入的越多波动的幅度越大10-30%。1分钟刷新一次 ，10分钟不能实时卖出，最后4分钟不能投入，如果跌到总价值20%以下 就全部没收清零。如果对现在的价格不满意可以点右边重置基金！</h3> <button onclick="resetFundData()" style="padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">重置基金</button>
+          <h3>投入的越多波动的幅度越大10-30%。1分钟刷新一次 ，10分钟不能实时卖出，最后4分钟不能投入，如果跌到总价值20%以下 就全部没收清零。每次第一次购买净值会归为1，已购买后正常。</h3> <button onclick="resetFundData()" style="padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">重置基金</button>
         <button onclick="toggleFundSystem()" style="padding: 5px 10px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer;">关闭</button>
      <button onclick="updateFundDisplay()" style="padding: 5px 10px; margin-right: 10px; background: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">刷新</button>
     </div>
@@ -2861,7 +2861,9 @@ function autoReincarnate() {
     player.lingtone = 0;
     player.huangtone = 0;
     player.mingtone = 0;
-
+ // 重置材料宝箱购买成本
+            player.materialChestCost = 1;
+            player.techniqueChestCost = 1;
     // 增加转生币
     player.reincarnationCoin += totalReincarnationCoin;
     player.reincarnationCount++;
@@ -3118,13 +3120,13 @@ function confirmActivationCode() {
             success = true;
             break;
         case "VIP888":
-            player.items.advancedGem = (player.items.advancedGem || 0) + 5;
-            rewardMsg = "获得5个高级宝石";
+            player.items.advancedGem = (player.items.advancedGem || 0) + 3;
+            rewardMsg = "获得3个高级宝石";
             success = true;
             break;
         case "YUYU":
-            player.cosmicstone += 10;
-            rewardMsg = "获得10个宇宙石";
+            player.cosmicstone += 2;
+            rewardMsg = "获得2个宇宙石";
             success = true;
             break;
        case "BANLV":
@@ -3132,7 +3134,13 @@ function confirmActivationCode() {
             player.items.rose += 520;
             rewardMsg = "获得10个伴侣钥匙和520朵玫瑰花";
             success = true;
-            break;        
+            break;     
+        case "BANLV1":
+            player.items.companionKey += 30; 
+            player.items.rose += 520;
+            rewardMsg = "获得30个伴侣钥匙和520朵玫瑰花";
+            success = true;
+            break;    
         case "VIP666666":
         player.items.vipPower = (player.items.vipPower || 0) + 10;
         rewardMsg = "获得10个VIP能力值";
@@ -6945,8 +6953,8 @@ function simulateItemDrop(stage) {
         hasDropped = true;
     }
     
-    // 伴侣钥匙掉落（150关以上0.01%概率）
-    if (stage >= 1 && Math.random() < 0.00025) {
+    // 伴侣钥匙掉落（150关以上0.001%概率）
+    if (stage >= 1 && Math.random() < 0.0005) {
         player.items.companionKey++;
         hasDropped = true;
     }
@@ -7540,7 +7548,6 @@ function updateFundDisplay() {
                 <div style="margin-top: 10px;">
                     <input type="number" id="fundAmount${index}" placeholder="投资金额" min="1" style="width: 120px; margin-right: 10px;">
                     <button onclick="investFund(${index})" ${fund.investment >= fund.maxInvestment ? 'disabled' : ''}>投资</button>
-                    <button onclick="redeemFund(${index})" ${fund.investment <= 0 || !canRedeem ? 'disabled' : ''}>赎回</button>
                     <button onclick="investAllFund(${index})" ${fund.investment >= fund.maxInvestment ? 'disabled' : ''}>一键投资</button>
                     <button onclick="redeemAllFund(${index})" ${fund.investment <= 0 || !canRedeem ? 'disabled' : ''}>一键赎回</button>
                 </div>
@@ -7575,7 +7582,12 @@ function investFund(index) {
         logAction("转生币不足！", "error");
         return;
     }
-    
+    // 检查赎回倒计时状态
+    if (fund.redemptionTime <= 0) {
+        // 如果没有赎回倒计时，重置净值为1
+        fund.netValue = 1.00;
+        logAction(`重置基金净值至1.00`, "info");
+    }
     player.reincarnationCoin -= amount;
     fund.investment += amount;
     
@@ -7634,7 +7646,12 @@ function investAllFund(index) {
         logAction("没有可投资的转生币或已达投资上限", "error");
         return;
     }
-    
+    // 检查赎回倒计时状态
+    if (fund.redemptionTime <= 0) {
+        // 如果没有赎回倒计时，重置净值为1
+        fund.netValue = 1.00;
+        logAction(`重置基金净值至1.00`, "info");
+    }
     player.reincarnationCoin -= amount;
     fund.investment += amount;
     
