@@ -633,12 +633,13 @@
             <p>13. 职业系统：有法师和战士不同搭配属性，对于关卡解锁属性，选择获得属性。</p>
             <p>14. 称号系统：解锁每一个都可以永久获得属性，自由搭配选择称号(不影响属性效果）。</p>
             <p>14. 官职系统：增加总和攻击，一共60级。</p>
-            <p>15. 伴侣系统：大幅度增加属性。天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒（伴侣钥匙和玫瑰花：打怪或者材料宝箱掉落）。</p>
+            <p>15. 伴侣系统：大幅度增加属性。天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒，进阶玩法：每进阶+1倍率加1倍，未锁定状态才能进阶，点进阶自动消耗背包里面的同品质伴侣，想保留的伴侣记得锁定（伴侣钥匙和玫瑰花：打怪或者材料宝箱掉落）。</p>
             <p>16. 通天塔：只要通过每一层加1点玩家属性，每一层加0.1倍GPS,还有对应称号（100转才能打）。</p>
             <p>17. 存档问题：换设备后存档导入一开始进去VIP和伴侣是空的，你直接退出在重新进就恢复了或者刷新页面（点了导出按钮，会自动复制，你黏贴就可以了）</p>
             <p>18. 网页存档问题：建议每一小时保存导出存档，游戏容易炸档（群里的版本没出现过炸档，就网页有）</p>
             <p>19. 奥秘系统：每阶段只生效第一个效果。</p>
             <p>20. 基金系统：投入的越多波动的幅度越大10-30%，1分钟刷新一次 ，10分钟不能实时卖出，如果跌到总价值20%以下 就全部没收清零。</p>
+           
         </div>
     </div>
 </div>
@@ -685,8 +686,6 @@
     <button onclick="reincarnate()">转生</button>
     <button onclick="toggleAutoReincarnation()" style="margin-left: 10px;">自动转生: <span id="autoReincarnationStatus">关闭</span></button>
     <button onclick="toggleShopUI()">打开宝箱商店</button>
-    <button onclick="buyMaterialChest()">材料宝箱（<span id="materialChestCost">1</span>钻石）</button>
-    <button onclick="buyTechniqueChest()">功法秘籍宝箱（<span id="techniqueChestCost">1</span>转生币）</button>
     <button onclick="toggleMonsterUI()">打怪模式</button>
     <button onclick="toggleTowerUI()">通天塔</button>
     <button onclick="toggleWorldBossUI()" style="background: linear-gradient(to bottom, #d4af37, #a67c00); color: #000; font-weight: bold; padding: 6px 12px; font-size: 12px;">世界BOSS</button>
@@ -715,6 +714,7 @@
         <button id="autoChest11" class="auto-buy-btn" onclick="toggleAutoBuy(11)">鸿蒙宝箱自动购买：关闭</button>
         <button id="autoChest12" class="auto-buy-btn" onclick="toggleAutoBuy(12)">太虚宝箱自动购买：关闭</button>
         <button id="autoMaterialChest" class="auto-buy-btn" onclick="toggleAutoBuyMaterialChest()">材料宝箱自动购买：关闭</button>
+        <button id="autoTechniqueChest" class="auto-buy-btn" onclick="toggleAutoBuyTechniqueChest()">功法秘籍宝箱自动购买：关闭</button>
         <button id="autoBuySpeedBoost" class="auto-buy-btn" onclick="toggleAutoBuySpeedBoost()">在线自动购买加速100倍：关闭</button>
         <button id="toggleOnlineBoost" onclick="toggleOnlineBoost()">在线金币加速100倍: 关闭</button>
     </div>
@@ -975,6 +975,7 @@
 
     <!-- 新增打怪模式UI -->
     <div id="monsterUI" style="display: none;">
+    <button onclick="toggleMonsterUI()" style="position: absolute; top: 5px; right: 200px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">×</button>
         <h3>打怪模式</h3>
         <div class="player-info">
             <p>生命: <span id="playerHealth">0</span></p>
@@ -1240,6 +1241,8 @@
         <button onclick="buyChest(10)">星云宝箱（1灵髓石）</button>
         <button onclick="buyChest(11)">鸿蒙宝箱（1幻空石）</button>
         <button onclick="buyChest(12)">太虚宝箱（1冥源石）</button>
+     <button onclick="buyMaterialChest()">材料宝箱（<span id="materialChestCost">1</span>钻石）</button>
+    <button onclick="buyTechniqueChest()">功法秘籍宝箱（<span id="techniqueChestCost">1</span>转生币）</button>
     </div>
     <button onclick="toggleShopUI()" style="margin-top: 20px; padding: 10px 20px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer;">关闭商店</button>
 </div>
@@ -1805,6 +1808,7 @@ tower: {
             autoBuySpeedBoost: false,
             onlineBoostEnabled: false,
             autoBuyMaterialChest: false, 
+            autoBuyTechniqueChest: false, 
             gpsMultiplier: 1, 
             clickMultiplier: 1,
             autoConvert: false,
@@ -3297,6 +3301,7 @@ function calculateTotalGPS() {
             // 确保自动购买状态被正确加载
             player.autoBuy = save.autoBuy || [false, false, false, false, false, false, false, false, false, false, false, false];
             player.autoBuyMaterialChest = save.autoBuyMaterialChest || false;
+           player.autoBuyTechniqueChest = save.autoBuyTechniqueChest || false;
             // 强制覆盖宠物的 multiplier，同时保留等级和其他数据
             Object.keys(player.pets).forEach(petKey => {
                 if (petConfig[petKey]) {
@@ -3311,13 +3316,17 @@ function calculateTotalGPS() {
                     btn.textContent = `${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚'][index]}宝箱自动购买：${enabled ? '开启' : '关闭'}`;
                 }
             });
+   
 
             // 初始化材料宝箱自动购买按钮状态
             const materialChestBtn = document.getElementById('autoMaterialChest');
             if (materialChestBtn) {
                 materialChestBtn.textContent = `材料宝箱自动购买：${player.autoBuyMaterialChest ? '开启' : '关闭'}`;
             }
-
+ const techniqueChestBtn = document.getElementById('autoTechniqueChest');
+    if (techniqueChestBtn) {
+        techniqueChestBtn.textContent = `功法秘籍宝箱自动购买：${player.autoBuyTechniqueChest ? '开启' : '关闭'}`;
+    }
          // 在初始化自动购买按钮状态的地方添加
 const speedBoostBtn = document.getElementById('autoBuySpeedBoost');
 if (speedBoostBtn) {
@@ -3525,6 +3534,7 @@ function handleVipPowerGain() {
         achievements: oldSave.achievements || player.achievements,
         autoBuy: oldSave.autoBuy || [false, false, false, false, false, false, false, false, false, false, false, false], // 新增宝箱自动购买状态
         autoBuyMaterialChest: oldSave.autoBuyMaterialChest || false,
+        autoBuyTechniqueChest: oldSave.autoBuyTechniqueChest || false,
         gpsMultiplier: oldSave.gpsMultiplier || 1,
         clickMultiplier: oldSave.clickMultiplier || 1,
         autoConvert: oldSave.autoConvert || false,
@@ -3915,6 +3925,9 @@ function onCollectionAdded(collectionType) {
             }
         }
     });
+if (player.autoBuyTechniqueChest && player.reincarnationCoin >= player.techniqueChestCost) {
+        buyTechniqueChest();
+    }
 
     // 新增：自动购买材料宝箱
     if (player.autoBuyMaterialChest && player.diamond >= player.materialChestCost) {
@@ -3937,6 +3950,12 @@ function onCollectionAdded(collectionType) {
     const btn = document.getElementById('autoMaterialChest');
     btn.textContent = `材料宝箱自动购买：${player.autoBuyMaterialChest ? '开启' : '关闭'}`;
     logAction(`${player.autoBuyMaterialChest ? '开启' : '关闭'}自动购买材料宝箱`, 'info');
+}
+  function toggleAutoBuyTechniqueChest() {
+    player.autoBuyTechniqueChest = !player.autoBuyTechniqueChest;
+    const btn = document.getElementById('autoTechniqueChest');
+    btn.textContent = `功法秘籍宝箱自动购买：${player.autoBuyTechniqueChest ? '开启' : '关闭'}`;
+    logAction(`${player.autoBuyTechniqueChest ? '开启' : '关闭'}功法秘籍宝箱自动购买`, 'info');
 }
      function toggleOnlineBoost() {
     player.onlineBoostEnabled = !player.onlineBoostEnabled;
@@ -6038,6 +6057,7 @@ function confirmRename() {
                         goldLogs: [], // 保留原有金币日志（如果仍需单独使用）
                         autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
                         autoBuyMaterialChest: false, // 新增：自动购买材料宝箱的状态
+                      autoBuyTechniqueChest: false,
                         gpsMultiplier: 1,
                         clickMultiplier: 1,
                         autoConvert: false,
@@ -8143,7 +8163,7 @@ function updateCompanionDisplay() {
             <div style="position: absolute; top: 5px; right: 5px; color: ${companionRarities[companion.rarity].color};">
                 ${companionRarities[companion.rarity].name}
             </div>
-            <h4 style="color: ${companionRarities[companion.rarity].color}; margin-top: 0;">${companion.name}</h4>
+            <h4 style="color: ${companionRarities[companion.rarity].color}; margin-top: 0;">${companion.name}<span style="margin-left: 5px; color: #FFD700;">+${companion.advanceLevel || 0}</span>${companion.locked ? '🔒' : ' '}</h4>
             <div>${stars}${emptyStars} (${companion.score}/10000)</div>
             <div style="margin: 5px 0; font-size: 0.8em; max-height: 80px; overflow-y: auto;">
                 ${companion.talents.map(t => `${talentRanks[t.rank]}${talentTypes[t.type].name}: ${talentTypes[t.type].description(t.rank)}`).join('<br>')}
@@ -8153,11 +8173,15 @@ function updateCompanionDisplay() {
                     ${isEquipped ? '已装备' : '装备'}
                 </button>
                 <button onclick="toggleCompanionLock('${companion.id}')" style="width: 30px; background: ${companion.locked ? '#f44336' : '#555'}; color: white; border: none; padding: 3px; border-radius: 2px;">
-                    ${companion.locked ? '锁' : '开'}
+                    ${companion.locked ? '已锁' : '开锁'}
                 </button>
                 <button onclick="decomposeCompanion('${companion.id}')" style="width: 30px; background: #f44336; color: white; border: none; padding: 3px; border-radius: 2px;" ${companion.locked ? 'disabled' : ''}>
-                    分
+                    分解
                 </button>
+       <button onclick="advanceCompanion('${companion.id}')" style="width: 30px; background: #FFD700; color: black; border: none; padding: 3px; border-radius: 2px; margin-left: 2px;" 
+    ${companion.locked || !['white','blue','epic','pink', 'orange', 'red'].includes(companion.rarity) ? 'disabled' : ''}>
+    进阶
+</button>
             </div>
         `;
         listContainer.appendChild(card);
@@ -8240,7 +8264,8 @@ function drawCompanion() {
         rarity: selectedRarity,
         talents,
         score: totalScore,
-        locked: false
+        locked: false,
+       advanceLevel: 0
     };
     
     player.companions.push(companion);
@@ -8257,7 +8282,51 @@ function drawCompanion() {
     logAction(`获得了${rarityName}品质伴侣：${companion.name}${isGuaranteed ? " (保底)" : ""}`, 'success');
     updateCompanionDisplay();
 }
+// 添加伴侣进阶函数
+function advanceCompanion(id) {
+    const companion = player.companions.find(c => c.id === id);
+    if (!companion) return;
 
+    // 检查是否为可进阶品质
+    if (!['white','blue','epic','pink', 'orange', 'red'].includes(companion.rarity)) {
+        logAction("品质的伴侣可以进阶！", "error");
+        return;
+    }
+
+    // 计算当前进阶等级和所需消耗
+    const currentLevel = companion.advanceLevel || 0;
+    const requiredCount = Math.pow(2, currentLevel); // 1, 2, 4, 8...
+
+    // 检查是否有足够的同品质未锁定伴侣
+    const availableCompanions = player.companions.filter(
+        c => c.rarity === companion.rarity && !c.locked && c.id !== id
+    );
+
+    if (availableCompanions.length < requiredCount) {
+        logAction(`需要${requiredCount}个同品质未锁定伴侣才能进阶！`, "error");
+        return;
+    }
+
+    // 消耗同品质伴侣
+    const toConsume = availableCompanions.slice(0, requiredCount);
+    player.companions = player.companions.filter(
+        c => !toConsume.some(consumed => consumed.id === c.id)
+    );
+
+    // 提升进阶等级
+    companion.advanceLevel = (companion.advanceLevel || 0) + 1;
+    updateCompanionStats(companion);
+    // 提示信息
+    const rarityName = companionRarities[companion.rarity].name;
+    logAction(`${companion.name}进阶成功！当前进阶等级+${companion.advanceLevel}`, "success");
+    
+    // 如果消耗了当前装备的伴侣，需要取消装备
+    if (toConsume.some(c => c.id === player.equippedCompanionId)) {
+        player.equippedCompanionId = null;
+    }
+
+    updateCompanionDisplay();
+}
 // 升级伴侣等级
 function upgradeCompanion() {
     const cost = 10 * player.companionLevel;
@@ -8447,26 +8516,32 @@ function getCompanionBonuses() {
     companion.talents.forEach(talent => {
         const rank = talent.rank;
         const type = talentTypes[talent.type];
-        const multiplier = companionRarities[companion.rarity].upgradeMultiplier * player.companionLevel;
+        const baseMultiplier = companionRarities[companion.rarity].upgradeMultiplier;
+        const levelMultiplier = player.companionLevel;
+        
+        // 添加进阶等级加成 (每级提供100%额外加成)
+        const advanceMultiplier = 1 + (companion.advanceLevel || 0) * 1;
+        
+        const totalMultiplier = baseMultiplier * levelMultiplier * advanceMultiplier;
         
         switch (talent.type) {
             case 0: // 攻击
-                bonuses.attackMultiplier += (type.base + type.perLevel * rank) * multiplier;
+                bonuses.attackMultiplier += (type.base + type.perLevel * rank) * totalMultiplier;
                 break;
             case 1: // 爆伤
-                bonuses.critDamageMultiplier += (type.base + type.perLevel * rank) * multiplier;
+                bonuses.critDamageMultiplier += (type.base + type.perLevel * rank) * totalMultiplier;
                 break;
             case 2: // 生命
-                bonuses.healthMultiplier += (type.base + type.perLevel * rank) * multiplier;
+                bonuses.healthMultiplier += (type.base + type.perLevel * rank) * totalMultiplier;
                 break;
             case 3: // 全属性
-                bonuses.allStatsMultiplier += (type.base + type.perLevel * rank) * multiplier;
+                bonuses.allStatsMultiplier += (type.base + type.perLevel * rank) * totalMultiplier;
                 break;
             case 4: // 连击
-                bonuses.combo += (type.base + type.perLevel * rank) * multiplier;
+                bonuses.combo += (type.base + type.perLevel * rank) * totalMultiplier;
                 break;
             case 5: // 暴击率
-                bonuses.critRateMultiplier += (type.base + type.perLevel * rank) * multiplier;
+                bonuses.critRateMultiplier += (type.base + type.perLevel * rank) * totalMultiplier;
                 break;
         }
     });
@@ -8474,7 +8549,7 @@ function getCompanionBonuses() {
     // 全属性加成应用到攻击和爆伤
     bonuses.attackMultiplier += bonuses.allStatsMultiplier;
     bonuses.critDamageMultiplier += bonuses.allStatsMultiplier;
-    
+
     return bonuses;
 }
 
