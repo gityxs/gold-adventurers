@@ -96,15 +96,15 @@
         .tooltip { 
             display: none;
             position: absolute;
-            left: 70%;
+            left: 65%;
             top: 0;
             background: white;
-            border: 1px solid #ddd;
+            border: 5px solid #ddd;
             padding: 5px;
-            min-width: 120px;
+            min-width: 200px;
             z-index: 0;
             transform: scale(0.5);
-            margin-top: -80px;
+            margin-top: -90px;
         }
         .equipment:hover .tooltip { display: block; }
         @keyframes shake {
@@ -148,7 +148,7 @@
     transform-origin: top left;
     width: 100%;
     /* 新增以下样式 */
-    max-height: 20vh; /* 限制最大高度为屏幕高度的20%，可根据需求调整 */
+    max-height: 24.6vh; /* 限制最大高度为屏幕高度的20%，可根据需求调整 */
     overflow-y: auto; /* 允许垂直滚动 */
     -webkit-overflow-scrolling: touch; /* 启用移动端平滑滚动特性 */
     overscroll-behavior-y: contain; /* 阻止滚动到底部时的全局回弹 */
@@ -600,6 +600,7 @@
 #dialogOverlay {
     z-index: 1999 !important;
 }
+
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -619,12 +620,12 @@
             <p>1. 转生系统：玩家可以通过转生重置游戏进度，并获得转生币，用于提升转生属性（转生要求必须普通装备10000+转生次数*20）。</p>
             <p>   转生币等级兑换比例：普通10000=1  稀有5000=1 史诗1000=1 传说300=1 远古200=1 神圣125=1 奥术100=1 天空33=1 地狱20=1 星界12.5=1  原初10=1 超凡3=1 量子2=1 究极1=1  混沌1=3 永恒1=5 虚无1=10 创世1=20 神域1=30 终焉1=40 星辰1=50 起源1=60 时光1=70 造物1=80 银河1=90 天界1=100 星云1=200 星河1=300 纪元1=400 鸿蒙1=500 星穹1=600 亘古1=700 万象1=800 太虚1=900 九垓1=1000 </p>
             <p>2. 宠物系统：玩家可以通过升级宠物来提升装备属性加成。</p>
-            <p>3. 离线系统：现在离线也能奥秘经验和银行和股票，彩票更新，升级装备（下线前最好把100倍加速自动开宝箱关了）。</p>
+            <p>3. 离线系统：现在离线也能奥秘经验和银行和股票，彩票更新，升级装备。</p>
             <p>4. 新增股票系统，显示实时股价和持有情况，每10分钟股价随机波动±1%~10%，离线时间自动计算股价波动，所有交易使用转生币结算，实时显示价格变化趋势</p>
-            <p>5. 彩票系统：购买到心仪的数字就可以，1小时开奖1次。刮刮卡：直接生效，开奖结果看获取！</p>
+            <p>5. 彩票系统：购买到心仪的数字就可以（留1000转生币每次开奖自动消耗10转生币），30分钟开奖1次。刮刮卡：直接生效，开奖结果看获取！</p>
             <p>6. 银行系统：存钱每6分钟0.02%收益！</p>
             <p>7. 副本装备系统：副本装备可以提升第一页装备的全属性，使用洗炼石（材料宝箱或者打怪掉）可以重铸副本装备的成长属性或者分解重新获取。成长数值上限：废品0.05%，倚天剑10%，青龙枪15%，白虎斧20%，朱雀弓25%，玄武盾30%，麒麟杖35%，凤凰剑40%，饕餮刀45%，穷奇戟50%，烛龙枪60%，白泽剑70%，混沌斧80%，太初刃90%   后续加深颜色多10%  比如：☆=100%★=110% ○=200% ●=210%  ◇=300%  ◆=310%  □=400%  ■=410%  △=500%  ▲=510%</p>
-            <p>8. 魂环系统：魂环可以永久提升装备属性，通过打怪掉落或消耗转生币升级。</p>
+            <p>8. 魂环系统：魂环可以永久提升装备属性，通过打怪掉落升级。</p>
             <p>9. 打怪模式：逃跑等于重置关卡消耗最大关卡*10转生币（取消扫荡增加自动扫荡4秒1次！！！）（如果第一次打不了买1次功法秘笈宝箱，或者点逃跑）。</p>
             <p>10. 升级属性：第一次加载要转生一次，在点洗点就正常了（总数和实际不一样点一下洗点）。</p>
             <p>11. 功法秘籍：后期比较强，加成属性直接算到玩家属性乘于里面（如果突然没效果了开一个秘法宝箱就好了，正常不会有问题）</p>
@@ -636,10 +637,9 @@
             <p>15. 伴侣系统：大幅度增加属性。天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒，进阶玩法：每进阶+1倍率加1倍，未锁定状态才能进阶，点进阶自动消耗背包里面的同品质伴侣，想保留的伴侣记得锁定（伴侣钥匙和玫瑰花：打怪或者材料宝箱掉落）。</p>
             <p>16. 通天塔：只要通过每一层加1点玩家属性，每一层加0.1倍GPS,还有对应称号（100转才能打）。</p>
             <p>17. 存档问题：换设备后存档导入一开始进去VIP和伴侣是空的，你直接退出在重新进就恢复了或者刷新页面（点了导出按钮，会自动复制，你黏贴就可以了）</p>
-            <p>18. 网页存档问题：建议每一小时保存导出存档，游戏容易炸档（群里的版本没出现过炸档，就网页有）</p>
-            <p>19. 奥秘系统：每阶段只生效第一个效果。</p>
-            <p>20. 基金系统：投入的越多波动的幅度越大10-30%，1分钟刷新一次 ，10分钟不能实时卖出，如果跌到总价值20%以下 就全部没收清零。</p>
-           
+            <p>18. 奥秘系统：每阶段只生效第一个效果。</p>
+            <p>19. 基金系统：投入的越多波动的幅度越大10-30%，1分钟刷新一次 ，10分钟不能实时卖出，如果跌到总价值20%以下 就全部没收清零。</p>
+   
         </div>
     </div>
 </div>
@@ -715,7 +715,7 @@
         <button id="autoChest12" class="auto-buy-btn" onclick="toggleAutoBuy(12)">太虚宝箱自动购买：关闭</button>
         <button id="autoMaterialChest" class="auto-buy-btn" onclick="toggleAutoBuyMaterialChest()">材料宝箱自动购买：关闭</button>
         <button id="autoTechniqueChest" class="auto-buy-btn" onclick="toggleAutoBuyTechniqueChest()">功法秘籍宝箱自动购买：关闭</button>
-        <button id="autoBuySpeedBoost" class="auto-buy-btn" onclick="toggleAutoBuySpeedBoost()">在线自动购买加速100倍：关闭</button>
+        <button id="autoBuySpeedBoost" class="auto-buy-btn" onclick="toggleAutoBuySpeedBoost()">在线自动购买100倍数量：关闭</button>
         <button id="toggleOnlineBoost" onclick="toggleOnlineBoost()">在线金币加速100倍: 关闭</button>
     </div>
 
@@ -1330,12 +1330,12 @@
                     <div>30000转生币</div>
                 </div>
                 <div class="boss-reward-tier">
-                    <h4>第2-5名</h4>
+                    <h4>第2-10名</h4>
                     <div>5极品宝石</div>
                     <div>10000转生币</div>
                 </div>
                 <div class="boss-reward-tier">
-                    <h4>第6-10名</h4>
+                    <h4>第11-30名</h4>
                     <div>3高级宝石</div>
                     <div>5000转生币</div>
                 </div>
@@ -1874,7 +1874,8 @@ tower: {
         playerCritRate: 0.1,
         playerCritDamage: 1.5,
         playerAccuracy: 0.9,
-        playerDodge: 0.1   
+        playerDodge: 0.1,
+        autoSweepEnabled: false  
     }
 };
         // 成就奖励配置
@@ -2207,8 +2208,8 @@ tower: {
     "year37_1000": { gpsMultiplier: 5.20, description: "闫闫·黑丝亿年魂环达到1000级，GPS +520%" },
     "year37_10000": { gpsMultiplier: 7.20, description: "闫闫·黑丝亿年魂环达到10000级，GPS +720%" },
     "world_boss_1st": { gpsMultiplier: 10.0, description: "在世界BOSS中获得第1名，GPS +1000%"  },
-    "world_boss_top5": { gpsMultiplier: 5.0, description: "在世界BOSS中获得第2-5名，GPS +500%"  },
-    "world_boss_top10": { gpsMultiplier: 3.0, description: "在世界BOSS中获得第6-10名，GPS +300%"  },
+    "world_boss_top5": { gpsMultiplier: 5.0, description: "在世界BOSS中获得第2-10名，GPS +500%"  },
+    "world_boss_top10": { gpsMultiplier: 3.0, description: "在世界BOSS中获得第11-30名，GPS +300%"  },
     "world_boss_participant": { gpsMultiplier: 1.00, description: "参与世界BOSS战斗，GPS +100%"  },
     // 新增转生成就奖励
     "reincarnation_10": { gpsMultiplier: 0.50, description: "转生10次，GPS +50%" },
@@ -3284,7 +3285,9 @@ function calculateTotalGPS() {
             player = migrateSaveData(save);
             player.equipment = validateEquipmentList(save.equipment);
         
-
+            if (save.battle && save.battle.autoSweepEnabled !== undefined) {
+            player.battle.autoSweepEnabled = save.battle.autoSweepEnabled;
+        }
              // 确保加载通天塔数据
             if (save.tower) {
                 player.tower = save.tower;
@@ -3330,11 +3333,11 @@ function calculateTotalGPS() {
          // 在初始化自动购买按钮状态的地方添加
 const speedBoostBtn = document.getElementById('autoBuySpeedBoost');
 if (speedBoostBtn) {
-    speedBoostBtn.textContent = `在线自动购买加速100倍：${player.autoBuySpeedBoost ? '开启' : '关闭'}`;
+    speedBoostBtn.textContent = `在线自动购买100倍数量：${player.autoBuySpeedBoost ? '开启' : '关闭'}`;
 }
       const onlineBoostBtn = document.getElementById('toggleOnlineBoost');
     if (onlineBoostBtn) {
-        onlineBoostBtn.textContent = `在线金币加速100倍: ${player.onlineBoostEnabled ? '开启' : '关闭'}`;
+        onlineBoostBtn.textContent = `在线自动购买100倍数量: ${player.onlineBoostEnabled ? '开启' : '关闭'}`;
     }
       
             // 确保日志不超过 20 条
@@ -3687,7 +3690,6 @@ function getTotalClickValue() {
         const selectedRarity = selectRarity(type);
         console.log(`购买宝箱类型: ${type}, 掉落装备品质: ${selectedRarity}`); // 调试信息
         handleEquipment(selectedRarity);
-        logAction(`购买${['普通','高级','稀有','史诗','传说','混沌','终焉','星辰','银河','星云','鸿蒙','太虚'][type-1]}宝箱`, 'success');
 
         // 更新宝箱购买计数
         const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5'][type - 1];
@@ -3855,7 +3857,7 @@ function onCollectionAdded(collectionType) {
             const vipBonus = 1 + getVipBonus();
             eq.gps = safeNumber(config.gps * (1 + config.growthRate * eq.level) * (1 + player.reincarnationStats.gpsBonus.level)* vipBonus); // 每级装备属性乘以100%
             eq.click = safeNumber(config.click * (1 + config.growthRate * eq.level) * (1 + player.reincarnationStats.gpsBonus.level)* vipBonus); // 每级装备属性乘以100%
-            logAction(`升级 ${eq.name}装备 至 Lv.${eq.level}`, rarity);
+
         }
 
         function addNewEquipment(rarity) {
@@ -3892,8 +3894,7 @@ function onCollectionAdded(collectionType) {
         }
 
         // 自动购买逻辑
-        function checkAutoBuy() {
-    // 添加加速倍率计算
+       function checkAutoBuy() {
     const speedMultiplier = player.autoBuySpeedBoost ? 100 : 1;
     player.autoBuy.forEach((enabled, index) => {
         if (enabled) {
@@ -3914,13 +3915,35 @@ function onCollectionAdded(collectionType) {
             ][index];
             
             if (player[costConfig.currency] >= costConfig.amount) {
-                // 应用加速倍率，一次性购买多个
-                const maxBuy = speedMultiplier;
+                // 计算最大可购买数量（最多100个）
+                const maxBuy = Math.min(speedMultiplier, 100);
                 const affordable = Math.floor(player[costConfig.currency] / costConfig.amount);
                 const actualBuy = Math.min(maxBuy, affordable);
                 
-                for (let i = 0; i < actualBuy; i++) {
-                    buyChest(type);
+                if (actualBuy > 0) {
+                    // 批量扣除货币
+                    player[costConfig.currency] -= actualBuy * costConfig.amount;
+                    
+                    // 统计装备升级总级数
+                    let totalLevelsUp = 0;
+                    const chestTypeName = ['普通','高级','稀有','史诗','传说','混沌','终焉','星辰','银河','星云','鸿蒙','太虚'][index];
+                    
+                    // 批量处理装备获取并统计升级计数
+                    for (let i = 0; i < actualBuy; i++) {
+                        const selectedRarity = selectRarity(type);
+                        // 临时修改handleEquipment，使其返回升级的级数
+                        const levelsUp = handleEquipment(selectedRarity);
+                        totalLevelsUp += levelsUp;
+                    }
+                    
+                    // 更新宝箱计数
+                    const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5'][index];
+                    player.chestCounts[chestType] += actualBuy;
+                    checkChestAchievements(chestType, player.chestCounts[chestType]);
+                    
+                    // 统一记录日志
+                    logAction(`自动购买${chestTypeName}宝箱 x${actualBuy},${name}`, 'success');
+                    updateDisplay();
                 }
             }
         }
@@ -3966,8 +3989,8 @@ if (player.autoBuyTechniqueChest && player.reincarnationCoin >= player.technique
      function toggleAutoBuySpeedBoost() {
     player.autoBuySpeedBoost = !player.autoBuySpeedBoost;
     const btn = document.getElementById('autoBuySpeedBoost');
-    btn.textContent = `在线自动购买加速100倍：${player.autoBuySpeedBoost ? '开启' : '关闭'}`;
-    logAction(`${player.autoBuySpeedBoost ? '开启' : '关闭'}在线自动购买加速（100倍速度）`, 'info');
+    btn.textContent = `在线自动购买100倍数量：${player.autoBuySpeedBoost ? '开启' : '关闭'}`;
+    logAction(`${player.autoBuySpeedBoost ? '开启' : '关闭'}在线自动购买100倍数量`, 'info');
 }
 
         // 切换自动兑换货币状态
@@ -4635,6 +4658,18 @@ function updateItemDisplay() {
         })
         .join('');
 }
+   window.onload = function() {
+    loadSave();
+    
+    // 恢复自动扫荡状态显示
+    document.getElementById('autoSweepStatus').textContent = 
+        player.battle.autoSweepEnabled ? '开' : '关';
+    
+    // 如果自动扫荡是开启状态，重新启动
+    if (player.battle.autoSweepEnabled) {
+        startAutoSweep();
+    }
+};
         // 更新股票显示
         function updateStockDisplay() {
     const container = document.getElementById('stocksContainer');
@@ -5157,9 +5192,8 @@ function updateBankDisplay() {
         if (existingEq.quantity >= 3) {
             existingEq.level++; // 升级装备等级
             existingEq.quantity = 0; // 重置数量
-            logAction(`副本装备 ${existingEq.name} 升级至 Lv.${existingEq.level}`, 'success');
-        } else {
-            logAction(`获得副本装备：${existingEq.name} (数量: ${existingEq.quantity})`, 'info');
+            
+       
         }
     } else {
         // 如果没有相同的副本装备，则添加新的装备
@@ -5466,11 +5500,6 @@ function confirmRename() {
                 等级: ${eq.level}<br>
                 成长率: +${(eq.growthRate * 100).toFixed(1)}%/级<br>
                 宝石加成: +${(eq.gemMultiplier * 100).toFixed(2)}%<br>
-                收藏物加成: +${(eq.collectionMultiplier * 100).toFixed(5)}%<br>
-                转生加成: 每级装备属性 +${player.reincarnationStats.gpsBonus.level * 100}%<br>
-                转生加成: 装备初始等级 +${player.reincarnationStats.equipmentLevelBonus.level * 200} 级<br>
-                转生加成: 点击上限 +${player.reincarnationStats.clickLimitBonus.level} 次/秒<br>
-                宠物加成: ${Object.entries(player.pets).map(([key, pet]) => `${petConfig[key].name}: +${(pet.level * pet.multiplier * 100).toFixed(2)}%`).join('<br>')}
             </div>
         `;
         fragment.appendChild(div);
@@ -6168,6 +6197,452 @@ function confirmRename() {
  checkAutoReincarnation(); // 检查自动转生
  updateCompanionDisplay();
     updateDisplay();
+    if (player.battle.maxStage > 1050) {
+        localStorage.removeItem('goldGameSave');
+        player = {
+                        gold: 0,
+                        diamond: 0,
+                        titanium: 0,
+                        starstone: 0,
+                        cosmicstone: 0,
+                        superstone: 0,
+                        otherworldstone: 0, 
+                        xingjiestone: 0, 
+                        hundunstone: 0,  
+                        lingtone: 0,
+                        huangtone: 0,
+                        mingtone: 0,
+                        reincarnationCoin: 0,
+                        reincarnationCount: 0,
+                        equipment: [],
+                        vip: {
+        level: 1,
+        power: 0, // 累计VIP能力值数量
+    },
+                        items: {
+                            primaryGem: 0,
+                            advancedGem: 0,
+                            superiorGem: 0,
+                            divineGem: 0,
+                            vipPower: 0,
+                            refineStone: 0 // 新增洗炼石
+                        },
+                        collections: {
+                            lightSpeedHand: 0,
+                            empHand: 0,
+                            godlyHand: 0,
+                            quickHand: 0,
+                            shadowHand: 0,
+                            quantumHand: 0,
+                            lightningHand: 0,
+                            divineHand: 0
+                        },
+                        pets: {
+                             thunderKirin: { level: 0, cost: 1, multiplier: 0.10 },
+                             chaosTaotie: { level: 0, cost: 1, multiplier: 0.50 },
+                             netherQiongqi: { level: 0, cost: 1, multiplier: 2.50 },
+                             abyssKun: { level: 0, cost: 1, multiplier: 12.50 },
+                             primordialZhuLong: { level: 0, cost: 1, multiplier: 62.50 },
+                            wanJunSuanNi: { level: 0, cost: 1, multiplier: 312.50 },
+                            yanYuBiAn: { level: 0, cost: 1, multiplier: 1562.50 },
+                            yuyu1: { level: 0, cost: 1, multiplier: 7812.50 },
+                              yuyu2: { level: 0, cost: 1, multiplier: 39062.50 },
+                            yuyu3: { level: 0, cost: 1, multiplier: 195312.50 },
+                              yuyu4: { level: 0, cost: 1, multiplier: 976562.50 },
+                            yuyu5: { level: 0, cost: 1, multiplier: 5882812.50 }
+
+                        },
+                        dungeonEquipment: [], // 新增副本装备
+                        soulRings: [], // 新增魂环系统
+                        techniques: {},
+                        attributes: {
+                         totalPoints: 0,
+                        remainingPoints: 0,
+                        health: 0,
+                        attack: 0,
+                        critRate: 0,
+                         critDamage: 0,
+                       multiAttack: 0,
+                         block: 0
+                        },
+                        lastUpdate: Date.now(),
+                        achievements: {
+        first_equipment: false,
+        first_rare: false,
+        first_epic: false,
+        first_legendary: false,
+        first_ancient: false,
+        first_divine: false,
+        first_arcane: false,
+        first_celestial: false,
+        first_infernal: false,
+        first_astral: false,
+        first_primeval: false,
+        first_transcendental: false,
+        first_quantum: false,
+        first_ultimate: false,
+        first_chaos: false,
+        first_eternal: false,
+        first_void: false,
+        first_genesis: false,
+        first_divineRealm: false,
+        first_apocalypse: false,
+        first_yeyu1: false,
+        first_yeyu2: false,
+        first_yeyu3: false,
+        first_yeyu4: false,
+        first_yeyu5: false,
+        first_yeyu6: false,
+        first_yeyu7: false,
+        first_yeyu8: false,
+        first_yeyu9: false,
+        first_yeyu10: false,
+        first_yeyu11: false,
+        first_yeyu12: false,
+        first_yeyu13: false,
+        first_yeyu14: false,
+        first_yeyu15: false,
+
+        // 宝箱成就
+        common_chest_100: false,
+        common_chest_10000: false,
+        common_chest_1000000: false,
+        common_chest_10000000: false,
+        common_chest_100000000: false,
+        advanced_chest_100: false,
+        advanced_chest_10000: false,
+        advanced_chest_1000000: false,
+        advanced_chest_10000000: false,
+        advanced_chest_100000000: false,
+        rare_chest_100: false,
+        rare_chest_10000: false,
+        rare_chest_1000000: false,
+        rare_chest_10000000: false,
+        rare_chest_100000000: false,
+        epic_chest_100: false,
+        epic_chest_10000: false,
+        epic_chest_1000000: false,
+        epic_chest_10000000: false,
+        epic_chest_100000000: false,
+        legendary_chest_100: false,
+        legendary_chest_10000: false,
+        legendary_chest_1000000: false,
+        legendary_chest_10000000: false,
+        legendary_chest_100000000: false,
+        chaos_chest_100: false,
+        chaos_chest_10000: false,
+        chaos_chest_1000000: false,
+        chaos_chest_10000000: false,
+        chaos_chest_100000000: false,
+        apocalypse_chest_100: false,
+        apocalypse_chest_10000: false,
+        apocalypse_chest_1000000: false,
+        apocalypse_chest_10000000: false,
+        apocalypse_chest_100000000: false,
+        yeyu1_chest_100: false,
+        yeyu1_chest_10000: false,
+        yeyu1_chest_1000000: false,
+        yeyu1_chest_10000000: false,
+        yeyu1_chest_100000000: false,
+        yeyu2_chest_100: false,
+        yeyu2_chest_10000: false,
+        yeyu2_chest_1000000: false,
+        yeyu2_chest_10000000: false,
+        yeyu2_chest_100000000: false,
+        yeyu3_chest_100: false,
+        yeyu3_chest_10000: false,
+        yeyu3_chest_1000000: false,
+        yeyu3_chest_10000000: false,
+        yeyu3_chest_100000000: false,
+        yeyu4_chest_100: false,
+        yeyu4_chest_10000: false,
+        yeyu4_chest_1000000: false,
+        yeyu4_chest_10000000: false,
+        yeyu4_chest_100000000: false,
+        yeyu5_chest_100: false,
+        yeyu5_chest_10000: false,
+        yeyu5_chest_1000000: false,
+        yeyu5_chest_10000000: false,
+        yeyu5_chest_100000000: false,
+
+        "max_stage_10": false,
+    "max_stage_30": false,
+    "max_stage_60": false,
+    "max_stage_90": false,
+    "max_stage_120": false,
+    "max_stage_200": false,
+    "max_stage_300": false,
+    "max_stage_400": false,
+    "max_stage_500": false,
+    "max_stage_600": false,
+    "max_stage_700": false,
+    "max_stage_800": false,
+    "max_stage_900": false,
+    "max_stage_1000": false,
+
+    // 新增宠物成就状态
+    "thunderKirin_10": false,
+    "thunderKirin_50": false,
+    "thunderKirin_100": false,
+    "chaosTaotie_10": false,
+    "chaosTaotie_50": false,
+    "chaosTaotie_100": false,
+    "netherQiongqi_10": false,
+    "netherQiongqi_50": false,
+    "netherQiongqi_100": false,
+    "abyssKun_10": false,
+    "abyssKun_50": false,
+    "abyssKun_100": false,
+    "primordialZhuLong_10": false,
+    "primordialZhuLong_50": false,
+    "primordialZhuLong_100": false,
+    "wanJunSuanNi_10": false,
+    "wanJunSuanNi_50": false,
+    "wanJunSuanNi_100": false,
+    "yanYuBiAn_10": false,
+    "yanYuBiAn_50": false,
+    "yanYuBiAn_100": false,
+    "yuyu1_10": false,
+    "yuyu1_50": false,
+    "yuyu1_100": false,
+    "yuyu2_10": false,
+    "yuyu2_50": false,
+    "yuyu2_100": false,
+    "yuyu3_10": false,
+    "yuyu3_50": false,
+    "yuyu3_100": false,
+    "yuyu4_10": false,
+    "yuyu4_50": false,
+    "yuyu4_100": false,
+    "yuyu5_10": false,
+    "yuyu5_50": false,
+    "yuyu5_100": false,
+    // 新增魂环成就状态
+    "year1_10": false,
+    "year10_10": false,
+    "year100_10": false,
+    "year1000_10": false,
+    "year10000_10": false,
+    "year100000_10": false,
+    "year1000000_10": false,
+    "year10000000_10": false,
+    "year100000000_10": false,
+    "year1_100": false,
+    "year10_100": false,
+    "year100_100": false,
+    "year1000_100": false,
+    "year10000_100": false,
+    "year100000_100": false,
+    "year1000000_100": false,
+    "year10000000_100": false,
+    "year100000000_100": false,
+    "year1_1000": false,
+    "year10_1000": false,
+    "year100_1000": false,
+    "year1000_1000": false,
+    "year10000_1000": false,
+    "year100000_1000": false,
+    "year1000000_1000": false,
+    "year10000000_1000": false,
+    "year100000000_1000": false,
+    "year1_10000": false,
+    "year10_10000": false,
+    "year100_10000": false,
+    "year1000_10000": false,
+    "year10000_10000": false,
+    "year100000_10000": false,
+    "year1000000_10000": false,
+    "year10000000_10000": false,
+    "year100000000_10000": false,
+    "year2_10": false,
+    "year2_100": false,
+    "year2_1000": false,
+    "year2_10000": false,
+    "year3_10": false,
+    "year3_100": false,
+    "year3_1000": false,
+    "year3_10000": false,
+    "year4_10": false,
+    "year4_100": false,
+    "year4_1000": false,
+    "year4_10000": false,
+    "year5_10": false,
+    "year5_100": false,
+    "year5_1000": false,
+    "year5_10000": false,
+    "year6_10": false,
+    "year6_100": false,
+    "year6_1000": false,
+    "year6_10000": false,
+    "year7_10": false,
+    "year7_100": false,
+    "year7_1000": false,
+    "year7_10000": false,
+    "year8_10": false,
+    "year8_100": false,
+    "year8_1000": false,
+    "year8_10000": false,
+    "year9_10": false,
+    "year9_100": false,
+    "year9_1000": false,
+    "year9_10000": false,
+    "year11_10": false,
+    "year11_100": false,
+    "year11_1000": false,
+    "year11_10000": false,
+    "year12_10": false,
+    "year12_100": false,
+    "year12_1000": false,
+    "year12_10000": false,
+    "year13_10": false,
+    "year13_100": false,
+    "year13_1000": false,
+    "year13_10000": false,
+    "year14_10": false,
+    "year14_100": false,
+    "year14_1000": false,
+    "year14_10000": false,
+    "year15_10": false,
+    "year15_100": false,
+    "year15_1000": false,
+    "year15_10000": false,
+    "year16_10": false,
+    "year16_100": false,
+    "year16_1000": false,
+    "year16_10000": false,
+    "year17_10": false,
+    "year17_100": false,
+    "year17_1000": false,
+    "year17_10000": false,
+    "year18_10": false,
+    "year18_100": false,
+    "year18_1000": false,
+    "year18_10000": false,
+    "year19_10": false,
+    "year19_100": false,
+    "year19_1000": false,
+    "year19_10000": false,
+    "year20_10": false,
+    "year20_100": false,
+    "year20_1000": false,
+    "year20_10000": false,
+    "year21_10": false,
+    "year21_100": false,
+    "year21_1000": false,
+    "year21_10000": false,
+    "year22_10": false,
+    "year22_100": false,
+    "year22_1000": false,
+    "year22_10000": false,
+    "year23_10": false,
+    "year23_100": false,
+    "year23_1000": false,
+    "year23_10000": false,
+    "year24_10": false,
+    "year24_100": false,
+    "year24_1000": false,
+    "year24_10000": false,
+    "year25_10": false,
+    "year25_100": false,
+    "year25_1000": false,
+    "year25_10000": false,
+    "year26_10": false,
+    "year26_100": false,
+    "year26_1000": false,
+    "year26_10000": false,
+    "year27_10": false,
+    "year27_100": false,
+    "year27_1000": false,
+    "year27_10000": false,
+    "year28_10": false,
+    "year28_100": false,
+    "year28_1000": false,
+    "year28_10000": false,
+    "year29_10": false,
+    "year29_100": false,
+    "year29_1000": false,
+    "year29_10000": false,
+    "year30_10": false,
+    "year30_100": false,
+    "year30_1000": false,
+    "year30_10000": false,
+    "year31_10": false,
+    "year31_100": false,
+    "year31_1000": false,
+    "year31_10000": false,
+    "year32_10": false,
+    "year32_100": false,
+    "year32_1000": false,
+    "year32_10000": false,
+    "year33_10": false,
+    "year33_100": false,
+    "year33_1000": false,
+    "year33_10000": false,
+    "year34_10": false,
+    "year34_100": false,
+    "year34_1000": false,
+    "year34_10000": false,
+    "year35_10": false,
+    "year35_100": false,
+    "year35_1000": false,
+    "year35_10000": false,
+    "year36_10": false,
+    "year36_100": false,
+    "year36_1000": false,
+    "year36_10000": false,
+    "year37_10": false,
+    "year37_100": false,
+    "year37_1000": false,
+    "year37_10000": false,
+    "world_boss_1st": false,
+    "world_boss_top5": false,
+    "world_boss_top10": false,
+    "world_boss_participant": false,
+    
+        // 转生成就
+        reincarnation_10: false,
+        reincarnation_100: false,
+        reincarnation_1000: false,
+        reincarnation_10000: false
+                        },
+                        actionLogs: [], // 新增：统一存储所有操作日志
+                        goldLogs: [], // 保留原有金币日志（如果仍需单独使用）
+                        autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
+                        autoBuyMaterialChest: false, // 新增：自动购买材料宝箱的状态
+                      autoBuyTechniqueChest: false,
+                        gpsMultiplier: 1,
+                        clickMultiplier: 1,
+                        autoConvert: false,
+                        autoConvertCurrency: { gold: false, diamond: false, titanium: false, starstone: false }, // 新增：自动兑换货币状态
+                        clickTimestamps: [],
+                        chestCounts: { common: 0, advanced: 0, rare: 0, epic: 0, legendary: 0 },
+                        reincarnationStats: {
+                            gpsBonus: { level: 0, cost: 1 },
+                            equipmentLevelBonus: { level: 0, cost: 1 },
+                            clickLimitBonus: { level: 0, cost: 1 }
+                        },
+                        materialChestCost: 1,
+                        stockData: { // 新增股票数据
+                            stocks: [
+                                { name: '青龙至尊股', basePrice: 1, currentPrice: 1, lastPrice: 1, shares: 0, avgCost: 0 },
+                                { name: '白虎至尊股', basePrice: 10, currentPrice: 10, lastPrice: 10, shares: 0, avgCost: 0 },
+                                { name: '朱雀至尊股', basePrice: 100, currentPrice: 100, lastPrice: 100, shares: 0, avgCost: 0 },
+                                { name: '玄武至尊股', basePrice: 1000, currentPrice: 1000, lastPrice: 1000, shares: 0, avgCost: 0 },
+                                { name: '瑞兽白泽股', basePrice: 10000, currentPrice: 10000, lastPrice: 10000, shares: 0, avgCost: 0 }
+                            ],
+                            lastStockUpdate: Date.now()
+                        },
+                        lotteryResults: [], // 新增：彩票开奖结果
+                        traditionalLotteryNumbers: [], // 新增：传统数字彩票号码
+                        lastLotteryDraw: Date.now(), // 新增：上次开奖时间
+                        bank: { // 新增银行系统
+                            deposit: 0, // 存款金额
+                            lastInterestUpdate: Date.now() // 上次利息计算时间
+                        }
+        };
+        updateDisplay();
+        logAction('游戏已自动重置', 'success');
+    }
 }, 1000);
         updateDisplay();
 
@@ -6407,10 +6882,7 @@ function generateMonster() {
         damageTakenMultiplier: damageTakenMultiplier
     };
 }
-    function updateAutoSweepStatus() {
-    document.getElementById('autoSweepStatus').textContent = isAutoSweeping ? '开' : '关';
 
-}
        function updateMonsterUI() {
     document.getElementById('playerHealth').textContent = player.battle.playerHealth.toExponential(3);
     document.getElementById('playerAttack').textContent = player.battle.playerAttack.toExponential(3);
@@ -6428,7 +6900,7 @@ function generateMonster() {
     // 显示怪物词条
     const modifiers = player.battle.monster.modifiers.join(', ');
     document.getElementById('monsterModifiers').textContent = ` ${modifiers}`;
-     updateAutoSweepStatus();
+     
 }
        function attackMonster() {
     const monster = player.battle.monster;
@@ -6603,7 +7075,7 @@ function dropItemsAfterBattle() {
         logBattleAction('获得了玫瑰花！');
     }
 
-     if (stage >= 1 && Math.random() < 0.0005) {
+     if (stage >= 1 && Math.random() < 0.0003) {
         player.items.companionKey++;
         logBattleAction('获得了伴侣钥匙！');
     }
@@ -6950,13 +7422,13 @@ function simulateItemDrop(stage) {
     }
     
     // 初级宝石掉落（50关以上0.04%概率）
-    if (stage >= 50 && Math.random() < 0.0004) {
+    if (stage >= 50 && Math.random() < 0.0003) {
         player.items.primaryGem++;
         hasDropped = true;
     }
     
     // 高级宝石掉落（100关以上0.03%概率）
-    if (stage >= 100 && Math.random() < 0.0003) {
+    if (stage >= 100 && Math.random() < 0.0002) {
         player.items.advancedGem++;
         hasDropped = true;
     }
@@ -6974,7 +7446,7 @@ function simulateItemDrop(stage) {
     }
     
     // 伴侣钥匙掉落（150关以上0.001%概率）
-    if (stage >= 1 && Math.random() < 0.0005) {
+    if (stage >= 1 && Math.random() < 0.0002) {
         player.items.companionKey++;
         hasDropped = true;
     }
@@ -7021,28 +7493,37 @@ let isAutoSweeping = false;
 
 // 添加自动扫荡控制函数
 function toggleAutoSweep() {
-    if (isAutoSweeping) {
-        // 停止自动扫荡
-        clearInterval(autoSweepInterval);
-        autoSweepInterval = null;
-        isAutoSweeping = false;
-        logBattleAction("自动扫荡已停止");
-          updateOfficialSystemDisplay();
-        updateMonsterUI(); 
+    player.battle.autoSweepEnabled = !player.battle.autoSweepEnabled;
+    
+    // 更新UI显示
+    document.getElementById('autoSweepStatus').textContent = 
+        player.battle.autoSweepEnabled ? '开' : '关';
+    
+    // 如果开启自动扫荡，启动定时器
+    if (player.battle.autoSweepEnabled) {
+        startAutoSweep();
     } else {
-        // 检查是否满足开启条件
-        if (player.reincarnationCount < 2) {
-            alert("需要达到2转才能开启自动扫荡！");
-            return;
-        }
-        // 开始自动扫荡
-        isAutoSweeping = true;
-        logBattleAction("自动扫荡已开启，每4秒执行一次");
-        autoSweepInterval = setInterval(autoSweepProcess, 4000);
-        // 立即执行一次
-        autoSweepProcess();
-        updateOfficialSystemDisplay();
-        updateMonsterUI(); 
+        stopAutoSweep();
+    }
+    
+    logAction(`自动扫荡已${player.battle.autoSweepEnabled ? '开启' : '关闭'}`, 'info');
+    saveGame();
+ 
+}
+
+// 启动自动扫荡
+function startAutoSweep() {
+    // 清除现有定时器（如果有）
+    stopAutoSweep();
+    // 每4秒执行一次自动扫荡
+    player.battle.autoSweepInterval = setInterval(autoSweepProcess, 4000);
+}
+
+// 停止自动扫荡
+function stopAutoSweep() {
+    if (player.battle.autoSweepInterval) {
+        clearInterval(player.battle.autoSweepInterval);
+        player.battle.autoSweepInterval = null;
     }
 }
 
@@ -7717,14 +8198,27 @@ function updateFundValues() {
     
     if (intervals > 0) {
         player.fundData.funds.forEach(fund => {
+           
+            let riseProbability;
+            if (fund.netValue < 1.0) {
+                riseProbability = 0.45; 
+            } else if (fund.netValue < 1.5) {
+                riseProbability = 0.40; 
+            } else if (fund.netValue < 2.0) {
+                riseProbability = 0.30; 
+            } else if (fund.netValue < 2.5) {
+                riseProbability = 0.20; 
+            } else {
+                riseProbability = 0.10; 
+            }
+
             // 计算投资比例（0-1）
             const investmentRatio = fund.maxInvestment > 0 ? Math.min(fund.investment / fund.maxInvestment, 1) : 0;
             
             // 根据投资比例计算波动幅度（10%-30%）
             const baseVolatility = 0.1 + (0.2 * investmentRatio);
             
-            // 跌的概率比涨高10-20%
-            const riseProbability = 0.50 - (0.1 * investmentRatio); // 50%基础上涨概率，随投资增加降低
+           
             
             let newNetValue = fund.netValue;
             for (let i = 0; i < intervals; i++) {
@@ -8080,7 +8574,7 @@ const talentTypes = [
         name: "生命",
         base: 0.001,
         perLevel: 0.001,
-        description: (level) => `玩家总和生命+${(0.001 + 0.001 * level).toFixed(2)}倍`
+        description: (level) => `玩家总和生命+${(0.001 + 0.001 * level).toFixed(3)}倍`
     },
     {
         name: "全属性",
@@ -8098,7 +8592,7 @@ const talentTypes = [
         name: "暴击率",
         base: 0.001,
         perLevel: 0.001,
-        description: (level) => `玩家暴击率+${(0.001 + 0.001 * level).toFixed(2)}倍`
+        description: (level) => `玩家暴击率+${(0.001 + 0.001 * level).toFixed(3)}倍`
     }
 ];
 
@@ -8165,7 +8659,7 @@ function updateCompanionDisplay() {
             </div>
             <h4 style="color: ${companionRarities[companion.rarity].color}; margin-top: 0;">${companion.name}<span style="margin-left: 5px; color: #FFD700;">+${companion.advanceLevel || 0}</span>${companion.locked ? '🔒' : ' '}</h4>
             <div>${stars}${emptyStars} (${companion.score}/10000)</div>
-            <div style="margin: 5px 0; font-size: 0.8em; max-height: 80px; overflow-y: auto;">
+            <div style="margin: 5px -2; font-size: 0.8em; max-height: 190px; overflow-y: auto;">
                 ${companion.talents.map(t => `${talentRanks[t.rank]}${talentTypes[t.type].name}: ${talentTypes[t.type].description(t.rank)}`).join('<br>')}
             </div>
             <div style="margin-top: 10px; display: flex; gap: 5px;">
@@ -8433,6 +8927,8 @@ function initAutoDecomposeUI() {
     btn.textContent = `自动分解：${player.autoDecompose.enabled ? '开启' : '关闭'}`;
     btn.style.background = player.autoDecompose.enabled ? '#4CAF50' : '#ff9800';
 }
+
+
 
 // 添加定时检查（每5秒一次）
 setInterval(checkAutoDecompose, 5000);
@@ -9832,7 +10328,7 @@ function loadWorldBossData() {
             
             // 随机生成BOSS属性
             worldBossData.bossName = bossNames[Math.floor(Math.random() * bossNames.length)];
-            worldBossData.bossWorld = worldNames[Math.floor(Math.random() * worldNames.length)];
+             worldBossData.bossWorld = worldNames[Math.floor(Math.random() * worldNames.length)];
             worldBossData.bossStars = Math.floor(Math.random() * 30) + 1; // 1-30星
             
             // BOSS生命值为玩家攻击力的100000万-1000000万倍
@@ -10197,8 +10693,8 @@ function updateRankings() {
             player.gpsMultiplier += achievementRewards.world_boss_1st.gpsMultiplier;
             logAction(`成就达成：${achievementRewards.world_boss_1st.description}，GPS奖励 +${achievementRewards.world_boss_1st.gpsMultiplier * 100}%`, 'success');
         }
-    } else if (playerRank >= 2 && playerRank <= 5) {
-        // 第2-5名
+    } else if (playerRank >= 2 && playerRank <= 10) {
+        // 第2-10名
         player.items.superiorGem += 5;
         player.reincarnationCoin += 10000;
         addBossBattleLog(`你获得了第${playerRank}名奖励: 5个极品宝石 + 10000转生币`);
@@ -10209,8 +10705,8 @@ function updateRankings() {
             player.gpsMultiplier += achievementRewards.world_boss_top5.gpsMultiplier;
             logAction(`成就达成：${achievementRewards.world_boss_top5.description}，GPS奖励 +${achievementRewards.world_boss_top5.gpsMultiplier * 100}%`, 'success');
         }
-    } else if (playerRank >= 6 && playerRank <= 10) {
-        // 第6-10名
+    } else if (playerRank >= 11 && playerRank <= 30) {
+        // 第11-30名
         player.items.advancedGem += 3;
         player.reincarnationCoin += 5000;
         addBossBattleLog(`你获得了第${playerRank}名奖励: 3个高级宝石 + 5000转生币`);
@@ -10277,7 +10773,7 @@ function updateRankings() {
     updateMonsterUI();
  updateMysterySystemDisplay();
     </script>
-<!--客服 开始-->
+    <!--客服 开始-->
 <script src="//g8hh.github.io/static/js/jquery.min.js"></script>
 <link rel="stylesheet" href="//g8hh.github.io/static/css/kf.css" type="text/css" media="screen" charset="utf-8">
 <script src="//g8hh.github.io/static/js/kf.js"></script>
