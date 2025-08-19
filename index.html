@@ -148,7 +148,7 @@
     transform-origin: top left;
     width: 100%;
     /* 新增以下样式 */
-    max-height: 24.6vh; /* 限制最大高度为屏幕高度的20%，可根据需求调整 */
+    max-height: 29.6vh; /* 限制最大高度为屏幕高度的20%，可根据需求调整 */
     overflow-y: auto; /* 允许垂直滚动 */
     -webkit-overflow-scrolling: touch; /* 启用移动端平滑滚动特性 */
     overscroll-behavior-y: contain; /* 阻止滚动到底部时的全局回弹 */
@@ -698,41 +698,15 @@
     <button onclick="toggleFundSystem()">基金系统</button>
     <button onclick="toggleSettingsUI()">设置</button>
 
-
-    <h3>自动购买设置</h3>
+<h3>自动购买设置</h3>
     <div class="auto-buy-container">
-        <button id="autoChest1" class="auto-buy-btn" onclick="toggleAutoBuy(1)">普通宝箱自动购买：关闭</button>
-        <button id="autoChest2" class="auto-buy-btn" onclick="toggleAutoBuy(2)">高级宝箱自动购买：关闭</button>
-        <button id="autoChest3" class="auto-buy-btn" onclick="toggleAutoBuy(3)">稀有宝箱自动购买：关闭</button>
-        <button id="autoChest4" class="auto-buy-btn" onclick="toggleAutoBuy(4)">史诗宝箱自动购买：关闭</button>
-        <button id="autoChest5" class="auto-buy-btn" onclick="toggleAutoBuy(5)">传说宝箱自动购买：关闭</button>
-        <button id="autoChest6" class="auto-buy-btn" onclick="toggleAutoBuy(6)">混沌宝箱自动购买：关闭</button>
-        <button id="autoChest7" class="auto-buy-btn" onclick="toggleAutoBuy(7)">终焉宝箱自动购买：关闭</button>
-        <button id="autoChest8" class="auto-buy-btn" onclick="toggleAutoBuy(8)">星辰宝箱自动购买：关闭</button>
-        <button id="autoChest9" class="auto-buy-btn" onclick="toggleAutoBuy(9)">银河宝箱自动购买：关闭</button>
-        <button id="autoChest10" class="auto-buy-btn" onclick="toggleAutoBuy(10)">星云宝箱自动购买：关闭</button>
-        <button id="autoChest11" class="auto-buy-btn" onclick="toggleAutoBuy(11)">鸿蒙宝箱自动购买：关闭</button>
-        <button id="autoChest12" class="auto-buy-btn" onclick="toggleAutoBuy(12)">太虚宝箱自动购买：关闭</button>
-        <button id="autoMaterialChest" class="auto-buy-btn" onclick="toggleAutoBuyMaterialChest()">材料宝箱自动购买：关闭</button>
-        <button id="autoTechniqueChest" class="auto-buy-btn" onclick="toggleAutoBuyTechniqueChest()">功法秘籍宝箱自动购买：关闭</button>
+      <button onclick="toggleAutoBuyShop()">自动购买商店</button>
+      <button onclick="toggleAutoConvertUI()">自动兑换货币</button>
         <button id="autoBuySpeedBoost" class="auto-buy-btn" onclick="toggleAutoBuySpeedBoost()">在线自动购买100倍数量：关闭</button>
         <button id="toggleOnlineBoost" onclick="toggleOnlineBoost()">在线金币加速100倍: 关闭</button>
     </div>
 
-    <h3>自动兑换设置</h3>
-    <div class="auto-buy-container">
-        <button id="autoConvertGold" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('gold')">金币自动兑换：关闭</button>
-        <button id="autoConvertDiamond" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('diamond')">钻石自动兑换：关闭</button>
-        <button id="autoConvertTitanium" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('titanium')">钛晶石自动兑换：关闭</button>
-        <button id="autoConvertStarstone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('starstone')">星耀石自动兑换：关闭</button>
-        <button id="autoConvertCosmicstone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('cosmicstone')">宇宙石自动兑换：关闭</button>
-       <button id="autoConvertSuperstone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('superstone')">超能石自动兑换：关闭</button>
-       <button id="autoConvertOtherworldstone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('otherworldstone')">异界石自动兑换：关闭</button>
-       <button id="autoConvertXingjiestone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('xingjiestone')">星界石自动兑换：关闭</button>
-       <button id="autoConvertHundunstone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('hundunstone')">混沌石自动兑换：关闭</button>
-       <button id="autoConvertLingtone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('lingtone')">灵髓石自动兑换：关闭</button>
-       <button id="autoConvertHuangtone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('huangtone')">幻空石自动兑换：关闭</button>
-</div>
+  
 
     <div class="tab active" onclick="switchTab('equipment')">装备</div>
     <div class="tab" onclick="switchTab('items')">道具</div>
@@ -1088,8 +1062,20 @@
         <h3>伴侣等级: Lv. <span id="companionLevel">1</span></h3>
         <p>升级消耗: <span id="upgradeCost">10</span> 玫瑰花</p>
         <button onclick="upgradeCompanion()" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">升级</button>
+
+     <div style="flex: 1; min-width: 400px; background: #2a2a2a; padding: 10px; border-radius: 5px;">
+        <h3>已装备伴侣属性加成</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.9em;">
+            <div>品质加成倍数: <span id="qualityMultiplier">1x</span></div>
+            <div>攻击总和加成: <span id="attackTotalBonus">1x</span></div>
+            <div>生命总和加成: <span id="healthTotalBonus">1x</span></div>
+            <div>暴击率总和加成: <span id="critRateTotalBonus">1x</span></div>
+            <div>爆伤总和加成: <span id="critDamageTotalBonus">1x</span></div>
+            <div>连击总和加成: <span id="comboTotalBonus">0</span></div>
+            <div>全属性总和加成: <span id="allStatsTotalBonus">1x</span></div>
+        </div>
     </div>
-    
+</div>
     <div style="display: flex; gap: 10px; margin: 15px 0;">
     <!-- 伴侣宝箱 -->
     <div style="flex: 1; padding: 10px; background: #333; border-radius: 5px;">
@@ -1117,6 +1103,7 @@
             <option value="pink">卓越(粉色)</option>
             <option value="orange">完美(橙色)</option>
             <option value="red">神赐(红色)</option>
+            <option value="angel">天使(彩色)</option>
         </select>
         <button onclick="batchDecompose()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">批量分解选中品阶(未锁定)</button>
 <div style="flex: 1; padding: 10px; background: #333; border-radius: 5px; margin-top: 1px;">
@@ -1128,6 +1115,7 @@
         <option value="pink">卓越(粉色)及以下</option>
         <option value="orange">完美(橙色)及以下</option>
         <option value="red">神赐(红色)及以下</option>
+        <option value="angel">天使(彩色)及以下</option>
     </select>
     <button id="toggleAutoDecompose" onclick="toggleAutoDecompose()" style="background: #ff9800; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">自动分解：关闭</button>
 </div>
@@ -1213,7 +1201,7 @@
 <div id="fundSystem" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 800px; background: #fff; border: 2px solid #333; border-radius: 10px; padding: 20px; z-index: 1001;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2>基金系统</h2>
-          <h3>投入的越多波动的幅度越大10-30%。1分钟刷新一次 ，10分钟不能实时卖出，最后4分钟不能投入，如果跌到总价值20%以下 就全部没收清零。每次第一次购买净值会归为1，已购买后正常。</h3> <button onclick="resetFundData()" style="padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">重置基金</button>
+          <h3>投入的越多波动的幅度越大10-50%（按满仓算50%）。1分钟刷新一次 ，10分钟不能实时卖出，最后8分钟不能投入，如果跌到总价值20%以下 就全部没收清零。每次第一次购买净值会归为1，已购买后正常。</h3> <button onclick="resetFundData()" style="padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">重置基金</button>
         <button onclick="toggleFundSystem()" style="padding: 5px 10px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer;">关闭</button>
      <button onclick="updateFundDisplay()" style="padding: 5px 10px; margin-right: 10px; background: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">刷新</button>
     </div>
@@ -1257,6 +1245,7 @@
         <button onclick="saveGame()">保存游戏</button>
         <button onclick="loadGame()">加载游戏</button>
         <button onclick="exportSave()">导出存档（自动复制）</button>
+        <button onclick="downloadSave()">下载存档</button>
         <button onclick="importSave()">导入存档</button>
         <button onclick="resetGame()" style="background-color: #ff4444; color: white; border: none;">重置游戏</button>
     </div>
@@ -1265,6 +1254,108 @@
 
 <!-- 半透明遮罩层 -->
 <div id="settingsOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
+<!-- 新增合成面板HTML -->
+<div id="combinePanel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; background: #333; border: 2px solid #9C27B0; border-radius: 10px; padding: 20px; z-index: 1001;">
+    <button onclick="closeCombinePanel()" style="position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 16px;">×</button>
+    <h3 style="color: #fff; text-align: center;">伴侣合成</h3>
+    
+    <div style="display: flex; gap: 20px; margin: 20px 0;">
+        <!-- 主伴侣选择 -->
+        <div style="flex: 1;">
+            <h4 style="color: #fff;">主伴侣</h4>
+            <div id="mainCompanionSlot" style="background: #444; border-radius: 5px; padding: 10px; min-height: 150px;">
+                <select id="mainCompanionSelect" style="width: 100%; padding: 5px; background: #555; color: white; border: 1px solid #666;">
+                    <!-- 动态填充可选伴侣 -->
+                </select>
+                <div id="mainCompanionInfo" style="margin-top: 10px; color: #fff; font-size: 0.9em;">
+                    <!-- 显示选中的主伴侣信息 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 合成图标 -->
+        <div style="display: flex; align-items: center; justify-content: center;">
+            <button onclick="combineCompanions()" style="background: #9C27B0; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer;">→</button>
+        </div>
+        
+        <!-- 副伴侣选择 -->
+        <div style="flex: 1;">
+            <h4 style="color: #fff;">副伴侣</h4>
+            <div id="secondaryCompanionSlot" style="background: #444; border-radius: 5px; padding: 10px; min-height: 150px;">
+                <select id="secondaryCompanionSelect" style="width: 100%; padding: 5px; background: #555; color: white; border: 1px solid #666;">
+                    <!-- 动态填充可选伴侣 -->
+                </select>
+                <div id="secondaryCompanionInfo" style="margin-top: 10px; color: #fff; font-size: 0.9em;">
+                    <!-- 显示选中的副伴侣信息 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 合成预览 -->
+    <div style="background: #444; border-radius: 5px; padding: 10px; margin: 10px 0;">
+        <h4 style="color: #fff; margin-top: 0;">合成预览</h4>
+        <div id="combinePreview" style="color: #fff; font-size: 0.9em;">
+            <p>选择主副伴侣查看合成预览</p>
+            <p>新一代数: <span id="previewGeneration">--</span></p>
+            <p>预计天赋数量: <span id="previewTalentCount">--</span></p>
+            <p>预计品质: <span id="previewRarity" style="color: #ff00ff;">天使(彩色)</span></p>
+            <p>预计评分范围: <span id="previewScoreRange">--</span></p>
+            <p>品质加成倍数: <span id="previewQualityMultiplier">--</span></p>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="combineCompanions()" style="background: #9C27B0; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">确认合成</button>
+        <p style="color: #ff4444; font-size: 0.8em; margin-top: 10px;">注意: 合成将消耗主副两只伴侣，且结果随机！</p>
+    </div>
+</div>
+<!-- 新增自动购买商店界面 -->
+<div id="autoBuyShop" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid #333; z-index: 1000; max-height: 80vh; overflow-y: auto; width: 500px;">
+    <h3>自动购买设置</h3>
+    <div class="auto-buy-container">
+        <button id="autoChest1" class="auto-buy-btn" onclick="toggleAutoBuy(1)">普通宝箱自动购买：关闭</button>
+        <button id="autoChest2" class="auto-buy-btn" onclick="toggleAutoBuy(2)">高级宝箱自动购买：关闭</button>
+        <button id="autoChest3" class="auto-buy-btn" onclick="toggleAutoBuy(3)">稀有宝箱自动购买：关闭</button>
+        <button id="autoChest4" class="auto-buy-btn" onclick="toggleAutoBuy(4)">史诗宝箱自动购买：关闭</button>
+        <button id="autoChest5" class="auto-buy-btn" onclick="toggleAutoBuy(5)">传说宝箱自动购买：关闭</button>
+        <button id="autoChest6" class="auto-buy-btn" onclick="toggleAutoBuy(6)">混沌宝箱自动购买：关闭</button>
+        <button id="autoChest7" class="auto-buy-btn" onclick="toggleAutoBuy(7)">终焉宝箱自动购买：关闭</button>
+        <button id="autoChest8" class="auto-buy-btn" onclick="toggleAutoBuy(8)">星辰宝箱自动购买：关闭</button>
+        <button id="autoChest9" class="auto-buy-btn" onclick="toggleAutoBuy(9)">银河宝箱自动购买：关闭</button>
+        <button id="autoChest10" class="auto-buy-btn" onclick="toggleAutoBuy(10)">星云宝箱自动购买：关闭</button>
+        <button id="autoChest11" class="auto-buy-btn" onclick="toggleAutoBuy(11)">鸿蒙宝箱自动购买：关闭</button>
+        <button id="autoChest12" class="auto-buy-btn" onclick="toggleAutoBuy(12)">太虚宝箱自动购买：关闭</button>
+        <button id="autoMaterialChest" class="auto-buy-btn" onclick="toggleAutoBuyMaterialChest()">材料宝箱自动购买：关闭</button>
+        <button id="autoTechniqueChest" class="auto-buy-btn" onclick="toggleAutoBuyTechniqueChest()">功法秘籍宝箱自动购买：关闭</button>
+    </div>
+    <button onclick="toggleAutoBuyShop()" style="margin-top: 15px;">关闭商店</button>
+</div>
+<!-- 自动兑换货币界面 -->
+<div id="autoConvertUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid #3498db; border-radius: 10px; z-index: 1000; max-width: 500px; max-height: 80vh; overflow-y: auto;">
+    <h3 style="margin-top: 0; color: #3498db; text-align: center;">自动兑换设置</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0;">
+        <button id="autoConvertGold" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('gold')">金币自动兑换：关闭</button>
+        <button id="autoConvertDiamond" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('diamond')">钻石自动兑换：关闭</button>
+        <button id="autoConvertTitanium" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('titanium')">钛晶石自动兑换：关闭</button>
+        <button id="autoConvertStarstone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('starstone')">星耀石自动兑换：关闭</button>
+        <button id="autoConvertCosmicstone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('cosmicstone')">宇宙石自动兑换：关闭</button>
+        <button id="autoConvertSuperstone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('superstone')">超能石自动兑换：关闭</button>
+        <button id="autoConvertOtherworldstone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('otherworldstone')">异界石自动兑换：关闭</button>
+        <button id="autoConvertXingjiestone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('xingjiestone')">星界石自动兑换：关闭</button>
+        <button id="autoConvertHundunstone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('hundunstone')">混沌石自动兑换：关闭</button>
+        <button id="autoConvertLingtone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('lingtone')">灵髓石自动兑换：关闭</button>
+        <button id="autoConvertHuangtone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('huangtone')">幻空石自动兑换：关闭</button>
+    </div>
+    <div style="text-align: center; margin-top: 15px;">
+        <button onclick="toggleAutoConvertUI()" style="background: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">关闭</button>
+    </div>
+</div>
+
+<!-- 半透明遮罩层 -->
+<div id="autoConvertOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
+
+
 
 
 
@@ -2407,18 +2498,18 @@ const mysteryConfig = [
          yeyu1: { name: '星辰', gps: 500000000000000000000000, click: 500000000000000000000000000, prob: 0.0001, growthRate: 3.20 },
          yeyu2: { name: '起源', gps: 600000000000000000000000, click: 600000000000000000000000000, prob: 0.00005, growthRate: 3.50 },
          yeyu3: { name: '时光', gps: 1000000000000000000000000, click: 2000000000000000000000000000, prob: 0.00001, growthRate: 4.00 },
-         yeyu4: { name: '造物', gps: 500000000000000000000000000000, click: 500000000000000000000000000000000, prob: 0.000005, growthRate: 4.20 },
-         yeyu5: { name: '银河', gps: 600000000000000000000000000000, click: 600000000000000000000000000000000, prob: 0.000001, growthRate: 4.50 },
-         yeyu6: { name: '天界', gps: 1000000000000000000000000000000, click: 1000000000000000000000000000000000, prob: 0.0000001, growthRate: 5.00 },
-         yeyu7: { name: '星云', gps: 500000000000000000000000000000000000, click: 500000000000000000000000000000000000000, prob: 0.0000001, growthRate: 5.50 },
-         yeyu8: { name: '星河', gps: 600000000000000000000000000000000000, click: 600000000000000000000000000000000000000, prob: 0.0000001, growthRate: 6.00 },
-         yeyu9: { name: '纪元', gps: 1000000000000000000000000000000000000, click: 1000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 6.50 }, 
-         yeyu10: { name: '鸿蒙', gps: 50000000000000000000000000000000000000000, click: 5000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 7.00 },
-         yeyu11: { name: '星穹', gps: 60000000000000000000000000000000000000000, click: 6000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 7.50 },
-         yeyu12: { name: '亘古', gps: 100000000000000000000000000000000000000000, click: 10000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.00 },
-         yeyu13: { name: '万象', gps: 5000000000000000000000000000000000000000000000, click: 50000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.50 },
-         yeyu14: { name: '太虚', gps: 6000000000000000000000000000000000000000000000, click: 60000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.00 },
-         yeyu15: { name: '九垓', gps: 10000000000000000000000000000000000000000000000, click: 100000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.50 }
+         yeyu4: { name: '造物', gps: 50000000000000000000000000000, click: 50000000000000000000000000000000, prob: 0.000005, growthRate: 4.20 },
+         yeyu5: { name: '银河', gps: 60000000000000000000000000000, click: 60000000000000000000000000000000, prob: 0.000001, growthRate: 4.50 },
+         yeyu6: { name: '天界', gps: 100000000000000000000000000000, click: 100000000000000000000000000000000, prob: 0.0000001, growthRate: 5.00 },
+         yeyu7: { name: '星云', gps: 5000000000000000000000000000000000, click: 5000000000000000000000000000000000000, prob: 0.0000001, growthRate: 5.50 },
+         yeyu8: { name: '星河', gps: 6000000000000000000000000000000000, click: 6000000000000000000000000000000000000, prob: 0.0000001, growthRate: 6.00 },
+         yeyu9: { name: '纪元', gps: 10000000000000000000000000000000000, click: 10000000000000000000000000000000000000, prob: 0.0000001, growthRate: 6.50 }, 
+         yeyu10: { name: '鸿蒙', gps: 500000000000000000000000000000000000000, click: 50000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 7.00 },
+         yeyu11: { name: '星穹', gps: 600000000000000000000000000000000000000, click: 60000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 7.50 },
+         yeyu12: { name: '亘古', gps: 1000000000000000000000000000000000000000, click: 100000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.00 },
+         yeyu13: { name: '万象', gps: 50000000000000000000000000000000000000000000, click: 500000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.50 },
+         yeyu14: { name: '太虚', gps: 60000000000000000000000000000000000000000000, click: 600000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.00 },
+         yeyu15: { name: '九垓', gps: 100000000000000000000000000000000000000000000, click: 1000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.50 }
        
         };
 
@@ -3288,6 +3379,7 @@ function calculateTotalGPS() {
             if (save.battle && save.battle.autoSweepEnabled !== undefined) {
             player.battle.autoSweepEnabled = save.battle.autoSweepEnabled;
         }
+         updateAutoConvertDisplay();
              // 确保加载通天塔数据
             if (save.tower) {
                 player.tower = save.tower;
@@ -3337,7 +3429,7 @@ if (speedBoostBtn) {
 }
       const onlineBoostBtn = document.getElementById('toggleOnlineBoost');
     if (onlineBoostBtn) {
-        onlineBoostBtn.textContent = `在线自动购买100倍数量: ${player.onlineBoostEnabled ? '开启' : '关闭'}`;
+        onlineBoostBtn.textContent = `在线金币加速100倍: ${player.onlineBoostEnabled ? '开启' : '关闭'}`;
     }
       
             // 确保日志不超过 20 条
@@ -3993,27 +4085,50 @@ if (player.autoBuyTechniqueChest && player.reincarnationCoin >= player.technique
     logAction(`${player.autoBuySpeedBoost ? '开启' : '关闭'}在线自动购买100倍数量`, 'info');
 }
 
-        // 切换自动兑换货币状态
-        function toggleAutoConvertCurrency(currency) {
-    player.autoConvertCurrency[currency] = !player.autoConvertCurrency[currency];
-    const btn = document.getElementById(`autoConvert${currency.charAt(0).toUpperCase() + currency.slice(1)}`);
-    // 货币名称映射表
-    const currencyNames = {
-        'gold': '金币',
-        'diamond': '钻石',
-        'titanium': '钛晶石',
-        'starstone': '星耀石',
-        'cosmicstone': '宇宙石',
-        'superstone': '超能石',
-        'otherworldstone': '异界石',
-        'xingjiestone': '星界石',
-        'hundunstone': '混沌石',
-        'lingtone': '灵髓石',
-        'huangtone': '幻空石'      
+     // 添加更新自动兑换货币显示的函数
+function updateAutoConvertDisplay() {
+    const currencies = ['gold', 'diamond', 'titanium', 'starstone', 'cosmicstone', 
+                        'superstone', 'otherworldstone', 'xingjiestone', 'hundunstone', 
+                        'lingtone', 'huangtone', 'mingtone'];
+    
+    currencies.forEach(currency => {
+        const btn = document.getElementById(`autoConvert${currency.charAt(0).toUpperCase() + currency.slice(1)}`);
+        if (btn) {
+            btn.textContent = `${getCurrencyName(currency)}自动兑换：${player.autoConvertCurrency[currency] ? '开启' : '关闭'}`;
+        }
+    });
+}
+
+// 辅助函数：获取货币中文名称
+function getCurrencyName(currency) {
+    const names = {
+        gold: '金币',
+        diamond: '钻石',
+        titanium: '钛晶石',
+        starstone: '星耀石',
+        cosmicstone: '宇宙石',
+        superstone: '超能石',
+        otherworldstone: '异界石',
+        xingjiestone: '星界石',
+        hundunstone: '混沌石',
+        lingtone: '灵髓石',
+        huangtone: '幻空石',
+        mingtone: '冥源石'
     };
-    // 使用中文名称
-    btn.textContent = `${currencyNames[currency]}自动兑换：${player.autoConvertCurrency[currency] ? '开启' : '关闭'}`;
-    logAction(`${currencyNames[currency]}自动兑换${player.autoConvertCurrency[currency] ? '开启' : '关闭'}`, 'info');
+    return names[currency] || currency;
+}
+
+// 修改切换函数，确保更新显示
+function toggleAutoConvertCurrency(currency) {
+    player.autoConvertCurrency[currency] = !player.autoConvertCurrency[currency];
+    
+    // 更新按钮显示
+    const btn = document.getElementById(`autoConvert${currency.charAt(0).toUpperCase() + currency.slice(1)}`);
+    if (btn) {
+        btn.textContent = `${getCurrencyName(currency)}自动兑换：${player.autoConvertCurrency[currency] ? '开启' : '关闭'}`;
+    }
+    
+    logAction(`${getCurrencyName(currency)}自动兑换${player.autoConvertCurrency[currency] ? '开启' : '关闭'}`, 'info');
 }
         // 成就检查
         function checkAchievement(rarity) {
@@ -5630,6 +5745,43 @@ function confirmRename() {
             console.error('导出错误:', error);
         }
     }
+ // 导出存档到文件（新增功能）
+function downloadSave() {
+    try {
+        // 获取当前存档数据
+        const saveData = JSON.stringify(player);
+        
+        // 使用AES加密存档
+        const encryptedData = CryptoJS.AES.encrypt(
+            saveData,
+            ENCRYPTION_KEY
+        ).toString();
+        
+        // 创建Blob对象
+        const blob = new Blob([encryptedData], { type: 'text/plain' });
+        
+        // 创建下载链接
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `gold_adventurer_save_${new Date().toISOString().slice(0, 10)}.txt`;
+        
+        // 触发下载
+        document.body.appendChild(a);
+        a.click();
+        
+        // 清理
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+        
+        logAction('存档已加密并下载', 'success');
+    } catch (error) {
+        logAction('存档下载失败: ' + error.message, 'error');
+        console.error('存档下载错误:', error);
+    }
+}
 
         // 导入存档
         function importSave() {
@@ -6664,7 +6816,22 @@ function confirmRename() {
             document.querySelectorAll('.log-tab').forEach(t => t.classList.remove('active'));
             document.querySelector(`.log-tab[onclick="switchLogTab(${page})"]`).classList.add('active');
         }
-
+   function toggleAutoConvertUI() {
+    const ui = document.getElementById('autoConvertUI');
+    const overlay = document.getElementById('autoConvertOverlay');
+    
+    if (ui.style.display === 'none') {
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+    } else {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    }
+}
+function toggleAutoBuyShop() {
+    const shop = document.getElementById('autoBuyShop');
+    shop.style.display = shop.style.display === 'none' ? 'block' : 'none';
+}
 function toggleShopUI() {
     const shopUI = document.getElementById('shopUI');
     const overlay = document.getElementById('shopOverlay');
@@ -6821,33 +6988,33 @@ function generateMonster() {
     if (stage <= 5) {
         attackMultiplier = Math.floor(Math.random() * 3) + 1;
     } else if (stage <= 15) {
-        attackMultiplier = Math.floor(Math.random() * 5) + 10;
+        attackMultiplier = 35 + (stage - 10) * 10;
     } else if (stage <= 25) {
-        attackMultiplier = Math.floor(Math.random() * 25) + 20;
+        attackMultiplier = 50 + (stage - 10) * 10;
     } else if (stage <= 40) {
-        attackMultiplier = Math.floor(Math.random() * 50) + 50;
+        attackMultiplier = 100 + (stage - 10) * 10;
     } else if (stage <= 65) {
-        attackMultiplier = Math.floor(Math.random() * 90) + 100;
+        attackMultiplier = 350 + (stage - 9) * 100;
     } else if (stage <= 90) {
-        attackMultiplier = Math.floor(Math.random() * 120) + 250;
+        attackMultiplier = 3500 + (stage - 64) * 100;
     } else if (stage <= 120) {
-        attackMultiplier = Math.floor(Math.random() * 180) + 1000;
-    } else if (stage <= 180) {
-        attackMultiplier = Math.floor(Math.random() * 200) + 5000;
-    } else if (stage <= 220) {
-        attackMultiplier = Math.floor(Math.random() * 250) + 10000;
+        attackMultiplier = 35000 + (stage - 89) * 1000;
     } else if (stage <= 250) {
-        attackMultiplier = Math.floor(Math.random() * 300) + 30000;
-    } else if (stage <= 300) {
-        attackMultiplier = Math.floor(Math.random() * 400) + 40000;
+        attackMultiplier = 350000 + (stage - 119) * 10000;
     } else if (stage <= 350) {
-        attackMultiplier = Math.floor(Math.random() * 600) + 50000;
-    } else if (stage <= 400) {
-        attackMultiplier = Math.floor(Math.random() * 800) + 75000;
-    } else if (stage <= 500) {
-        attackMultiplier = Math.floor(Math.random() * 1000) + 90000;
+        attackMultiplier = 3500000 + (stage - 249) * 100000;
+    } else if (stage <= 450) {
+        attackMultiplier = 450000000 + (stage - 349) * 1000000;
+    } else if (stage <= 550) {
+        attackMultiplier = 5500009000 + (stage - 449) * 1000000000;
+    } else if (stage <= 650) {
+        attackMultiplier = 650000000900 + (stage - 549) * 100000000000;
+    } else if (stage <= 750) {
+        attackMultiplier = 7500000000000 + (stage - 649) * 100000000000000;
+    } else if (stage <= 850) {
+        attackMultiplier = 800000000000000 + (stage - 749) * 100000000000000000;
     } else {
-        attackMultiplier = 100000 + (stage - 500) * 10000;
+        attackMultiplier = 90000000000000000 + (stage - 849) * 100000000000000000000;
     }
 
     // 应用词条效果
@@ -8059,11 +8226,11 @@ function updateFundDisplay() {
 // 投资基金
 function investFund(index) {
    const fund = player.fundData.funds[index];
-// 检查是否在赎回前4分钟内
+// 检查是否在赎回前8分钟内
     const now = Date.now();
     const redemptionTime = fund.redemptionTime;
-    if (redemptionTime && now > redemptionTime - 4 * 60 * 1000 && now < redemptionTime) {
-        logAction("赎回前最后4分钟内禁止投资！", "error");
+    if (redemptionTime && now > redemptionTime - 8 * 60 * 1000 && now < redemptionTime) {
+        logAction("赎回前最后8分钟内禁止投资！", "error");
         return;
     }
     
@@ -8133,11 +8300,11 @@ function redeemFund(index) {
 function investAllFund(index) {
     const fund = player.fundData.funds[index];
     const redeemedTime = Date.now() - fund.redemptionStart;
-// 检查是否在赎回前4分钟内
+// 检查是否在赎回前8分钟内
     const now = Date.now();
     const redemptionTime = fund.redemptionTime;
-    if (redemptionTime && now > redemptionTime - 4 * 60 * 1000 && now < redemptionTime) {
-        logAction("赎回前最后4分钟内禁止投资！", "error");
+    if (redemptionTime && now > redemptionTime - 8 * 60 * 1000 && now < redemptionTime) {
+        logAction("赎回前最后8分钟内禁止投资！", "error");
         return;
     }
     const maxCanInvest = fund.maxInvestment - fund.investment;
@@ -8201,13 +8368,13 @@ function updateFundValues() {
            
             let riseProbability;
             if (fund.netValue < 1.0) {
-                riseProbability = 0.45; 
-            } else if (fund.netValue < 1.5) {
                 riseProbability = 0.40; 
+            } else if (fund.netValue < 1.5) {
+                riseProbability = 0.35; 
             } else if (fund.netValue < 2.0) {
-                riseProbability = 0.30; 
+                riseProbability = 0.25; 
             } else if (fund.netValue < 2.5) {
-                riseProbability = 0.20; 
+                riseProbability = 0.15; 
             } else {
                 riseProbability = 0.10; 
             }
@@ -8215,8 +8382,8 @@ function updateFundValues() {
             // 计算投资比例（0-1）
             const investmentRatio = fund.maxInvestment > 0 ? Math.min(fund.investment / fund.maxInvestment, 1) : 0;
             
-            // 根据投资比例计算波动幅度（10%-30%）
-            const baseVolatility = 0.1 + (0.2 * investmentRatio);
+            // 根据投资比例计算波动幅度（20%-50%）
+            const baseVolatility = 0.20 + (0.3 * investmentRatio);
             
            
             
@@ -8553,7 +8720,17 @@ const companionRarities = {
         talentCount: 10,
         talentRange: [0, 8], // 初级到洪荒
         decomposeRose: 1000
+    },
+   angel: { 
+        name: '天使', 
+        color: '#87CEEB',
+        talentCount: 0, // 动态计算
+        upgradeMultiplier: 30,
+        talentRange: [0, 8], // 可达到洪荒级别
+        baseScore: 1000,
+        decomposeRose: 1000,
     }
+
 };
 
 // 天赋类型配置
@@ -8645,9 +8822,42 @@ function updateCompanionDisplay() {
     // 更新伴侣列表
     const listContainer = document.getElementById('companionList');
     listContainer.innerHTML = '';
-    
+    const companion = player.companions.find(c => c.id === player.equippedCompanionId);
+    if (companion) {
+        const rarityConfig = companionRarities[companion.rarity] || {};
+        const bonuses = getCompanionBonuses();
+        
+        // 更新显示
+        document.getElementById('qualityMultiplier').textContent = `${rarityConfig.upgradeMultiplier || 1}倍`;
+        document.getElementById('attackTotalBonus').textContent = `${bonuses.attackMultiplier.toFixed(3)}倍`;
+        document.getElementById('healthTotalBonus').textContent = `${bonuses.healthMultiplier.toFixed(3)}倍`;
+        document.getElementById('critRateTotalBonus').textContent = `${bonuses.critRateMultiplier.toFixed(3)}倍`;
+        document.getElementById('critDamageTotalBonus').textContent = `${bonuses.critDamageMultiplier.toFixed(3)}倍`;
+        document.getElementById('comboTotalBonus').textContent = bonuses.combo;
+        document.getElementById('allStatsTotalBonus').textContent = `${bonuses.allStatsMultiplier.toFixed(3)}倍`;
+    } else {
+        // 未装备伴侣时显示默认值
+        const defaultText = '未装备';
+        document.getElementById('qualityMultiplier').textContent = defaultText;
+        document.getElementById('attackTotalBonus').textContent = defaultText;
+        document.getElementById('healthTotalBonus').textContent = defaultText;
+        document.getElementById('critRateTotalBonus').textContent = defaultText;
+        document.getElementById('critDamageTotalBonus').textContent = defaultText;
+        document.getElementById('comboTotalBonus').textContent = defaultText;
+        document.getElementById('allStatsTotalBonus').textContent = defaultText;
+    }
+
     player.companions.forEach(companion => {
         const isEquipped = player.equippedCompanionId === companion.id;
+const rarityConfig = companionRarities[companion.rarity] || {};
+        const rarityName = rarityConfig.name || "未知";
+        const rarityColor = rarityConfig.color || "#CCCCCC";
+        
+        // 特殊处理天使品质的显示
+        let displayName = companion.name;
+        if (companion.rarity === 'angel') {
+            displayName = `天使·${companion.name}`;
+        }
         const stars = '★'.repeat(Math.min(10, Math.floor(companion.score / 1000)));
         const emptyStars = '☆'.repeat(10 - Math.min(10, Math.floor(companion.score / 1000)));
         
@@ -8657,8 +8867,13 @@ function updateCompanionDisplay() {
             <div style="position: absolute; top: 5px; right: 5px; color: ${companionRarities[companion.rarity].color};">
                 ${companionRarities[companion.rarity].name}
             </div>
-            <h4 style="color: ${companionRarities[companion.rarity].color}; margin-top: 0;">${companion.name}<span style="margin-left: 5px; color: #FFD700;">+${companion.advanceLevel || 0}</span>${companion.locked ? '🔒' : ' '}</h4>
-            <div>${stars}${emptyStars} (${companion.score}/10000)</div>
+            <h4 style="color: ${companionRarities[companion.rarity].color}; margin-top: 0;">
+                ${companion.name}
+                <span style="margin-left: 5px; color: #FFD700;">+${companion.advanceLevel || 0}</span>
+                ${companion.locked ? '🔒' : ''}
+            </h4>
+            </div>
+    <div>${stars}${emptyStars} (${companion.score}/10000)</div>
             <div style="margin: 5px -2; font-size: 0.8em; max-height: 190px; overflow-y: auto;">
                 ${companion.talents.map(t => `${talentRanks[t.rank]}${talentTypes[t.type].name}: ${talentTypes[t.type].description(t.rank)}`).join('<br>')}
             </div>
@@ -8673,8 +8888,12 @@ function updateCompanionDisplay() {
                     分解
                 </button>
        <button onclick="advanceCompanion('${companion.id}')" style="width: 30px; background: #FFD700; color: black; border: none; padding: 3px; border-radius: 2px; margin-left: 2px;" 
-    ${companion.locked || !['white','blue','epic','pink', 'orange', 'red'].includes(companion.rarity) ? 'disabled' : ''}>
+    ${companion.locked || !['white','blue','epic','pink', 'orange', 'red', 'angel'].includes(companion.rarity) ? 'disabled' : ''}>
     进阶
+</button>
+   <button onclick="openCombinePanel('${companion.id}')" style="width: 30px; background: #9C27B0; color: white; border: none; padding: 3px; border-radius: 2px; margin-left: 2px;"
+    ${companion.locked || !['epic','pink', 'orange', 'red', 'angel'].includes(companion.rarity) ? 'disabled' : ''}>
+    合成
 </button>
             </div>
         `;
@@ -8759,7 +8978,8 @@ function drawCompanion() {
         talents,
         score: totalScore,
         locked: false,
-       advanceLevel: 0
+       advanceLevel: 0,
+       qualityMultiplier: 1.0
     };
     
     player.companions.push(companion);
@@ -8770,7 +8990,8 @@ function drawCompanion() {
         "epic": "史诗",
         "pink": "卓越",
         "orange": "完美",
-        "red": "神赐"
+        "red": "神赐",
+        "angel": "天使"
     }[selectedRarity];
     
     logAction(`获得了${rarityName}品质伴侣：${companion.name}${isGuaranteed ? " (保底)" : ""}`, 'success');
@@ -8782,7 +9003,7 @@ function advanceCompanion(id) {
     if (!companion) return;
 
     // 检查是否为可进阶品质
-    if (!['white','blue','epic','pink', 'orange', 'red'].includes(companion.rarity)) {
+    if (!['white','blue','epic','pink', 'orange', 'red', 'angel'].includes(companion.rarity)) {
         logAction("品质的伴侣可以进阶！", "error");
         return;
     }
@@ -8880,7 +9101,8 @@ function getRarityName(rarity) {
         'epic': '史诗(紫色)',
         'pink': '卓越(粉色)',
         'orange': '完美(橙色)',
-        'red': '神赐(红色)'
+        'red': '神赐(红色)',
+        'angel': '天使(彩色)'
     };
     return names[rarity] || '普通(白色)';
 }
@@ -8889,7 +9111,7 @@ function getRarityName(rarity) {
 function checkAutoDecompose() {
     if (!player.autoDecompose.enabled) return;
 
-    const rarityOrder = ['white', 'blue', 'epic', 'pink', 'orange', 'red'];
+    const rarityOrder = ['white', 'blue', 'epic', 'pink', 'orange', 'red', 'angel'];
     const targetIndex = rarityOrder.indexOf(player.autoDecompose.belowRarity);
     if (targetIndex === -1) return;
 
@@ -8976,7 +9198,243 @@ function batchDecompose() {
     logAction(`批量分解${toDecompose.length}个${companionRarities[rarity].name}伴侣，获得${totalRoses}玫瑰花`, 'success');
     updateCompanionDisplay();
 }
+// 打开合成面板
+function openCombinePanel(mainId = null) {
+    // 显示面板
+    document.getElementById('combinePanel').style.display = 'block';
+    
+    // 填充可选伴侣列表
+    const mainSelect = document.getElementById('mainCompanionSelect');
+    const secondarySelect = document.getElementById('secondaryCompanionSelect');
+    
+    // 清空现有选项
+    mainSelect.innerHTML = '';
+    secondarySelect.innerHTML = '';
+    
+    // 只显示可合成的伴侣（史诗及以上且未锁定）
+    const eligibleCompanions = player.companions.filter(c => 
+        ['epic', 'pink', 'orange', 'red', 'angel'].includes(c.rarity) && !c.locked
+    );
+    
+    eligibleCompanions.forEach(companion => {
+        const option = document.createElement('option');
+        option.value = companion.id;
+        option.textContent = `${companion.name} (${companionRarities[companion.rarity].name} +${companion.advanceLevel || 0})`;
+        mainSelect.appendChild(option.cloneNode(true));
+        secondarySelect.appendChild(option);
+    });
+    
+    // 如果有传入主伴侣ID，设置为主选
+    if (mainId && eligibleCompanions.some(c => c.id === mainId)) {
+        mainSelect.value = mainId;
+    }
+    
+    // 添加选择事件监听
+    mainSelect.onchange = updateCombinePreview;
+    secondarySelect.onchange = updateCombinePreview;
+    
+    // 初始更新预览
+    updateCombinePreview();
+}
 
+// 关闭合成面板
+function closeCombinePanel() {
+    document.getElementById('combinePanel').style.display = 'none';
+}
+
+// 更新合成预览
+function updateCombinePreview() {
+    const mainId = document.getElementById('mainCompanionSelect').value;
+    const secondaryId = document.getElementById('secondaryCompanionSelect').value;
+    
+    // 清除相同选择
+    if (mainId && secondaryId && mainId === secondaryId) {
+        document.getElementById('secondaryCompanionSelect').value = '';
+    }
+    
+    const mainCompanion = player.companions.find(c => c.id === mainId);
+   // 显示随机品质加成预览
+    document.getElementById('previewQualityMultiplier').textContent = 
+        `${(Math.random() * 0.6 + 0.7).toFixed(2)}x`;
+    const secondaryCompanion = player.companions.find(c => c.id === secondaryId);
+    
+    // 更新伴侣信息显示
+    updateCompanionInfo('mainCompanionInfo', mainCompanion);
+    updateCompanionInfo('secondaryCompanionInfo', secondaryCompanion);
+    
+    // 更新预览信息
+    const previewGeneration = document.getElementById('previewGeneration');
+    const previewTalentCount = document.getElementById('previewTalentCount');
+    const previewScoreRange = document.getElementById('previewScoreRange');
+    
+    if (mainCompanion && secondaryCompanion) {
+        // 计算可能的代数
+        const mainGen = getCompanionGeneration(mainCompanion);
+        const secondaryGen = getCompanionGeneration(secondaryCompanion);
+        const newGen = Math.max(mainGen, secondaryGen) + 1;
+        previewGeneration.textContent = `${newGen}代`;
+        
+        // 计算可能的天赋数量范围
+        const totalTalents = mainCompanion.talents.length + secondaryCompanion.talents.length;
+        const minT1 = Math.floor(totalTalents * 0.01);
+        const maxT1 = Math.floor(totalTalents * 0.5);
+        const minT2 = Math.floor(maxT1 + 1);
+        const maxT2 = Math.floor(totalTalents * 0.75);
+        const minT3 = maxT2 + 1;
+        const maxT3 = Math.floor(totalTalents * 1.0);
+        previewTalentCount.textContent = `${minT1}-${maxT3} (80%概率 ${minT1}-${maxT1}, 18%概率 ${minT2}-${maxT2}, 2%概率 ${minT3}-${maxT3})`;
+        
+        // 计算可能的评分范围
+        const minScore = Math.min(mainCompanion.score, secondaryCompanion.score);
+        const maxScore = Math.max(mainCompanion.score, secondaryCompanion.score);
+        const finalMin = Math.floor(minScore * 0.7); // 最低70%
+        const finalMax = Math.ceil(maxScore * 1.3); // 最高130%
+        previewScoreRange.textContent = `${finalMin}-${finalMax}`;
+    } else {
+        previewGeneration.textContent = '--';
+        previewTalentCount.textContent = '--';
+        previewScoreRange.textContent = '--';
+    }
+}
+
+// 获取伴侣代数
+function getCompanionGeneration(companion) {
+    // 检查名字中是否包含代数信息
+    const match = companion.name.match(/(\d+)代/);
+    if (match) {
+        return parseInt(match[1]);
+    }
+    return 1; // 默认1代
+}
+
+// 更新伴侣信息显示
+function updateCompanionInfo(elementId, companion) {
+    const element = document.getElementById(elementId);
+    if (!companion) {
+        element.innerHTML = '<p>未选择</p>';
+        return;
+    }
+    
+    element.innerHTML = `
+        <p>名称: ${companion.name}</p>
+        <p>品阶: <span style="color: ${companionRarities[companion.rarity].color}">${companionRarities[companion.rarity].name}</span></p>
+        <p>评分: ${companion.score}</p>
+        <p>天赋数量: ${companion.talents.length}</p>
+        <p>进阶等级: +${companion.advanceLevel || 0}</p>
+    `;
+}
+
+// 合成伴侣
+function combineCompanions() {
+    const mainId = document.getElementById('mainCompanionSelect').value;
+    const secondaryId = document.getElementById('secondaryCompanionSelect').value;
+    
+    if (!mainId || !secondaryId || mainId === secondaryId) {
+        logAction('请选择不同的主副伴侣', 'error');
+        return;
+    }
+    
+    const mainCompanion = player.companions.find(c => c.id === mainId);
+    const secondaryCompanion = player.companions.find(c => c.id === secondaryId);
+    
+    if (!mainCompanion || !secondaryCompanion) {
+        logAction('选择的伴侣不存在', 'error');
+        return;
+    }
+
+
+    // 计算新一代数
+    const mainGen = getCompanionGeneration(mainCompanion);
+    const secondaryGen = getCompanionGeneration(secondaryCompanion);
+    const newGen = Math.max(mainGen, secondaryGen) + 1;
+    
+    // 随机选择新名字（主或副的名字 + 代数）
+    const newName = Math.random() > 0.5 ? 
+        `${mainCompanion.name.replace(/ \d+代$/, '')} ${newGen}代` : 
+        `${secondaryCompanion.name.replace(/ \d+代$/, '')} ${newGen}代`;
+    
+    // 计算天赋数量
+    const totalTalents = mainCompanion.talents.length + secondaryCompanion.talents.length;
+    let newTalentCount;
+    const rand = Math.random();
+    
+    if (rand < 0.80) {
+        // 80% 概率：1-50%
+        newTalentCount = Math.floor(Math.random() * (totalTalents * 0.5) + totalTalents * 0.2);
+    } else if (rand < 0.97) {
+        // 18% 概率：50-75%
+        newTalentCount = Math.floor(Math.random() * (totalTalents * 0.25) + totalTalents * 0.5);
+    } else {
+        // 2% 概率：75-100%
+        newTalentCount = Math.floor(Math.random() * (totalTalents * 0.25) + totalTalents * 0.75);
+    }
+    newTalentCount = Math.max(1, newTalentCount); // 至少1个天赋
+    
+    // 计算新评分（基于主副评分范围，上下浮动30%）
+    const minScore = Math.min(mainCompanion.score, secondaryCompanion.score);
+    const maxScore = Math.max(mainCompanion.score, secondaryCompanion.score);
+    const scoreRange = maxScore * 1.3 - minScore * 0.7;
+    const newScore = Math.floor(Math.random() * scoreRange + minScore * 0.7);
+    
+    // 生成新天赋（结合主副天赋的类型，有几率生成新类型）
+    const allTalentTypes = [...mainCompanion.talents.map(t => t.type), ...secondaryCompanion.talents.map(t => t.type), ...Array.from({length: 3}, () => Math.floor(Math.random() * talentTypes.length))];
+    const newTalents = [];
+    
+    for (let i = 0; i < newTalentCount; i++) {
+        // 随机选择天赋类型（优先从主副天赋中选择）
+        const type = allTalentTypes[Math.floor(Math.random() * allTalentTypes.length)];
+        
+        // 天赋天赋等级（基于主副天赋等级范围）
+        const mainRanks = mainCompanion.talents.filter(t => t.type === type).map(t => t.rank);
+        const secondaryRanks = secondaryCompanion.talents.filter(t => t.type === type).map(t => t.rank);
+        const allRanks = [...mainRanks, ...secondaryRanks];
+        
+        let rank;
+        if (allRanks.length > 0) {
+            const minRank = Math.min(...allRanks);
+            const maxRank = Math.max(...allRanks);
+            // 上下浮动30%
+            const newMin = Math.max(0, Math.floor(minRank * 0.7));
+            const newMax = Math.min(8, Math.ceil(maxRank * 1.3));
+            rank = Math.floor(Math.random() * (newMax - newMin + 1)) + newMin;
+        } else {
+            // 如果没有相同类型的天赋，随机生成
+            rank = Math.floor(Math.random() * 9); // 0-8级
+        }
+        
+        newTalents.push({ type, rank });
+    }
+
+    // 创建新伴侣
+    const newCompanion = {
+        id: 'comp_' + Date.now() + Math.floor(Math.random() * 1000),
+        name: newName,
+        rarity: 'angel', // 合成后为天使品质
+        talents: newTalents,
+        score: Math.min(1000000, newScore), // 天使品质上限更高
+        locked: false,
+        advanceLevel: 0,
+       qualityMultiplier: qualityMultiplier // 添加品质加成
+    };
+    
+    // 移除主副伴侣
+    player.companions = player.companions.filter(c => c.id !== mainId && c.id !== secondaryId);
+    
+    // 如果装备的是被合成的伴侣，取消装备
+    if (player.equippedCompanionId === mainId || player.equippedCompanionId === secondaryId) {
+        player.equippedCompanionId = null;
+    }
+    
+    // 添加新伴侣
+    player.companions.push(newCompanion);
+    
+    // 提示信息
+    logAction(`成功合成${newGen}代天使伴侣：${newName}`, 'success');
+    
+    // 更新显示
+    updateCompanionDisplay();
+    closeCombinePanel();
+}
 // 计算伴侣天赋加成（需要整合到属性计算中）
 function getCompanionBonuses() {
     if (!player.equippedCompanionId) return {
@@ -9012,32 +9470,26 @@ function getCompanionBonuses() {
     companion.talents.forEach(talent => {
         const rank = talent.rank;
         const type = talentTypes[talent.type];
-        const baseMultiplier = companionRarities[companion.rarity].upgradeMultiplier;
-        const levelMultiplier = player.companionLevel;
-        
-        // 添加进阶等级加成 (每级提供100%额外加成)
-        const advanceMultiplier = 1 + (companion.advanceLevel || 0) * 1;
-        
-        const totalMultiplier = baseMultiplier * levelMultiplier * advanceMultiplier;
+        const multiplier = companionRarities[companion.rarity].upgradeMultiplier * player.companionLevel;
         
         switch (talent.type) {
             case 0: // 攻击
-                bonuses.attackMultiplier += (type.base + type.perLevel * rank) * totalMultiplier;
+                bonuses.attackMultiplier += (type.base + type.perLevel * rank) * multiplier;
                 break;
             case 1: // 爆伤
-                bonuses.critDamageMultiplier += (type.base + type.perLevel * rank) * totalMultiplier;
+                bonuses.critDamageMultiplier += (type.base + type.perLevel * rank) * multiplier;
                 break;
             case 2: // 生命
-                bonuses.healthMultiplier += (type.base + type.perLevel * rank) * totalMultiplier;
+                bonuses.healthMultiplier += (type.base + type.perLevel * rank) * multiplier;
                 break;
             case 3: // 全属性
-                bonuses.allStatsMultiplier += (type.base + type.perLevel * rank) * totalMultiplier;
+                bonuses.allStatsMultiplier += (type.base + type.perLevel * rank) * multiplier;
                 break;
             case 4: // 连击
-                bonuses.combo += (type.base + type.perLevel * rank) * totalMultiplier;
+                bonuses.combo += (type.base + type.perLevel * rank) * multiplier;
                 break;
             case 5: // 暴击率
-                bonuses.critRateMultiplier += (type.base + type.perLevel * rank) * totalMultiplier;
+                bonuses.critRateMultiplier += (type.base + type.perLevel * rank) * multiplier;
                 break;
         }
     });
@@ -9045,11 +9497,9 @@ function getCompanionBonuses() {
     // 全属性加成应用到攻击和爆伤
     bonuses.attackMultiplier += bonuses.allStatsMultiplier;
     bonuses.critDamageMultiplier += bonuses.allStatsMultiplier;
-
+    
     return bonuses;
 }
-
-
 
 // 切换通天塔UI
 function toggleTowerUI() {
@@ -9143,15 +9593,15 @@ function generateTowerMonster() {
     } else if (floor <= 30000) {
       attackMultiplier = 30000 + (floor - 19999) * 1000000;
     } else if (floor <= 50000) {
-      attackMultiplier = 50000 + (floor - 29999) * 10000000;
+      attackMultiplier = 50000000 + (floor - 29999) * 1000000000;
     } else if (floor <= 60000) {
-      attackMultiplier = 60000 + (floor - 49999) * 100000000;
+      attackMultiplier = 60000000 + (floor - 49999) * 100000000000;
    }  else if (floor <= 70000) {
-     attackMultiplier = 70000 + (floor - 59999) * 1000000000;
+     attackMultiplier = 70000000 + (floor - 59999) * 10000000000000;
     } else if (floor <= 80000) {
-     attackMultiplier = 80000 + (floor - 69999) * 10000000000;
+     attackMultiplier = 80000000 + (floor - 69999) * 1000000000000000;
     } else {
-      attackMultiplier = 90000 + (floor - 79999) * 100000000000;
+      attackMultiplier = 90000000 + (floor - 79999) * 10000000000000000;
     }
 
     let attack = attackMultiplier * (10 + floor * 500);
@@ -10171,16 +10621,16 @@ function loadWorldBossData() {
                     
                     // 2. 新增：计算真实玩家的离线自动攻击伤害
                     if (worldBossData.isAutoAttacking) { // 仅当开启自动攻击时计算
-                        // 玩家每秒攻击20次（与startAutoAttack一致）
-                        const attacksPerSecond = 20;
+                        // 玩家每秒攻击14次（与startAutoAttack一致）
+                        const attacksPerSecond = 14;
                         const totalAttacks = offlineSeconds * attacksPerSecond;
                         
                         // 计算单次攻击的平均伤害（参考calculatePlayerDamage逻辑）
                         const playerData = {
-                            attack: player.battle.playerAttack,
-                            multiAttack: player.battle.playerMultiAttack,
-                            critRate: player.battle.playerCritRate,
-                            critDamage: player.battle.playerCritDamage
+                            attack: player.bossBattleSnapshot?.playerAttack || player.battle.playerAttack,
+    multiAttack: player.bossBattleSnapshot?.playerMultiAttack || player.battle.playerMultiAttack,
+    critRate: player.bossBattleSnapshot?.playerCritRate || player.battle.playerCritRate,
+    critDamage: player.bossBattleSnapshot?.playerCritDamage || player.battle.playerCritDamage
                         };
                         // 计算单次攻击的平均伤害（避免循环计算totalAttacks次，优化性能）
                         const singleAttackAvgDamage = playerData.attack * playerData.multiAttack * 
@@ -10328,7 +10778,7 @@ function loadWorldBossData() {
             
             // 随机生成BOSS属性
             worldBossData.bossName = bossNames[Math.floor(Math.random() * bossNames.length)];
-             worldBossData.bossWorld = worldNames[Math.floor(Math.random() * worldNames.length)];
+            worldBossData.bossWorld = worldNames[Math.floor(Math.random() * worldNames.length)];
             worldBossData.bossStars = Math.floor(Math.random() * 30) + 1; // 1-30星
             
             // BOSS生命值为玩家攻击力的100000万-1000000万倍
@@ -10367,10 +10817,10 @@ function loadWorldBossData() {
             
             for (let i = 0; i < 60; i++) {
                 const name = virtualPlayerNames[i] || `玩家${i+1}`;
-                const attackMultiplier = 0.1 + Math.random() * 30; 
+                const attackMultiplier = 0.2 + Math.random() * 30; 
                 const attack = Math.floor(player.battle.playerAttack * attackMultiplier);
                 const multiAttack = Math.max(1, 
-                    Math.floor(player.battle.playerMultiAttack * (0.4 + Math.random() * 0.9))); 
+                    Math.floor(player.battle.playerMultiAttack * (0.3 + Math.random() * 0.9))); 
                 const critRate = 0.5 + Math.random() * 1.9; 
                 const critDamage = player.battle.playerCritDamage * (0.3 + Math.random() * 0.9);
                 
@@ -10382,8 +10832,8 @@ function loadWorldBossData() {
                     critDamage: critDamage,
                     damage: 0
                 });
-            }
-        }
+            } 
+      }
       // 修改离线虚拟玩家伤害计算逻辑（替换原有的平均分配部分）
 function calculateOfflineVirtualDamage() {
     const now = Date.now();
@@ -10395,7 +10845,7 @@ function calculateOfflineVirtualDamage() {
     worldBossData.virtualPlayers.forEach(player => {
         // 计算该玩家的每秒平均伤害（考虑连击和爆伤）
         const avgDps = player.attack * player.multiAttack * 
-                      (1 + (player.critRate * (player.critDamage - 1)));
+                      (3 + (player.critRate * (player.critDamage - 1)));
         // 计算离线总伤害
         const playerDamage = Math.floor(avgDps * secondsPassed);
         // 应用伤害
@@ -10773,7 +11223,7 @@ function updateRankings() {
     updateMonsterUI();
  updateMysterySystemDisplay();
     </script>
-    <!--客服 开始-->
+<!--客服 开始-->
 <script src="//g8hh.github.io/static/js/jquery.min.js"></script>
 <link rel="stylesheet" href="//g8hh.github.io/static/css/kf.css" type="text/css" media="screen" charset="utf-8">
 <script src="//g8hh.github.io/static/js/kf.js"></script>
