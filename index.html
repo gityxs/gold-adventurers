@@ -634,7 +634,7 @@
             <p>13. 职业系统：有法师和战士不同搭配属性，对于关卡解锁属性，选择获得属性。</p>
             <p>14. 称号系统：解锁每一个都可以永久获得属性，自由搭配选择称号(不影响属性效果）。</p>
             <p>14. 官职系统：增加总和攻击，一共60级。</p>
-            <p>15. 伴侣系统：大幅度增加属性。天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒，进阶玩法：每进阶+1倍率加1倍，未锁定状态才能进阶，点进阶自动消耗背包里面的同品质伴侣，想保留的伴侣记得锁定（伴侣钥匙和玫瑰花：打怪或者材料宝箱掉落）。</p>
+            <p>15. 伴侣系统：大幅度增加属性。天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒，进阶玩法：每进阶+1倍率加1倍，未锁定状态才能进阶，点进阶自动消耗背包里面的同品质伴侣，想保留的伴侣记得锁定（伴侣钥匙和玫瑰花和洗髓丹：打怪或者材料宝箱掉落）。</p>
             <p>16. 通天塔：只要通过每一层加1点玩家属性，每一层加0.1倍GPS,还有对应称号（100转才能打）。</p>
             <p>17. 存档问题：换设备后存档导入一开始进去VIP和伴侣是空的，你直接退出在重新进就恢复了或者刷新页面（点了导出按钮，会自动复制，你黏贴就可以了）</p>
             <p>18. 奥秘系统：每阶段只生效第一个效果。</p>
@@ -1049,7 +1049,7 @@
     </div>
 </div>
 
-<div id="companionSystem" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #4CAF50; border-radius: 10px; z-index: 1001; width: 800px; max-height: 600px; overflow-y: auto;">
+<div id="companionSystem" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #4CAF50; border-radius: 10px; z-index: 1001; width: 850px; max-height: 800px; overflow-y: auto;">
     <!-- 标题栏（包含标题和关闭按钮） -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #4CAF50; padding-bottom: 10px;">
         <h2 style="color: #4CAF50; margin: 0;">伴侣系统</h2>
@@ -1064,7 +1064,7 @@
         <button onclick="upgradeCompanion()" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">升级</button>
 
      <div style="flex: 1; min-width: 400px; background: #2a2a2a; padding: 10px; border-radius: 5px;">
-        <h3>已装备伴侣属性加成</h3>
+        <h3>伴侣属性加成</h3>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.9em;">
             <div>品质加成倍数: <span id="qualityMultiplier">1x</span></div>
             <div>攻击总和加成: <span id="attackTotalBonus">1x</span></div>
@@ -1104,6 +1104,8 @@
             <option value="orange">完美(橙色)</option>
             <option value="red">神赐(红色)</option>
             <option value="angel">天使(彩色)</option>
+            <option value="emyyyy">恶魔(深红色)及以下</option>
+           <option value="jlyyyy">精灵(绿色)及以下</option>
         </select>
         <button onclick="batchDecompose()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">批量分解选中品阶(未锁定)</button>
 <div style="flex: 1; padding: 10px; background: #333; border-radius: 5px; margin-top: 1px;">
@@ -1116,6 +1118,8 @@
         <option value="orange">完美(橙色)及以下</option>
         <option value="red">神赐(红色)及以下</option>
         <option value="angel">天使(彩色)及以下</option>
+        <option value="emyyyy">恶魔(深红色)及以下</option>
+        <option value="jlyyyy">精灵(绿色)及以下</option>
     </select>
     <button id="toggleAutoDecompose" onclick="toggleAutoDecompose()" style="background: #ff9800; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">自动分解：关闭</button>
 </div>
@@ -1299,7 +1303,7 @@
             <p>选择主副伴侣查看合成预览</p>
             <p>新一代数: <span id="previewGeneration">--</span></p>
             <p>预计天赋数量: <span id="previewTalentCount">--</span></p>
-            <p>预计品质: <span id="previewRarity" style="color: #ff00ff;">天使(彩色)</span></p>
+            <p>预计品质: <span id="previewRarity" style="color: #ff00ff;">天使(彩色)丶</span> <span id="previewRarity" style="color: #E63946;">恶魔(深红色)丶</span> <span id="previewRarity" style="color: #7CFC00;">精灵(绿色)</span></p>
             <p>预计评分范围: <span id="previewScoreRange">--</span></p>
             <p>品质加成倍数: <span id="previewQualityMultiplier">--</span></p>
         </div>
@@ -1354,6 +1358,31 @@
 
 <!-- 半透明遮罩层 -->
 <div id="autoConvertOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
+<!-- 新增洗练面板HTML -->
+<div id="washPanel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; background: #333; border: 2px solid #2196F3; border-radius: 10px; padding: 20px; z-index: 1001;">
+    <button onclick="closeWashPanel()" style="position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 16px;">×</button>
+    <h3 style="color: #fff; text-align: center;">伴侣洗练</h3>
+    
+    <div id="washCompanionInfo" style="background: #444; border-radius: 5px; padding: 10px; margin: 15px 0;">
+        <!-- 伴侣信息将在这里动态填充 -->
+    </div>
+    
+    <div style="margin: 15px 0; color: #fff;">
+        <p>洗练消耗：1 洗髓丹</p>
+        <p>当前洗髓丹数量：<span id="rebornDanCount">0</span></p>
+    </div>
+    
+    <div id="washResult" style="background: #444; border-radius: 5px; padding: 10px; margin: 15px 0; min-height: 60px; color: #fff; display: none;">
+        <!-- 洗练结果将在这里动态显示 -->
+    </div>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="washCompanion()" style="background: #2196F3; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">确认洗练</button>
+        <p style="color: #ff4444; font-size: 0.8em; margin-top: 10px;">注意: 洗练将随机改变伴侣天赋，可能增加天赋数量！</p>
+    </div>
+</div>
+
+
 
 
 
@@ -2346,16 +2375,16 @@ const vipConfig = [
     { level: 7, requiredPower: 648, bonus: 1000000 }, 
     { level: 8, requiredPower: 1280, bonus: 10000000 }, 
     { level: 9, requiredPower: 3280, bonus: 100000000 }, 
-    { level: 10, requiredPower: 6480, bonus: 100000000 }, 
-    { level: 11, requiredPower: 10000, bonus: 1000000000 },
-    { level: 12, requiredPower: 20000, bonus: 10000000000 },
-    { level: 13, requiredPower: 30000, bonus: 100000000000 },
-    { level: 14, requiredPower: 40000, bonus: 1000000000000 },
-    { level: 15, requiredPower: 50000, bonus: 10000000000000 },
-    { level: 16, requiredPower: 60000, bonus: 100000000000000 },
-    { level: 17, requiredPower: 70000, bonus: 1000000000000000 },
-    { level: 18, requiredPower: 80000, bonus: 10000000000000000 },
-    { level: 19, requiredPower: 90000, bonus: 100000000000000000 },
+    { level: 10, requiredPower: 6480, bonus: 1000000000 }, 
+    { level: 11, requiredPower: 10000, bonus: 10000000000 },
+    { level: 12, requiredPower: 20000, bonus: 100000000000 },
+    { level: 13, requiredPower: 30000, bonus: 1000000000000 },
+    { level: 14, requiredPower: 40000, bonus: 10000000000000 },
+    { level: 15, requiredPower: 50000, bonus: 100000000000000 },
+    { level: 16, requiredPower: 60000, bonus: 1000000000000000 },
+    { level: 17, requiredPower: 70000, bonus: 10000000000000000 },
+    { level: 18, requiredPower: 80000, bonus: 100000000000000000 },
+    { level: 19, requiredPower: 90000, bonus: 1000000000000000000 },
     { level: 20, requiredPower: 100000, bonus: 10000000000000000000 },
     { level: 21, requiredPower: 125000, bonus: 100000000000000000000 },
     { level: 22, requiredPower: 150000, bonus: 1000000000000000000000 },
@@ -2377,7 +2406,8 @@ const vipConfig = [
     vipPower: { name: 'VIP能力值', effect: 1, description: '提升VIP等级的特殊道具' },
     refineStone: { name: '洗炼石', effect: 0, description: '用于重铸副本装备的成长属性' }, // 新增洗炼石
     rose: { name: '玫瑰花', effect: 1, description: '用于升级伴侣等级' },
-    companionKey: { name: '伴侣钥匙', effect: 0, description: '用于开启伴侣宝箱' } 
+    companionKey: { name: '伴侣钥匙', effect: 0, description: '用于开启伴侣宝箱' }, 
+   rebornDan: { name: '洗髓丹', effect: 0, description: '用于洗练伴侣天赋' }
      
 };
 
@@ -2397,7 +2427,7 @@ const vipConfig = [
         const materialChestProbabilities = [
      { type: 'lightSpeedHand', prob: 0.71188 },
     { type: 'empHand', prob: 0.2305 },
-    { type: 'godlyHand', prob: 0.0334 },
+    { type: 'godlyHand', prob: 0.0324 },
     { type: 'quickHand', prob: 0.01 },
     { type: 'shadowHand', prob: 0.005 },
     { type: 'quantumHand', prob: 0.0005 },
@@ -2409,7 +2439,8 @@ const vipConfig = [
     { type: 'divineGem', prob: 0.00001 },
     { type: 'vipPower', prob: 0.001 },
     { type: 'refineStone', prob: 0.001 }, 
-    { type: 'companionKey', prob: 0.001 } 
+    { type: 'companionKey', prob: 0.001 }, 
+     { type: 'rebornDan', prob: 0.001 }, 
     
 ];
     const techniqueChestDrops = [
@@ -3230,13 +3261,18 @@ function confirmActivationCode() {
             player.items.rose += 520;
             rewardMsg = "获得10个伴侣钥匙和520朵玫瑰花";
             success = true;
-            break;     
-        case "BANLV1":
+            break;  
+          case "BANLV1":
             player.items.companionKey += 30; 
             player.items.rose += 520;
             rewardMsg = "获得30个伴侣钥匙和520朵玫瑰花";
             success = true;
-            break;    
+            break;     
+          case "XISUIDAN":
+            player.items.rebornDan = (player.items.rebornDan || 0) + 10;
+            rewardMsg = "获得10个洗髓丹";
+            success = true;
+            break;
         case "VIP666666":
         player.items.vipPower = (player.items.vipPower || 0) + 10;
         rewardMsg = "获得10个VIP能力值";
@@ -4742,7 +4778,8 @@ function resetItemDisplay() {
         vipPower: itemCounts.vipPower || 0,
         refineStone: itemCounts.refineStone || 0,
         rose: itemCounts.rose || 0,
-        companionKey: itemCounts.companionKey || 0
+        companionKey: itemCounts.companionKey || 0,
+         rebornDan: itemCounts.rebornDan || 0
        
     };
 
@@ -7004,17 +7041,17 @@ function generateMonster() {
     } else if (stage <= 350) {
         attackMultiplier = 3500000 + (stage - 249) * 100000;
     } else if (stage <= 450) {
-        attackMultiplier = 450000000 + (stage - 349) * 1000000;
+        attackMultiplier = 450000000 + (stage - 349) * 10000000;
     } else if (stage <= 550) {
-        attackMultiplier = 5500009000 + (stage - 449) * 1000000000;
+        attackMultiplier = 5500009000 + (stage - 449) * 10000000000;
     } else if (stage <= 650) {
-        attackMultiplier = 650000000900 + (stage - 549) * 100000000000;
+        attackMultiplier = 650000000900 + (stage - 549) * 10000000000000;
     } else if (stage <= 750) {
-        attackMultiplier = 7500000000000 + (stage - 649) * 100000000000000;
+        attackMultiplier = 7500000000000 + (stage - 649) * 100000000000000000;
     } else if (stage <= 850) {
-        attackMultiplier = 800000000000000 + (stage - 749) * 100000000000000000;
+        attackMultiplier = 800000000000000 + (stage - 749) * 100000000000000000000;
     } else {
-        attackMultiplier = 90000000000000000 + (stage - 849) * 100000000000000000000;
+        attackMultiplier = 90000000000000000 + (stage - 849) * 100000000000000000000000;
     }
 
     // 应用词条效果
@@ -7062,7 +7099,7 @@ function generateMonster() {
     document.getElementById('monsterName').textContent = player.battle.monster.name;
     document.getElementById('monsterRank').textContent = player.battle.monster.rank;
     document.getElementById('monsterHealth').textContent = player.battle.monster.health.toExponential(3);
-    document.getElementById('monsterAttack').textContent = player.battle.monster.attack.toLocaleString();
+    document.getElementById('monsterAttack').textContent = player.battle.monster.attack.toExponential(3);
 
     // 显示怪物词条
     const modifiers = player.battle.monster.modifiers.join(', ');
@@ -7240,6 +7277,11 @@ function dropItemsAfterBattle() {
      if (stage >= 1 && Math.random() < 0.001) {
         player.items.rose++;
         logBattleAction('获得了玫瑰花！');
+    }
+
+     if (stage >= 200 && Math.random() < 0.0001) {
+        player.items.rebornDan++;
+        logBattleAction('获得了洗髓丹！');
     }
 
      if (stage >= 1 && Math.random() < 0.0003) {
@@ -7611,7 +7653,11 @@ function simulateItemDrop(stage) {
         player.items.rose++;
         hasDropped = true;
     }
-    
+    // 洗髓丹匙掉落（150关以上0.001%概率）
+    if (stage >= 200 && Math.random() < 0.0001) {
+        player.items.rebornDan++;
+        hasDropped = true;
+    }
     // 伴侣钥匙掉落（150关以上0.001%概率）
     if (stage >= 1 && Math.random() < 0.0002) {
         player.items.companionKey++;
@@ -8368,7 +8414,7 @@ function updateFundValues() {
            
             let riseProbability;
             if (fund.netValue < 1.0) {
-                riseProbability = 0.40; 
+                riseProbability = 0.45; 
             } else if (fund.netValue < 1.5) {
                 riseProbability = 0.35; 
             } else if (fund.netValue < 2.0) {
@@ -8729,8 +8775,25 @@ const companionRarities = {
         talentRange: [0, 8], // 可达到洪荒级别
         baseScore: 1000,
         decomposeRose: 1000,
+    },
+  emyyyy: { 
+        name: '恶魔', 
+        color: '#E63946',
+        talentCount: 0, // 动态计算
+        upgradeMultiplier: 25,
+        talentRange: [0, 8], // 可达到洪荒级别
+        baseScore: 1000,
+        decomposeRose: 1000,
+    },
+  jlyyyy: { 
+        name: '妖精', 
+        color: '#7CFC00',
+        talentCount: 0, // 动态计算
+        upgradeMultiplier: 20,
+        talentRange: [0, 8], // 可达到洪荒级别
+        baseScore: 1000,
+        decomposeRose: 1000,
     }
-
 };
 
 // 天赋类型配置
@@ -8828,7 +8891,8 @@ function updateCompanionDisplay() {
         const bonuses = getCompanionBonuses();
         
         // 更新显示
-        document.getElementById('qualityMultiplier').textContent = `${rarityConfig.upgradeMultiplier || 1}倍`;
+        document.getElementById('qualityMultiplier').textContent = 
+    `${(Math.floor(companion.score / 100) + companionRarities[companion.rarity].upgradeMultiplier).toFixed(2)}x`;
         document.getElementById('attackTotalBonus').textContent = `${bonuses.attackMultiplier.toFixed(3)}倍`;
         document.getElementById('healthTotalBonus').textContent = `${bonuses.healthMultiplier.toFixed(3)}倍`;
         document.getElementById('critRateTotalBonus').textContent = `${bonuses.critRateMultiplier.toFixed(3)}倍`;
@@ -8888,11 +8952,15 @@ const rarityConfig = companionRarities[companion.rarity] || {};
                     分解
                 </button>
        <button onclick="advanceCompanion('${companion.id}')" style="width: 30px; background: #FFD700; color: black; border: none; padding: 3px; border-radius: 2px; margin-left: 2px;" 
-    ${companion.locked || !['white','blue','epic','pink', 'orange', 'red', 'angel'].includes(companion.rarity) ? 'disabled' : ''}>
+    ${companion.locked || !['white','blue','epic','pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'].includes(companion.rarity) ? 'disabled' : ''}>
     进阶
 </button>
+ <button onclick="openWashPanel('${companion.id}')" style="width: 30px; background: #2196F3; color: white; border: none; padding: 3px; border-radius: 2px; margin-left: 2px;"
+    ${companion.locked || !['epic','pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'].includes(companion.rarity) ? 'disabled' : ''}>
+    洗练
+</button>
    <button onclick="openCombinePanel('${companion.id}')" style="width: 30px; background: #9C27B0; color: white; border: none; padding: 3px; border-radius: 2px; margin-left: 2px;"
-    ${companion.locked || !['epic','pink', 'orange', 'red', 'angel'].includes(companion.rarity) ? 'disabled' : ''}>
+    ${companion.locked || !['epic','pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'].includes(companion.rarity) ? 'disabled' : ''}>
     合成
 </button>
             </div>
@@ -8991,7 +9059,9 @@ function drawCompanion() {
         "pink": "卓越",
         "orange": "完美",
         "red": "神赐",
-        "angel": "天使"
+        "angel": "天使",
+        "emyyyy": "恶魔",
+        "jlyyyy": "精灵"
     }[selectedRarity];
     
     logAction(`获得了${rarityName}品质伴侣：${companion.name}${isGuaranteed ? " (保底)" : ""}`, 'success');
@@ -9003,7 +9073,7 @@ function advanceCompanion(id) {
     if (!companion) return;
 
     // 检查是否为可进阶品质
-    if (!['white','blue','epic','pink', 'orange', 'red', 'angel'].includes(companion.rarity)) {
+    if (!['white','blue','epic','pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'].includes(companion.rarity)) {
         logAction("品质的伴侣可以进阶！", "error");
         return;
     }
@@ -9030,6 +9100,7 @@ function advanceCompanion(id) {
 
     // 提升进阶等级
     companion.advanceLevel = (companion.advanceLevel || 0) + 1;
+    companion.score += Math.floor(companion.score * 0.1) + 100;
     updateCompanionStats(companion);
     // 提示信息
     const rarityName = companionRarities[companion.rarity].name;
@@ -9062,7 +9133,172 @@ function equipCompanion(id) {
     logAction(`已装备伴侣：${player.companions.find(c => c.id === id).name}`, 'success');
     updateCompanionDisplay();
 }
+// 新增洗练面板相关函数
+let currentWashCompanionId = null;
 
+function openWashPanel(companionId) {
+    const companion = player.companions.find(c => c.id === companionId);
+    if (!companion) return;
+    
+    currentWashCompanionId = companionId;
+    document.getElementById('washPanel').style.display = 'block';
+    document.getElementById('settingsOverlay').style.display = 'block';
+    document.getElementById('rebornDanCount').textContent = player.items.rebornDan || 0;
+    
+    // 显示当前伴侣信息
+    const infoElement = document.getElementById('washCompanionInfo');
+    infoElement.innerHTML = `
+        <p>名称: ${companion.name}</p>
+        <p>品阶: <span style="color: ${companionRarities[companion.rarity].color}">${companionRarities[companion.rarity].name}</span></p>
+        <p>天赋数量: ${companion.talents.length}</p>
+        <div style="margin-top: 10px; font-size: 0.9em; max-height: 150px; overflow-y: auto;">
+            ${companion.talents.map((t, index) => `${index + 1}. ${talentRanks[t.rank]}${talentTypes[t.type].name}: ${talentTypes[t.type].description(t.rank)}`).join('<br>')}
+        </div>
+    `;
+    
+    // 隐藏之前的洗练结果
+    document.getElementById('washResult').style.display = 'none';
+}
+
+function closeWashPanel() {
+    document.getElementById('washPanel').style.display = 'none';
+    document.getElementById('settingsOverlay').style.display = 'none';
+    currentWashCompanionId = null;
+}
+
+function washCompanion() {
+    if (!currentWashCompanionId) return;
+    
+    const companion = player.companions.find(c => c.id === currentWashCompanionId);
+    if (!companion) {
+        closeWashPanel();
+        return;
+    }
+    
+    // 检查还童丹数量
+    if ((player.items.rebornDan || 0) < 1) {
+        logAction("还童丹不足！", "error");
+        return;
+    }
+    
+    // 消耗还童丹
+    player.items.rebornDan--;
+    document.getElementById('rebornDanCount').textContent = player.items.rebornDan;
+    
+    // 计算洗练效果
+    const rand = Math.random();
+    let resultText = '';
+    const originalTalents = [...companion.talents];
+    
+    if (rand < 0.7) {
+        // 70% 概率：随机洗练1个天赋
+        if (companion.talents.length > 0) {
+            const index = Math.floor(Math.random() * companion.talents.length);
+            const oldTalent = companion.talents[index];
+            const oldTalentText = `${talentRanks[oldTalent.rank]}${talentTypes[oldTalent.type].name}`;
+            
+            // 生成新天赋
+            const newType = Math.floor(Math.random() * talentTypes.length);
+            const newRank = Math.floor(Math.random() * 9); // 0-8级
+            companion.talents[index] = { type: newType, rank: newRank };
+            
+            const newTalentText = `${talentRanks[newRank]}${talentTypes[newType].name}`;
+            resultText = `成功洗练天赋#${index + 1}：${oldTalentText} → ${newTalentText}`;
+        } else {
+            // 如果没有天赋，自动增加一个
+            const newType = Math.floor(Math.random() * talentTypes.length);
+            const newRank = Math.floor(Math.random() * 9);
+            companion.talents.push({ type: newType, rank: newRank });
+            resultText = `为伴侣增加了新天赋：${talentRanks[newRank]}${talentTypes[newType].name}`;
+        }
+    } else if (rand < 0.9) {
+        // 20% 概率：随机洗练2个天赋
+        const maxTalents = Math.min(2, companion.talents.length);
+        if (maxTalents === 0) {
+            // 如果没有天赋，增加两个
+            for (let i = 0; i < 2; i++) {
+                const newType = Math.floor(Math.random() * talentTypes.length);
+                const newRank = Math.floor(Math.random() * 9);
+                companion.talents.push({ type: newType, rank: newRank });
+            }
+            resultText = `为伴侣增加了2个新天赋`;
+        } else {
+            const changedIndices = new Set();
+            while (changedIndices.size < maxTalents) {
+                changedIndices.add(Math.floor(Math.random() * companion.talents.length));
+            }
+            
+            resultText = `成功洗练多个天赋：`;
+            Array.from(changedIndices).forEach(index => {
+                const oldTalent = companion.talents[index];
+                const oldTalentText = `${talentRanks[oldTalent.rank]}${talentTypes[oldTalent.type].name}`;
+                
+                const newType = Math.floor(Math.random() * talentTypes.length);
+                const newRank = Math.floor(Math.random() * 9);
+                companion.talents[index] = { type: newType, rank: newRank };
+                
+                const newTalentText = `${talentRanks[newRank]}${talentTypes[newType].name}`;
+                resultText += ` #${index + 1}(${oldTalentText}→${newTalentText})`;
+            });
+        }
+    } else if (rand < 0.98) {
+        // 8% 概率：随机洗练3个天赋
+        const maxTalents = Math.min(3, companion.talents.length);
+        if (maxTalents === 0) {
+            // 如果没有天赋，增加三个
+            for (let i = 0; i < 3; i++) {
+                const newType = Math.floor(Math.random() * talentTypes.length);
+                const newRank = Math.floor(Math.random() * 9);
+                companion.talents.push({ type: newType, rank: newRank });
+            }
+            resultText = `为伴侣增加了3个新天赋`;
+        } else {
+            const changedIndices = new Set();
+            while (changedIndices.size < maxTalents) {
+                changedIndices.add(Math.floor(Math.random() * companion.talents.length));
+            }
+            
+            resultText = `成功洗练多个天赋：`;
+            Array.from(changedIndices).forEach(index => {
+                const oldTalent = companion.talents[index];
+                const oldTalentText = `${talentRanks[oldTalent.rank]}${talentTypes[oldTalent.type].name}`;
+                
+                const newType = Math.floor(Math.random() * talentTypes.length);
+                const newRank = Math.floor(Math.random() * 9);
+                companion.talents[index] = { type: newType, rank: newRank };
+                
+                const newTalentText = `${talentRanks[newRank]}${talentTypes[newType].name}`;
+                resultText += ` #${index + 1}(${oldTalentText}→${newTalentText})`;
+            });
+        }
+    } else {
+        // 2% 概率：增加1个天赋
+        const newType = Math.floor(Math.random() * talentTypes.length);
+        const newRank = Math.floor(Math.random() * 9);
+        companion.talents.push({ type: newType, rank: newRank });
+        resultText = `恭喜！为伴侣额外增加了1个天赋：${talentRanks[newRank]}${talentTypes[newType].name}`;
+    }
+    
+    // 更新伴侣评分
+    companion.score = Math.min(1000000, calculateCompanionScore(companion));
+    
+    // 显示洗练结果
+    const resultElement = document.getElementById('washResult');
+    resultElement.innerHTML = `<p>${resultText}</p>`;
+    resultElement.style.display = 'block';
+    
+    // 更新显示
+    updateCompanionDisplay();
+    openWashPanel(currentWashCompanionId); // 刷新面板显示
+    
+    logAction(`伴侣${companion.name}洗练完成`, 'success');
+}
+function calculateCompanionScore(companion) {
+    const baseScore = companion.score;
+    return baseScore;
+
+
+}
 // 切换锁定状态
 function toggleCompanionLock(id) {
     const companion = player.companions.find(c => c.id === id);
@@ -9102,7 +9338,9 @@ function getRarityName(rarity) {
         'pink': '卓越(粉色)',
         'orange': '完美(橙色)',
         'red': '神赐(红色)',
-        'angel': '天使(彩色)'
+        'angel': '天使(彩色)',
+        'emyyyy': '恶魔(深红色)',
+        'jlyyyy': '精灵(绿色)'
     };
     return names[rarity] || '普通(白色)';
 }
@@ -9111,7 +9349,7 @@ function getRarityName(rarity) {
 function checkAutoDecompose() {
     if (!player.autoDecompose.enabled) return;
 
-    const rarityOrder = ['white', 'blue', 'epic', 'pink', 'orange', 'red', 'angel'];
+    const rarityOrder = ['white', 'blue', 'epic', 'pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'];
     const targetIndex = rarityOrder.indexOf(player.autoDecompose.belowRarity);
     if (targetIndex === -1) return;
 
@@ -9213,7 +9451,7 @@ function openCombinePanel(mainId = null) {
     
     // 只显示可合成的伴侣（史诗及以上且未锁定）
     const eligibleCompanions = player.companions.filter(c => 
-        ['epic', 'pink', 'orange', 'red', 'angel'].includes(c.rarity) && !c.locked
+        ['epic', 'pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'].includes(c.rarity) && !c.locked
     );
     
     eligibleCompanions.forEach(companion => {
@@ -9404,16 +9642,23 @@ function combineCompanions() {
         
         newTalents.push({ type, rank });
     }
-
+   const newAdvanceLevel = Math.max(
+        mainCompanion.advanceLevel || 0,
+        secondaryCompanion.advanceLevel || 0
+    );
+  
+    const rarities = ['angel', 'emyyyy', 'jlyyyy'];
+    const randomIndex = Math.floor(Math.random() * rarities.length);
+    const selectedRarity = rarities[randomIndex];
     // 创建新伴侣
     const newCompanion = {
         id: 'comp_' + Date.now() + Math.floor(Math.random() * 1000),
         name: newName,
-        rarity: 'angel', // 合成后为天使品质
+        rarity: selectedRarity,// 合成后为天使品质
         talents: newTalents,
         score: Math.min(1000000, newScore), // 天使品质上限更高
         locked: false,
-        advanceLevel: 0,
+        advanceLevel: newAdvanceLevel,
        qualityMultiplier: qualityMultiplier // 添加品质加成
     };
     
@@ -9429,7 +9674,7 @@ function combineCompanions() {
     player.companions.push(newCompanion);
     
     // 提示信息
-    logAction(`成功合成${newGen}代天使伴侣：${newName}`, 'success');
+   logAction(`成功合成${newGen}代特殊伴侣：${newName}（保留最高进阶等级${newAdvanceLevel}）`, 'success');
     
     // 更新显示
     updateCompanionDisplay();
@@ -9470,26 +9715,28 @@ function getCompanionBonuses() {
     companion.talents.forEach(talent => {
         const rank = talent.rank;
         const type = talentTypes[talent.type];
-        const multiplier = companionRarities[companion.rarity].upgradeMultiplier * player.companionLevel;
-        
+        const advanceMultiplier = 1 + (companion.advanceLevel * 1);
+        const baseMultiplier = companionRarities[companion.rarity].upgradeMultiplier;
+const scoreDivided = Math.floor(companion.score / 100);
+const qualityMultiplier = (scoreDivided + baseMultiplier) * player.companionLevel;;
         switch (talent.type) {
             case 0: // 攻击
-                bonuses.attackMultiplier += (type.base + type.perLevel * rank) * multiplier;
+                bonuses.attackMultiplier += (type.base + type.perLevel * rank) * qualityMultiplier * advanceMultiplier;
                 break;
             case 1: // 爆伤
-                bonuses.critDamageMultiplier += (type.base + type.perLevel * rank) * multiplier;
+                bonuses.critDamageMultiplier += (type.base + type.perLevel * rank) * qualityMultiplier * advanceMultiplier;
                 break;
             case 2: // 生命
-                bonuses.healthMultiplier += (type.base + type.perLevel * rank) * multiplier;
+                bonuses.healthMultiplier += (type.base + type.perLevel * rank) * qualityMultiplier * advanceMultiplier;
                 break;
             case 3: // 全属性
-                bonuses.allStatsMultiplier += (type.base + type.perLevel * rank) * multiplier;
+                bonuses.allStatsMultiplier += (type.base + type.perLevel * rank) * qualityMultiplier * advanceMultiplier;
                 break;
             case 4: // 连击
-                bonuses.combo += (type.base + type.perLevel * rank) * multiplier;
+                bonuses.combo += (type.base + type.perLevel * rank) * qualityMultiplier * advanceMultiplier;
                 break;
             case 5: // 暴击率
-                bonuses.critRateMultiplier += (type.base + type.perLevel * rank) * multiplier;
+                bonuses.critRateMultiplier += (type.base + type.perLevel * rank) * qualityMultiplier * advanceMultiplier;
                 break;
         }
     });
@@ -9593,15 +9840,15 @@ function generateTowerMonster() {
     } else if (floor <= 30000) {
       attackMultiplier = 30000 + (floor - 19999) * 1000000;
     } else if (floor <= 50000) {
-      attackMultiplier = 50000000 + (floor - 29999) * 1000000000;
+      attackMultiplier = 50000000 + (floor - 29999) * 100000000;
     } else if (floor <= 60000) {
-      attackMultiplier = 60000000 + (floor - 49999) * 100000000000;
+      attackMultiplier = 60000000 + (floor - 49999) * 1000000000000;
    }  else if (floor <= 70000) {
-     attackMultiplier = 70000000 + (floor - 59999) * 10000000000000;
+     attackMultiplier = 70000000 + (floor - 59999) * 10000000000000000;
     } else if (floor <= 80000) {
-     attackMultiplier = 80000000 + (floor - 69999) * 1000000000000000;
+     attackMultiplier = 80000000 + (floor - 69999) * 10000000000000000000;
     } else {
-      attackMultiplier = 90000000 + (floor - 79999) * 10000000000000000;
+      attackMultiplier = 90000000 + (floor - 79999) * 1000000000000000000000;
     }
 
     let attack = attackMultiplier * (10 + floor * 500);
@@ -9737,7 +9984,6 @@ function attackTowerMonster() {
         // 自动进入下一关
         generateTowerMonster();
         updateTowerUI();
-        saveGame();
         return;
     }
 
