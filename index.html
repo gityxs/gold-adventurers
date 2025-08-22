@@ -633,11 +633,12 @@
             <p>13. 职业系统：有法师和战士不同搭配属性，对于关卡解锁属性，选择获得属性。</p>
             <p>14. 称号系统：解锁每一个都可以永久获得属性，自由搭配选择称号(不影响属性效果）。</p>
             <p>14. 官职系统：增加总和攻击，一共60级。</p>
-            <p>15. 伴侣系统：大幅度增加属性。天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒，进阶玩法：每进阶+1倍率加1倍，未锁定状态才能进阶，点进阶自动消耗背包里面的同品质伴侣，想保留的伴侣记得锁定，史诗以上才能合成洗练！（伴侣钥匙和玫瑰花和洗髓丹：打怪或者材料宝箱掉落）。</p>
+            <p>15. 伴侣系统：大幅度增加属性。天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒，进阶玩法：每进阶+1倍率加1倍，未锁定状态才能进阶，点进阶自动消耗背包里面的同品质伴侣，想保留的伴侣记得锁定，史诗以上才能合成洗练！洗练每次洗减5评分！！（伴侣钥匙和玫瑰花和洗髓丹：打怪或者材料宝箱掉落）。</p>
             <p>16. 通天塔：只要通过每一层加1点玩家属性，每一层加0.1倍GPS,还有对应称号（100转才能打）。</p>
             <p>17. 存档问题：换设备后存档导入一开始进去VIP和伴侣是空的，你直接退出在重新进就恢复了或者刷新页面（点了导出按钮，会自动复制，你黏贴就可以了）</p>
             <p>18. 奥秘系统：每阶段只生效第一个效果。</p>
             <p>19. 基金系统：投入的越多波动的幅度越大10-30%，1分钟刷新一次 ，10分钟不能实时卖出，如果跌到总价值20%以下 就全部没收清零。</p>
+            <p>20. 钓鱼系统：分解鱼类可以获得VIP能力值，玫瑰花，洗髓丹，洗练石。鱼饵掉率（打怪模式扫荡）</p>
    
         </div>
     </div>
@@ -695,6 +696,7 @@
     <button onclick="openCompanionSystem()">伴侣系统</button>
     <button onclick="toggleMysterySystem()">奥秘系统</button>
     <button onclick="toggleFundSystem()">基金系统</button>
+    <button onclick="toggleFishingSystem()" style="margin-left: 10px;">钓鱼系统</button>
     <button onclick="toggleSettingsUI()">设置</button>
 
 <h3>自动购买设置</h3>
@@ -1380,11 +1382,78 @@
         <p style="color: #ff4444; font-size: 0.8em; margin-top: 10px;">注意: 洗练将随机改变伴侣天赋，可能增加天赋数量！</p>
     </div>
 </div>
-
-
-
-
-
+<div id="fishingSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="fishingSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #f0f8ff; padding: 20px; border: 3px solid #4682b4; border-radius: 10px; z-index: 1001; width: 600px; max-height: 80vh; overflow-y: auto;">
+    <!-- 标题栏 -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #4682b4; padding-bottom: 10px;">
+        <h2 style="color: #1e3a8a; margin: 0;">钓鱼系统</h2>
+        <button onclick="toggleFishingSystem()" style="background: #ff4444; color: white; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer;">关闭</button>
+    </div>
+    
+    <!-- 钓鱼信息 -->
+    <div style="margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <div>
+                <strong>钓鱼等级: </strong><span id="fishingLevel">1</span>
+            </div>
+            <div>
+                <strong>当前经验: </strong><span id="currentFishingExp">0</span>/<span id="nextFishingExp">500</span>
+            </div>
+            <div>
+                <strong>点击收益加成: </strong><span id="fishingBonus">1</span>
+            </div>
+        </div>
+        <div style="margin-top: 10px;">
+            <strong>鱼饵数量: </strong><span id="baitCount">0</span>
+        </div>
+    </div>
+    
+    <!-- 钓鱼区域 -->
+    <div style="background: #87ceeb; height: 200px; border-radius: 8px; margin-bottom: 20px; position: relative; overflow: hidden;">
+        <div id="fishingPond" style="width: 100%; height: 100%; position: relative;">
+            <!-- 水面效果 -->
+            <div style="position: absolute; bottom: 0; width: 100%; height: 120px; background: #1e90ff; opacity: 0.7; border-top: 2px dashed #4682b4;"></div>
+            
+            <!-- 鱼竿 -->
+            <div id="fishingRod" style="position: absolute; bottom: 120px; left: 50px; width: 150px; height: 10px; background: #8b4513; transform-origin: left center; transform: rotate(-30deg); display: none;">
+                <div style="position: absolute; right: 0; width: 20px; height: 20px; background: #ffd700; border-radius: 50%;"></div>
+            </div>
+            
+            <!-- 浮标 -->
+            <div id="fishingBobber" style="position: absolute; bottom: 130px; left: 180px; width: 15px; height: 15px; background: #ff4500; border-radius: 50%; display: none;"></div>
+            
+            <!-- 鱼咬钩动画区域 -->
+            <div id="biteIndicator" style="position: absolute; bottom: 120px; left: 180px; color: white; font-weight: bold; display: none; text-shadow: 0 0 5px #000;">
+                鱼咬钩了！快拉！
+            </div>
+            
+            <!-- 状态文本 -->
+            <div id="fishingStatus" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: #1e3a8a; font-weight: bold;">
+                点击"开始钓鱼"按钮开始
+            </div>
+        </div>
+    </div>
+    
+    <!-- 钓鱼控制按钮 -->
+    <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
+        <button id="startFishingBtn" onclick="startFishing()" style="background: #228b22; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">开始钓鱼</button>
+        <button id="reelInBtn" onclick="reelInFish()" style="background: #d2691e; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; display: none;">拉钩上钓</button>
+    </div>
+    
+    <!-- 鱼笼信息 -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: #1e3a8a; border-bottom: 1px solid #4682b4; padding-bottom: 5px;">鱼笼 (<span id="cageCount">0</span>/20)</h3>
+        <div id="fishCage" style="background: white; padding: 10px; border-radius: 8px; max-height: 200px; overflow-y: auto; border: 1px solid #ddd; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <!-- 鱼会动态显示在这里 -->
+            <div style="grid-column: 1 / -1; text-align: center; color: #666;">鱼笼是空的，快去钓鱼吧！</div>
+        </div>
+    </div>
+    
+    <!-- 分解按钮 -->
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="decomposeSelectedFish()" style="background: #8b0000; color: white; border: none; padding: 10px 30px; border-radius: 5px; cursor: pointer; font-size: 16px;">分解选中的鱼获</button>
+    </div>
+</div>
 
 
 
@@ -1519,6 +1588,17 @@
     orange: 0,  // 完美保底计数器
     red: 0       // 神赐保底计数器
 },
+ fishing: {
+    level: 1,
+    currentExp: 0,
+    fishCage: [],
+    isFishing: false,
+    isBiting: false,
+    biteTimer: null,
+    biteWindowTimer: null,
+    biteTime: 0,
+    bonus: 1
+},
 tower: {
     currentFloor: 0,
     maxFloor: 0,
@@ -1545,7 +1625,9 @@ tower: {
         divineGem: 0,
         refineStone: 0,
         rose: 0, // 玫瑰花
-        companionKey: 0 // 伴侣钥匙
+        companionKey: 0, // 伴侣钥匙
+        rebornDan: 0,
+        baitCount: 0
     },
     collections: {
         lightSpeedHand: 0,
@@ -2408,7 +2490,8 @@ const vipConfig = [
     refineStone: { name: '洗炼石', effect: 0, description: '用于重铸副本装备的成长属性' }, // 新增洗炼石
     rose: { name: '玫瑰花', effect: 1, description: '用于升级伴侣等级' },
     companionKey: { name: '伴侣钥匙', effect: 0, description: '用于开启伴侣宝箱' }, 
-   rebornDan: { name: '洗髓丹', effect: 0, description: '用于洗练伴侣天赋' }
+    rebornDan: { name: '洗髓丹', effect: 0, description: '用于洗练伴侣天赋' },
+    baitCount: { name: '鱼饵', effect: 0, description: '用于钓鱼消耗品' }
      
 };
 
@@ -3274,6 +3357,11 @@ function confirmActivationCode() {
             rewardMsg = "获得10个洗髓丹";
             success = true;
             break;
+        case "YUER":
+            player.items.baitCount = (player.items.baitCount || 0) + 20;
+            rewardMsg = "获得20个鱼饵";
+            success = true;
+            break;
         case "VIP666666":
         player.items.vipPower = (player.items.vipPower || 0) + 10;
         rewardMsg = "获得10个VIP能力值";
@@ -3421,6 +3509,20 @@ function calculateTotalGPS() {
         }
          updateAutoConvertDisplay();
              // 确保加载通天塔数据
+          if (!player.fishing) {
+        player.fishing = {
+            level: 1,
+            currentExp: 0,
+            fishCage: [],
+            isFishing: false,
+            isBiting: false,
+            biteTimer: null,
+            biteWindowTimer: null,
+            biteTime: 0,
+            bonus: 1
+        };
+    }
+         
             if (save.tower) {
                 player.tower = save.tower;
             }
@@ -3744,12 +3846,13 @@ function getTotalClickValue() {
     // 改为使用带职业加成的总装备加成
     const dungeonBonus = getTotalDungeonEquipBonus();
     // 改为使用带职业加成的总魂环加成
+   const fishingBonus = player.fishing ? player.fishing.bonus : 1;
     const soulRingBonus = getTotalSoulRingBonus();
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.click * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.clickMultiplier 
         * petMultiplier 
         * (1 + dungeonBonus)  // 应用副本装备总加成（含职业乘数）
-        * (1 + soulRingBonus); // 应用魂环总加成（含职业乘数）
+        * (1 + soulRingBonus) * fishingBonus; // 应用魂环总加成（含职业乘数）
 }
 
 
@@ -4781,7 +4884,8 @@ function resetItemDisplay() {
         refineStone: itemCounts.refineStone || 0,
         rose: itemCounts.rose || 0,
         companionKey: itemCounts.companionKey || 0,
-         rebornDan: itemCounts.rebornDan || 0
+         rebornDan: itemCounts.rebornDan || 0,
+      baitCount: itemCounts.baitCount || 0
        
     };
 
@@ -7722,6 +7826,11 @@ function simulateItemDrop(stage) {
         player.items.rebornDan++;
         hasDropped = true;
     }
+    // 洗髓丹匙掉落（150关以上0.001%概率）
+    if (stage >= 100 && Math.random() < 0.0001) {
+        player.items.baitCount++;
+        hasDropped = true;
+    }
     // 伴侣钥匙掉落（150关以上0.001%概率）
     if (stage >= 1 && Math.random() < 0.0002) {
         player.items.companionKey++;
@@ -8504,7 +8613,7 @@ function updateFundValues() {
             if (fund.netValue < 1.0) {
                 riseProbability = 0.45; 
             } else if (fund.netValue < 1.5) {
-                riseProbability = 0.35; 
+                riseProbability = 0.40; 
             } else if (fund.netValue < 2.0) {
                 riseProbability = 0.25; 
             } else if (fund.netValue < 2.5) {
@@ -8567,7 +8676,401 @@ function formatNumber(num) {
     return num.toFixed(2);
 }
 
+// 钓鱼系统配置
+const fishQualities = [
+    { name: "普通", color: "#000", exp: 1, rarity: 60 },
+    { name: "稀有", color: "#008000", exp: 5, rarity: 25 },
+    { name: "珍贵", color: "#0000CD", exp: 20, rarity: 10 },
+    { name: "传说", color: "#8B4513", exp: 50, rarity: 4 },
+    { name: "神话", color: "#FFD700", exp: 100, rarity: 1 }
+];
 
+const junkItems = [
+    "破旧的鞋子", "生锈的铁片", "塑料瓶", "烂木头", "破布",
+    "空罐头", "旧轮胎", "玻璃瓶", "渔网碎片", "朽木"
+];
+
+const fishNames = [
+    "鲫鱼", "鲤鱼", "草鱼", "鲈鲈鱼", "黑鱼",
+    "鲶鲶鱼", "鳊鳊鱼", "鳙鳙鱼", "鲢鲢鱼", "青鱼",
+    "黄鱼", "鳕鳕鱼", "金枪鱼", "三文鱼", "鲨鱼",
+    "鳗鱼", "带鱼", "比目鱼", "鲳鲳鱼", "鲈鲈鱼",
+    "虹鳟鳟鱼", "罗非鱼", "鲷鲷鱼", "鲅鲅鱼", "鲮鲮鱼",
+    "泥鳅鳅", "黄鳝鳝", "河虾", "对虾", "龙虾",
+    "螃蟹", "扇贝", "牡蛎蛎", "蛤蜊蜊", "鱿鱿鱼",
+    "章鱼", "墨鱼", "虾蛄蛄", "海马", "海龙",
+    "河豚", "石斑鱼", "金鱼", "锦鲤", "斗鱼",
+    "龙鱼", "天使鱼", "孔雀鱼", "罗汉鱼", "鹦鹉鱼"
+];
+
+const decompositionRewards = [
+    "vip能力值", "洗髓丹", "洗练石", "玫瑰花"
+];
+const levelConfig = [
+    { level: 1, requiredExp: 0, bonus: 1 },
+    { level: 2, requiredExp: 100, bonus: 1 },
+    { level: 3, requiredExp: 500, bonus: 1 },
+    { level: 4, requiredExp: 1000, bonus: 1 },
+    { level: 5, requiredExp: 2500, bonus: 1 },
+    { level: 6, requiredExp: 5000, bonus: 1 },
+    { level: 7, requiredExp: 10000, bonus: 1 },
+    { level: 8, requiredExp: 25000, bonus: 1 },
+    { level: 9, requiredExp: 50000, bonus: 1 },
+    { level: 10, requiredExp: 75000, bonus: 1 },
+    { level: 11, requiredExp: 100000, bonus: 1 },
+    { level: 12, requiredExp: 150000, bonus: 1 }
+];
+
+// 钓鱼系统函数
+function toggleFishingSystem() {
+    const ui = document.getElementById('fishingSystemUI');
+    const overlay = document.getElementById('fishingSystemOverlay');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateFishingUI();
+    }
+}
+
+function updateFishingUI() {
+    if (!player.fishing) return;
+    
+   document.getElementById('fishingLevel').textContent = player.fishing.level;
+    document.getElementById('currentFishingExp').textContent = player.fishing.currentExp;
+    
+    // 使用玩家道具中的鱼饵数量
+    document.getElementById('baitCount').textContent = player.items.baitCount || 0;
+    
+    document.getElementById('cageCount').textContent = player.fishing.fishCage.length;
+    
+    // 计算下一级所需经验
+    const nextLevel = Math.min(player.fishing.level, levelConfig.length - 1);
+     document.getElementById('nextFishingExp').textContent = levelConfig[player.fishing.level].requiredExp;
+    
+    document.getElementById('fishingBonus').textContent = player.fishing.bonus.toFixed(2) + '倍';
+    
+    updateFishCageDisplay();
+}
+
+function startFishing() {
+    // 检查是否有鱼饵（使用玩家道具中的鱼饵）
+    if (!player.items.baitCount || player.items.baitCount <= 0) {
+        document.getElementById('fishingStatus').textContent = "没有鱼饵了，无法钓鱼！";
+        return;
+    }
+    
+    // 检查鱼笼是否已满
+    if (player.fishing.fishCage.length >= 20) {
+        document.getElementById('fishingStatus').textContent = "鱼笼已满，请先分解一些鱼获！";
+        return;
+    }
+    
+    // 消耗一个鱼饵（从玩家道具中扣除）
+    player.items.baitCount--;
+    updateFishingUI();
+    
+    // 更新状态
+    player.fishing.isFishing = true;
+    document.getElementById('startFishingBtn').style.display = 'none';
+    document.getElementById('fishingStatus').textContent = "正在下竿...等待鱼上钩...";
+    document.getElementById('fishingRod').style.display = 'block';
+    document.getElementById('fishingBobber').style.display = 'block';
+    
+    // 随机3-10秒后鱼咬钩
+    const biteDelay = 3000 + Math.random() * 7000; // 3-10秒
+    player.fishing.biteTime = Date.now() + biteDelay;
+    
+    // 鱼咬钩定时器
+    player.fishing.biteTimer = setTimeout(() => {
+        fishBite();
+    }, biteDelay);
+}
+
+function fishBite() {
+    player.fishing.isBiting = true;
+    document.getElementById('fishingStatus').textContent = "注意！有鱼对鱼饵感兴趣...";
+    document.getElementById('fishingBobber').style.animation = 'bobberMove 0.5s infinite alternate';
+    document.getElementById('biteIndicator').style.display = 'block';
+    
+    // 显示拉钩按钮
+    document.getElementById('reelInBtn').style.display = 'block';
+    
+    // 咬钩窗口期为2秒
+    player.fishing.biteWindowTimer = setTimeout(() => {
+        // 窗口期结束，未及时拉杆
+        if (player.fishing.isBiting) {
+            document.getElementById('fishingStatus').textContent = "鱼跑掉了！";
+            resetFishing();
+        }
+    }, 2000);
+}
+
+function reelInFish() {
+    // 检查是否在咬钩状态
+    if (!player.fishing.isBiting) return;
+    
+    // 清除定时器
+    clearTimeout(player.fishing.biteWindowTimer);
+    
+    // 计算是否成功钓到鱼（基于时机）
+    const currentTime = Date.now();
+    const timeSinceBite = currentTime - player.fishing.biteTime;
+    let success = timeSinceBite >= 0 && timeSinceBite <= 2000;
+    
+    if (success) {
+        // 70%概率钓到鱼，30%概率钓到破烂
+        if (Math.random() < 0.7) {
+            catchFish();
+        } else {
+            catchJunk();
+        }
+    } else {
+        document.getElementById('fishingStatus').textContent = "时机不对，鱼跑掉了！";
+    }
+    
+    resetFishing();
+}
+
+function catchFish() {
+    // 随机选择鱼的品质
+    let quality = determineQuality();
+    
+    // 随机选择鱼的名称
+    let name = fishNames[Math.floor(Math.random() * fishNames.length)];
+    
+    // 随机长度和重量
+    let length = (2 + Math.random() * 98).toFixed(1); // 2-100厘米
+    let weight = (0.1 + Math.random() * 9.9).toFixed(1); // 0.1-10公斤
+    
+    // 创建鱼对象
+    let fish = {
+        type: 'fish',
+        name: name,
+        quality: quality,
+        length: length,
+        weight: weight,
+        selected: false
+    };
+    
+    // 添加到鱼笼
+    player.fishing.fishCage.push(fish);
+    
+    // 添加经验
+    addExperience(quality.exp);
+    
+    document.getElementById('fishingStatus').textContent = `成功钓到一条${quality.name}的${name}！获得${quality.exp}点经验！`;
+}
+
+function catchJunk() {
+    // 随机选择破烂
+    let junkName = junkItems[Math.floor(Math.random() * junkItems.length)];
+    
+    // 创建破烂对象
+    let junk = {
+        type: 'junk',
+        name: junkName,
+        selected: false
+    };
+    
+    // 添加到鱼笼
+    player.fishing.fishCage.push(junk);
+    
+    document.getElementById('fishingStatus').textContent = `钓到了${junkName}，没什么用但可以分解！`;
+}
+
+function resetFishing() {
+    player.fishing.isFishing = false;
+    player.fishing.isBiting = false;
+    
+    clearTimeout(player.fishing.biteTimer);
+    clearTimeout(player.fishing.biteWindowTimer);
+    
+    document.getElementById('fishingRod').style.display = 'none';
+    document.getElementById('fishingBobber').style.display = 'none';
+    document.getElementById('biteIndicator').style.display = 'none';
+    document.getElementById('fishingBobber').style.animation = '';
+    document.getElementById('reelInBtn').style.display = 'none';
+    document.getElementById('startFishingBtn').style.display = 'block';
+    
+    updateFishingUI();
+}
+
+function addExperience(amount) {
+    // 应用收益加成
+    const bonus = getCurrentBonus();
+    const actualAmount = amount * bonus;
+    
+    player.fishing.currentExp += actualAmount;
+    checkLevelUp();
+}
+
+function checkLevelUp() {
+    // 从当前等级开始检查是否可以升级
+    let currentLevelIndex = levelConfig.findIndex(conf => conf.level === player.fishing.level);
+    
+    // 检查是否可以升级到下一级
+    while (currentLevelIndex + 1 < levelConfig.length && 
+           player.fishing.currentExp >= levelConfig[currentLevelIndex + 1].requiredExp) {
+        player.fishing.level++;
+        currentLevelIndex++;
+        document.getElementById('fishingStatus').textContent += `恭喜！钓鱼等级提升到${player.fishing.level}级！`;
+    }
+    const fishingBonuses = [1, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
+     player.fishing.bonus = fishingBonuses[player.fishing.level - 1] || 1000000;   // 每级增加0.1倍（10%）
+    updateFishingUI();
+}
+
+function updateFishCageDisplay() {
+    const cageContainer = document.getElementById('fishCage');
+    cageContainer.innerHTML = '';
+    
+    if (!player.fishing.fishCage || player.fishing.fishCage.length === 0) {
+        cageContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #666;">鱼笼是空的，快去钓鱼吧！</div>';
+        return;
+    }
+    
+    player.fishing.fishCage.forEach((item, index) => {
+        let itemElement = document.createElement('div');
+        itemElement.style.padding = '5px';
+        itemElement.style.borderRadius = '4px';
+        itemElement.style.cursor = 'pointer';
+        itemElement.style.transition = 'all 0.2s';
+        
+        // 设置选中状态样式
+        if (item.selected) {
+            itemElement.style.backgroundColor = '#e6f7ff';
+            itemElement.style.border = '1px solid #91d5ff';
+        } else {
+            itemElement.style.backgroundColor = '#f9f9f9';
+            itemElement.style.border = '1px solid transparent';
+        }
+        
+        // 设置内容
+        if (item.type === 'fish') {
+            itemElement.innerHTML = `
+                <span style="color: ${item.quality.color}; font-weight: bold;">${item.quality.name}</span>
+                ${item.name} (${item.length}cm, ${item.weight}kg)
+            `;
+        } else {
+            itemElement.textContent = item.name;
+        }
+        
+        // 添加点击选中事件
+        itemElement.addEventListener('click', () => {
+            item.selected = !item.selected;
+            updateFishCageDisplay();
+        });
+        
+        cageContainer.appendChild(itemElement);
+    });
+}
+
+function decomposeSelectedFish() {
+    if (!player.fishing.fishCage || player.fishing.fishCage.length === 0) {
+        alert('鱼笼是空的！');
+        return;
+    }
+    
+    const selectedItems = player.fishing.fishCage.filter(item => item.selected);
+    
+    if (selectedItems.length === 0) {
+        alert('请先选择要分解的鱼获！');
+        return;
+    }
+    
+    let rewards = [];
+    
+    // 处理每种选中的物品
+    selectedItems.forEach(item => {
+        if (item.type === 'junk') {
+            // 破烂分解固定获得1朵玫瑰花
+            player.items.rose = (player.items.rose || 0) + 1; // 添加到玩家物品
+            rewards.push({type: '玫瑰花', quantity: 1});
+        } else if (item.type === 'fish') {
+            // 鱼分解根据品质、长度和重量获得奖励
+            const qualityFactor = fishQualities.findIndex(q => q.name === item.quality.name) + 1;
+            const lengthFactor = parseFloat(item.length) / 100;
+            const weightFactor = parseFloat(item.weight) / 10;
+            
+            // 计算基础数量
+            let baseQuantity = Math.floor(1 + qualityFactor * (lengthFactor + weightFactor));
+            // 应用收益加成
+            baseQuantity = Math.floor(baseQuantity * getCurrentBonus());
+            
+            // 随机选择一种奖励
+            const rewardType = decompositionRewards[Math.floor(Math.random() * decompositionRewards.length)];
+            
+            // 添加到玩家物品
+            switch(rewardType) {
+                case 'vip能力值':
+                    player.items.vipPower = (player.items.vipPower || 0) + baseQuantity;
+                    break;
+                case '洗髓丹':
+                    player.items.rebornDan = (player.items.rebornDan || 0) + baseQuantity;
+                    break;
+                case '洗练石':
+                    player.items.refineStone = (player.items.refineStone || 0) + baseQuantity;
+                    break;
+                case '玫瑰花':
+                    player.items.rose = (player.items.rose || 0) + baseQuantity;
+                    break;
+            }
+            
+            rewards.push({type: rewardType, quantity: baseQuantity});
+        }
+        
+        // 从鱼笼中移除
+        const index = player.fishing.fishCage.indexOf(item);
+        if (index > -1) {
+            player.fishing.fishCage.splice(index, 1);
+        }
+    });
+    
+    // 显示奖励
+    let rewardMessage = '分解获得：\n';
+    rewards.forEach(reward => {
+        rewardMessage += `- ${reward.type} x ${reward.quantity}\n`;
+    });
+    alert(rewardMessage);
+    
+    // 更新显示
+    updateFishingUI();
+    updateItemDisplay(); // 更新物品显示
+}
+
+function determineQuality() {
+    let rand = Math.random() * 100;
+    let cumulative = 0;
+    
+    for (let quality of fishQualities) {
+        cumulative += quality.rarity;
+        if (rand <= cumulative) {
+            return quality;
+        }
+    }
+    
+    return fishQualities[0]; // 默认普通品质
+}
+
+function getCurrentBonus() {
+    if (!player.fishing.level) return 1;
+    const currentLevelConfig = levelConfig.find(conf => conf.level === player.fishing.level);
+    return currentLevelConfig ? currentLevelConfig.bonus : 1;
+}
+
+// 添加CSS动画
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes bobberMove {
+        from { transform: translateY(0); }
+        to { transform: translateY(-10px); }
+    }
+`;
+document.head.appendChild(style);
 // 称号配置（按分支分组）
 const titleConfig = {
      towerBranch: [
@@ -9382,7 +9885,7 @@ function washCompanion() {
     logAction(`伴侣${companion.name}洗练完成`, 'success');
 }
 function calculateCompanionScore(companion) {
-    const baseScore = companion.score - 2;
+    const baseScore = companion.score - 5;
     return baseScore;
 
 
@@ -10280,7 +10783,13 @@ const officialConfig = [
     { level: 57, name: "大殿下（神品）", attackMultiplier: 50000000000000000000000000000, cost: 100000000000000000000000000000000000000000000000000000000 },
     { level: 58, name: "太子爷（仙品）", attackMultiplier: 100000000000000000000000000000, cost: 1000000000000000000000000000000000000000000000000000000000 },
     { level: 59, name: "皇帝（仙品）", attackMultiplier: 500000000000000000000000000000, cost: 10000000000000000000000000000000000000000000000000000000000 },
-    { level: 60, name: "太上皇（仙品）", attackMultiplier: 1000000000000000000000000000000, cost: 100000000000000000000000000000000000000000000000000000000000 }
+    { level: 60, name: "太上皇（仙品）", attackMultiplier: 1000000000000000000000000000000, cost: 100000000000000000000000000000000000000000000000000000000000 },
+  { level: 61, name: "仙兵（帝品）", attackMultiplier: 10000000000000000000000000000000, cost: 1000000000000000000000000000000000000000000000000000000000000000 },
+ { level: 62, name: "仙君（帝品）", attackMultiplier: 50000000000000000000000000000000, cost: 100000000000000000000000000000000000000000000000000000000000000000000 },
+ { level: 63, name: "仙皇（帝品）", attackMultiplier: 100000000000000000000000000000000, cost: 10000000000000000000000000000000000000000000000000000000000000000000000000 },
+ { level: 64, name: "仙王（帝品）", attackMultiplier: 500000000000000000000000000000000, cost: 1000000000000000000000000000000000000000000000000000000000000000000000000000000 },
+ { level: 65, name: "仙帝（帝品）", attackMultiplier: 1000000000000000000000000000000000, cost: 100000000000000000000000000000000000000000000000000000000000000000000000000000000000 }
+
 ];
 
 // 切换官职系统界面显示
@@ -10308,7 +10817,7 @@ function updateOfficialSystemDisplay() {
         currentOfficial = officialConfig.find(oc => oc.level === currentLevel);
     }
     
-    if (currentLevel < 60) {
+    if (currentLevel < 65) {
         nextOfficial = officialConfig.find(oc => oc.level === currentLevel + 1);
     }
     
@@ -10322,7 +10831,7 @@ function updateOfficialSystemDisplay() {
     const nextOfficialEl = document.getElementById('nextOfficialInfo');
     if (nextOfficial) {
         nextOfficialEl.innerHTML = `${nextOfficial.name} - 攻击加成: ${nextOfficial.attackMultiplier}倍, 消耗: ${formatNumber(nextOfficial.cost)}转生币`;
-    } else if (currentLevel >= 60) {
+    } else if (currentLevel >= 65) {
         nextOfficialEl.textContent = '已达到最高官职';
     } else {
         nextOfficialEl.textContent = '请升级官职';
@@ -10366,7 +10875,7 @@ function upgradeOfficialMaxPossible() {
 // 升级一级官职
 function upgradeOfficial() {
     const nextLevel = player.officialLevel + 1;
-    if (nextLevel > 60) {
+    if (nextLevel > 65) {
         logAction("已达到最高官职！", "error");
         return false;
     }
