@@ -600,7 +600,6 @@
 #dialogOverlay {
     z-index: 1999 !important;
 }
-
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -634,7 +633,7 @@
             <p>13. 职业系统：有法师和战士不同搭配属性，对于关卡解锁属性，选择获得属性。</p>
             <p>14. 称号系统：解锁每一个都可以永久获得属性，自由搭配选择称号(不影响属性效果）。</p>
             <p>14. 官职系统：增加总和攻击，一共60级。</p>
-            <p>15. 伴侣系统：大幅度增加属性。天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒，进阶玩法：每进阶+1倍率加1倍，未锁定状态才能进阶，点进阶自动消耗背包里面的同品质伴侣，想保留的伴侣记得锁定（伴侣钥匙和玫瑰花和洗髓丹：打怪或者材料宝箱掉落）。</p>
+            <p>15. 伴侣系统：大幅度增加属性。天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒，进阶玩法：每进阶+1倍率加1倍，未锁定状态才能进阶，点进阶自动消耗背包里面的同品质伴侣，想保留的伴侣记得锁定，史诗以上才能合成洗练！（伴侣钥匙和玫瑰花和洗髓丹：打怪或者材料宝箱掉落）。</p>
             <p>16. 通天塔：只要通过每一层加1点玩家属性，每一层加0.1倍GPS,还有对应称号（100转才能打）。</p>
             <p>17. 存档问题：换设备后存档导入一开始进去VIP和伴侣是空的，你直接退出在重新进就恢复了或者刷新页面（点了导出按钮，会自动复制，你黏贴就可以了）</p>
             <p>18. 奥秘系统：每阶段只生效第一个效果。</p>
@@ -693,7 +692,7 @@
     <button onclick="toggleClassSystem()">职业系统</button>
     <button onclick="showTitleDialog()">称号系统</button>
     <button onclick="toggleOfficialSystem()">官职系统</button>
-    <button onclick="openCompanionSystem()" style="margin-left: 10px;">伴侣系统</button>
+    <button onclick="openCompanionSystem()">伴侣系统</button>
     <button onclick="toggleMysterySystem()">奥秘系统</button>
     <button onclick="toggleFundSystem()">基金系统</button>
     <button onclick="toggleSettingsUI()">设置</button>
@@ -1104,8 +1103,8 @@
             <option value="orange">完美(橙色)</option>
             <option value="red">神赐(红色)</option>
             <option value="angel">天使(彩色)</option>
-            <option value="emyyyy">恶魔(深红色)及以下</option>
-           <option value="jlyyyy">精灵(绿色)及以下</option>
+            <option value="emyyyy">恶魔(深红色)</option>
+           <option value="jlyyyy">精灵(绿色)</option>
         </select>
         <button onclick="batchDecompose()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">批量分解选中品阶(未锁定)</button>
 <div style="flex: 1; padding: 10px; background: #333; border-radius: 5px; margin-top: 1px;">
@@ -1976,6 +1975,8 @@ tower: {
 },
             lotteryResults: [],
             traditionalLotteryNumbers: [],
+         traditionalLotteryPurchased: false,
+          traditionalLotteryBought: false,
             lastLotteryDraw: Date.now(),
            titles: {
         unlocked: [], // 已解锁称号列表
@@ -3409,6 +3410,9 @@ function calculateTotalGPS() {
     try {
         const save = JSON.parse(localStorage.getItem('goldGameSave'));
         if (save) {
+            if (save.lastUpdate && save.lastUpdate > Date.now()) {
+                throw new Error("检测到时间回退，强制重置游戏");
+            }
             player = migrateSaveData(save);
             player.equipment = validateEquipmentList(save.equipment);
         
@@ -3515,9 +3519,7 @@ if (speedBoostBtn) {
                 // 计算离线期间的银行利息
                 calculateBankInterest();
             }
-         
-            // 更新彩票号码显示
-            updateTraditionalLotteryDisplay();
+          
         }
     } catch (e) {
         console.warn('存档加载失败，使用默认数据:', e);
@@ -4810,18 +4812,7 @@ function updateItemDisplay() {
         })
         .join('');
 }
-   window.onload = function() {
-    loadSave();
-    
-    // 恢复自动扫荡状态显示
-    document.getElementById('autoSweepStatus').textContent = 
-        player.battle.autoSweepEnabled ? '开' : '关';
-    
-    // 如果自动扫荡是开启状态，重新启动
-    if (player.battle.autoSweepEnabled) {
-        startAutoSweep();
-    }
-};
+ 
         // 更新股票显示
         function updateStockDisplay() {
     const container = document.getElementById('stocksContainer');
@@ -5083,18 +5074,38 @@ function sellAllStock() {
 }
 
         // 购买传统数字彩票
-        function buyTraditionalLottery() {
+     function buyTraditionalLottery() {
+    if (player.traditionalLotteryBought) {
+        logAction("您已购买过传统数字彩票，需等待开奖后才能重新购买。", "error");
+        return;
+    }
+
     if (player.reincarnationCoin >= 10) {
         player.reincarnationCoin -= 10;
         const numbers = generateTraditionalLotteryNumbers();
         player.traditionalLotteryNumbers = numbers;
+        player.traditionalLotteryBought = true; // 设置购买标记
+        
         updateTraditionalLotteryDisplay();
         logAction(`购买了传统数字彩票，号码为：${numbers.join(', ')}`, 'info');
-        setTimeout(checkTraditionalLotteryResult, 1800000); // 30分钟后开奖
+        
+        setTimeout(() => {
+            checkTraditionalLotteryResult();
+            resetTraditionalLottery(); // 开奖后重置状态
+        }, 1800000);
     } else {
         logAction("转生币不足！无法购买传统数字彩票", "error");
     }
 }
+
+// 新增重置函数
+function resetTraditionalLottery() {
+    player.traditionalLotteryNumbers = [];
+    player.traditionalLotteryBought = false; // 重置购买标记
+    player.traditionalLotteryPurchased = false; // 重置原有限购标记
+    updateTraditionalLotteryDisplay();
+}
+
 
         // 生成传统数字彩票号码
         function generateTraditionalLotteryNumbers() {
@@ -5149,8 +5160,14 @@ function sellAllStock() {
     }
     
     logAction(`传统数字彩票开奖结果：中奖号码为 ${winningNumbers.join(', ')}，你中了 ${matchedNumbers} 个号码，获得 ${reward} 转生币`, 'success');
-    updateLotteryResultsDisplay();
-  }
+  // 开奖后重置购买状态
+     resetTraditionalLottery();
+    player.traditionalLotteryPurchased = false;
+    saveGame();
+
+}
+
+  
 
         // 购买蛇年刮刮卡
         function buySnakeScratchCard() {
@@ -5221,14 +5238,18 @@ function sellAllStock() {
         }
 
         // 更新传统数字彩票显示
-        function updateTraditionalLotteryDisplay() {
-            const container = document.getElementById('traditionalLotteryNumbers');
-            if (player.traditionalLotteryNumbers && player.traditionalLotteryNumbers.length > 0) {
-                container.textContent = `你的号码：${player.traditionalLotteryNumbers.join(', ')}`;
-            } else {
-                container.textContent = "你还没有购买彩票";
-            }
-        }
+      function updateTraditionalLotteryDisplay() {
+    const container = document.getElementById('traditionalLotteryNumbers');
+    if (player.traditionalLotteryBought) {
+        container.textContent = `您的号码：${player.traditionalLotteryNumbers.join(', ')} (已购买，等待开奖...)`;
+        // 禁用购买按钮
+        document.querySelector('.buy-traditional-lottery-btn').style.display = 'none';
+    } else {
+        container.textContent = "您还没有购买彩票";
+        // 启用购买按钮
+        document.querySelector('.buy-traditional-lottery-btn').style.display = 'block';
+    }
+}
 
         // 更新开奖结果显示
         function updateLotteryResultsDisplay() {
@@ -5739,6 +5760,8 @@ function confirmRename() {
     }
 }
 
+
+
         // 保存游戏
         function saveGame() {
     player.lastUpdate = Date.now(); // 确保保存时更新最后更新时间
@@ -5747,6 +5770,7 @@ function confirmRename() {
     player.mystery.lastUpdateTime = Date.now();
     player.tower.lastUpdate = Date.now();
     localStorage.setItem('goldGameSave', JSON.stringify(player));
+    localStorage.setItem('traditionalLotteryPurchased', player.traditionalLotteryPurchased);
     logAction('游戏已保存', 'success');
 }
 
@@ -5755,6 +5779,7 @@ function confirmRename() {
     loadSave();
     updateDisplay();
    calculateTotalGPS();
+ player.traditionalLotteryPurchased = localStorage.getItem('traditionalLotteryPurchased') === 'true';
     logAction('游戏已加载', 'success');
 }
  const ENCRYPTION_KEY = "your-secure-key-here-123";
@@ -5821,26 +5846,64 @@ function downloadSave() {
 }
 
         // 导入存档
-        function importSave() {
-        showCustomPrompt('请输入加密存档代码：', (encryptedData) => {
-            if (encryptedData) {
-                try {
-                    // 解密数据
-                    const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
-                    const saveData = bytes.toString(CryptoJS.enc.Utf8);
-                    
-                    // 解析并迁移存档
-                    const save = JSON.parse(saveData);
-                    player = migrateSaveData(save);
-                    updateDisplay();
-                    logAction('加密存档已导入', 'success');
-                } catch (error) {
-                    logAction('存档导入失败（可能是无效的存档或密钥错误）', 'error');
-                    console.error('导入错误:', error);
-                }
+    function importSave() {
+    showCustomPrompt('请输入加密存档代码：', async (encryptedData) => {
+        if (!encryptedData) return;
+
+        // 检查冷却时间
+        const lastImportTime = await getEncryptedTime('lastImportTime');
+        if (lastImportTime) {
+            const currentTime = Date.now();
+            const timeDiff = currentTime - lastImportTime;
+            if (timeDiff < 6 * 60 * 60 * 1000) { // 6小时
+                logAction("导入存档冷却中，请等待" + formatTime(6 * 60 * 60 * 1000 - timeDiff) + "后再试。", "error");
+                return;
             }
-        });
+        }
+
+        try {
+            // 解密存档数据
+            const decrypted = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
+            const saveData = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+            
+            // 应用存档数据
+            player = migrateSaveData(saveData);
+            updateDisplay();
+            logAction('存档已成功导入！', 'success');
+
+            // 加密存储当前时间戳
+            await setEncryptedTime('lastImportTime', Date.now());
+        } catch (error) {
+            logAction('存档导入失败：无效的存档或密钥错误', 'error');
+            console.error('导入错误:', error);
+        }
+    });
+}
+
+// 获取加密的时间戳
+async function getEncryptedTime(key) {
+    const encrypted = localStorage.getItem(key);
+    if (!encrypted) return null;
+    try {
+        const decrypted = CryptoJS.AES.decrypt(encrypted, ENCRYPTION_KEY);
+        return parseInt(decrypted.toString(CryptoJS.enc.Utf8));
+    } catch {
+        return null;
     }
+}
+
+// 设置加密的时间戳
+async function setEncryptedTime(key, value) {
+    const encrypted = CryptoJS.AES.encrypt(String(value), ENCRYPTION_KEY);
+    localStorage.setItem(key, encrypted.toString());
+}
+
+// 格式化时间显示
+function formatTime(milliseconds) {
+    const hours = Math.floor(milliseconds / 3600000);
+    const mins = Math.floor((milliseconds % 3600000) / 60000);
+    return `${hours}小时${mins}分钟`;
+}
           function resetItems() {
       showCustomConfirm('确定要重置道具数据吗？所有道具将被清除！', (confirmed) => {
           if (confirmed) {
@@ -6380,13 +6443,14 @@ function downloadSave() {
     autoConvertCurrency(); 
   initAutoDecomposeUI();
     checkAutoBuy(); 
+ checkAutoDecompose();
     updateStockPrices(); 
     calculateBankInterest(); 
    updateFundValues(); // 添加这一行 
  checkAutoReincarnation(); // 检查自动转生
  updateCompanionDisplay();
-    updateDisplay();
-    if (player.battle.maxStage > 1050) {
+ updateDisplay();
+   if (player.battle.maxStage > 1050) {
         localStorage.removeItem('goldGameSave');
         player = {
                         gold: 0,
@@ -8031,6 +8095,23 @@ function updatePlayerBattleStats() {
     // 更新UI显示
     updateMonsterUI();
 }
+function checkTimeValidity() {
+    const now = Date.now();
+    const storedTime = localStorage.getItem('lastValidTime');
+    
+    if (!storedTime) {
+        localStorage.setItem('lastValidTime', now);
+        return true;
+    }
+    
+    const timeDiff = now - storedTime;
+    if (timeDiff < 0 || timeDiff > 30 * 60 * 1000) { // 允许30分钟内偏差
+        return false;
+    }
+    
+    localStorage.setItem('lastValidTime', now);
+    return true;
+}
 
 // 计算离线经验
 // 新增：计算离线奥秘经验
@@ -8039,6 +8120,13 @@ function calculateOfflineMysteryExp() {
     
     const now = Date.now();
     const timeDiff = now - player.mystery.lastUpdateTime;
+   // 时间回退检测
+    if (timeDiff < 0) {
+        console.warn("检测到时间回退，重置奥秘经验");
+        player.mystery.exp = 0;
+        player.mystery.lastUpdateTime = now;
+        return;
+    }
     const minutesPassed = Math.floor(timeDiff / (1000 * 60));
     
     if (minutesPassed > 0) {
@@ -8770,29 +8858,29 @@ const companionRarities = {
    angel: { 
         name: '天使', 
         color: '#87CEEB',
-        talentCount: 0, // 动态计算
-        upgradeMultiplier: 30,
-        talentRange: [0, 8], // 可达到洪荒级别
         baseScore: 1000,
-        decomposeRose: 1000,
+        upgradeMultiplier: 30,
+        talentCount: 0, // 动态计算
+        talentRange: [0, 8], // 可达到洪荒级别
+        decomposeRose: 100,
     },
   emyyyy: { 
         name: '恶魔', 
         color: '#E63946',
-        talentCount: 0, // 动态计算
-        upgradeMultiplier: 25,
-        talentRange: [0, 8], // 可达到洪荒级别
         baseScore: 1000,
-        decomposeRose: 1000,
+        upgradeMultiplier: 25,
+        talentCount: 0, // 动态计算
+        talentRange: [0, 8], // 可达到洪荒级别
+        decomposeRose: 100,
     },
   jlyyyy: { 
         name: '妖精', 
         color: '#7CFC00',
-        talentCount: 0, // 动态计算
-        upgradeMultiplier: 20,
-        talentRange: [0, 8], // 可达到洪荒级别
         baseScore: 1000,
-        decomposeRose: 1000,
+        upgradeMultiplier: 20,
+        talentCount: 0, // 动态计算
+        talentRange: [0, 8], // 可达到洪荒级别
+        decomposeRose: 100,
     }
 };
 
@@ -8956,11 +9044,11 @@ const rarityConfig = companionRarities[companion.rarity] || {};
     进阶
 </button>
  <button onclick="openWashPanel('${companion.id}')" style="width: 30px; background: #2196F3; color: white; border: none; padding: 3px; border-radius: 2px; margin-left: 2px;"
-    ${companion.locked || !['epic','pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'].includes(companion.rarity) ? 'disabled' : ''}>
+    ${companion.locked || !['epic', 'pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'].includes(companion.rarity) ? 'disabled' : ''}>
     洗练
 </button>
    <button onclick="openCombinePanel('${companion.id}')" style="width: 30px; background: #9C27B0; color: white; border: none; padding: 3px; border-radius: 2px; margin-left: 2px;"
-    ${companion.locked || !['epic','pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'].includes(companion.rarity) ? 'disabled' : ''}>
+    ${companion.locked || !['epic', 'pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'].includes(companion.rarity) ? 'disabled' : ''}>
     合成
 </button>
             </div>
@@ -9177,7 +9265,7 @@ function washCompanion() {
     
     // 检查还童丹数量
     if ((player.items.rebornDan || 0) < 1) {
-        logAction("还童丹不足！", "error");
+        logAction("洗髓丹不足！", "error");
         return;
     }
     
@@ -9294,7 +9382,7 @@ function washCompanion() {
     logAction(`伴侣${companion.name}洗练完成`, 'success');
 }
 function calculateCompanionScore(companion) {
-    const baseScore = companion.score;
+    const baseScore = companion.score - 2;
     return baseScore;
 
 
@@ -9715,10 +9803,10 @@ function getCompanionBonuses() {
     companion.talents.forEach(talent => {
         const rank = talent.rank;
         const type = talentTypes[talent.type];
-        const advanceMultiplier = 1 + (companion.advanceLevel * 1);
         const baseMultiplier = companionRarities[companion.rarity].upgradeMultiplier;
 const scoreDivided = Math.floor(companion.score / 100);
-const qualityMultiplier = (scoreDivided + baseMultiplier) * player.companionLevel;;
+const qualityMultiplier = (scoreDivided + baseMultiplier) * player.companionLevel;
+  const advanceMultiplier = 1 + (companion.advanceLevel * 1);;
         switch (talent.type) {
             case 0: // 攻击
                 bonuses.attackMultiplier += (type.base + type.perLevel * rank) * qualityMultiplier * advanceMultiplier;
@@ -10756,14 +10844,15 @@ function calculateClassBonuses() {
         ];
 
         // 初始化世界BOSS系统
-       function initWorldBossSystem() {
-    // 计算离线时间增加的召唤次数
+      function initWorldBossSystem() {
+    // 计算离线时间增加的召唤次数（改为只恢复一次）
     const currentTime = Date.now();
     const timePassed = currentTime - (worldBossData.lastSummonTime || currentTime);
     const hoursPassed = Math.floor(timePassed / (60 * 60 * 1000));
     
-    if (hoursPassed > 0) {
-        worldBossData.summonCount = Math.min(worldBossData.summonCount + hoursPassed, 10);
+    if (hoursPassed > 0 && worldBossData.summonCount < 10) {
+        const recoverCount = Math.min(hoursPassed, 10 - worldBossData.summonCount);
+        worldBossData.summonCount += recoverCount;
         worldBossData.lastSummonTime = currentTime;
         saveWorldBossData();
     }
@@ -10784,7 +10873,7 @@ function calculateNextRecoveryTime() {
         return;
     }
     
-    // 距离下次恢复的时间 = 1小时 - (当前时间与上次恢复的时间差 % 1小时)
+    // 修复为每1小时恢复1次，而非每次计算都重置
     const oneHour = 60 * 60 * 1000;
     const timeSinceLastRecovery = Date.now() - worldBossData.lastSummonTime;
     const timeToNextRecovery = oneHour - (timeSinceLastRecovery % oneHour);
@@ -10792,15 +10881,14 @@ function calculateNextRecoveryTime() {
     worldBossData.nextRecoveryTime = Date.now() + timeToNextRecovery;
 }
 
-// 更新召唤次数倒计时显示
+// 在updateSummonCountdown中添加次数上限检查
 function updateSummonCountdown() {
     const countdownElement = document.getElementById('summonCountdown');
     if (!countdownElement) return;
     
     if (worldBossData.summonCount >= 10) {
         countdownElement.textContent = "已达上限";
-        setTimeout(updateSummonCountdown, 1000);
-        return;
+        return; // 直接返回不再继续
     }
     
     const now = Date.now();
@@ -10867,8 +10955,8 @@ function loadWorldBossData() {
                     
                     // 2. 新增：计算真实玩家的离线自动攻击伤害
                     if (worldBossData.isAutoAttacking) { // 仅当开启自动攻击时计算
-                        // 玩家每秒攻击14次（与startAutoAttack一致）
-                        const attacksPerSecond = 14;
+                        // 玩家每秒攻击13次（与startAutoAttack一致）
+                        const attacksPerSecond = 13;
                         const totalAttacks = offlineSeconds * attacksPerSecond;
                         
                         // 计算单次攻击的平均伤害（参考calculatePlayerDamage逻辑）
@@ -11028,8 +11116,8 @@ function loadWorldBossData() {
             worldBossData.bossStars = Math.floor(Math.random() * 30) + 1; // 1-30星
             
             // BOSS生命值为玩家攻击力的100000万-1000000万倍
-            const healthMultiplier = 1000000000 + Math.random() * 99000000000000000000000000;
-            worldBossData.bossMaxHealth = Math.floor(player.battle.playerAttack * healthMultiplier);
+            const healthMultiplier = 10000000000000000000 + Math.random() * 99000000000000000000000000;
+            worldBossData.bossMaxHealth = Math.floor(player.battle.playerAttack * healthMultiplier * player.battle.playerCritDamage);
             worldBossData.bossHealth = worldBossData.bossMaxHealth;
            // 保存玩家属性快照
     player.bossBattleSnapshot = {
@@ -11066,9 +11154,9 @@ function loadWorldBossData() {
                 const attackMultiplier = 0.2 + Math.random() * 30; 
                 const attack = Math.floor(player.battle.playerAttack * attackMultiplier);
                 const multiAttack = Math.max(1, 
-                    Math.floor(player.battle.playerMultiAttack * (0.3 + Math.random() * 0.9))); 
+                    Math.floor(player.battle.playerMultiAttack * (0.3 + Math.random() * 1.1))); 
                 const critRate = 0.5 + Math.random() * 1.9; 
-                const critDamage = player.battle.playerCritDamage * (0.3 + Math.random() * 0.9);
+                const critDamage = player.battle.playerCritDamage * (0.3 + Math.random() * 1.1);
                 
                 worldBossData.virtualPlayers.push({
                     name: name,
@@ -11459,16 +11547,30 @@ function updateRankings() {
             }
         }
 
-
+  window.onload = function() {
+    loadSave();
+      // 执行重置函数
+    resetItemDisplay();
+    resetPetDisplay();
+    // 恢复自动扫荡状态显示
+    document.getElementById('autoSweepStatus').textContent = 
+        player.battle.autoSweepEnabled ? '开' : '关';
+    
+    // 如果自动扫荡是开启状态，重新启动
+    if (player.battle.autoSweepEnabled) {
+        startAutoSweep();
+    }
+};
         // 在游戏加载时初始化世界BOSS系统
         loadWorldBossData();
         updateOfficialSystemDisplay();
         updatePlayerClassNameDisplay();
      updateCompanionDisplay();
        updateItemDisplay();
-    updateMonsterUI();
  updateMysterySystemDisplay();
-    </script>
+updateItemDisplay();
+updateTraditionalLotteryDisplay();
+</script>
 <!--客服 开始-->
 <script src="//g8hh.github.io/static/js/jquery.min.js"></script>
 <link rel="stylesheet" href="//g8hh.github.io/static/css/kf.css" type="text/css" media="screen" charset="utf-8">
