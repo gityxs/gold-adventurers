@@ -655,7 +655,7 @@ button:hover {
             <p>17. 存档问题：换设备后存档导入一开始进去VIP和伴侣是空的，你直接退出在重新进就恢复了或者刷新页面（点了导出按钮，会自动复制，你黏贴就可以了）</p>
             <p>18. 奥秘系统：100转开启，每阶段只生效第一个效果。</p>
             <p>19. 基金系统：投入的越多波动的幅度越大10-50%，1分钟刷新一次 ，10分钟不能实时卖出，如果跌到总价值20%以下 就全部没收清零。</p>
-            <p>20. 钓鱼系统：20转开启，分解鱼类可以获得VIP能力值，玫瑰花，洗髓丹，洗练石，农场种子。鱼饵掉率（打怪模式扫荡）</p>
+            <p>20. 钓鱼系统：20转开启，分解鱼类可以获得VIP能力值，玫瑰花，洗髓丹，洗练石，农场种子。鱼饵掉率（打怪模式扫荡）（自动钓鱼开启没用，点一下开始钓鱼，自动分解是分解钓到的所有东西）</p>
              <p>21. 农场系统：50转开启，种子靠鱼类分解，可以获得VIP能力值（水滴等于VIP能力值），每级都有每秒GPS和点击加成</p>
             <p>22. 停车场系统：200转开启，靠种子收取时候有几率获得车（进去领取兑换码送 "法拉利" ），每级都有每秒GPS和点击加成</p>
         </div>
@@ -1026,6 +1026,11 @@ button:hover {
         <div class="titleBranch">
             <h4>特殊称号</h4>
             <div class="titleRow" id="specialBranchContainer"></div>
+        </div>
+     <!-- 特殊分支 -->
+        <div class="titleBranch">
+            <h4>普通称号</h4>
+            <div class="titleRow" id="towerBranyyContainer"></div>
         </div>
     <!-- 特殊分支 -->
         <div class="titleBranch">
@@ -1455,6 +1460,14 @@ button:hover {
     <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
         <button id="startFishingBtn" onclick="startFishing()" style="background: #228b22; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">开始钓鱼</button>
         <button id="reelInBtn" onclick="reelInFish()" style="background: #d2691e; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; display: none;">拉钩上钓</button>
+     <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
+    <button id="autoFishingBtn" onclick="toggleAutoFishing()" style="background: #4CAF50; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">
+        自动钓鱼: 关闭
+    </button>
+    <button id="autoDecomposeFishBtn" onclick="toggleAutoDecomposeFish()" style="background: #2196F3; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">
+        自动分解: 关闭
+    </button>
+</div>
     </div>
     
     <!-- 鱼笼信息 -->
@@ -1729,7 +1742,10 @@ button:hover {
     biteTimer: null,
     biteWindowTimer: null,
     biteTime: 0,
-    bonus: 1
+    bonus: 1,
+    autoFishingEnabled: false,
+    autoDecomposeFishEnabled: false
+
 },
 tower: {
     currentFloor: 0,
@@ -8916,8 +8932,11 @@ const levelConfig = [
     { level: 8, requiredExp: 25000, bonus: 1 },
     { level: 9, requiredExp: 50000, bonus: 1 },
     { level: 10, requiredExp: 100000, bonus: 1 },
-    { level: 11, requiredExp: 200000, bonus: 1 },
-    { level: 12, requiredExp: 300000, bonus: 1 }
+    { level: 11, requiredExp: 500000, bonus: 1 },
+    { level: 12, requiredExp: 1000000, bonus: 1 },
+    { level: 13, requiredExp: 5000000, bonus: 1 },
+    { level: 14, requiredExp: 10000000, bonus: 1 },
+    { level: 15, requiredExp: 50000000, bonus: 1 }
 ];
 
 // 钓鱼系统函数
@@ -8937,6 +8956,30 @@ function toggleFishingSystem() {
         overlay.style.display = 'block';
         updateFishingUI();
     }
+}
+// 切换自动钓鱼状态
+function toggleAutoFishing() {
+    player.fishing.autoFishingEnabled = !player.fishing.autoFishingEnabled;
+    const btn = document.getElementById('autoFishingBtn');
+    btn.textContent = `自动钓鱼: ${player.fishing.autoFishingEnabled ? '开启' : '关闭'}`;
+    btn.style.background = player.fishing.autoFishingEnabled ? '#4CAF50' : '#f44336';
+    
+    logAction(`自动钓鱼${player.fishing.autoFishingEnabled ? '开启' : '关闭'}`, 'info');
+    
+    // 如果开启自动钓鱼且当前没有在钓鱼，则开始钓鱼
+    if (player.fishing.autoFishingEnabled && !player.fishing.isFishing) {
+        startFishing();
+    }
+}
+
+// 切换自动分解状态
+function toggleAutoDecomposeFish() {
+    player.fishing.autoDecomposeFishEnabled = !player.fishing.autoDecomposeFishEnabled;
+    const btn = document.getElementById('autoDecomposeFishBtn');
+    btn.textContent = `自动分解: ${player.fishing.autoDecomposeFishEnabled ? '开启' : '关闭'}`;
+    btn.style.background = player.fishing.autoDecomposeFishEnabled ? '#2196F3' : '#f44336';
+    
+    logAction(`自动分解${player.fishing.autoDecomposeFishEnabled ? '开启' : '关闭'}`, 'info');
 }
 
 function updateFishingUI() {
@@ -8963,6 +9006,13 @@ function startFishing() {
     // 检查是否有鱼饵（使用玩家道具中的鱼饵）
     if (!player.items.baitCount || player.items.baitCount <= 0) {
         document.getElementById('fishingStatus').textContent = "没有鱼饵了，无法钓鱼！";
+     // 自动钓鱼模式下，鱼饵不足时关闭自动钓鱼
+        if (player.fishing.autoFishingEnabled) {
+            player.fishing.autoFishingEnabled = false;
+            document.getElementById('autoFishingBtn').textContent = "自动钓鱼: 关闭";
+            document.getElementById('autoFishingBtn').style.background = '#f44336';
+        }
+
         return;
     }
     
@@ -9002,12 +9052,30 @@ function fishBite() {
     // 显示拉钩按钮
     document.getElementById('reelInBtn').style.display = 'block';
     
+    // 如果开启了自动钓鱼，自动拉钩
+    if (player.fishing.autoFishingEnabled) {
+        // 随机延迟0.5-1.5秒后自动拉钩，模拟玩家反应时间
+        const reelDelay = 500 + Math.random() * 1000;
+        setTimeout(() => {
+            reelInFish();
+        }, reelDelay);
+    }
+    
     // 咬钩窗口期为2秒
+    if (player.fishing.biteWindowTimer) {
+        clearTimeout(player.fishing.biteWindowTimer);
+    }
+    
     player.fishing.biteWindowTimer = setTimeout(() => {
         // 窗口期结束，未及时拉杆
         if (player.fishing.isBiting) {
             document.getElementById('fishingStatus').textContent = "鱼跑掉了！";
             resetFishing();
+            
+            // 自动钓鱼模式下，自动开始下一次钓鱼
+            if (player.fishing.autoFishingEnabled) {
+                startFishing();
+            }
         }
     }, 2000);
 }
@@ -9036,6 +9104,10 @@ function reelInFish() {
     }
     
     resetFishing();
+  // 自动钓鱼模式下，自动开始下一次钓鱼
+    if (player.fishing.autoFishingEnabled) {
+        startFishing();
+    }
 }
 
 function catchFish() {
@@ -9058,14 +9130,19 @@ function catchFish() {
         weight: weight,
         selected: false
     };
+    // 如果开启了自动分解，立即分解这条鱼
+    if (player.fishing.autoDecomposeFishEnabled) {
+        decomposeSingleFish(fish);
+        document.getElementById('fishingStatus').textContent = `钓到${fish.quality.name}的${fish.name}并自动分解！`;
+    } else {
+        // 否则放入鱼笼
+        player.fishing.fishCage.push(fish);
+        document.getElementById('fishingStatus').textContent = `成功钓到${fish.quality.name}的${fish.name}！`;
+    }
     
-    // 添加到鱼笼
-    player.fishing.fishCage.push(fish);
-    
-    // 添加经验
+  // 添加经验
     addExperience(quality.exp);
     
-    document.getElementById('fishingStatus').textContent = `成功钓到一条${quality.name}的${name}！获得${quality.exp}点经验！`;
 }
 
 function catchJunk() {
@@ -9079,10 +9156,15 @@ function catchJunk() {
         selected: false
     };
     
-    // 添加到鱼笼
-    player.fishing.fishCage.push(junk);
-    
-    document.getElementById('fishingStatus').textContent = `钓到了${junkName}，没什么用但可以分解！`;
+   // 如果开启了自动分解，立即分解这个破烂
+    if (player.fishing.autoDecomposeFishEnabled) {
+        decomposeSingleJunk(junk);
+        document.getElementById('fishingStatus').textContent = `钓到${junk.name}并自动分解！`;
+    } else {
+        // 否则放入鱼笼
+        player.fishing.fishCage.push(junk);
+        document.getElementById('fishingStatus').textContent = `钓到了${junk.name}！`;
+    }
 }
 
 function resetFishing() {
@@ -9101,7 +9183,56 @@ function resetFishing() {
     
     updateFishingUI();
 }
+function decomposeSingleFish(fish) {
+    const qualityFactor = fishQualities.findIndex(q => q.name === fish.quality.name) + 2;
+    const lengthFactor = parseFloat(fish.length) / 100;
+    const weightFactor = parseFloat(fish.weight) / 10;
+    
+    // 计算基础数量
+    let baseQuantity = Math.floor(1 + qualityFactor * (lengthFactor + weightFactor));
+    // 应用收益加成
+    baseQuantity = Math.floor(baseQuantity * getCurrentBonus());
+    
+    // 随机选择一种奖励
+    const rewardType = decompositionRewards[Math.floor(Math.random() * decompositionRewards.length)];
+    
+    // 添加到玩家物品
+    switch(rewardType) {
+        case 'vip能力值':
+            player.items.vipPower = (player.items.vipPower || 0) + baseQuantity;
+            break;
+        case '洗髓丹':
+            player.items.rebornDan = (player.items.rebornDan || 0) + baseQuantity;
+            break;
+        case '洗练石':
+            player.items.refineStone = (player.items.refineStone || 0) + baseQuantity;
+            break;
+        case '玫瑰花':
+            player.items.rose = (player.items.rose || 0) + baseQuantity;
+            break;
+    }
+    
+    // 添加种子掉落
+    if (Math.random() < 0.15) { // 15%概率获得种子
+        dropSeedAfterDecompose();
+    }
+    
+    // 更新显示
+    updateFishingUI();
+    updateItemDisplay();
+   checkTitleUnlocks();
+}
 
+// 新增：分解单个破烂
+function decomposeSingleJunk(junk) {
+    // 破烂分解固定获得1朵玫瑰花
+    player.items.rose = (player.items.rose || 0) + 1;
+    
+    // 更新显示
+    updateFishingUI();
+    updateItemDisplay();
+  checkTitleUnlocks();
+}
 function addExperience(amount) {
     // 应用收益加成
     const bonus = getCurrentBonus();
@@ -9122,8 +9253,8 @@ function checkLevelUp() {
         currentLevelIndex++;
         document.getElementById('fishingStatus').textContent += `恭喜！钓鱼等级提升到${player.fishing.level}级！`;
     }
-    const fishingBonuses = [1, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
-     player.fishing.bonus = fishingBonuses[player.fishing.level - 1] || 1000000;   // 每级增加0.1倍（10%）
+    const fishingBonuses = [1, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000, 50000000];
+     player.fishing.bonus = fishingBonuses[player.fishing.level - 1] || 50000000;   // 每级增加0.1倍（10%）
     updateFishingUI();
 }
 
@@ -9190,7 +9321,7 @@ function decomposeSelectedFish() {
     // 处理每种选中的物品
     selectedItems.forEach(item => {
         // 添加种子掉落
-    if (Math.random() < 0.15) { // 15%概率获得种子
+    if (Math.random() < 0.10) { // 10%概率获得种子
         dropSeedAfterDecompose();
     }
        
@@ -9552,6 +9683,7 @@ function harvestCrop(fieldIndex) {
     onFarmHarvest();
     updateFarmDisplay();
     updateDisplay(); // 更新主界面显示
+   checkTitleUnlocks();
     logAction(`收获${seed.name}，获得${seed.exp}农场经验和${seed.value}VIP能力值`, 'success');
 }
 
@@ -9812,7 +9944,7 @@ function updateParkingUI() {
 
 // 获取下一级所需经验
 function getNextLevelExp() {
-    const expRequirements = [100, 200, 300, 400, 600, 800, 1000, 1300, 1700, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, 200000, 300000, 400000, 500000];
+    const expRequirements = [100, 200, 300, 400, 600, 800, 1000, 1300, 1700, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, 125000, 150000, 200000, 400000, 600000, 800000, 1000000, 2500000, 5000000, 10000000, 100000000];
     const currentLevel = Math.min(player.parking.level, expRequirements.length);
     return expRequirements[currentLevel - 1];
 }
@@ -9918,6 +10050,7 @@ function unparkVehicle(spotIndex) {
     // 更新显示
     updateParkingDisplay();
     updateDisplay();
+    checkTitleUnlocks();
     saveGame();
 }
 
@@ -10021,6 +10154,7 @@ function collectAllParkingIncome() {
     logAction(`收取了所有停车收益: ${totalIncome} 转生币`, "success");
     updateParkingUI();
     updateDisplay();
+   checkTitleUnlocks();
     saveGame();
 }
 
@@ -10124,15 +10258,15 @@ function onFarmHarvest() {
         const rand = Math.random();
         let rarityRange;
         
-        if (rand < 0.75) {
+        if (rand < 0.70) {
             rarityRange = [1, 7];
-        } else if (rand < 0.90) {
+        } else if (rand < 0.88) {
             rarityRange = [8, 14];
         } else if (rand < 0.96) {
            rarityRange = [15, 22];
             } else if (rand < 0.99) {
            rarityRange = [23, 30];
-        } else if (rand < 0.999) {
+        } else if (rand < 0.998) {
             rarityRange = [31, 38];
         } else if (rand < 0.9999) {
             rarityRange = [39, 44];
@@ -10184,6 +10318,24 @@ function calculateOfflineParkingIncome() {
 }
 // 称号配置（按分支分组）
 const titleConfig = {
+     towerBranyy: [
+    { name: "钓竿初握", condition: (p) => p.fishing.level > 2, bonus: { attackMultiplier: 1.1 } },
+    { name: "河塘渔夫", condition: (p) => p.fishing.level > 5, bonus: { attackMultiplier: 1.1 } },
+    { name: "渔获大师", condition: (p) => p.fishing.level > 7, bonus: { attackMultiplier: 1.1 } },
+    { name: "万鱼臣服", condition: (p) => p.fishing.level > 10, bonus: { attackMultiplier: 1.2 } },
+    { name: "钓尽乾坤", condition: (p) => p.fishing.level > 14, bonus: { attackMultiplier: 1.2 } },
+    { name: "小农夫", condition: (p) => p.farm.level > 2, bonus: { attackMultiplier: 1.1 } },
+    { name: "田园熟手", condition: (p) => p.farm.level > 5, bonus: { attackMultiplier: 1.1 } },
+    { name: "农耕大师", condition: (p) => p.farm.level > 15, bonus: { attackMultiplier: 1.1 } },
+    { name: "庄园尊主", condition: (p) => p.farm.level > 25, bonus: { attackMultiplier: 1.2 } },
+    { name: "大地主宰", condition: (p) => p.farm.level > 35, bonus: { attackMultiplier: 1.2 } },
+    { name: "车途学徒", condition: (p) => p.parking.level > 2, bonus: { attackMultiplier: 1.1 } },
+    { name: "赛道枭雄", condition: (p) => p.parking.level > 7, bonus: { attackMultiplier: 1.1 } },
+    { name: "车坛至尊", condition: (p) => p.parking.level > 14, bonus: { attackMultiplier: 1.1 } },
+    { name: "巅峰车皇", condition: (p) => p.parking.level > 24, bonus: { attackMultiplier: 1.2 } },
+    { name: "寰宇车神", condition: (p) => p.parking.level > 34, bonus: { attackMultiplier: 1.2 } },
+    { name: "创世车帝", condition: (p) => p.parking.level > 39, bonus: { attackMultiplier: 1.2 } }
+], 
      towerBranch: [
     { name: "关破厉鬼", condition: (p) => p.tower.maxFloor > 10, bonus: { healthMultiplier: 1.1 } },
     { name: "阶碎无常", condition: (p) => p.tower.maxFloor > 100, bonus: { healthMultiplier: 1.1 } },
@@ -10208,11 +10360,11 @@ const titleConfig = {
         { name: "探险者", condition: (p) => p.battle.maxStage > 10, bonus: { attackMultiplier: 2 } },
         { name: "银翼斥候", condition: (p) => p.battle.maxStage > 50, bonus: { attackMultiplier: 2 } },
         { name: "圣域行者", condition: (p) => p.battle.maxStage > 100, bonus: { attackMultiplier: 2 } },
-        { name: "苍穹之主", condition: (p) => p.battle.maxStage > 150, bonus: { attackMultiplier: 5 } },
-        { name: "九天至尊", condition: (p) => p.battle.maxStage > 200, bonus: { attackMultiplier: 5 } },
-        { name: "万域之主", condition: (p) => p.battle.maxStage > 300, bonus: { attackMultiplier: 5 } },
-        { name: "寰宇独尊", condition: (p) => p.battle.maxStage > 400, bonus: { attackMultiplier: 5 } },
-        { name: "万界臣服", condition: (p) => p.battle.maxStage > 500, bonus: { attackMultiplier: 5 } },
+        { name: "苍穹之主", condition: (p) => p.battle.maxStage > 150, bonus: { attackMultiplier: 2 } },
+        { name: "九天至尊", condition: (p) => p.battle.maxStage > 200, bonus: { attackMultiplier: 2 } },
+        { name: "万域之主", condition: (p) => p.battle.maxStage > 300, bonus: { attackMultiplier: 2 } },
+        { name: "寰宇独尊", condition: (p) => p.battle.maxStage > 400, bonus: { attackMultiplier: 2 } },
+        { name: "万界臣服", condition: (p) => p.battle.maxStage > 500, bonus: { attackMultiplier: 2 } },
         { name: "天地共主", condition: (p) => p.battle.maxStage > 600, bonus: { attackMultiplier: 5 } },
         { name: "星河主宰", condition: (p) => p.battle.maxStage > 700, bonus: { attackMultiplier: 5 } },
         { name: "太虚之皇", condition: (p) => p.battle.maxStage > 800, bonus: { attackMultiplier: 5 } },
@@ -10238,8 +10390,8 @@ const titleConfig = {
     tamerBranch: [
         { name: "初级驯兽师", condition: (p) => p.pets?.thunderKirin?.level > 10, bonus: { critMultiplier: 2 } },
         { name: "中级驯兽师", condition: (p) => p.pets?.netherQiongqi?.level > 10, bonus: { critMultiplier: 2 } },
-        { name: "高级驯兽师", condition: (p) => p.pets?.primordialZhuLong?.level > 10, bonus: { critMultiplier: 4 } },
-        { name: "圣级驯兽师", condition: (p) => p.pets?.yanYuBiAn?.level > 10, bonus: { critMultiplier: 4 } },
+        { name: "高级驯兽师", condition: (p) => p.pets?.primordialZhuLong?.level > 10, bonus: { critMultiplier: 2 } },
+        { name: "圣级驯兽师", condition: (p) => p.pets?.yanYuBiAn?.level > 10, bonus: { critMultiplier: 2 } },
         { name: "神级驯兽师", condition: (p) => p.pets?.yuyu2?.level > 10, bonus: { critMultiplier: 4 } },
         { name: "人级驯兽师", condition: (p) => p.pets?.yuyu3?.level > 10, bonus: { critMultiplier: 4 } },
         { name: "地级驯兽师", condition: (p) => p.pets?.yuyu4?.level > 10, bonus: { critMultiplier: 4 } },
@@ -10253,8 +10405,8 @@ const titleConfig = {
         { name: "魂尊", condition: (p) => hasSoulRing(p, "year1000000"), bonus: { attackMultiplier: 2 } },
         { name: "魂宗", condition: (p) => hasSoulRing(p, "year3"), bonus: { attackMultiplier: 2 } },
         { name: "魂王", condition: (p) => hasSoulRing(p, "year7"), bonus: { attackMultiplier: 2 } },
-        { name: "魂帝", condition: (p) => hasSoulRing(p, "year13"), bonus: { attackMultiplier: 4 } },
-        { name: "魂圣", condition: (p) => hasSoulRing(p, "year18"), bonus: { attackMultiplier: 4 } },
+        { name: "魂帝", condition: (p) => hasSoulRing(p, "year13"), bonus: { attackMultiplier: 2 } },
+        { name: "魂圣", condition: (p) => hasSoulRing(p, "year18"), bonus: { attackMultiplier: 2 } },
         { name: "魂斗罗", condition: (p) => hasSoulRing(p, "year23"), bonus: { attackMultiplier: 4 } },
         { name: "普通封号斗罗", condition: (p) => hasSoulRing(p, "year28"), bonus: { attackMultiplier: 4 } },
         { name: "巅峰斗罗", condition: (p) => hasSoulRing(p, "year33"), bonus: { attackMultiplier: 4 } },
@@ -10269,9 +10421,9 @@ const titleConfig = {
         { name: "断水剑师", condition: (p) => getEquipLevel(p, "废品") > 10000, bonus: { attackMultiplier: 2 } },
         { name: "九霄剑王", condition: (p) => getEquipLevel(p, "废品") > 100000, bonus: { attackMultiplier: 2 } },
         { name: "独孤剑皇", condition: (p) => getEquipLevel(p, "废品") > 500000, bonus: { attackMultiplier: 2 } },
-        { name: "剑域之主", condition: (p) => getEquipLevel(p, "废品") > 1000000, bonus: { attackMultiplier: 4 } },
-        { name: "万剑之神", condition: (p) => getEquipLevel(p, "废品") > 5000000, bonus: { attackMultiplier: 4 } },
-        { name: "鸿蒙剑祖", condition: (p) => getEquipLevel(p, "废品") > 10000000, bonus: { attackMultiplier: 4 } },
+        { name: "剑域之主", condition: (p) => getEquipLevel(p, "废品") > 1000000, bonus: { attackMultiplier: 2 } },
+        { name: "万剑之神", condition: (p) => getEquipLevel(p, "废品") > 5000000, bonus: { attackMultiplier: 2 } },
+        { name: "鸿蒙剑祖", condition: (p) => getEquipLevel(p, "废品") > 10000000, bonus: { attackMultiplier: 2 } },
         { name: "万劫剑神", condition: (p) => getEquipLevel(p, "废品") > 50000000, bonus: { attackMultiplier: 4 } },
         { name: "无上剑神", condition: (p) => getEquipLevel(p, "废品") > 100000000, bonus: { attackMultiplier: 4 } },
         { name: "剑狱之尊", condition: (p) => getEquipLevel(p, "废品") > 200000000, bonus: { attackMultiplier: 4 } },
@@ -13209,6 +13361,5 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
-
 </body>
 </html>
