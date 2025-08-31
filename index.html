@@ -4,7 +4,7 @@
     <title>金币冒险者 - 完整版</title>
     <style>
         /* 样式保持不变 */
-        body { font-family: Arial, sans-serif; padding: 20px; }
+        body { font-family: Arial, sans-serif; padding: 20pxf; background-color: #ffffff; }
         button { padding: 10px; margin: 5px; cursor: pointer; }
         #equipmentList, #itemList, #collectionList, #reincarnationList, #petList, #stockList, #lotteryList, #bankList, #dungeonEquipmentList, #soulRingList { margin-top: 20px; max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; }
         .log { color: #666; font-size: 0.9em; }
@@ -616,7 +616,233 @@
 button:hover {
     background: #666;
 }
+/* 星域探索系统样式 */
+#explorationSystemUI {
+    font-family: 'Arial', sans-serif;
+}
 
+.attribute-card {
+    background: #2a2a4a;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s;
+}
+
+.attribute-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(74, 134, 232, 0.3);
+}
+
+.attribute-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.attribute-info {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.upgrade-btn {
+    background: linear-gradient(to bottom, #4a86e8, #1c5bb8);
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s;
+}
+
+.upgrade-btn:hover {
+    background: linear-gradient(to bottom, #5a96f8, #2c6bc8);
+    transform: scale(1.05);
+}
+
+.mission-card {
+    background: #2a2a4a;
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.3s;
+}
+
+.mission-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(74, 134, 232, 0.3);
+}
+
+.mission-card[data-difficulty="easy"] {
+    border-left: 4px solid #00cc66;
+}
+
+.mission-card[data-difficulty="medium"] {
+    border-left: 4px solid #4a86e8;
+}
+
+.mission-card[data-difficulty="hard"] {
+    border-left: 4px solid #ff9900;
+}
+
+.mission-card[data-difficulty="extreme"] {
+    border-left: 4px solid #ff3333;
+}
+
+.mission-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.difficulty-tag {
+    background: #4a86e8;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+}
+
+.mission-info {
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.start-mission-btn {
+    background: linear-gradient(to bottom, #4a86e8, #1c5bb8);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s;
+}
+
+.start-mission-btn:hover {
+    background: linear-gradient(to bottom, #5a96f8, #2c6bc8);
+    transform: scale(1.05);
+}
+
+.resource-card {
+    background: #2a2a4a;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s;
+}
+
+.resource-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(74, 134, 232, 0.3);
+}
+
+.resource-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.resource-info {
+    text-align: center;
+}
+
+.log-entry {
+    padding: 8px;
+    margin-bottom: 5px;
+    background: #2a2a4a;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.log-entry:nth-child(odd) {
+    background: #33335a;
+}
+.upgrade-btn:disabled {
+    background: #666 !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+ .exchange-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .exchange-info {
+        flex: 1;
+    }
+    
+    .exchange-controls {
+        display: flex;
+        gap: 10px;
+    }
+ .gem-shop-item {
+        background: #2a2a2a;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+    }
+    
+    .gem-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: bold;
+        margin: 0 auto 10px;
+    }
+    
+    .gem-icon.red { background: linear-gradient(to bottom, #ff4d4d, #cc0000); }
+    .gem-icon.blue { background: linear-gradient(to bottom, #4da6ff, #0066cc); }
+    .gem-icon.black { background: linear-gradient(to bottom, #666666, #000000); }
+    .gem-icon.green { background: linear-gradient(to bottom, #66ff66, #00cc00); }
+    .gem-icon.pink { background: linear-gradient(to bottom, #ff66cc, #cc0099); }
+    .gem-icon.yellow { background: linear-gradient(to bottom, #ffff66, #cccc00); }
+    
+    .gem-item {
+        background: #2a2a2a;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+        position: relative;
+    }
+    
+    .gem-level {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #d4af37;
+        color: black;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+    }
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -657,7 +883,10 @@ button:hover {
             <p>19. 基金系统：投入的越多波动的幅度越大10-50%，1分钟刷新一次 ，10分钟不能实时卖出，如果跌到总价值20%以下 就全部没收清零。</p>
             <p>20. 钓鱼系统：20转开启，分解鱼类可以获得VIP能力值，玫瑰花，洗髓丹，洗练石，农场种子。鱼饵掉率（打怪模式扫荡）（自动钓鱼开启没用，点一下开始钓鱼，自动分解是分解钓到的所有东西）</p>
              <p>21. 农场系统：50转开启，种子靠鱼类分解，可以获得VIP能力值（水滴等于VIP能力值），每级都有每秒GPS和点击加成</p>
-            <p>22. 停车场系统：200转开启，靠种子收取时候有几率获得车（进去领取兑换码送 "法拉利" ），每级都有每秒GPS和点击加成</p>
+            <p>22. 停车场系统：200转开启，靠种子收取时候有几率获得车（进群领取兑换码送 "法拉利" ），每级都有每秒GPS和点击加成</p>
+            <p>23. 神器锻造系统：500转开启，探索获取材料，6个品质，集齐套装加格外属性。</p>
+           <p>24. 星域探索：300转开启，获取新材料</p>
+           <p>25. 宝石系统：800转开启，提供大量属性</p>
         </div>
     </div>
 </div>
@@ -704,6 +933,7 @@ button:hover {
     <button onclick="reincarnate()">转生</button>
     <button onclick="toggleAutoReincarnation()" style="margin-left: 10px;">自动转生: <span id="autoReincarnationStatus">关闭</span></button>
     <button onclick="toggleShopUI()">打开宝箱商店</button>
+    <button onclick="toggleGroceriesUI()" style="margin-left: 10px;">杂货铺</button> 
     <button onclick="toggleMonsterUI()">打怪模式(优先打!)</button> 
     <button onclick="toggleTowerUI()">通天塔</button>
     <button onclick="toggleWorldBossUI()" style="background: linear-gradient(to bottom, #d4af37, #a67c00); color: #000; font-weight: bold; padding: 6px 12px; font-size: 12px;">世界BOSS</button>
@@ -716,6 +946,9 @@ button:hover {
     <button onclick="toggleFishingSystem()" style="margin-left: 10px;">钓鱼系统</button>
     <button onclick="toggleFarmSystem()" style="margin-left: 10px;">农场系统</button>
     <button onclick="toggleParkingSystem()">停车位系统</button>
+    <button onclick="toggleExplorationSystem()" style="margin-left: 10px;">星域探索</button>
+    <button onclick="toggleArtifactSystem()" style="margin-left: 10px;">神器锻造系统</button>
+    <button onclick="toggleGemSystem()" style="margin-left: 10px;">宝石系统</button>
     <button onclick="toggleSettingsUI()">设置</button>
 
 <h3>自动购买设置</h3>
@@ -1589,6 +1822,323 @@ button:hover {
         <button onclick="decomposeSelectedVehicle()" style="margin-top: 10px; background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">分解选中车辆</button>
     </div>
 </div>
+<!-- 星域探索系统界面 -->
+<div id="explorationSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="explorationSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0a0a2a; color: white; padding: 20px; border: 3px solid #4a86e8; border-radius: 10px; z-index: 1001; width: 800px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #4a86e8; padding-bottom: 10px;">
+        <h2 style="color: #4a86e8; margin: 0;">星域探索系统</h2>
+        <button onclick="toggleExplorationSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-size: 14px;">关闭</button>
+    </div>
+    
+    <!-- 舰队属性 -->
+    <div style="margin-bottom: 20px; background: #1a1a3a; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #4a86e8; margin-top: 0;">舰队属性</h3>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px;">
+           <div class="attribute-card">
+    <div class="attribute-icon" style="background: linear-gradient(to bottom, #ff9900, #ff6600);">⏱️</div>
+    <div class="attribute-info">
+        <strong>速度</strong>
+        <div>等级: <span id="speedLevel">1</span></div>
+        <div>探索时间: <span id="explorationTime">60</span>分钟</div>
+    </div>
+    <button class="upgrade-btn" data-attr="speed" onclick="upgradeAttribute('speed')">升级</button>
+</div>
+
+<div class="attribute-card">
+    <div class="attribute-icon" style="background: linear-gradient(to bottom, #00cc66, #00994d);">📦</div>
+    <div class="attribute-info">
+        <strong>容量</strong>
+        <div>等级: <span id="capacityLevel">1</span></div>
+        <div>资源获取: <span id="resourceGain">100%</span></div>
+    </div>
+    <button class="upgrade-btn" data-attr="capacity" onclick="upgradeAttribute('capacity')">升级</button>
+</div>
+
+<div class="attribute-card">
+    <div class="attribute-icon" style="background: linear-gradient(to bottom, #9966ff, #6600cc);">🛡️</div>
+    <div class="attribute-info">
+        <strong>耐久</strong>
+        <div>等级: <span id="durabilityLevel">1</span></div>
+        <div>稀有率: <span id="rareRate">5%</span></div>
+        <div>损坏率: <span id="damageRate">10%</span></div>
+    </div>
+    <button class="upgrade-btn" data-attr="durability" onclick="upgradeAttribute('durability')">升级</button>
+</div>
+        </div>
+        <div style="text-align: center; margin-top: 10px;">
+            <button onclick="upgradeAllAttributes()" style="background: #4a86e8; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer;">一键升级全部属性</button>
+        </div>
+    </div>
+    
+    <!-- 探索任务 -->
+    <div style="margin-bottom: 20px; background: #1a1a3a; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #4a86e8; margin-top: 0;">探索任务</h3>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+            <div class="mission-card" data-difficulty="easy">
+                <div class="mission-header">
+                    <h4>近地星域</h4>
+                    <span class="difficulty-tag">简单</span>
+                </div>
+                <div class="mission-info">
+                    <div>时间: <span class="mission-time">60分钟</span></div>
+                    <div>资源: 星尘</div>
+                    <div>资源: 暗物质</div>
+                    <div>损坏风险: <span class="damage-risk">10%</span></div>
+                </div>
+                <button class="start-mission-btn" onclick="startMission('easy')">开始探索</button>
+            </div>
+            
+            <div class="mission-card" data-difficulty="medium">
+                <div class="mission-header">
+                    <h4>深空星域</h4>
+                    <span class="difficulty-tag">中等</span>
+                </div>
+                <div class="mission-info">
+                    <div>时间: <span class="mission-time">120分钟</span></div>
+                    <div>资源: 星尘</div>
+                    <div>资源: 暗物质</div>
+                    <div>资源: 宇宙晶体</div>
+                    <div>损坏风险: <span class="damage-risk">20%</span></div>
+                </div>
+                <button class="start-mission-btn" onclick="startMission('medium')">开始探索</button>
+            </div>
+            
+            <div class="mission-card" data-difficulty="hard">
+                <div class="mission-header">
+                    <h4>黑洞边缘</h4>
+                    <span class="difficulty-tag">困难</span>
+                </div>
+                <div class="mission-info">
+                    <div>时间: <span class="mission-time">180分钟</span></div>
+                    <div>资源: 星尘</div>
+                    <div>资源: 暗物质</div>
+                    <div>资源: 宇宙晶体</div>
+                    <div>损坏风险: <span class="damage-risk">30%</span></div>
+                </div>
+                <button class="start-mission-btn" onclick="startMission('hard')">开始探索</button>
+            </div>
+            
+            <div class="mission-card" data-difficulty="extreme">
+                <div class="mission-header">
+                    <h4>宇宙边缘</h4>
+                    <span class="difficulty-tag">极限</span>
+                </div>
+                <div class="mission-info">
+                    <div>时间: <span class="mission-time">240分钟</span></div>
+                    <div>资源: 宇宙晶体</div>
+                    <div>资源: 神器碎片</div>
+                    <div>损坏风险: <span class="damage-risk">40%</span></div>
+                </div>
+                <button class="start-mission-btn" onclick="startMission('extreme')">开始探索</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 资源仓库 -->
+    <div style="margin-bottom: 20px; background: #1a1a3a; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #4a86e8; margin-top: 0;">资源仓库</h3>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+            <div class="resource-card">
+                <div class="resource-icon" style="background: linear-gradient(to bottom, #cccccc, #999999);">✨</div>
+                <div class="resource-info">
+                    <strong>星尘</strong>
+                    <div id="stardustCount">0</div>
+                </div>
+            </div>
+            
+            <div class="resource-card">
+                <div class="resource-icon" style="background: linear-gradient(to bottom, #333366, #000033);">🌌</div>
+                <div class="resource-info">
+                    <strong>暗物质</strong>
+                    <div id="darkMatterCount">0</div>
+                </div>
+            </div>
+            
+            <div class="resource-card">
+                <div class="resource-icon" style="background: linear-gradient(to bottom, #66ccff, #3399ff);">💎</div>
+                <div class="resource-info">
+                    <strong>宇宙晶体</strong>
+                    <div id="cosmicCrystalCount">0</div>
+                </div>
+            </div>
+            
+            <div class="resource-card">
+                <div class="resource-icon" style="background: linear-gradient(to bottom, #ffcc00, #ff9900);">🔱</div>
+                <div class="resource-info">
+                    <strong>神器碎片</strong>
+                    <div id="artifactFragmentCount">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 探索日志 -->
+    <div style="background: #1a1a3a; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #4a86e8; margin-top: 0;">探索日志</h3>
+        <div id="explorationLog" style="height: 200px; overflow-y: auto; background: #0a0a1a; padding: 10px; border-radius: 5px; margin-top: 10px;">
+            <div class="log-entry">欢迎使用星域探索系统！</div>
+            <div class="log-entry">选择任务并开始探索宇宙奥秘吧！</div>
+        </div>
+    </div>
+</div>
+<!-- 神器锻造系统 -->
+<div id="artifactSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="artifactSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #d4af37; border-radius: 10px; z-index: 1001; width: 850px; max-height: 800px; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #d4af37; padding-bottom: 10px;">
+        <h2 style="color: #d4af37; margin: 0;">神器锻造系统</h2>
+        <button onclick="toggleArtifactSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-size: 14px;">关闭</button>
+    </div>
+    
+
+    
+    <!-- 锻造区域 -->
+    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #d4af37; margin-top: 0;">锻造神器</h3>
+        <p>消耗10神器碎片随机锻造一件神器</p>
+        <button onclick="forgeArtifact()" style="background: #d4af37; color: black; border: none; padding: 8px 20px; border-radius: 5px; cursor: font-weight: bold; margin-top: 10px;">锻造神器</button>
+    </div>
+    
+    <!-- 装备部位 -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: #d4af37; margin-top: 0;">装备部位</h3>
+        <div id="artifactSlots" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+            <!-- 6个装备部位将动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 神器仓库 -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: #d4af37; margin-top: 0;">神器仓库</h3>
+        <div id="artifactInventory" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 300px; overflow-y: auto; padding: 10px; background: #333; border-radius: 8px;">
+            <!-- 神器将动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 套装效果 -->
+    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #d4af37; margin-top: 0;">套装效果</h3>
+        <div id="setBonuses">
+            <!-- 套装效果将动态显示 -->
+        </div>
+    </div>
+</div>
+<!-- 杂货铺界面 -->
+<div id="groceriesOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;"></div>
+<div id="groceriesUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid #333; border-radius: 10px; z-index: 1001; width: 500px;">
+    <h2>杂货铺</h2>
+    <p>当前星尘: <span id="currentStardust">0</span></p>
+    
+    <div class="exchange-item">
+        <div class="exchange-info">
+            <strong>鱼饵</strong>
+            <div>50星尘 → 1鱼饵</div>
+        </div>
+        <div class="exchange-controls">
+            <input type="number" id="baitAmount" min="1" value="1" style="width: 60px;">
+            <button onclick="exchangeStardust('bait')">兑换</button>
+        </div>
+    </div>
+    
+    <div class="exchange-item">
+        <div class="exchange-info">
+            <strong>伴侣钥匙</strong>
+            <div>200星尘 → 1钥匙</div>
+        </div>
+        <div class="exchange-controls">
+            <input type="number" id="keyAmount" min="1" value="1" style="width: 60px;">
+            <button onclick="exchangeStardust('key')">兑换</button>
+        </div>
+    </div>
+    
+    <div class="exchange-item">
+        <div class="exchange-info">
+            <strong>玫瑰花</strong>
+            <div>5星尘 → 1玫瑰花</div>
+        </div>
+        <div class="exchange-controls">
+            <input type="number" id="roseAmount" min="1" value="1" style="width: 60px;">
+            <button onclick="exchangeStardust('rose')">兑换</button>
+        </div>
+    </div>
+    
+    <div class="exchange-item">
+        <div class="exchange-info">
+            <strong>VIP能力值</strong>
+            <div>10星尘 → 1VIP能力值</div>
+        </div>
+        <div class="exchange-controls">
+            <input type="number" id="vipAmount" min="1" value="1" style="width: 60px;">
+            <button onclick="exchangeStardust('vip')">兑换</button>
+        </div>
+    </div>
+    
+    <div class="exchange-item">
+        <div class="exchange-info">
+            <strong>神级宝石</strong>
+            <div>5000星尘 → 1神级宝石</div>
+        </div>
+        <div class="exchange-controls">
+            <input type="number" id="gemAmount" min="1" value="1" style="width: 60px;">
+            <button onclick="exchangeStardust('gem')">兑换</button>
+        </div>
+    </div>
+    
+    <div class="exchange-item">
+        <div class="exchange-info">
+            <strong>转生币</strong>
+            <div>1星尘 → 10000转生币</div>
+        </div>
+        <div class="exchange-controls">
+            <input type="number" id="coinAmount" min="1" value="1" style="width: 60px;">
+            <button onclick="exchangeStardust('coin')">兑换</button>
+        </div>
+    </div>
+    
+    <button onclick="toggleGroceriesUI()" style="margin-top: 20px; padding: 8px 20px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer;">关闭</button>
+</div>
+<!-- 宝石系统界面 -->
+<div id="gemSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="gemSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #d4af37; border-radius: 10px; z-index: 1001; width: 800px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #d4af37; margin: 0;">宝石系统</h2>
+        <button onclick="toggleGemSystem()" style="background: #ff4444; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-size: 14px;">关闭</button>
+    </div>
+    
+    <!-- 宝石商店 -->
+    <div style="margin-bottom: 30px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #d4af37; margin-top: 0;">宝石商店</h3>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+            <div class="gem-shop-item">
+                <div class="gem-icon red">红</div>
+                <div>红宝石 (攻击)</div>
+                <div>价格: 100暗物质</div>
+                <button onclick="buyGem('red', 1)">购买</button>
+            </div>
+            <div class="gem-shop-item">
+                <div class="gem-icon blue">蓝</div>
+                <div>蓝宝石 (生命)</div>
+                <div>价格: 100暗物质</div>
+                <button onclick="buyGem('blue', 1)">购买</button>
+            </div>
+            <div class="gem-shop-item">
+                <div class="gem-icon black">黑</div>
+                <div>黑宝石 (爆伤)</div>
+                <div>价格: 100暗物质</div>
+                <button onclick="buyGem('black', 1)">购买</button>
+
+            </div>
+        </div>
+    </div>
+    
+    <!-- 宝石仓库 -->
+    <div style="margin-bottom: 30px;">
+        <h3 style="color: #d4af37; margin-top: 0;">宝石仓库</h3>
+        <div id="gemInventory" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+            <!-- 宝石将动态生成在这里 -->
+        </div>
+    </div>
+</div>
+
 
 
 
@@ -1700,6 +2250,19 @@ button:hover {
     soulRingMultiplier: 1,    // 魂环总加成乘数（默认1倍）
     dungeonEquipMultiplier: 1 // 副本装备总加成乘数（默认1倍）
   },
+ artifacts: {
+            fragments: 0,
+            crystals: 0,
+            inventory: [],
+            equipped: {
+                helmet: null,
+                clothes: null,
+                pants: null,
+                shoes: null,
+                necklace: null,
+                weapon: null
+            }
+        },
    mystery: {
         stage: 1,
         level: 1,
@@ -1747,6 +2310,20 @@ button:hover {
     autoDecomposeFishEnabled: false
 
 },
+exploration: {
+            speed: { level: 1, cost: 100 },
+            capacity: { level: 1, cost: 100 },
+            durability: { level: 1, cost: 100 },
+            resources: {
+                stardust: 0,
+                darkMatter: 0,
+                cosmicCrystal: 0,
+                artifactFragment: 0
+            },
+            activeMission: null,
+            missionEndTime: 0,
+            logs: []
+        },
 tower: {
     currentFloor: 0,
     maxFloor: 0,
@@ -1759,6 +2336,14 @@ tower: {
     playerCritDamage: 0,
     monster: null
 },
+gems: {
+            red: {},   // {等级: 数量}
+            blue: {},
+            black: {},
+            green: {},
+            pink: {},
+            yellow: {}
+        },
         companions: [], // 伴侣列表
     equippedCompanionId: null, // 当前装备的伴侣ID
     companionLevel: 1, // 共享的伴侣等级
@@ -3692,7 +4277,9 @@ function calculateTotalGPS() {
         }
          updateAutoConvertDisplay();
         
-
+ 
+        
+        
              // 确保加载通天塔数据
           if (!player.fishing) {
         player.fishing = {
@@ -3807,6 +4394,10 @@ if (speedBoostBtn) {
                 calculateBankInterest();
             }
           initFarmData();
+         initExplorationSystem();
+        if (save.exploration) {
+                Object.assign(explorationData, save.exploration);
+            }
         }
     } catch (e) {
         console.warn('存档加载失败，使用默认数据:', e);
@@ -5117,6 +5708,7 @@ function updateItemDisplay() {
       // 执行重置函数
     resetItemDisplay();
     resetPetDisplay();
+    updateExplorationUI();
     // 恢复自动扫荡状态显示
     document.getElementById('autoSweepStatus').textContent = 
         player.battle.autoSweepEnabled ? '开' : '关';
@@ -6082,6 +6674,16 @@ function confirmRename() {
     player.lotteryResults = player.lotteryResults.slice(0, 5);
     player.mystery.lastUpdateTime = Date.now();
     player.tower.lastUpdate = Date.now();
+    player.exploration = {
+        speed: explorationData.speed,
+        capacity: explorationData.capacity,
+        durability: explorationData.durability,
+        resources: explorationData.resources,
+        activeMission: explorationData.activeMission,
+        missionEndTime: explorationData.missionEndTime,
+        logs: explorationData.logs
+    };
+    
     localStorage.setItem('goldGameSave', JSON.stringify(player));
     localStorage.setItem('traditionalLotteryPurchased', player.traditionalLotteryPurchased);
     logAction('游戏已保存', 'success');
@@ -8228,7 +8830,7 @@ function autoSweepProcess() {
             player.attributes.critRate += pointsToAdd;
             break;
         case 'critDamage':
-            撒player.attributes.critDamage += pointsToAdd;
+            player.attributes.critDamage += pointsToAdd;
             break;
         case 'multiAttack':
             player.attributes.multiAttack += pointsToAdd;
@@ -8371,16 +8973,17 @@ function updatePlayerBattleStats() {
     const titleBonuses = calculateTotalBonuses(); // 重命名变量避免混淆
     const officialBonus = getOfficialBonus();
     const companionBonuses = getCompanionBonuses(); // 获取伴侣天赋加成
-
+   const artifactBonuses = calculateArtifactBonuses();
     // 保存职业加成到player对象
     player.classBonuses = classBonuses;
+    const bonuses = calculateGemBonuses();
 
     // 2. 计算玩家生命（应用伴侣生命加成）
     player.battle.playerHealth = Math.floor(
         player.reincarnationCount * 
         (1 + player.attributes.healthBonus + player.attributes.health * 0.01) *
         classBonuses.healthMultiplier * titleBonuses.healthMultiplier *
-        companionBonuses.healthMultiplier // 应用伴侣生命加成
+        companionBonuses.healthMultiplier * (1 + artifactBonuses.health) * (1 + bonuses.health / 100)// 应用伴侣生命加成
     );
 
     // 3. 计算玩家攻击（应用伴侣攻击加成）
@@ -8388,7 +8991,7 @@ function updatePlayerBattleStats() {
         getTotalClickValue() * 
         (1 + player.attributes.attackBonus + player.attributes.attack * 0.01) *
         classBonuses.attackMultiplier * titleBonuses.attackMultiplier *
-        officialBonus * companionBonuses.attackMultiplier // 应用伴侣攻击加成
+        officialBonus * companionBonuses.attackMultiplier * (1 + artifactBonuses.attack) * (1 + bonuses.attack / 100) // 应用伴侣攻击加成
     );
 
     // 4. 计算暴击率（应用伴侣暴击率加成）
@@ -8404,7 +9007,7 @@ function updatePlayerBattleStats() {
         player.attributes.critDamageBonus + 
         player.attributes.critDamage * 0.0025) *
         classBonuses.critMultiplier * titleBonuses.critMultiplier *
-        companionBonuses.critDamageMultiplier; // 应用伴侣爆伤加成
+        companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100); // 应用伴侣爆伤加成
 
     // 6. 计算连击次数（应用伴侣连击加成）
     player.battle.playerMultiAttack = Math.max(1,
@@ -10316,6 +10919,1363 @@ function calculateOfflineParkingIncome() {
     
     player.parking.lastUpdate = now;
 }
+// 星域探索系统数据
+const explorationData = {
+    speed: { level: 1, cost: 100 },
+    capacity: { level: 1, cost: 100 },
+    durability: { level: 1, cost: 100 },
+    resources: {
+        stardust: 0,
+        darkMatter: 0,
+        cosmicCrystal: 0,
+        artifactFragment: 0
+    },
+    activeMission: null,
+    missionEndTime: 0,
+    logs: []
+};
+
+// 任务配置
+const missions = {
+    easy: {
+        name: "近地星域",
+        time: 120, // 分钟
+        rewards: {
+            stardust: { min: 1, max: 15 },
+            darkMatter: { min: 1, max: 20 }
+        },
+        damageRisk: 50
+    },
+    medium: {
+        name: "深空星域",
+        time: 180,
+        rewards: { 
+            stardust: { min: 1, max: 20 },
+            darkMatter: { min: 1, max: 40 },
+             cosmicCrystal: { min: 1, max: 20 }
+        },
+        damageRisk: 60
+    },
+    hard: {
+        name: "黑洞边缘",
+        time: 240,
+        rewards: {
+            stardust: { min: 1, max: 20 },
+            darkMatter: { min: 1, max: 100 },
+            cosmicCrystal: { min: 1, max: 50 }
+        },
+        damageRisk: 70
+    },
+    extreme: {
+        name: "宇宙边缘",
+        time: 360,
+        rewards: {
+            cosmicCrystal: { min: 1, max: 100 },
+            artifactFragment: { min: 1, max: 50 }
+        },
+        damageRisk: 80
+    }
+};
+
+// 切换探索系统界面
+function toggleExplorationSystem() {
+    if (player.reincarnationCount < 300) {
+        alert("需要达到300转才能开启星域探索！");
+        return;
+    }
+    const ui = document.getElementById('explorationSystemUI');
+    const overlay = document.getElementById('explorationSystemOverlay');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateExplorationUI();
+    }
+}
+
+// 更新探索系统界面
+function updateExplorationUI() {
+    // 更新资源仓库显示
+   document.getElementById('speedLevel').textContent = explorationData.speed.level;
+    document.getElementById('capacityLevel').textContent = explorationData.capacity.level;
+    document.getElementById('durabilityLevel').textContent = explorationData.durability.level;
+    // 计算属性效果
+    const speedEffect = 60 - (explorationData.speed.level - 1) * 5;
+    const capacityEffect = 100 + (explorationData.capacity.level - 1) * 20;
+    const durabilityEffect = 5 + (explorationData.durability.level - 1) * 2;
+    const damageReduction = 10 - (explorationData.durability.level - 1) * 1;
+    
+    document.getElementById('explorationTime').textContent = Math.max(10, speedEffect);
+    document.getElementById('resourceGain').textContent = capacityEffect + '%';
+    document.getElementById('rareRate').textContent = durabilityEffect + '%';
+    document.getElementById('damageRate').textContent = Math.max(1, damageReduction) + '%';
+    
+    // 更新资源显示
+    document.getElementById('stardustCount').textContent = player.exploration.resources.stardust || 0;
+    document.getElementById('darkMatterCount').textContent = player.exploration.resources.darkMatter || 0;
+    document.getElementById('cosmicCrystalCount').textContent = player.exploration.resources.cosmicCrystal || 0;
+    document.getElementById('artifactFragmentCount').textContent = player.exploration.resources.artifactFragment || 0;
+    
+    // 更新任务按钮状态
+    const missionButtons = document.querySelectorAll('.start-mission-btn');
+    missionButtons.forEach(button => {
+        if (explorationData.activeMission) {
+            button.disabled = true;
+            button.textContent = "任务进行中";
+        } else {
+            button.disabled = false;
+            button.textContent = "开始探索";
+        }
+    });
+    
+    // 更新任务时间显示（应用速度加成）
+    const missionCards = document.querySelectorAll('.mission-card');
+    missionCards.forEach(card => {
+        const difficulty = card.getAttribute('data-difficulty');
+        const baseTime = missions[difficulty].time;
+        const actualTime = Math.max(10, baseTime - (explorationData.speed.level - 1) * 5);
+        card.querySelector('.mission-time').textContent = actualTime + "分钟";
+        
+        // 应用耐久加成后的损坏率
+        const baseRisk = missions[difficulty].damageRisk;
+        const actualRisk = Math.max(1, baseRisk - (explorationData.durability.level - 1));
+        card.querySelector('.damage-risk').textContent = actualRisk + "%";
+    });
+     // 更新属性升级按钮的显示
+    const attributes = ['speed', 'capacity', 'durability'];
+    attributes.forEach(attr => {
+        const btn = document.querySelector(`.upgrade-btn[data-attr="${attr}"]`);
+        if (btn) {
+            const cost = explorationData[attr].cost;
+            btn.textContent = `升级 (${formatNumber(cost)}转生币)`;
+            btn.disabled = player.reincarnationCoin < cost;
+        }
+    });
+
+    // 更新日志
+    updateExplorationLog();
+    
+    // 如果有进行中的任务，显示倒计时
+    if (explorationData.activeMission) {
+        const remaining = Math.max(0, explorationData.missionEndTime - Date.now());
+        const minutes = Math.floor(remaining / 60000);
+        const seconds = Math.floor((remaining % 60000) / 1000);
+        
+        addLog(`任务进行中: ${missions[explorationData.activeMission].name} - 剩余: ${minutes}分${seconds}秒`);
+        
+        if (remaining <= 0) {
+            completeMission();
+        }
+    }
+}
+
+// 升级属性
+function upgradeAttribute(attribute) {
+    const cost = explorationData[attribute].cost;
+    
+    if (player.reincarnationCoin >= cost) {
+        player.reincarnationCoin -= cost;
+        explorationData[attribute].level++;
+        explorationData[attribute].cost = Math.floor(cost * 10);
+        
+        addLog(`${attribute === 'speed' ? '速度' : attribute === 'capacity' ? '容量' : '耐久'}升级到 ${explorationData[attribute].level}级`);
+        updateExplorationUI();
+        logAction(`星域探索: ${attribute}升级成功`, 'success');
+    } else {
+        logAction(`转生币不足！需要${formatNumber(cost)}转生币`, "error");
+    }
+}
+
+// 一键升级全部属性
+function upgradeAllAttributes() {
+    const attributes = ['speed', 'capacity', 'durability'];
+    let upgraded = false;
+    
+    attributes.forEach(attr => {
+        while (player.reincarnationCoin >= explorationData[attr].cost) {
+            const cost = explorationData[attr].cost;
+            player.reincarnationCoin -= cost;
+            explorationData[attr].level++;
+            explorationData[attr].cost = Math.floor(cost * 10);
+            upgraded = true;
+        }
+    });
+    
+    if (upgraded) {
+        addLog("一键升级全部属性成功");
+        updateExplorationUI();
+        logAction("星域探索: 一键升级成功", 'success');
+    } else {
+        // 显示具体缺少的转生币数量
+        const costs = attributes.map(attr => explorationData[attr].cost);
+        const minCost = Math.min(...costs);
+        logAction(`转生币不足，至少需要${formatNumber(minCost)}转生币才能升级任一属性`, "error");
+    }
+}
+
+// 开始任务
+function startMission(difficulty) {
+    if (explorationData.activeMission) {
+        logAction("已有任务进行中", "error");
+        return;
+    }
+    
+    // 计算实际任务时间（应用速度加成）
+    const baseTime = missions[difficulty].time;
+    const actualTime = Math.max(10, baseTime - (explorationData.speed.level - 1) * 5) * 60000;
+    
+    explorationData.activeMission = difficulty;
+    explorationData.missionEndTime = Date.now() + actualTime;
+    
+    addLog(`开始探索: ${missions[difficulty].name} - 预计完成时间: ${new Date(explorationData.missionEndTime).toLocaleTimeString()}`);
+    updateExplorationUI();
+    
+    // 设置任务完成检查
+    setTimeout(completeMission, actualTime);
+    
+    // 立即保存游戏
+    saveGame();
+}
+
+// 完成任务
+function completeMission() {
+    if (!explorationData.activeMission) return;
+    
+    const mission = missions[explorationData.activeMission];
+    const difficulty = explorationData.activeMission;
+    
+    // 计算实际损坏率（应用耐久加成）
+    const baseRisk = mission.damageRisk;
+    const actualRisk = Math.max(1, baseRisk - (explorationData.durability.level - 1));
+    
+    // 检查是否发生损坏
+    let damaged = false;
+    if (Math.random() * 100 < actualRisk) {
+        damaged = true;
+        addLog(`任务完成，但舰队受到损坏！`);
+    } else {
+        addLog(`任务成功完成: ${mission.name}`);
+    }
+    
+    // 计算资源获取（应用容量加成）
+    const capacityMultiplier = 1 + (explorationData.capacity.level - 1) * 0.2;
+    
+    // 发放资源
+    let rewards = "";
+    for (const resource in mission.rewards) {
+        const min = mission.rewards[resource].min;
+        const max = mission.rewards[resource].max;
+        let amount = Math.floor((Math.random() * (max - min + 1) + min) * capacityMultiplier);
+    
+        if (damaged) {
+            amount = Math.floor(amount * 0.2); // 损坏时资源减半
+        }
+        
+        explorationData.resources[resource] += amount;
+        rewards += `${getResourceName(resource)}: ${amount} `;
+    }
+    
+    addLog(`获得资源: ${rewards}`);
+    
+    // 重置任务状态
+    explorationData.activeMission = null;
+    explorationData.missionEndTime = 0;
+    
+    updateExplorationUI();
+    saveGame();
+}
+
+// 获取资源名称
+function getResourceName(resource) {
+    switch(resource) {
+        case 'stardust': return '星尘';
+        case 'darkMatter': return '暗物质';
+        case 'cosmicCrystal': return '宇宙晶体';
+        case 'artifactFragment': return '神器碎片';
+        default: return resource;
+    }
+}
+
+// 添加日志
+function addLog(message) {
+    const timestamp = new Date().toLocaleTimeString();
+    explorationData.logs.unshift(`[${timestamp}] ${message}`);
+    
+    if (explorationData.logs.length > 20) {
+        explorationData.logs.pop();
+    }
+    
+    updateExplorationLog();
+}
+
+// 更新日志显示
+function updateExplorationLog() {
+    const logContainer = document.getElementById('explorationLog');
+    logContainer.innerHTML = explorationData.logs.map(log => 
+        `<div class="log-entry">${log}</div>`
+    ).join('');
+}
+
+function initExplorationSystem() {
+    // 确保所有属性都有默认值
+    explorationData.speed = explorationData.speed || { level: 1, cost: 100 };
+    explorationData.capacity = explorationData.capacity || { level: 1, cost: 100 };
+    explorationData.durability = explorationData.durability || { level: 1, cost: 100 };
+    explorationData.resources = explorationData.resources || {
+        stardust: 0,
+        darkMatter: 0,
+        cosmicCrystal: 0,
+        artifactFragment: 0
+    };
+    explorationData.activeMission = explorationData.activeMission || null;
+    explorationData.missionEndTime = explorationData.missionEndTime || 0;
+    explorationData.logs = explorationData.logs || [];
+    
+    // 检查是否有进行中的任务
+    if (explorationData.activeMission && explorationData.missionEndTime > Date.now()) {
+        const remaining = explorationData.missionEndTime - Date.now();
+        setTimeout(completeMission, remaining);
+        addLog(`恢复进行中的探索任务: ${missions[explorationData.activeMission].name} - 剩余时间: ${Math.floor(remaining/60000)}分钟`);
+    } else if (explorationData.activeMission && explorationData.missionEndTime <= Date.now()) {
+        // 任务已经结束但未完成
+        completeMission();
+    }
+}
+
+// 神器部位配置
+const artifactParts = [
+    { id: "helmet", name: "头盔" },
+    { id: "clothes", name: "衣服" },
+    { id: "pants", name: "裤子" },
+    { id: "shoes", name: "鞋子" },
+    { id: "necklace", name: "项链" },
+    { id: "weapon", name: "武器" }
+];
+
+// 神器品质配置
+const artifactQualities = [
+    { id: "common", name: "普通", color: "#FFFFFF", minBonus: 0.1, maxBonus: 1 },
+    { id: "uncommon", name: "精良", color: "#1E90FF", minBonus: 0.5, maxBonus: 5 },
+    { id: "rare", name: "稀有", color: "#9B30FF", minBonus: 1, maxBonus: 10 },
+    { id: "epic", name: "史诗", color: "#FF4500", minBonus: 2, maxBonus: 20 },
+    { id: "legendary", name: "传说", color: "#FFD700", minBonus: 5, maxBonus: 50 },
+    { id: "mythic", name: "神话", color: "#FF1493", minBonus: 10, maxBonus: 100 }
+];
+
+// 神器套装配置
+const artifactSets = [
+    {
+        name: "青龙套装",
+        bonuses: {
+            2: { health: 30, description: "生命加成+3000%" },
+            4: { attack: 200, description: "攻击加成+20000%" },
+            6: { critDamage: 1500, description: "爆伤加成+150000%" }
+        }
+    },
+ {
+        name: "新手套装",
+        bonuses: {
+            2: { health: 2, description: "生命加成+200%" },
+            4: { attack: 20, description: "攻击加成+2000%" },
+            6: { critDamage: 150, description: "爆伤加成+15000%" }
+        }
+    },
+ {
+        name: "废品套装",
+        bonuses: {
+            2: { health: 1, description: "生命加成+100%" },
+            4: { attack: 1, description: "攻击加成+100%" },
+            6: { critDamage: 1, description: "爆伤加成+100%" }
+        }
+},
+ {
+        name: "闫闫套装",
+        bonuses: {
+            2: { health: 10, description: "生命加成+1000%" },
+            4: { health: 10, description: "生命加成+1000%" },
+            6: { health: 10, description: "生命加成+1000%" }
+        }
+},
+ {
+        name: "茶茶套装",
+        bonuses: {
+            2: { attack: 20, description: "攻击加成+2000%" },
+            4: { attack: 20, description: "攻击加成+2000%" },
+            6: { attack: 20, description: "攻击加成+2000%" }
+        }
+    },
+ {
+        name: "幼儿园套装",
+        bonuses: {
+            2: { health: 2, description: "生命加成+200%" },
+            4: { attack: 2, description: "攻击加成+200%" },
+            6: { critDamage: 2, description: "爆伤加成+200%" }
+        }
+    },
+ {
+        name: "梦想套装",
+        bonuses: {
+            2: { health: 1, description: "生命加成+100%" },
+            4: { attack: 10, description: "攻击加成+1000%" },
+            6: { critDamage: 100, description: "爆伤加成+10000%" }
+        }
+    },
+ {
+        name: "堕入套装",
+        bonuses: {
+            2: { attack: 3, description: "攻击加成+300%" },
+            4: { attack: 5, description: "攻击加成+500%" },
+            6: { critDamage: 80, description: "爆伤加成+8000%" }
+        }
+    },
+ {
+        name: "邪恶套装",
+        bonuses: {
+            2: { critDamage: 2, description: "爆伤加成+200%" },
+            4: { critDamage: 10, description: "爆伤加成+1000%" },
+            6: { critDamage: 170, description: "爆伤加成+17000%" }
+        }
+    },
+ {
+        name: "猎人套装",
+        bonuses: {
+            2: { health: 2, description: "生命加成+200%" },
+            4: { attack: 30, description: "攻击加成+3000%" },
+            6: { critDamage: 150, description: "爆伤加成+15000%" }
+        }
+    },
+ {
+        name: "死神套装",
+        bonuses: {
+            2: { health: 10, description: "生命加成+1000%" },
+            4: { attack: 500, description: "攻击加成+50000%" },
+            6: { attack: 4000, description: "攻击加成+400000%" }
+        }
+    },
+ {
+        name: "冥王套装",
+        bonuses: {
+            2: { health: 10, description: "生命加成+1000%" },
+            4: { attack: 300, description: "攻击加成+30000%" },
+            6: { critDamage: 3000, description: "爆伤加成+300000%" }
+        }
+    },
+ {
+        name: "至尊套装",
+        bonuses: {
+            2: { attack: 30, description: "攻击加成+3000%" },
+            4: { health: 500, description: "生命加成+50000%" },
+            6: { critDamage: 1700, description: "爆伤加成+170000%" }
+        }
+    },
+ {
+        name: "雷霆套装",
+        bonuses: {
+            2: { attack: 100, description: "攻击加成+10000%" },
+            4: { attack: 550, description: "攻击加成+55000%" },
+            6: { critDamage: 1300, description: "爆伤加成+130000%" }
+        }
+    },
+ {
+        name: "堕落套装",
+        bonuses: {
+            2: { health: 5, description: "生命加成+500%" },
+            4: { attack: 10, description: "攻击加成+1000%" },
+            6: { critDamage: 53, description: "爆伤加成+5300%" }
+        }
+    },
+ {
+        name: "神话套装",
+        bonuses: {
+            2: { health: 22, description: "生命加成+2200%" },
+            4: { critDamage: 400, description: "攻击加成+40000%" },
+            6: { critDamage: 2000, description: "爆伤加成+200000%" }
+        }
+    },
+ {
+        name: "圣光套装",
+        bonuses: {
+            2: { health: 15, description: "生命加成+1500%" },
+            4: { attack: 100, description: "攻击加成+10000%" },
+            6: { critDamage: 1300, description: "爆伤加成+130000%" }
+        }
+    },
+ {
+        name: "混沌套装",
+        bonuses: {
+            2: { health: 10, description: "生命加成+1000%" },
+            4: { attack: 300, description: "攻击加成+30000%" },
+            6: { health: 1500, description: "生命加成+150000%" }
+        }
+    },
+    {
+        name: "白虎套装",
+        bonuses: {
+            2: { attack: 15, description: "攻击加成+1500%" },
+            4: { attack: 400, description: "攻击加成+40000%" },
+            6: { attack: 1850, description: "攻击加成+185000%" }
+        }
+    },
+    {
+        name: "朱雀套装",
+        bonuses: {
+            2: { critDamage: 20, description: "爆伤加成+2000%" },
+            4: { critDamage: 250, description: "爆伤加成+25000%" },
+            6: { attack: 1650, description: "攻击加成+165000%" }
+        }
+    },
+    {
+        name: "玄武套装",
+        bonuses: {
+            2: { health: 50, description: "生命加成+5000%" },
+            4: { health: 500, description: "生命加成+50000%" },
+            6: { health: 1800, description: "生命加成+180000%" }
+        }
+    },
+    {
+        name: "麒麟套装",
+        bonuses: {
+            2: { attack: 50, description: "攻击加成+5000%" },
+            4: { attack: 550, description: "攻击加成+55000%" },
+            6: { health: 1000, description: "生命加成+100000%" }
+        }
+    }
+];
+
+// 神器名字库
+const artifactNames = {
+    helmet: ["玄铁战盔", "流光宝冠", "暗影头盔", "烈焰头环", "凤羽冠", "圣光战盔", "疾风头盔", "雷霆战盔", "雷霆战盔", "守护者头盔", "幽魂头罩", "精灵之冠", "矮人战盔", "毒藤头环", "寒冰面甲", "荣耀战盔", "耻辱面甲", "刹那冠冕", "雨龙盔", "龟甲盔", "云龙盔", "饕餮头盔", "虬龙头盔", "青鸾头盔", "火凤头盔", "蛟龙头盔", "龙鳞头盔", "苍龙头盔", "虚无头盔"],
+    clothes: ["龙鳞甲", "玄冰法袍", "暗影披风", "圣光铠甲", "大地之袍", "疾风劲装", "藤蔓风衣", "王者披风", "毁灭者战衣", "混沌战甲", "黎明法衣", "黄昏披风", "幽魂长衫", "泰坦铠甲", "矮人战甲", "恶魔披风", "磐石铠甲", "熔岩铠甲", "寒冰法袍", "静谧长衫", "狂怒战甲", "意志披风", "龙纹战甲", "流光战衣", "深渊战甲", "永恒战甲", "信仰战甲", "狂怒长衫"],
+    pants: ["星空护腿", "玄铁战裤", "暗影皮裤", "冰晶长裤", "圣光战裤", "幽冥长裤", "疾风短裤", "大地之裤", "藤蔓短裤", "混沌护腿", "雷霆战裤", "藤蔓护腿", "幻影护腿", "守护者护腿", "黎明护腿", "幽魂护腿", "恶魔护腿", "天使护腿", "毒藤护腿", "磐石护腿", "狂怒护腿", "勇气护腿", "雷神护腿", "火神护腿", "暗夜护腿", "星光护腿", "死神护腿"],
+    shoes: ["流光战靴", "烈焰履", "黑麒麟战靴", "神玄武战靴", "邪白虎战靴", "圣朱雀羽靴", "灭世青龙战靴", "赫光圣靴", "疾风战靴", "混沌战靴", "死神战靴", "雷神战靴", "至尊战靴", "剑圣战靴", "剑神战靴", "灭神战靴", "永恒战靴", "火迷战靴", "镭射战靴", "冥王战靴", "仙人神靴", "风暴战靴", "荣耀圣靴", "暗夜神靴", "圣飒战靴", "强韧战靴", "傲世神靴"],
+    necklace: ["星空项链", "烈焰项链", "王者项链", "玄德项链", "迪虎项链", "黎明项链", "幽魂项链", "黄昏圣链", "泰坦项链", "恶魔项链", "熔岩吊坠", "寒冰吊坠", "风暴吊坠", "狂怒吊坠", "力量吊坠", "勇气项链", "至尊项链", "荣耀项链", "凤羽项链", "流光项链", "顺神项链", "风日项链", "邪神吊坠", "睡神项链", "水神项链", "敖包吊坠", "死亡项链"],
+    weapon: ["万古绝尘剑", "撼天动地斧", "焚天怒焰刀", "惊鸿掠影剑", "血狱幽冥枪", "破界陨星锤", "冰封千里杖", "地狱修罗刀", "九霄龙吟剑", "噬魂夺魄刃", "乾坤逆转戟", "裂地崩山斧", "焚天炽羽弓", "玄冰锁魂镰", "紫电灭魔剑", "血饮狂刀", "雷霆碎岳锤", "万劫不灭矛", "破空穿云箭", "寒霜冻世剑", "炎狱修罗枪", "星河碎影剑", "混沌开天斧", "白虎裂山刃", "炼狱修罗爪", "破天裂穹剑", "轩辕剑", "湛泸剑", "赤霄剑", "泰阿剑", "承影剑", "干将", "莫邪", "鱼肠剑", "无影剑艾雷诺", "破碎之命运", "光炎剑", "泰拉石手枪", "永恒之枪", "潘多拉魔盒", "三叉戟", "方天画戟", "草薙剑", "圣剑格拉墨", "命运之矛", "埃癸斯之盾", "杜蕾斯", "闫闫爱心锤", "茶茶小奶瓶"]
+};
+
+// 初始化神器系统
+function initArtifactSystem() {
+    if (!player.artifacts) {
+        player.artifacts = {
+            fragments: 0,
+            crystals: 0,
+            inventory: [],
+            equipped: {
+                helmet: null,
+                clothes: null,
+                pants: null,
+                shoes: null,
+                necklace: null,
+                weapon: null
+            }
+        };
+    }
+}
+
+// 切换神器系统界面
+function toggleArtifactSystem() {
+    if (player.reincarnationCount < 500) {
+        alert("需要达到500转才能开启神器系统！");
+        return;
+    }
+    const overlay = document.getElementById('artifactSystemOverlay');
+    const ui = document.getElementById('artifactSystemUI');
+
+
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        initArtifactSystem();
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateArtifactUI();
+    }
+}
+
+// 更新神器系统界面
+   function updateArtifactUI() {
+   
+
+    
+    // 更新装备部位
+    updateArtifactSlots();
+    
+    // 更新神器仓库
+    updateArtifactInventory();
+    
+    // 更新套装效果
+    updateSetBonuses();
+}
+
+// 更新装备部位显示
+function updateArtifactSlots() {
+    const slotsContainer = document.getElementById('artifactSlots');
+    slotsContainer.innerHTML = '';
+    
+    artifactParts.forEach(part => {
+        const slot = document.createElement('div');
+        slot.className = 'artifact-slot';
+        slot.style.border = '1px solid #d4af37';
+        slot.style.padding = '10px';
+        slot.style.borderRadius = '5px';
+        slot.style.textAlign = 'center';
+        slot.style.backgroundColor = '#222';
+        
+        const equippedArtifact = player.artifacts.equipped[part.id];
+        
+        if (equippedArtifact) {
+            const quality = artifactQualities.find(q => q.id === equippedArtifact.quality);
+            const set = artifactSets.find(s => s.name === equippedArtifact.set);
+            
+            slot.innerHTML = `
+                <div style="color: ${quality.color}; font-weight: bold;">${equippedArtifact.name}</div>
+                <div>${part.name}</div>
+                <div style="font-size: 0.8em; margin-top: 5px;">
+                    <div>等级: ${equippedArtifact.upgradeLevel}</div>
+                    <div>套装: <span style="color: #d4af37;">${equippedArtifact.set}</span></div>
+                    <div>生命: +${(equippedArtifact.bonuses.health * 100).toFixed(1)}%</div>
+                    <div>攻击: +${(equippedArtifact.bonuses.attack * 100).toFixed(1)}%</div>
+                    <div>爆伤: +${(equippedArtifact.bonuses.critDamage * 100).toFixed(1)}%</div>
+                </div>
+                <button onclick="unequipArtifact('${part.id}')" style="margin-top: 10px; background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 0.8em;">卸下</button>
+            `;
+        } else {
+            slot.innerHTML = `
+                <div>${part.name}</div>
+                <div style="color: #888; font-size: 0.9em; margin-top: 5px;">未装备</div>
+            `;
+        }
+        
+        slotsContainer.appendChild(slot);
+    });
+}
+
+// 更新神器仓库显示
+function updateArtifactInventory() {
+    const inventoryContainer = document.getElementById('artifactInventory');
+    inventoryContainer.innerHTML = '';
+    
+    if (player.artifacts.inventory.length === 0) {
+        inventoryContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #888; padding: 20px;">仓库为空</div>';
+        return;
+    }
+    
+    player.artifacts.inventory.forEach(artifact => {
+        const quality = artifactQualities.find(q => q.id === artifact.quality);
+        const part = artifactParts.find(p => p.id === artifact.part);
+        
+        const artifactCard = document.createElement('div');
+        artifactCard.className = 'artifact-card';
+        artifactCard.style.border = `2px solid ${quality.color}`;
+        artifactCard.style.padding = '10px';
+        artifactCard.style.borderRadius = '5px';
+        artifactCard.style.cursor = 'pointer';
+        artifactCard.style.backgroundColor = '#1a1a1a';
+        artifactCard.onclick = () => showArtifactDetails(artifact.id);
+        
+         artifactCard.innerHTML = `
+        <div style="color: ${quality.color}; font-weight: bold;">${artifact.name}</div>
+        <div>${part.name}</div>
+        <div style="font-size: 0.8em; margin-top: 5px;">
+            <div>等级: ${artifact.upgradeLevel}</div>
+            <div>套装: <span style="color: #d4af37;">${artifact.set}</span></div>
+            <div>生命: +${(artifact.bonuses.health * 100).toFixed(1)}%</div>
+            <div>攻击: +${(artifact.bonuses.attack * 100).toFixed(1)}%</div>
+            <div>爆伤: +${(artifact.bonuses.critDamage * 100).toFixed(1)}%</div>
+        </div>
+        <div style="margin-top: 10px;">
+            <button onclick="equipArtifact('${artifact.id}')" style="background: #4CAF50; color: white; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8em; margin-right: 5px;">装备</button>
+            <button onclick="upgradeArtifact('${artifact.id}')" style="background: #2196F3; color: white; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8em; margin-right: 5px;">升级</button>
+            <button onclick="decomposeArtifactItem('${artifact.id}')" style="background: #f44336; color: white; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8em;">分解</button>
+        </div>
+    `;
+        
+        inventoryContainer.appendChild(artifactCard);
+    });
+}
+
+// 更新套装效果显示
+function updateSetBonuses() {
+    const setContainer = document.getElementById('setBonuses');
+    setContainer.innerHTML = '';
+    
+    // 计算当前装备的套装数量
+    const setCounts = {};
+    Object.values(player.artifacts.equipped).forEach(artifact => {
+        if (artifact) {
+            if (!setCounts[artifact.set]) {
+                setCounts[artifact.set] = 0;
+            }
+            setCounts[artifact.set]++;
+        }
+    });
+    
+    // 显示激活的套装效果
+    Object.entries(setCounts).forEach(([setName, count]) => {
+        const set = artifactSets.find(s => s.name === setName);
+        if (!set) return;
+        
+        const setDiv = document.createElement('div');
+        setDiv.style.marginBottom = '15px';
+        setDiv.style.padding = '15px';
+        setDiv.style.border = '1px solid #d4af37';
+        setDiv.style.borderRadius = '5px';
+        setDiv.style.backgroundColor = '#1a1a1a';
+        
+        let bonusesHtml = `<div style="font-weight: bold; color: #d4af37; font-size: 1.1em; margin-bottom: 10px;">${setName} (${count}/6)</div>`;
+        
+        // 显示已激活的效果
+        Object.entries(set.bonuses).forEach(([pieceCount, bonus]) => {
+            const pieceNum = parseInt(pieceCount);
+            const isActive = count >= pieceNum;
+            
+            bonusesHtml += `
+                <div style="margin-top: 8px; ${isActive ? 'color: #4CAF50;' : 'color: #888;'}">
+                    ${isActive ? '✓ ' : ''}${pieceCount}件: ${bonus.description}
+                </div>
+            `;
+        });
+        
+        setDiv.innerHTML = bonusesHtml;
+        setContainer.appendChild(setDiv);
+    });
+    
+    if (Object.keys(setCounts).length === 0) {
+        setContainer.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">未装备任何套装神器</div>';
+    }
+}
+function showArtifactDetails(artifactId) {
+    const artifact = player.artifacts.inventory.find(a => a.id === artifactId);
+    if (!artifact) return;
+    
+    const quality = artifactQualities.find(q => q.id === artifact.quality);
+    const part = artifactParts.find(p => p.id === artifact.part);
+    
+    // 创建详情弹窗
+    const detailOverlay = document.createElement('div');
+    detailOverlay.id = 'artifactDetailOverlay';
+    detailOverlay.style.position = 'fixed';
+    detailOverlay.style.top = '0';
+    detailOverlay.style.left = '0';
+    detailOverlay.style.width = '100%';
+    detailOverlay.style.height = '100%';
+    detailOverlay.style.backgroundColor = 'rgba(0,0,0,0.7)';
+    detailOverlay.style.zIndex = '2000';
+    detailOverlay.style.display = 'flex';
+    detailOverlay.style.justifyContent = 'center';
+    detailOverlay.style.alignItems = 'center';
+    
+    const detailCard = document.createElement('div');
+    detailCard.style.backgroundColor = '#1a1a1a';
+    detailCard.style.padding = '20px';
+    detailCard.style.borderRadius = '10px';
+    detailCard.style.border = `3px solid ${quality.color}`;
+    detailCard.style.width = '400px';
+    detailCard.style.maxWidth = '90%';
+    
+    detailCard.innerHTML = `
+        <div style="text-align: right;">
+            <button onclick="document.body.removeChild(document.getElementById('artifactDetailOverlay'))" style="background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">关闭</button>
+        </div>
+        <div style="text-align: center; margin-bottom: 15px;">
+            <div style="color: ${quality.color}; font-size: 1.2em; font-weight: bold;">${artifact.name}</div>
+            <div>${part.name}</div>
+            <div style="margin-top: 10px; font-size: 1.1em; color: #d4af37;">${artifact.set}套装</div>
+        </div>
+        <div style="margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span>品质:</span>
+                <span style="color: ${quality.color};">${quality.name}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span>升级等级:</span>
+                <span>${artifact.upgradeLevel}</span>
+            </div>
+        </div>
+        <div style="background: #333; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+            <div style="font-weight: bold; margin-bottom: 10px; color: #d4af37;">属性加成</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span>生命加成:</span>
+                <span>+${(artifact.bonuses.health * 100).toFixed(1)}%</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span>攻击加成:</span>
+                <span>+${(artifact.bonuses.attack * 100).toFixed(1)}%</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>爆伤加成:</span>
+                <span>+${(artifact.bonuses.critDamage * 100).toFixed(1)}%</span>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 10px;">
+            <button onclick="equipArtifact('${artifact.id}')" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">装备</button>
+            <button onclick="upgradeArtifact('${artifact.id}')" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">升级</button>
+        </div>
+    `;
+    
+    detailOverlay.appendChild(detailCard);
+    document.body.appendChild(detailOverlay);
+  updateArtifactUI();
+}
+
+function decomposeArtifactItem(artifactId) {
+    const artifactIndex = player.artifacts.inventory.findIndex(a => a.id === artifactId);
+    if (artifactIndex === -1) return;
+    
+    const artifact = player.artifacts.inventory[artifactIndex];
+    
+    // 计算分解收益
+    const decompositionRewards = calculateDecompositionReward(artifact);
+    
+    // 添加资源
+    player.exploration.resources.artifactFragment += decompositionRewards.fragments;
+    player.exploration.resources.cosmicCrystal += decompositionRewards.crystals;
+    
+    // 从仓库中移除神器
+    player.artifacts.inventory.splice(artifactIndex, 1);
+    
+    // 更新UI
+    updateArtifactUI();
+    updateExplorationUI();
+    
+    // 显示分解结果
+    showDecompositionResult(artifact, decompositionRewards);
+}
+
+// 计算分解收益
+function calculateDecompositionReward(artifact) {
+    // 基础收益基于品质
+    const quality = artifactQualities.find(q => q.id === artifact.quality);
+    const baseRewards = {
+        common: { fragments: 1, crystals: 1 },
+        uncommon: { fragments: 3, crystals: 2 },
+        rare: { fragments: 5, crystals: 5 },
+        epic: { fragments: 8, crystals: 8 },
+        legendary: { fragments: 20, crystals: 10 },
+        mythic: { fragments: 50, crystals: 20 }
+    };
+    
+    // 获取基础收益
+    const base = baseRewards[artifact.quality] || baseRewards.common;
+    
+    // 升级加成：每级增加10%收益
+    const upgradeMultiplier = 1 + (artifact.upgradeLevel * 0.1);
+    
+    // 套装加成：套装神器额外增加50%收益
+    const setMultiplier = artifact.set ? 1.5 : 1;
+    
+    // 计算最终收益
+    const fragments = Math.floor(base.fragments * upgradeMultiplier * setMultiplier);
+    const crystals = Math.floor(base.crystals * upgradeMultiplier * setMultiplier);
+    
+    return { fragments, crystals };
+}
+
+// 显示分解结果
+function showDecompositionResult(artifact, rewards) {
+    const quality = artifactQualities.find(q => q.id === artifact.quality);
+    const part = artifactParts.find(p => p.id === artifact.part);
+    
+    // 创建结果弹窗
+    const resultOverlay = document.createElement('div');
+    resultOverlay.id = 'decompositionResultOverlay';
+    resultOverlay.style.position = 'fixed';
+    resultOverlay.style.top = '0';
+    resultOverlay.style.left = '0';
+    resultOverlay.style.width = '100%';
+    resultOverlay.style.height = '100%';
+    resultOverlay.style.backgroundColor = 'rgba(0,0,0,0.7)';
+    resultOverlay.style.zIndex = '2000';
+    resultOverlay.style.display = 'flex';
+    resultOverlay.style.justifyContent = 'center';
+    resultOverlay.style.alignItems = 'center';
+    
+    const resultCard = document.createElement('div');
+    resultCard.style.backgroundColor = '#1a1a1a';
+    resultCard.style.padding = '30px';
+    resultCard.style.borderRadius = '10px';
+    resultCard.style.border = `3px solid ${quality.color}`;
+    resultCard.style.width = '450px';
+    resultCard.style.maxWidth = '90%';
+    resultCard.style.textAlign = 'center';
+    
+    resultCard.innerHTML = `
+        <h2 style="color: ${quality.color}; margin-top: 0;">分解成功</h2>
+        <div style="margin-bottom: 20px;">
+            <div style="font-size: 1.1em; margin-bottom: 10px;">${artifact.name} (${part.name})</div>
+            <div style="color: #d4af37; margin-bottom: 10px;">${artifact.set}套装</div>
+            <div>品质: <span style="color: ${quality.color};">${quality.name}</span></div>
+            <div>升级等级: ${artifact.upgradeLevel}</div>
+        </div>
+        <div style="background: #333; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <div style="font-weight: bold; margin-bottom: 10px; color: #d4af37;">获得资源</div>
+            <div style="display: flex; justify-content: space-around; margin-top: 15px;">
+                <div>
+                    <div style="font-size: 1.2em; color: #FF9800;">${rewards.fragments}</div>
+                    <div>神器碎片</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.2em; color: #2196F3;">${rewards.crystals}</div>
+                    <div>宇宙晶体</div>
+                </div>
+            </div>
+        </div>
+        <button onclick="document.body.removeChild(document.getElementById('decompositionResultOverlay'))" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1.1em;">确认</button>
+    `;
+    
+    resultOverlay.appendChild(resultCard);
+    document.body.appendChild(resultOverlay);
+}
+
+
+// 锻造神器
+function forgeArtifact() {
+    if (player.exploration.resources.artifactFragment < 10) {
+        logAction("神器碎片不足！", "error");
+        return;
+    }
+    
+    player.exploration.resources.artifactFragment -= 10;
+    
+    // 随机选择部位
+    const part = artifactParts[Math.floor(Math.random() * artifactParts.length)];
+    
+    // 随机选择品质（概率不同）
+    const qualityRoll = Math.random();
+    let quality;
+    if (qualityRoll < 0.7) quality = artifactQualities[0]; 
+    else if (qualityRoll < 0.86) quality = artifactQualities[1]; 
+    else if (qualityRoll < 0.95) quality = artifactQualities[2]; 
+    else if (qualityRoll < 0.99) quality = artifactQualities[3]; 
+    else if (qualityRoll < 0.999) quality = artifactQualities[4]; 
+    else quality = artifactQualities[5]; 
+    
+    // 随机选择名字
+    const name = artifactNames[part.id][Math.floor(Math.random() * artifactNames[part.id].length)];
+    
+    // 随机选择套装
+    const set = artifactSets[Math.floor(Math.random() * artifactSets.length)];
+    
+    // 生成随机属性（在品质范围内）
+    const bonuses = {
+        health: (Math.random() * (quality.maxBonus - quality.minBonus) + quality.minBonus).toFixed(3),
+        attack: (Math.random() * (quality.maxBonus - quality.minBonus) + quality.minBonus).toFixed(3),
+        critDamage: (Math.random() * (quality.maxBonus - quality.minBonus) + quality.minBonus).toFixed(3)
+    };
+    
+    // 创建神器
+    const artifact = {
+        id: 'artifact_' + Date.now() + Math.random(),
+        name: name,
+        part: part.id,
+        quality: quality.id,
+        set: set.name,
+        bonuses: bonuses,
+        upgradeLevel: 0
+    };
+    
+    player.artifacts.inventory.push(artifact);
+    logAction(`成功锻造 ${quality.name}品质${part.name}：${name}`, 'success');
+    updateArtifactUI();
+   
+}
+
+// 装备神器
+function equipArtifact(artifactId) {
+    const artifact = player.artifacts.inventory.find(a => a.id === artifactId);
+    if (!artifact) return;
+    
+    // 检查该部位是否已装备
+    if (player.artifacts.equipped[artifact.part]) {
+        // 卸下当前装备
+        player.artifacts.inventory.push(player.artifacts.equipped[artifact.part]);
+    }
+    
+    // 装备新神器
+    player.artifacts.equipped[artifact.part] = artifact;
+    
+    // 从仓库移除
+    player.artifacts.inventory = player.artifacts.inventory.filter(a => a.id !== artifactId);
+    
+    logAction(`装备了神器：${artifact.name}`, 'success');
+   updateExplorationUI();
+    updateArtifactUI();
+    updatePlayerBattleStats(); // 更新玩家战斗属性
+}
+
+// 卸下神器
+function unequipArtifact(part) {
+    const artifact = player.artifacts.equipped[part];
+    if (!artifact) return;
+    
+    player.artifacts.inventory.push(artifact);
+    player.artifacts.equipped[part] = null;
+    
+    logAction(`卸下了神器：${artifact.name}`, 'success');
+    updateArtifactUI();
+    updatePlayerBattleStats(); // 更新玩家战斗属性
+}
+
+// 升级神器
+function upgradeArtifact(artifactId) {
+    const artifact = player.artifacts.inventory.find(a => a.id === artifactId);
+    if (!artifact) return;
+    
+    const upgradeCost = 10 * (artifact.upgradeLevel + 1);
+    if (player.exploration.resources.cosmicCrystal < upgradeCost) {
+        logAction(`宇宙晶体不足！需要${upgradeCost}`, "error");
+        return;
+    }
+    
+    player.exploration.resources.cosmicCrystal -= upgradeCost;
+    artifact.upgradeLevel++;
+    
+    // 提升属性（最多提升50%）
+    const quality = artifactQualities.find(q => q.id === artifact.quality);
+    const maxBonus = quality.maxBonus * 100000000; // 最大提升100%
+    
+    Object.keys(artifact.bonuses).forEach(key => {
+        const currentBonus = parseFloat(artifact.bonuses[key]);
+        const upgradeAmount = Math.min(
+            maxBonus - currentBonus,
+            quality.maxBonus * 0.1 // 每次升级提升10%的品质上限
+        );
+        
+        if (upgradeAmount > 0) {
+            artifact.bonuses[key] = (currentBonus + upgradeAmount).toFixed(3);
+        }
+    });
+    
+    logAction(`成功升级 ${artifact.name} 到 Lv.${artifact.upgradeLevel}`, 'success');
+    updateArtifactUI();
+}
+
+// 计算神器总加成
+function calculateArtifactBonuses() {
+    const bonuses = {
+        health: 0,
+        attack: 0,
+        critDamage: 0
+    };
+    
+    // 累加所有装备神器的加成
+    Object.values(player.artifacts.equipped).forEach(artifact => {
+        if (artifact) {
+            bonuses.health += parseFloat(artifact.bonuses.health);
+            bonuses.attack += parseFloat(artifact.bonuses.attack);
+            bonuses.critDamage += parseFloat(artifact.bonuses.critDamage);
+        }
+    });
+    
+    // 应用套装效果
+    const setCounts = {};
+    Object.values(player.artifacts.equipped).forEach(artifact => {
+        if (artifact) {
+            if (!setCounts[artifact.set]) {
+                setCounts[artifact.set] = 0;
+            }
+            setCounts[artifact.set]++;
+        }
+    });
+    
+    Object.entries(setCounts).forEach(([setName, count]) => {
+        const set = artifactSets.find(s => s.name === setName);
+        if (!set) return;
+        
+        Object.entries(set.bonuses).forEach(([pieceCount, bonus]) => {
+            if (count >= parseInt(pieceCount)) {
+                bonuses.health += bonus.health || 0;
+                bonuses.attack += bonus.attack || 0;
+                bonuses.critDamage += bonus.critDamage || 0;
+            }
+        });
+    });
+    
+    return bonuses;
+}
+// 杂货铺功能
+function toggleGroceriesUI() {
+if (player.reincarnationCount < 400) {
+        alert("需要达到400转才能开启杂货铺！");
+        return;
+    }
+    const ui = document.getElementById('groceriesUI');
+    const overlay = document.getElementById('groceriesOverlay');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateGroceriesUI();
+    }
+}
+
+function updateGroceriesUI() {
+    // 更新星尘数量显示
+    document.getElementById('currentStardust').textContent = player.exploration.resources.stardust;
+}
+
+function exchangeStardust(type) {
+    const exchangeRates = {
+        bait: { cost: 50, item: 'baitCount', amount: parseInt(document.getElementById('baitAmount').value) },
+        key: { cost: 200, item: 'companionKey', amount: parseInt(document.getElementById('keyAmount').value) },
+        rose: { cost: 5, item: 'rose', amount: parseInt(document.getElementById('roseAmount').value) },
+        vip: { cost: 10, item: 'vipPower', amount: parseInt(document.getElementById('vipAmount').value) },
+        gem: { cost: 5000, item: 'divineGem', amount: parseInt(document.getElementById('gemAmount').value) },
+        coin: { cost: 1, item: 'reincarnationCoin', amount: parseInt(document.getElementById('coinAmount').value), coinRate: 10000 }
+    };
+    
+    const config = exchangeRates[type];
+    if (!config) return;
+    
+    const totalCost = config.cost * config.amount;
+    const stardust = player.exploration.resources.stardust;
+    
+    if (stardust < totalCost) {
+        logAction("星尘不足！", "error");
+        return;
+    }
+    
+    // 扣除星尘
+    player.exploration.resources.stardust -= totalCost;
+    
+    // 给予物品
+    if (type === 'coin') {
+        player[config.item] += config.amount * config.coinRate;
+    } else {
+        player.items[config.item] = (player.items[config.item] || 0) + config.amount;
+    }
+    
+    logAction(`成功兑换: ${config.amount}${getItemName(type)}`, "success");
+    updateGroceriesUI();
+    updateDisplay();
+    saveGame();
+}
+
+function getItemName(type) {
+    const names = {
+        bait: "鱼饵",
+        key: "伴侣钥匙",
+        rose: "玫瑰花",
+        vip: "VIP能力值",
+        gem: "神级宝石",
+        coin: "转生币"
+    };
+    return names[type] || "物品";
+}
+// 宝石系统初始化
+function initGemSystem() {
+    if (!player.gems) {
+        player.gems = {
+            red: {1: 0},   // 初始化为0个1级红宝石
+            blue: {1: 0},   // 初始化为0个1级蓝宝石
+            black: {1: 0}  // 初始化为0个1级黑宝石
+
+        };
+    }
+}
+
+// 切换宝石系统界面
+function toggleGemSystem() {
+   if (player.reincarnationCount < 800) {
+        alert("需要达到800转才能开启宝石系统！");
+        return;
+    }
+    const overlay = document.getElementById('gemSystemOverlay');
+    const ui = document.getElementById('gemSystemUI');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        initGemSystem();
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateGemUI();
+    }
+}
+
+// 更新宝石界面
+function updateGemUI() {
+    updateGemInventory();
+    updateGemBonuses();
+}
+
+// 更新宝石仓库显示
+function updateGemInventory() {
+    const container = document.getElementById('gemInventory');
+    container.innerHTML = '';
+    
+    // 红宝石
+    addGemTypeToUI('red', '红宝石 (攻击加成)', container);
+    // 蓝宝石
+    addGemTypeToUI('blue', '蓝宝石 (生命加成)', container);
+    // 黑宝石
+    addGemTypeToUI('black', '黑宝石 (爆伤加成)', container);
+
+}
+
+// 添加宝石类型到UI
+function addGemTypeToUI(type, name, container) {
+    const gemTypeDiv = document.createElement('div');
+    gemTypeDiv.className = 'gem-type-section';
+    gemTypeDiv.innerHTML = `<h4>${name}</h4>`;
+    
+    const gemsContainer = document.createElement('div');
+    gemsContainer.style.display = 'grid';
+    gemsContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    gemsContainer.style.gap = '10px';
+    gemsContainer.style.marginTop = '10px';
+    
+    // 显示该类型的所有宝石
+    let hasGems = false;
+    for (const level in player.gems[type]) {
+        const count = player.gems[type][level];
+        if (count > 0) {
+            hasGems = true;
+            const gemDiv = document.createElement('div');
+            gemDiv.className = 'gem-item';
+            gemDiv.innerHTML = `
+                <div class="gem-icon ${type}">${type.charAt(0).toUpperCase()}</div>
+                <div class="gem-level">${level}</div>
+                <div>数量: ${count}</div>
+                <button onclick="upgradeGem('${type}', ${level})" ${count < 3 ? 'disabled' : ''}>合成</button>
+            `;
+            gemsContainer.appendChild(gemDiv);
+        }
+    }
+    
+    // 如果没有宝石，显示提示
+    if (!hasGems) {
+        gemsContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #888;">暂无宝石</div>';
+    }
+    
+    gemTypeDiv.appendChild(gemsContainer);
+    container.appendChild(gemTypeDiv);
+}
+
+// 更新宝石加成显示
+function updateGemBonuses() {
+    const bonuses = calculateGemBonuses();
+    
+    document.getElementById('attackBonus').textContent = `${bonuses.attack.toFixed(1)}%`;
+    document.getElementById('healthBonus').textContent = `${bonuses.health.toFixed(1)}%`;
+    document.getElementById('critDamageBonus').textContent = `${bonuses.critDamage.toFixed(1)}%`;
+
+}
+
+
+// 计算宝石总加成
+function calculateGemBonuses() {
+    return {
+        attack: calculateGemBonus('red'),
+        health: calculateGemBonus('blue'),
+        critDamage: calculateGemBonus('black')
+
+
+    };
+}
+// 计算单个宝石类型的加成
+function calculateGemBonus(type) {
+    let totalBonus = 0;
+    
+    for (const level in player.gems[type]) {
+        const count = player.gems[type][level];
+        const levelInt = parseInt(level);
+        
+        // 不同宝石类型有不同的加成计算方式
+        switch (type) {
+            case 'red': // 攻击加成: 100% * 2^(等级-1)
+                totalBonus += count * 100 * (Math.pow(3, levelInt) - 1) / 2;
+                break;
+            case 'blue': // 生命加成: 5% * 2^(等级-1)
+                totalBonus += count * 5 * (Math.pow(3, levelInt) - 1) / 2;
+                break;
+            case 'black': // 爆伤加成: 100% * 2^(等级-1)
+                totalBonus += count * 100 * (Math.pow(3, levelInt) - 1) / 2;
+                break;
+
+        }
+    }
+    
+    return totalBonus;
+}
+
+// 购买宝石
+function buyGem(type, level) {
+    if (player.exploration.resources.darkMatter >= 100) {
+        player.exploration.resources.darkMatter -= 100;
+        
+        // 确保宝石类型存在
+        if (!player.gems[type]) {
+            player.gems[type] = {};
+        }
+        
+        // 确保宝石等级存在
+        if (!player.gems[type][level]) {
+            player.gems[type][level] = 0;
+        }
+        
+        player.gems[type][level]++;
+        logAction(`购买了1个${getGemName(type)}宝石`, 'success');
+        updateGemUI();
+        updateDisplay();
+    } else {
+        logAction("暗物质不足！", "error");
+    }
+}
+
+// 添加宝石
+function addGem(type, level) {
+    if (!player.gems[type][level]) {
+        player.gems[type][level] = 0;
+    }
+    player.gems[type][level]++;
+}
+
+// 获取宝石名称
+function getGemName(type) {
+    const names = {
+        red: "红",
+        blue: "蓝",
+        black: "黑"
+
+    };
+    return names[type] || "未知";
+}
+
+// 宝石合成
+function upgradeGem(type, level) {
+    const currentLevel = parseInt(level);
+    const nextLevel = currentLevel + 1;
+    
+    // 检查是否有足够的宝石合成
+    if (player.gems[type][currentLevel] >= 3) {
+        player.gems[type][currentLevel] -= 3;
+        
+        // 如果数量为0，删除该等级
+        if (player.gems[type][currentLevel] === 0) {
+            delete player.gems[type][currentLevel];
+        }
+        
+        // 添加高一级宝石
+        if (!player.gems[type][nextLevel]) {
+            player.gems[type][nextLevel] = 0;
+        }
+        player.gems[type][nextLevel]++;
+        
+        logAction(`成功合成${getGemName(type)}宝石 Lv.${nextLevel}`, 'success');
+        updateGemUI();
+    } else {
+        logAction("宝石数量不足，无法合成！", "error");
+    }
+}
+
 // 称号配置（按分支分组）
 const titleConfig = {
      towerBranyy: [
@@ -13361,5 +15321,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
+
 </body>
 </html>
