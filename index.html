@@ -887,6 +887,7 @@ button:hover {
             <p>23. 神器锻造系统：500转开启，探索获取材料，6个品质，集齐套装加格外属性。</p>
            <p>24. 星域探索：300转开启，获取新材料</p>
            <p>25. 宝石系统：800转开启，提供大量属性</p>
+           <p>26. 修仙系统：500转开启，开启经验获得条件是，获得一次灵根。灵根检测器，杂货铺购买</p>
         </div>
     </div>
 </div>
@@ -928,6 +929,7 @@ button:hover {
     <div>通天塔层数: <span id="towerFloor">0</span></div>
     <div>当前官职: <span id="currentOfficialTitle">无</span></div>
     <div>当前奥秘: <span id="currentMysteryTitle">初级秘法师 1阶1级</span></div>
+    <div>修仙境界: <span id="currentStageq">凡人</span></div>
 
     <button onclick="clickGold()">点击获取金币</button>
     <button onclick="reincarnate()">转生</button>
@@ -937,7 +939,7 @@ button:hover {
     <button onclick="toggleMonsterUI()">打怪模式(优先打!)</button> 
     <button onclick="toggleTowerUI()">通天塔</button>
     <button onclick="toggleWorldBossUI()" style="background: linear-gradient(to bottom, #d4af37, #a67c00); color: #000; font-weight: bold; padding: 6px 12px; font-size: 12px;">世界BOSS</button>
-<button onclick="toggleFundSystem()">基金系统</button>
+    <button onclick="toggleFundSystem()">基金系统</button>
     <button onclick="showTitleDialog()">称号系统</button>
     <button onclick="toggleOfficialSystem()">官职系统</button>
     <button onclick="toggleClassSystem()">职业系统</button>
@@ -948,6 +950,7 @@ button:hover {
     <button onclick="toggleParkingSystem()">停车位系统</button>
     <button onclick="toggleExplorationSystem()" style="margin-left: 10px;">星域探索</button>
     <button onclick="toggleArtifactSystem()" style="margin-left: 10px;">神器锻造系统</button>
+    <button onclick="toggleCultivationSystem()" style="margin-left: 10px;">修仙系统</button>
     <button onclick="toggleGemSystem()" style="margin-left: 10px;">宝石系统</button>
     <button onclick="toggleSettingsUI()">设置</button>
 
@@ -2082,7 +2085,16 @@ button:hover {
             <button onclick="exchangeStardust('gem')">兑换</button>
         </div>
     </div>
-    
+    <div class="exchange-item">
+    <div class="exchange-info">
+        <strong>灵根检测器</strong>
+        <div>500星尘 → 1个</div>
+    </div>
+    <div class="exchange-controls">
+        <input type="number" id="rootAmount" min="1" value="1" style="width: 60px;">
+        <button onclick="exchangeStardust('root')">兑换</button>
+    </div>
+</div>
     <div class="exchange-item">
         <div class="exchange-info">
             <strong>转生币</strong>
@@ -2138,7 +2150,63 @@ button:hover {
         </div>
     </div>
 </div>
+<!-- 修仙系统UI -->
+<div id="cultivationSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="cultivationSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #4CAF50; border-radius: 10px; z-index: 1001; width: 600px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #4CAF50; margin: 0;">修仙系统</h2>
+        <button onclick="toggleCultivationSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+    
+    <!-- 当前灵根信息 -->
+    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #4CAF50; margin-top: 0;">当前灵根</h3>
+        <div id="currentRootInfo" style="text-align: center; padding: 10px;">
+            尚未检测灵根
+        </div>
+        <div style="text-align: center; margin-top: 10px;">
+            <button onclick="openRootBox()" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">开启灵根宝箱</button>
+        </div>
+    </div>
+    
+    <!-- 修仙阶段 -->
+    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #4CAF50; margin-top: 0;">修仙阶段</h3>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <div>境界等级: <span id="stageLevel">0</span></div>（经验=转生次数*灵根加成）
+        </div>
+        <div style="margin-bottom: 10px;">
+            <div>当前经验: <span id="currentExp">0</span></div>
+            <div>升级所需: <span id="nextExp">1000</span></div>
+        </div>
+        <div class="exp-bar">
+            <div id="expProgress" class="exp-progress" style="width: 0%;"></div>
+        </div>
+        <div style="text-align: center; margin-top: 10px;">
+            <button onclick="upgradeCultivation()" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">升级</button>
+        </div>
+    </div>
+    
+    <!-- 阶段加成 -->
+    <div style="background: #333; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #4CAF50; margin-top: 0;">阶段加成</h3>
+        <div id="stageBonusInfo">
+            当前加成: GPS × <span id="gpsMultiplier">1</span>
+        </div>
+    </div>
+</div>
 
+<!-- 灵根宝箱UI -->
+<div id="rootBoxOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="rootBoxUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #FFD700; border-radius: 10px; z-index: 1001; width: 400px; text-align: center;">
+    <h3 style="color: #FFD700; margin-top: 0;">灵根宝箱</h3>
+    <p>消耗1个灵根检测器开启宝箱</p>
+    <div id="rootResult" style="margin: 20px 0; font-size: 18px; min-height: 60px; display: flex; align-items: center; justify-content: center;">
+        点击开启获取灵根
+    </div>
+    <button onclick="drawRoot()" style="background: #FFD700; color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px;">开启宝箱</button>
+    <button onclick="closeRootBox()" style="background: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">关闭</button>
+</div>
 
 
 
@@ -2250,6 +2318,12 @@ button:hover {
     soulRingMultiplier: 1,    // 魂环总加成乘数（默认1倍）
     dungeonEquipMultiplier: 1 // 副本装备总加成乘数（默认1倍）
   },
+cultivation: {
+            stage: 0, // 当前阶段索引
+            exp: 0,   // 当前经验值
+            root: null, // 当前灵根
+           bonus: 1
+        },
  artifacts: {
             fragments: 0,
             crystals: 0,
@@ -2360,7 +2434,8 @@ gems: {
         rose: 0, // 玫瑰花
         companionKey: 0, // 伴侣钥匙
         rebornDan: 0,
-        baitCount: 0
+        baitCount: 0,
+        rootDetector: 0
     },
     collections: {
         lightSpeedHand: 0,
@@ -3243,7 +3318,8 @@ const vipConfig = [
     rose: { name: '玫瑰花', effect: 1, description: '用于升级伴侣等级' },
     companionKey: { name: '伴侣钥匙', effect: 0, description: '用于开启伴侣宝箱' }, 
     rebornDan: { name: '洗髓丹', effect: 0, description: '用于洗练伴侣天赋' },
-    baitCount: { name: '鱼饵', effect: 0, description: '用于钓鱼消耗品' }
+    baitCount: { name: '鱼饵', effect: 0, description: '用于钓鱼消耗品' },
+    rootDetector: { name: '灵根检测器', effect: 0, description: '用于开启灵根宝箱' }
      
 };
 
@@ -3319,26 +3395,26 @@ const vipConfig = [
  // 奥秘系统配置
 const mysteryConfig = [
     { stage: 1, name: "初级秘法师", levelCost: 100, totalBonus: 1 },
-    { stage: 2, name: "奥法转运者", levelCost: 10000, totalBonus: 50 },
-    { stage: 3, name: "奥术掌握者", levelCost: 100000, totalBonus: 100 },
-    { stage: 4, name: "秘能大师", levelCost: 500000, totalBonus: 500 },
-    { stage: 5, name: "奥术之灵", levelCost: 1000000, totalBonus: 10000 },
-    { stage: 6, name: "神圣秘灵师", levelCost: 5000000, totalBonus: 50000 },
-    { stage: 7, name: "神之奥术掌握者", levelCost: 10000000, totalBonus: 100000 },
-    { stage: 8, name: "先知大师", levelCost: 50000000, totalBonus: 500000 },
-    { stage: 9, name: "恒星秘法师", levelCost: 100000000, totalBonus: 1000000 },
-    { stage: 10, name: "暗能量宗师", levelCost: 200000000, totalBonus: 5000000 },
-    { stage: 11, name: "星光秘耀使者", levelCost: 300000000, totalBonus: 100000000 },
-    { stage: 12, name: "混沌秘能主宰", levelCost: 400000000, totalBonus: 500000000 },
-    { stage: 13, name: "维度漫游大师", levelCost: 500000000, totalBonus: 1000000000 },
-    { stage: 14, name: "终焉秘法先知", levelCost: 600000000, totalBonus: 5000000000 },
-    { stage: 15, name: "时律操纵者", levelCost: 800000000, totalBonus: 10000000000 },
-    { stage: 16, name: "创世星芒导师", levelCost: 1000000000, totalBonus: 500000000000 },
-    { stage: 17, name: "虚无之光缔造者", levelCost: 2000000000, totalBonus: 1000000000000 },
-    { stage: 18, name: "神谕秘能神", levelCost: 4000000000, totalBonus: 5000000000000 },
-    { stage: 19, name: "永恒奥术神", levelCost: 6000000000, totalBonus: 10000000000000 },
-    { stage: 20, name: "超维秘耀神", levelCost: 8000000000, totalBonus: 50000000000000 },
-    { stage: 21, name: "奥秘本身", levelCost: 10000000000, totalBonus: 1000000000000000 }
+    { stage: 2, name: "奥法转运者", levelCost: 10000, totalBonus: 5 },
+    { stage: 3, name: "奥术掌握者", levelCost: 100000, totalBonus: 10 },
+    { stage: 4, name: "秘能大师", levelCost: 500000, totalBonus: 50 },
+    { stage: 5, name: "奥术之灵", levelCost: 1000000, totalBonus: 100 },
+    { stage: 6, name: "神圣秘灵师", levelCost: 5000000, totalBonus: 500 },
+    { stage: 7, name: "神之奥术掌握者", levelCost: 10000000, totalBonus: 1000 },
+    { stage: 8, name: "先知大师", levelCost: 50000000, totalBonus: 5000 },
+    { stage: 9, name: "恒星秘法师", levelCost: 100000000, totalBonus: 10000 },
+    { stage: 10, name: "暗能量宗师", levelCost: 200000000, totalBonus: 50000 },
+    { stage: 11, name: "星光秘耀使者", levelCost: 300000000, totalBonus: 100000 },
+    { stage: 12, name: "混沌秘能主宰", levelCost: 400000000, totalBonus: 500000 },
+    { stage: 13, name: "维度漫游大师", levelCost: 500000000, totalBonus: 1000000 },
+    { stage: 14, name: "终焉秘法先知", levelCost: 600000000, totalBonus: 5000000 },
+    { stage: 15, name: "时律操纵者", levelCost: 800000000, totalBonus: 10000000 },
+    { stage: 16, name: "创世星芒导师", levelCost: 1000000000, totalBonus: 50000000 },
+    { stage: 17, name: "虚无之光缔造者", levelCost: 2000000000, totalBonus: 100000000 },
+    { stage: 18, name: "神谕秘能神", levelCost: 4000000000, totalBonus: 500000000 },
+    { stage: 19, name: "永恒奥术神", levelCost: 6000000000, totalBonus: 1000000000 },
+    { stage: 20, name: "超维秘耀神", levelCost: 8000000000, totalBonus: 5000000000 },
+    { stage: 21, name: "奥秘本身", levelCost: 10000000000, totalBonus: 10000000000 }
 ];
         // 装备配置
         const equipmentTypes = {
@@ -3356,27 +3432,27 @@ const mysteryConfig = [
             transcendental: { name: '超凡', gps: 5000000, click: 50000000, prob: 0.001, growthRate: 0.80 },
             quantum: { name: '量子', gps: 6000000, click: 80000000, prob: 0.0005, growthRate: 0.90 },
             ultimate: { name: '究极', gps: 10000000, click: 2000000000, prob: 0.0134, growthRate: 1.00 },
-            chaos: { name: '混沌', gps: 500000000000, click: 5000000000000, prob: 0.01, growthRate: 1.20 },
-            eternal: { name: '永恒', gps: 600000000000, click: 800000000000000, prob: 0.01, growthRate: 1.50 },
-           void: { name: '虚无', gps: 10000000000000, click: 20000000000000000, prob: 0.001, growthRate: 2.00 },
-          genesis: { name: '创世', gps: 500000000000000000, click: 60000000000000000000, prob: 0.01, growthRate: 2.50 },
-          divineRealm: { name: '神域', gps: 600000000000000000, click: 80000000000000000000, prob: 0.01, growthRate: 2.70 },
-          apocalypse: { name: '终焉', gps: 1000000000000000000, click: 200000000000000000000, prob: 0.01, growthRate: 3.00 },
-         yeyu1: { name: '星辰', gps: 50000000000000000000000, click: 5000000000000000000000000, prob: 0.0001, growthRate: 3.20 },
-         yeyu2: { name: '起源', gps: 60000000000000000000000, click: 60000000000000000000000000, prob: 0.00005, growthRate: 3.50 },
-         yeyu3: { name: '时光', gps: 100000000000000000000000, click: 200000000000000000000000000, prob: 0.00001, growthRate: 4.00 },
-         yeyu4: { name: '造物', gps: 5000000000000000000000000000, click: 5000000000000000000000000000000, prob: 0.000005, growthRate: 4.20 },
-         yeyu5: { name: '银河', gps: 6000000000000000000000000000, click: 6000000000000000000000000000000, prob: 0.000001, growthRate: 4.50 },
-         yeyu6: { name: '天界', gps: 10000000000000000000000000000, click: 10000000000000000000000000000000, prob: 0.0000001, growthRate: 5.00 },
-         yeyu7: { name: '星云', gps: 500000000000000000000000000000000, click: 500000000000000000000000000000000000, prob: 0.0000001, growthRate: 5.50 },
-         yeyu8: { name: '星河', gps: 600000000000000000000000000000000, click: 600000000000000000000000000000000000, prob: 0.0000001, growthRate: 6.00 },
-         yeyu9: { name: '纪元', gps: 1000000000000000000000000000000000, click: 1000000000000000000000000000000000000, prob: 0.0000001, growthRate: 6.50 }, 
-         yeyu10: { name: '鸿蒙', gps: 50000000000000000000000000000000000000, click: 5000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 7.00 },
-         yeyu11: { name: '星穹', gps: 60000000000000000000000000000000000000, click: 6000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 7.50 },
-         yeyu12: { name: '亘古', gps: 100000000000000000000000000000000000000, click: 10000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.00 },
-         yeyu13: { name: '万象', gps: 5000000000000000000000000000000000000000000, click: 50000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.50 },
-         yeyu14: { name: '太虚', gps: 6000000000000000000000000000000000000000000, click: 60000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.00 },
-         yeyu15: { name: '九垓', gps: 10000000000000000000000000000000000000000000, click: 100000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.50 }
+            chaos: { name: '混沌', gps: 50000000000, click: 500000000000, prob: 0.01, growthRate: 1.20 },
+            eternal: { name: '永恒', gps: 60000000000, click: 80000000000000, prob: 0.01, growthRate: 1.50 },
+           void: { name: '虚无', gps: 1000000000000, click: 2000000000000000, prob: 0.001, growthRate: 2.00 },
+          genesis: { name: '创世', gps: 500000000000000, click: 60000000000000000, prob: 0.01, growthRate: 2.50 },
+          divineRealm: { name: '神域', gps: 600000000000000, click: 80000000000000000, prob: 0.01, growthRate: 2.70 },
+          apocalypse: { name: '终焉', gps: 1000000000000000, click: 200000000000000000, prob: 0.01, growthRate: 3.00 },
+         yeyu1: { name: '星辰', gps: 50000000000000000000, click: 5000000000000000000000, prob: 0.0001, growthRate: 3.20 },
+         yeyu2: { name: '起源', gps: 60000000000000000000, click: 60000000000000000000000, prob: 0.00005, growthRate: 3.50 },
+         yeyu3: { name: '时光', gps: 100000000000000000000, click: 200000000000000000000000, prob: 0.00001, growthRate: 4.00 },
+         yeyu4: { name: '造物', gps: 500000000000000000000000, click: 500000000000000000000000000, prob: 0.000005, growthRate: 4.20 },
+         yeyu5: { name: '银河', gps: 600000000000000000000000, click: 600000000000000000000000000, prob: 0.000001, growthRate: 4.50 },
+         yeyu6: { name: '天界', gps: 1000000000000000000000000, click: 1000000000000000000000000000, prob: 0.0000001, growthRate: 5.00 },
+         yeyu7: { name: '星云', gps: 5000000000000000000000000000, click: 5000000000000000000000000000000, prob: 0.0000001, growthRate: 5.50 },
+         yeyu8: { name: '星河', gps: 6000000000000000000000000000, click: 6000000000000000000000000000000, prob: 0.0000001, growthRate: 6.00 },
+         yeyu9: { name: '纪元', gps: 10000000000000000000000000000, click: 10000000000000000000000000000000, prob: 0.0000001, growthRate: 6.50 }, 
+         yeyu10: { name: '鸿蒙', gps: 500000000000000000000000000000000, click: 50000000000000000000000000000000000, prob: 0.0000001, growthRate: 7.00 },
+         yeyu11: { name: '星穹', gps: 600000000000000000000000000000000, click: 60000000000000000000000000000000000, prob: 0.0000001, growthRate: 7.50 },
+         yeyu12: { name: '亘古', gps: 1000000000000000000000000000000000, click: 100000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.00 },
+         yeyu13: { name: '万象', gps: 50000000000000000000000000000000000000, click: 500000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.50 },
+         yeyu14: { name: '太虚', gps: 60000000000000000000000000000000000000, click: 600000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.00 },
+         yeyu15: { name: '九垓', gps: 100000000000000000000000000000000000000, click: 1000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.50 }
        
         };
 
@@ -4109,6 +4185,11 @@ function confirmActivationCode() {
             rewardMsg = "获得10个洗髓丹";
             success = true;
             break;
+           case "XIUXIAN":
+            player.items.rootDetector = (player.items.rootDetector || 0) + 5;
+            rewardMsg = "获得5个灵根检测器";
+            success = true;
+            break;
            case "WOYAOCHE":
             const models = ["Portofino", "Roma", "SF90"];
             const randomModel = models[Math.floor(Math.random() * models.length)];
@@ -4276,9 +4357,7 @@ function calculateTotalGPS() {
             player.battle.autoSweepEnabled = save.battle.autoSweepEnabled;
         }
          updateAutoConvertDisplay();
-        
- 
-        
+       
         
              // 确保加载通天塔数据
           if (!player.fishing) {
@@ -4389,7 +4468,7 @@ if (speedBoostBtn) {
                         checkTraditionalLotteryResult();
                     }
                 }
-      
+               calculateOfflineCultivationExp(offlineMinutes);
                 // 计算离线期间的银行利息
                 calculateBankInterest();
             }
@@ -4610,16 +4689,18 @@ function handleVipPowerGain() {
     // 改为使用带职业加成的总魂环加成
     const soulRingBonus = getTotalSoulRingBonus();
  const mysteryBonus = player.mystery.bonus || 1;
+const cultivationBonus = player.cultivation.bonus || 1;
 const gpsEnhancements =  [1, 5, 10, 25, 50, 75, 100, 150, 250, 500, 750, 1000, 2500, 5000, 7500, 10000, 25000, 50000, 75000, 100000, 250000, 500000, 750000, 1000000, 2500000, 5000000, 7500000, 10000000, 25000000, 50000000, 75000000, 100000000, 250000000, 500000000, 750000000, 1000000000, 2500000000, 5000000000, 7500000000, 10000000000];
 const farmGPSEnhancement  = gpsEnhancements[player.farm.level - 1] || gpsEnhancements[gpsEnhancements.length - 1];
 
 const gpsEnhancementss =  [1, 5, 10, 25, 50, 75, 100, 150, 250, 500, 750, 1000, 2500, 5000, 7500, 10000, 25000, 50000, 75000, 100000, 250000, 500000, 750000, 1000000, 2500000, 5000000, 7500000, 10000000, 25000000, 50000000, 75000000, 100000000, 250000000, 500000000, 750000000, 1000000000, 2500000000, 5000000000, 7500000000, 10000000000];
 const farmGPSEnhancements  = gpsEnhancementss[player.parking.level - 1] || gpsEnhancementss[gpsEnhancementss.length - 1];
 
+
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.gps * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.gpsMultiplier 
         * (1 + gpsBonus) 
-        * petMultiplier * (1 + dungeonBonus)* (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements;
+        * petMultiplier * (1 + dungeonBonus)* (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus;
 }
 
 function getTotalClickValue() {
@@ -5672,7 +5753,8 @@ function resetItemDisplay() {
         rose: itemCounts.rose || 0,
         companionKey: itemCounts.companionKey || 0,
          rebornDan: itemCounts.rebornDan || 0,
-      baitCount: itemCounts.baitCount || 0
+      baitCount: itemCounts.baitCount || 0,
+   rootDetector: itemCounts.rootDetector || 0
        
     };
 
@@ -6510,6 +6592,8 @@ function confirmRename() {
       document.getElementById("playerName").textContent = player.name;
        const currentTitleEl = document.getElementById("currentTitle");
     currentTitleEl.textContent = player.titles.current ? `[${player.titles.current}]` : "";
+  
+ 
     // 数值显示
     const display = (value) => {
     if (value >= 1e8) {  // 当数值大于等于 100,000,000 时使用科学计数法
@@ -6539,7 +6623,7 @@ function confirmRename() {
     document.getElementById("gps").textContent = display(getTotalGPS());
     document.getElementById("clickValue").textContent = display(getTotalClickValue());
     document.getElementById("vipPowerCount").textContent = player.items.vipPower || 0;
-
+   document.getElementById("mysteryBonusDisplay").textContent = player.mystery.bonus;
 
 
     // 更新材料宝箱购买成本显示
@@ -6553,7 +6637,7 @@ function confirmRename() {
         document.getElementById("monsterHealth").textContent = display(player.battle.monster.health);
         document.getElementById("monsterAttack").textContent = display(player.battle.monster.attack);
     }
-
+   
     // 更新玩家攻击显示
     document.getElementById("playerAttack").textContent = display(player.battle.playerAttack);
 
@@ -7359,6 +7443,7 @@ function formatTime(milliseconds) {
     }
     player.gold += gpsPerSecond; // 每秒增加GPS
     autoConvertCurrency(); 
+  gainCultivationExp();
   initAutoDecomposeUI();
     checkAutoBuy(); 
  checkAutoDecompose();
@@ -7908,35 +7993,35 @@ function toggleSettingsUI() {
 
         const monsterModifiers = {
     // 防御类词条
-    "硬化": { damageReduction: 0.10 }, // 受到伤害减少10%
-    "钢铁": { damageReduction: 0.20 }, // 受到伤害减少20%
-    "金身": { damageReduction: 0.50 }, // 受到伤害减少50%
-    "不败": { damageReduction: 0.70 }, // 受到伤害减少70%
-    "圣体": { damageReduction: 0.80 }, // 受到伤害减少80%
-    "不死": { damageReduction: 0.99 }, // 受到伤害减少99%
+    "硬化": { damageReduction: 0.9 }, // 受到伤害减少10%
+    "钢铁": { damageReduction: 0.99 }, // 受到伤害减少20%
+    "金身": { damageReduction: 0.999 }, // 受到伤害减少50%
+    "不败": { damageReduction: 0.9999 }, // 受到伤害减少70%
+    "圣体": { damageReduction: 0.99999 }, // 受到伤害减少80%
+    "不死": { damageReduction: 0.999999 }, // 受到伤害减少99%
 
     // 攻击类词条
-    "强击": { attackMultiplier: 1.10 }, // 攻击增加10%
-    "突击": { attackMultiplier: 1.20 }, // 攻击增加20%
-    "嗜血": { attackMultiplier: 1.30 }, // 攻击增加30%
-    "炼狱": { attackMultiplier: 1.40 }, // 攻击增加40%
-    "修罗": { attackMultiplier: 1.50 }, // 攻击增加50%
-    "死神": { attackMultiplier: 2.00 }, // 攻击增加100%
+    "强击": { attackMultiplier: 10.10 }, 
+    "突击": { attackMultiplier: 100.20 }, 
+    "嗜血": { attackMultiplier: 1000.30 }, 
+    "炼狱": { attackMultiplier: 10000.40 }, 
+    "修罗": { attackMultiplier: 100000.50 }, 
+    "死神": { attackMultiplier: 1000000.00 }, 
 
     // 闪避类词条
-    "初级闪避": { dodgeChance: 0.10 }, // 闪避增加10%
-    "中级闪避": { dodgeChance: 0.20 }, // 闪避增加20%
-    "高级闪避": { dodgeChance: 0.30 }, // 闪避增加30%
-    "终极闪避": { dodgeChance: 0.40 }, // 闪避增加40%
-    "神级闪避": { dodgeChance: 0.50 }, // 闪避增加50%
+    "初级闪避": { dodgeChance: 0.5 },
+    "中级闪避": { dodgeChance: 0.6 }, 
+    "高级闪避": { dodgeChance: 0.7 }, 
+    "终极闪避": { dodgeChance: 0.8 }, 
+    "神级闪避": { dodgeChance: 0.9 }, 
 
     // 特殊效果类词条
-    "抵消": { blockCount: 1 }, // 可以抵消玩家1次攻击
-    "金光": { blockCount: 2 }, // 可以抵消玩家2次攻击
-    "神盾": { blockCount: 3 }, // 可以抵消玩家3次攻击
+    "抵消": { blockCount: 10 }, // 可以抵消玩家10次攻击
+    "金光": { blockCount: 100 }, // 可以抵消玩家100次攻击
+    "神盾": { blockCount: 1000 }, // 可以抵消玩家1000次攻击
 
     // 特殊攻击类词条
-    "连击": { attackCount: 2 }, // 攻击2次
+    "连击": { attackCount: 5 }, // 攻击5次
     "虚弱": { damageTakenMultiplier: 1.50 } // 受到玩家伤害增加50%
 };
  
@@ -7944,14 +8029,14 @@ const monsterRankModifiers = {
     "普通": { pool: ["硬化", "强击", "初级闪避", "虚弱"], selectCount: 2 },
     "精英": { pool: ["连击", "硬化", "强击", "初级闪避"], selectCount: 2 },
     "普通BOSS": { pool: ["虚弱", "连击", "钢铁", "突击", "初级闪避"], selectCount: 3 },
-    "特殊BOSS": { pool: ["连击", "硬化", "钢铁", "突击", "中级闪避"], selectCount: 3 },
+    "特殊BOSS": { pool: ["连击",  "钢铁", "突击", "中级闪避"], selectCount: 3 },
     "领主BOSS": { pool: ["连击", "钢铁", "突击", "嗜血", "中级闪避", "抵消"], selectCount: 4 },
-    "霸主级BOSS": { pool: ["钢铁", "金身", "连击", "嗜血", "突击", "中级闪避", "抵消"], selectCount: 4 },
-    "王级BOSS": { pool: ["连击", "初级闪避", "金身", "炼狱", "嗜血", "高级闪避", "抵消"], selectCount: 4 },
-    "皇级BOSS": { pool: ["连击", "初级闪避", "不败", "炼狱", "高级闪避", "抵消"], selectCount: 4 },
-    "帝级BOSS": { pool: ["连击", "不败", "中级闪避", "炼狱", "修罗", "高级闪避", "金光"], selectCount: 4 },
+    "霸主级BOSS": { pool: ["金身", "连击", "嗜血", "突击", "中级闪避", "抵消"], selectCount: 4 },
+    "王级BOSS": { pool: ["连击", "金身", "炼狱", "嗜血", "高级闪避", "抵消"], selectCount: 4 },
+    "皇级BOSS": { pool: ["连击", "不败", "炼狱", "高级闪避", "抵消"], selectCount: 4 },
+    "帝级BOSS": { pool: ["连击", "不败", "炼狱", "修罗", "高级闪避", "金光"], selectCount: 4 },
     "神级BOSS": { pool: ["连击", "圣体", "修罗", "终极闪避", "金光", "死神"], selectCount: 5 },
-    "圣级BOSS": { pool: ["连击", "不死", "死神", "神级闪避", "神盾", "终极闪避"], selectCount: 5 }
+    "圣级BOSS": { pool: ["连击", "不死", "死神", "神级闪避", "神盾"], selectCount: 5 }
 };
  const monsterNames = [
     "夜叉丸", "玄天青龙帝", "九幽冥凤尊", "太虚剑仙·凌霄", "紫微星君·太华",
@@ -8023,17 +8108,27 @@ function generateMonster() {
     } else if (stage <= 350) {
         attackMultiplier = 3500000 + (stage - 249) * 100000;
     } else if (stage <= 450) {
-        attackMultiplier = 450000000 + (stage - 349) * 10000000;
+        attackMultiplier = 450000000 + (stage - 349) * 100000000;
     } else if (stage <= 550) {
-        attackMultiplier = 5500009000 + (stage - 449) * 10000000000;
+        attackMultiplier = 5500009000 + (stage - 449) * 1000000000000;
     } else if (stage <= 650) {
-        attackMultiplier = 650000000900 + (stage - 549) * 10000000000000;
-    } else if (stage <= 750) {
-        attackMultiplier = 7500000000000 + (stage - 649) * 100000000000000000;
-    } else if (stage <= 850) {
-        attackMultiplier = 800000000000000 + (stage - 749) * 100000000000000000000;
+        attackMultiplier = 650000000900 + (stage - 549) * 1000000000000000;
+    } else if (stage <= 700) {
+        attackMultiplier = 6500000000900 + (stage - 649) * 1000000000000000000;
+     } else if (stage <= 750) {
+        attackMultiplier = 6500000000000900 + (stage - 699) * 1000000000000000000000;
+     } else if (stage <= 790) {
+        attackMultiplier = 6500000000000000900 + (stage - 549) * 10000000000000000000000000;
+    } else if (stage <= 820) {
+        attackMultiplier = 65000000000000000000900 + (stage - 549) * 10000000000000000000000000000000;
+    } else if (stage <= 840) {
+        attackMultiplier = 6500000000000000000000000900 + (stage - 549) * 10000000000000000000000000000000000000;
+    } else if (stage <= 860) {
+        attackMultiplier = 10000000000000000000000000000000 + (stage - 649) * 10000000000000000000000000000000000000000000;
+    } else if (stage <= 900) {
+        attackMultiplier = 100000000000000000000000000000000000 + (stage - 749) * 10000000000000000000000000000000000000000000000000000;
     } else {
-        attackMultiplier = 90000000000000000 + (stage - 849) * 100000000000000000000000;
+        attackMultiplier = 1000000000000000000000000000000000000000 + (stage - 849) * 100000000000000000000000000000000000000000000000000000000000000;
     }
 
     // 应用词条效果
@@ -8607,7 +8702,7 @@ function simulateItemDrop(stage) {
     }
     
     // VIP能力值掉落（全关卡0.1%概率）
-    if (stage >= 1 && Math.random() < 0.0005) {
+    if (stage >= 1 && Math.random() < 0.0002) {
         player.items.vipPower++;
         hasDropped = true;
     }
@@ -8646,7 +8741,7 @@ function simulateItemDrop(stage) {
         hasDropped = true;
     }
     // 伴侣钥匙掉落（150关以上0.001%概率）
-    if (stage >= 1 && Math.random() < 0.0002) {
+    if (stage >= 1 && Math.random() < 0.0001) {
         player.items.companionKey++;
         hasDropped = true;
     }
@@ -9203,6 +9298,8 @@ function upgradeMysteryByAmount() {
     if (config) {
         player.mystery.bonus = config.totalBonus;
     }
+  updateDisplay();
+
 // 一键升级奥秘到最大可能
 function upgradeMysteryMaxPossible() {
     calculateOfflineMysteryExp();
@@ -10942,7 +11039,7 @@ const missions = {
         time: 120, // 分钟
         rewards: {
             stardust: { min: 1, max: 15 },
-            darkMatter: { min: 1, max: 20 }
+            darkMatter: { min: 1, max: 15 }
         },
         damageRisk: 50
     },
@@ -10951,7 +11048,7 @@ const missions = {
         time: 180,
         rewards: { 
             stardust: { min: 1, max: 20 },
-            darkMatter: { min: 1, max: 40 },
+            darkMatter: { min: 1, max: 30 },
              cosmicCrystal: { min: 1, max: 20 }
         },
         damageRisk: 60
@@ -10961,7 +11058,7 @@ const missions = {
         time: 240,
         rewards: {
             stardust: { min: 1, max: 20 },
-            darkMatter: { min: 1, max: 100 },
+            darkMatter: { min: 1, max: 50 },
             cosmicCrystal: { min: 1, max: 50 }
         },
         damageRisk: 70
@@ -10970,7 +11067,7 @@ const missions = {
         name: "宇宙边缘",
         time: 360,
         rewards: {
-            cosmicCrystal: { min: 1, max: 100 },
+            cosmicCrystal: { min: 1, max: 50 },
             artifactFragment: { min: 1, max: 50 }
         },
         damageRisk: 80
@@ -11448,8 +11545,8 @@ const artifactSets = [
 // 神器名字库
 const artifactNames = {
     helmet: ["玄铁战盔", "流光宝冠", "暗影头盔", "烈焰头环", "凤羽冠", "圣光战盔", "疾风头盔", "雷霆战盔", "雷霆战盔", "守护者头盔", "幽魂头罩", "精灵之冠", "矮人战盔", "毒藤头环", "寒冰面甲", "荣耀战盔", "耻辱面甲", "刹那冠冕", "雨龙盔", "龟甲盔", "云龙盔", "饕餮头盔", "虬龙头盔", "青鸾头盔", "火凤头盔", "蛟龙头盔", "龙鳞头盔", "苍龙头盔", "虚无头盔"],
-    clothes: ["龙鳞甲", "玄冰法袍", "暗影披风", "圣光铠甲", "大地之袍", "疾风劲装", "藤蔓风衣", "王者披风", "毁灭者战衣", "混沌战甲", "黎明法衣", "黄昏披风", "幽魂长衫", "泰坦铠甲", "矮人战甲", "恶魔披风", "磐石铠甲", "熔岩铠甲", "寒冰法袍", "静谧长衫", "狂怒战甲", "意志披风", "龙纹战甲", "流光战衣", "深渊战甲", "永恒战甲", "信仰战甲", "狂怒长衫"],
-    pants: ["星空护腿", "玄铁战裤", "暗影皮裤", "冰晶长裤", "圣光战裤", "幽冥长裤", "疾风短裤", "大地之裤", "藤蔓短裤", "混沌护腿", "雷霆战裤", "藤蔓护腿", "幻影护腿", "守护者护腿", "黎明护腿", "幽魂护腿", "恶魔护腿", "天使护腿", "毒藤护腿", "磐石护腿", "狂怒护腿", "勇气护腿", "雷神护腿", "火神护腿", "暗夜护腿", "星光护腿", "死神护腿"],
+    clothes: ["龙鳞甲", "玄冰法袍", "暗影披风", "圣光铠甲", "大地之袍", "疾风劲装", "藤蔓风衣", "王者披风", "毁灭者战衣", "混沌战甲", "黎明法衣", "黄昏披风", "幽魂长衫", "泰坦铠甲", "矮人战甲", "恶魔披风", "磐石铠甲", "熔岩铠甲", "寒冰法袍", "静谧长衫", "狂怒战甲", "意志披风", "龙纹战甲", "流光战衣", "深渊战甲", "永恒战甲", "信仰战甲", "狂怒长衫", "闫闫内衣"],
+    pants: ["星空护腿", "玄铁战裤", "暗影皮裤", "冰晶长裤", "圣光战裤", "幽冥长裤", "疾风短裤", "大地之裤", "藤蔓短裤", "混沌护腿", "雷霆战裤", "藤蔓护腿", "幻影护腿", "守护者护腿", "黎明护腿", "幽魂护腿", "恶魔护腿", "天使护腿", "毒藤护腿", "磐石护腿", "狂怒护腿", "勇气护腿", "雷神护腿", "火神护腿", "暗夜护腿", "星光护腿", "死神护腿", "闫闫黑丝"],
     shoes: ["流光战靴", "烈焰履", "黑麒麟战靴", "神玄武战靴", "邪白虎战靴", "圣朱雀羽靴", "灭世青龙战靴", "赫光圣靴", "疾风战靴", "混沌战靴", "死神战靴", "雷神战靴", "至尊战靴", "剑圣战靴", "剑神战靴", "灭神战靴", "永恒战靴", "火迷战靴", "镭射战靴", "冥王战靴", "仙人神靴", "风暴战靴", "荣耀圣靴", "暗夜神靴", "圣飒战靴", "强韧战靴", "傲世神靴"],
     necklace: ["星空项链", "烈焰项链", "王者项链", "玄德项链", "迪虎项链", "黎明项链", "幽魂项链", "黄昏圣链", "泰坦项链", "恶魔项链", "熔岩吊坠", "寒冰吊坠", "风暴吊坠", "狂怒吊坠", "力量吊坠", "勇气项链", "至尊项链", "荣耀项链", "凤羽项链", "流光项链", "顺神项链", "风日项链", "邪神吊坠", "睡神项链", "水神项链", "敖包吊坠", "死亡项链"],
     weapon: ["万古绝尘剑", "撼天动地斧", "焚天怒焰刀", "惊鸿掠影剑", "血狱幽冥枪", "破界陨星锤", "冰封千里杖", "地狱修罗刀", "九霄龙吟剑", "噬魂夺魄刃", "乾坤逆转戟", "裂地崩山斧", "焚天炽羽弓", "玄冰锁魂镰", "紫电灭魔剑", "血饮狂刀", "雷霆碎岳锤", "万劫不灭矛", "破空穿云箭", "寒霜冻世剑", "炎狱修罗枪", "星河碎影剑", "混沌开天斧", "白虎裂山刃", "炼狱修罗爪", "破天裂穹剑", "轩辕剑", "湛泸剑", "赤霄剑", "泰阿剑", "承影剑", "干将", "莫邪", "鱼肠剑", "无影剑艾雷诺", "破碎之命运", "光炎剑", "泰拉石手枪", "永恒之枪", "潘多拉魔盒", "三叉戟", "方天画戟", "草薙剑", "圣剑格拉墨", "命运之矛", "埃癸斯之盾", "杜蕾斯", "闫闫爱心锤", "茶茶小奶瓶"]
@@ -12027,6 +12124,7 @@ function exchangeStardust(type) {
         rose: { cost: 5, item: 'rose', amount: parseInt(document.getElementById('roseAmount').value) },
         vip: { cost: 10, item: 'vipPower', amount: parseInt(document.getElementById('vipAmount').value) },
         gem: { cost: 5000, item: 'divineGem', amount: parseInt(document.getElementById('gemAmount').value) },
+        root: { cost: 500, item: 'rootDetector', amount: parseInt(document.getElementById('rootAmount').value) },
         coin: { cost: 1, item: 'reincarnationCoin', amount: parseInt(document.getElementById('coinAmount').value), coinRate: 10000 }
     };
     
@@ -12064,6 +12162,7 @@ function getItemName(type) {
         rose: "玫瑰花",
         vip: "VIP能力值",
         gem: "神级宝石",
+       root: "灵根检测器",
         coin: "转生币"
     };
     return names[type] || "物品";
@@ -12274,6 +12373,416 @@ function upgradeGem(type, level) {
     } else {
         logAction("宝石数量不足，无法合成！", "error");
     }
+}
+// 灵根配置
+const rootConfig = {
+    // 110%品阶
+    tier1: [
+        { name: "金灵根", bonus: 1.2 },
+        { name: "木灵根", bonus: 1.2 },
+        { name: "水灵根", bonus: 1.2 },
+        { name: "火灵根", bonus: 1.25 },
+        { name: "土灵根", bonus: 1.25 },
+        { name: "雷灵根", bonus: 1.25 },
+        { name: "杂灵根", bonus: 1.25 },
+        { name: "钝金根", bonus: 1.2 },
+        { name: "弱木根", bonus: 1.3 },
+        { name: "浅水灵根", bonus: 1.3 },
+        { name: "微火灵根", bonus: 1.3 },
+        { name: "散土灵根", bonus: 1.4 },
+        { name: "青禾根", bonus: 1.4 },
+        { name: "溪水灵根", bonus: 1.4 },
+        { name: "岩土根", bonus: 1.2 },
+        { name: "铜铁根", bonus: 1.2 },
+        { name: "三杂灵根", bonus: 1.2 },
+        { name: "脆金根", bonus: 1.2 }
+    ],
+    // 200%品阶
+    tier2: [
+        { name: "深水灵根", bonus: 2.0 },
+        { name: "炽火根", bonus: 2.0 },
+        { name: "雷灵根", bonus: 2.0 },
+        { name: "风灵根", bonus: 2.0 },
+        { name: "冰灵根", bonus: 2.1 },
+        { name: "沙灵根", bonus: 2.0 },
+        { name: "雾灵根", bonus: 2.0 },
+        { name: "藤木根", bonus: 2.0 },
+        { name: "熔岩根", bonus: 2.0 },
+        { name: "霜水灵根", bonus: 2.0 },
+        { name: "晶金根", bonus: 2.0 },
+        { name: "腐木根", bonus: 2.0 },
+        { name: "冥水灵根", bonus: 2.1 },
+        { name: "焦土根", bonus: 2.1 },
+        { name: "双灵根", bonus: 2.1 },
+        { name: "云灵根", bonus: 2.1 },
+        { name: "毒木根", bonus: 2.1 },
+        { name: "罡风根", bonus: 2.1 },
+        { name: "寒铁根", bonus: 2.0 },
+        { name: "焰木根", bonus: 2.1 },
+        { name: "磁金根", bonus: 2.1 },
+        { name: "酸水灵根", bonus: 2.0 }
+    ],
+    // 250%品阶
+    tier3: [
+        { name: "天灵根光", bonus: 2.5 },
+        { name: "暗灵根", bonus: 2.5 },
+        { name: "音灵根", bonus: 2.5 },
+        { name: "影灵根", bonus: 2.5 },
+        { name: "星辰灵根", bonus: 2.5 },
+        { name: "月华灵根", bonus: 2.5 },
+        { name: "日曦灵根", bonus: 2.5 },
+        { name: "虚空灵根", bonus: 2.5 },
+        { name: "时间灵根", bonus: 2.5 },
+        { name: "圣灵根", bonus: 2.5 },
+        { name: "魔灵根", bonus: 2.5 },
+        { name: "晶玉灵根", bonus: 2.5 },
+        { name: "云雾灵根", bonus: 2.5 },
+        { name: "生死灵根", bonus: 2.5 },
+        { name: "风火灵根", bonus: 2.5 },
+        { name: "光暗灵根", bonus: 2.5 },
+        { name: "山海灵根", bonus: 2.5 },
+        { name: "混元灵根", bonus: 2.5 },
+        { name: "灵植根", bonus: 2.5 },
+        { name: "魂灵根", bonus: 2.5 }
+    ],
+    // 300%品阶
+    tier4: [
+        { name: "混沌灵根", bonus: 3.0 },
+        { name: "鸿蒙灵根", bonus: 3.0 },
+        { name: "先天灵根", bonus: 3.0 },
+        { name: "虚无灵根", bonus: 3.0 },
+        { name: "永恒灵根", bonus: 3.0 },
+        { name: "本源灵根", bonus: 3.0 },
+        { name: "万物灵根", bonus: 3.0 },
+        { name: "太初灵根", bonus: 3.0 },
+        { name: "轮回灵根", bonus: 3.0 }
+    ],
+    // 400%品阶
+    tier5: [
+        { name: "天道灵根", bonus: 4.0 },
+        { name: "星辰本源根", bonus: 4.0 },
+        { name: "混沌雷灵根", bonus: 4.0 },
+        { name: "寂灭灵根", bonus: 4.0 },
+        { name: "太极灵根", bonus: 4.0 }
+    ],
+    // 500%品阶
+    tier6: [
+        { name: "大道灵根", bonus: 5.0 },
+        { name: "虚空混沌根", bonus: 5.0 },
+        { name: "万化灵根", bonus: 5.0 },
+        { name: "创世灵根", bonus: 5.0 }
+    ],
+    // 1000%品阶
+    tier7: [
+        { name: "无垢灵根", bonus: 10.0 }
+    ]
+};
+
+// 修仙阶段配置
+const cultivationStages = [
+    { name: "凡人", expRequired: 0, multiplier: 1 },
+    { name: "练气", expRequired: 10000, multiplier: 2 },
+    { name: "筑基", expRequired: 20000, multiplier: 5 },
+    { name: "灵动", expRequired: 40000, multiplier: 8 },
+    { name: "灵虚", expRequired: 60000, multiplier: 10 },
+    { name: "灵寂", expRequired: 80000, multiplier: 20 },
+    { name: "开光", expRequired: 100000, multiplier: 50 },
+    { name: "融合", expRequired: 200000, multiplier: 80 },
+    { name: "聚丹", expRequired: 300000, multiplier: 100 },
+    { name: "凝丹", expRequired: 400000, multiplier: 200 },
+    { name: "韵丹", expRequired: 500000, multiplier: 500 },
+    { name: "结丹", expRequired: 600000, multiplier: 800 },
+    { name: "金丹", expRequired: 700000, multiplier: 1000 },
+    { name: "聚婴", expRequired: 800000, multiplier: 2000 },
+    { name: "凝婴", expRequired: 900000, multiplier: 5000 },
+    { name: "结婴", expRequired: 1000000, multiplier: 8000 },
+    { name: "元婴", expRequired: 1250000, multiplier: 10000 },
+    { name: "婴变", expRequired: 1500000, multiplier: 20000 },
+    { name: "出窍", expRequired: 1750000, multiplier: 50000 },
+    { name: "元神", expRequired: 2000000, multiplier: 80000 },
+    { name: "分神", expRequired: 2250000, multiplier: 100000 },
+    { name: "化神", expRequired: 2500000, multiplier: 200000 },
+    { name: "洞虚", expRequired: 2750000, multiplier: 500000 },
+    { name: "化虚", expRequired: 3000000, multiplier: 800000 },
+    { name: "返虚", expRequired: 3250000, multiplier: 1000000 },
+    { name: "合体", expRequired: 3500000, multiplier: 2000000 },
+    { name: "合灵", expRequired: 4000000, multiplier: 5000000 },
+    { name: "合魂", expRequired: 4500000, multiplier: 8000000 },
+    { name: "空冥", expRequired: 5000000, multiplier: 10000000 },
+    { name: "寂灭", expRequired: 5250000, multiplier: 20000000 },
+    { name: "问鼎", expRequired: 5500000, multiplier: 50000000 },
+    { name: "问道", expRequired: 5750000, multiplier: 80000000 },
+    { name: "合道", expRequired: 6000000, multiplier: 100000000 },
+    { name: "大帝", expRequired: 6250000, multiplier: 200000000 },
+    { name: "半仙", expRequired: 6500000, multiplier: 500000000 },
+    { name: "渡劫", expRequired: 6750000, multiplier: 800000000 },
+    { name: "人仙", expRequired: 7000000, multiplier: 1000000000 },
+    { name: "真仙", expRequired: 7250000, multiplier: 2000000000 },
+    { name: "上仙", expRequired: 7500000, multiplier: 5000000000 },
+    { name: "地仙", expRequired: 7750000, multiplier: 8000000000 },
+    { name: "天仙", expRequired: 8000000, multiplier: 10000000000 },
+    { name: "玄仙", expRequired: 8250000, multiplier: 20000000000 },
+    { name: "太乙", expRequired: 8500000, multiplier: 50000000000 },
+    { name: "九天", expRequired: 8750000, multiplier: 80000000000 },
+    { name: "金仙", expRequired: 9000000, multiplier: 100000000000 },
+    { name: "仙将", expRequired: 9250000, multiplier: 200000000000 },
+    { name: "仙君", expRequired: 9500000, multiplier: 500000000000 },
+    { name: "仙王", expRequired: 9750000, multiplier: 800000000000 },
+    { name: "仙皇", expRequired: 10000000, multiplier: 1000000000000 },
+    { name: "仙尊", expRequired: 15000000, multiplier: 2000000000000 },
+    { name: "仙帝", expRequired: 20000000, multiplier: 5000000000000 },
+    { name: "半圣", expRequired: 25000000, multiplier: 8000000000000 },
+    { name: "真圣", expRequired: 30000000, multiplier: 10000000000000 },
+    { name: "人圣", expRequired: 35000000, multiplier: 20000000000000 },
+    { name: "地圣", expRequired: 40000000, multiplier: 50000000000000 },
+    { name: "天圣", expRequired: 45000000, multiplier: 80000000000000 },
+    { name: "玄圣", expRequired: 50000000, multiplier: 100000000000000 },
+    { name: "大圣", expRequired: 55000000, multiplier: 200000000000000 },
+    { name: "金圣", expRequired: 60000000, multiplier: 500000000000000 },
+    { name: "圣将", expRequired: 65000000, multiplier: 800000000000000 },
+    { name: "圣君", expRequired: 70000000, multiplier: 1000000000000000 },
+    { name: "圣王", expRequired: 75000000, multiplier: 2000000000000000 },
+    { name: "圣皇", expRequired: 80000000, multiplier: 5000000000000000 },
+    { name: "圣尊", expRequired: 85000000, multiplier: 8000000000000000 },
+    { name: "圣帝", expRequired: 90000000, multiplier: 10000000000000000 },
+    { name: "半神", expRequired: 95000000, multiplier: 20000000000000000 },
+    { name: "真神", expRequired: 100000000, multiplier: 50000000000000000 },
+    { name: "人神", expRequired: 150000000, multiplier: 80000000000000000 },
+    { name: "地神", expRequired: 200000000, multiplier: 100000000000000000 },
+    { name: "天神", expRequired: 250000000, multiplier: 200000000000000000 },
+    { name: "玄神", expRequired: 300000000, multiplier: 500000000000000000 },
+    { name: "金神", expRequired: 350000000, multiplier: 800000000000000000 },
+    { name: "神将", expRequired: 400000000, multiplier: 1000000000000000000 },
+    { name: "神灵", expRequired: 450000000, multiplier: 2000000000000000000 },
+    { name: "神王", expRequired: 500000000, multiplier: 5000000000000000000 },
+    { name: "神皇", expRequired: 550000000, multiplier: 8000000000000000000 },
+    { name: "神宗", expRequired: 600000000, multiplier: 10000000000000000000 },
+    { name: "神尊", expRequired: 650000000, multiplier: 20000000000000000000 },
+    { name: "神帝", expRequired: 700000000, multiplier: 50000000000000000000 },
+    { name: "荒帝", expRequired: 750000000, multiplier: 80000000000000000000 },
+    { name: "太荒", expRequired: 800000000, multiplier: 100000000000000000000 },
+    { name: "仙荒", expRequired: 850000000, multiplier: 200000000000000000000 },
+    { name: "神荒", expRequired: 900000000, multiplier: 500000000000000000000 },
+    { name: "荒古", expRequired: 1000000000, multiplier: 800000000000000000000 },
+    { name: "荒祖", expRequired: 1500000000, multiplier: 1000000000000000000000 },
+    { name: "始荒", expRequired: 2000000000, multiplier: 2000000000000000000000 },
+    { name: "人道", expRequired: 2500000000, multiplier: 5000000000000000000000 },
+    { name: "天道", expRequired: 3000000000, multiplier: 8000000000000000000000 },
+    { name: "仙道", expRequired: 3500000000, multiplier: 10000000000000000000000 },
+    { name: "神道", expRequired: 4000000000, multiplier: 20000000000000000000000 },
+    { name: "帝道", expRequired: 4500000000, multiplier: 50000000000000000000000 },
+    { name: "轮回", expRequired: 5000000000, multiplier: 80000000000000000000000 },
+    { name: "时空", expRequired: 5500000000, multiplier: 100000000000000000000000 },
+    { name: "乾坤", expRequired: 6000000000, multiplier: 200000000000000000000000 },
+    { name: "规则", expRequired: 6500000000, multiplier: 500000000000000000000000 },
+    { name: "始祖", expRequired: 7000000000, multiplier: 800000000000000000000000 },
+    { name: "元神", expRequired: 7500000000, multiplier: 1000000000000000000000000 },
+    { name: "人神", expRequired: 8000000000, multiplier: 2000000000000000000000000 },
+    { name: "仙神", expRequired: 8500000000, multiplier: 5000000000000000000000000 },
+    { name: "帝神", expRequired: 9000000000, multiplier: 8000000000000000000000000 },
+    { name: "主宰", expRequired: 9500000000, multiplier: 10000000000000000000000000 },
+    { name: "统治者", expRequired: 10000000000, multiplier: 100000000000000000000000000 }
+
+];
+
+// 初始化修仙系统
+function initCultivationSystem() {
+    if (!player.cultivation) {
+        player.cultivation = {
+            stage: 0, // 当前阶段索引
+            exp: 0,   // 当前经验值
+            root: null, // 当前灵根
+           bonus: 1 
+        };
+    }
+}
+
+// 切换修仙系统界面
+function toggleCultivationSystem() {
+    if (player.reincarnationCount < 500) {
+        alert("需要达到500转才能开启修仙系统！");
+        return;
+    }
+    initCultivationSystem();
+    
+    const ui = document.getElementById('cultivationSystemUI');
+    const overlay = document.getElementById('cultivationSystemOverlay');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateCultivationUI();
+    }
+}
+
+
+function updateCultivationUI() {
+    // 获取当前阶段信息
+    const stageIndex = player.cultivation.stage;
+    const stage = cultivationStages[stageIndex];
+    
+    // 确保阶段信息存在
+    if (!stage) {
+        console.error("无效的修仙阶段索引:", stageIndex);
+        return;
+    }
+    
+    // 更新当前阶段显示
+    document.getElementById('currentStageq').textContent = stage.name;
+    
+    // 其他更新逻辑保持不变...
+    const nextStage = cultivationStages[stageIndex + 1];
+    
+    // 更新灵根信息
+    const rootInfo = document.getElementById('currentRootInfo');
+    if (player.cultivation.root) {
+        rootInfo.innerHTML = `
+            <div style="font-size: 18px; font-weight: bold; color: #FFD700;">${player.cultivation.root.name}</div>
+            <div>加成: ${player.cultivation.root.bonus * 100}%</div>
+        `;
+    } else {
+        rootInfo.textContent = "尚未检测灵根";
+    }
+    
+    // 更新阶段信息
+    document.getElementById('stageLevel').textContent = stageIndex;
+    document.getElementById('currentExp').textContent = player.cultivation.exp.toFixed(0);
+    
+    if (nextStage) {
+        document.getElementById('nextExp').textContent = nextStage.expRequired;
+        
+        // 计算经验进度
+        const progress = Math.min(100, (player.cultivation.exp / nextStage.expRequired) * 100);
+        document.getElementById('expProgress').style.width = `${progress}%`;
+    } else {
+        document.getElementById('nextExp').textContent = "已达最高境界";
+        document.getElementById('expProgress').style.width = '100%';
+    }
+    
+    // 更新加成信息
+    document.getElementById('gpsMultiplier').textContent = stage.multiplier;
+}
+// 打开灵根宝箱界面
+function openRootBox() {
+    if (player.items.rootDetector < 1) {
+        logAction("灵根检测器不足！", "error");
+        return;
+    }
+    
+    document.getElementById('rootBoxUI').style.display = 'block';
+    document.getElementById('rootBoxOverlay').style.display = 'block';
+    document.getElementById('rootResult').textContent = "点击开启获取灵根";
+}
+
+// 关闭灵根宝箱界面
+function closeRootBox() {
+    document.getElementById('rootBoxUI').style.display = 'none';
+    document.getElementById('rootBoxOverlay').style.display = 'none';
+}
+
+// 抽取灵根
+function drawRoot() {
+    if (player.items.rootDetector < 1) {
+        logAction("灵根检测器不足！", "error");
+        return;
+    }
+    
+    player.items.rootDetector--;
+    
+    // 根据概率抽取灵根品阶
+    const rand = Math.random();
+    let tier;
+    
+    if (rand < 0.8) {
+        tier = "tier1"; // 80%
+    } else if (rand < 0.95) {
+        tier = "tier2"; // 15%
+    } else if (rand < 0.998889) {
+        tier = "tier3"; // 4.8889%
+    } else if (rand < 0.999889) {
+        tier = "tier4"; // 0.1%
+    } else if (rand < 0.999989) {
+        tier = "tier5"; // 0.01%
+    } else if (rand < 0.999999) {
+        tier = "tier6"; // 0.001%
+    } else {
+        tier = "tier7"; // 0.0001%
+    }
+    
+    // 随机选择该品阶中的一个灵根
+    const roots = rootConfig[tier];
+    const root = roots[Math.floor(Math.random() * roots.length)];
+    
+    // 更新玩家灵根
+    player.cultivation.root = root;
+    
+    // 显示结果
+    document.getElementById('rootResult').innerHTML = `
+        <div style="font-size: 20px; font-weight: bold; color: #FFD700;">获得${root.name}!</div>
+        <div>加成: ${root.bonus * 100}%</div>
+    `;
+    
+    logAction(`获得灵根: ${root.name} (加成${root.bonus * 100}%)`, "success");
+    updateCultivationUI();
+    updateDisplay();
+}
+
+// 升级修仙阶段
+function upgradeCultivation() {
+    console.log("升级前阶段:", player.cultivation.stage);
+    
+    const nextStageIndex = player.cultivation.stage + 1;
+    
+    // 检查是否有下一阶段
+    if (nextStageIndex >= cultivationStages.length) {
+        logAction("已达最高境界，无法继续升级", "info");
+        return;
+    }
+    
+    const nextStage = cultivationStages[nextStageIndex];
+    
+    // 检查经验是否足够
+    if (player.cultivation.exp < nextStage.expRequired) {
+        logAction("经验不足，无法升级", "error");
+        return;
+    }
+    
+    // 扣除经验并升级
+    player.cultivation.exp -= nextStage.expRequired;
+    player.cultivation.stage = nextStageIndex;
+    
+    console.log("升级后阶段:", player.cultivation.stage);
+    logAction(`成功晋升${nextStage.name}境界！`, "success");
+    
+    // 更新显示
+    updateDisplay();
+    updateCultivationUI(); // 如果修仙界面打开，也需要更新
+}
+
+// 每分钟获取经验
+function gainCultivationExp() {
+    if (!player.cultivation || !player.cultivation.root) return;
+    
+    // 每分钟经验 = 转生次数 × 灵根加成
+    const expGain = player.reincarnationCount * player.cultivation.root.bonus;
+    player.cultivation.exp += expGain/60;
+    const stage = cultivationStages[player.cultivation.stage];
+    player.cultivation.bonus = stage.multiplier;
+    // 更新UI
+  updateDisplay();
+    updateCultivationUI();
+}
+// 计算离线经验
+function calculateOfflineCultivationExp(offlineMinutes) {
+    if (!player.cultivation || !player.cultivation.root) return;
+    
+    const expGain = offlineMinutes * player.reincarnationCount * player.cultivation.root.bonus;
+    player.cultivation.exp += expGain;
+    
+    logAction(`离线获得${expGain}点修仙经验`, "info");
 }
 
 // 称号配置（按分支分组）
@@ -13656,21 +14165,21 @@ function generateTowerMonster() {
     } else if (floor <= 5000) {
       attackMultiplier = 5000 + (floor - 999) * 1000;
     } else if (floor <= 10000) {
-      attackMultiplier = 10000 + (floor - 4999) * 10000;
+      attackMultiplier = 10000 + (floor - 4999) * 100000;
     } else if (floor <= 20000) {
-      attackMultiplier = 20000 + (floor - 9999) * 100000;
+      attackMultiplier = 200000 + (floor - 9999) * 100000000;
     } else if (floor <= 30000) {
-      attackMultiplier = 30000 + (floor - 19999) * 1000000;
+      attackMultiplier = 3000000 + (floor - 19999) * 10000000000;
     } else if (floor <= 50000) {
-      attackMultiplier = 50000000 + (floor - 29999) * 100000000;
+      attackMultiplier = 50000000 + (floor - 29999) * 100000000000000;
     } else if (floor <= 60000) {
-      attackMultiplier = 60000000 + (floor - 49999) * 1000000000000;
+      attackMultiplier = 60000000 + (floor - 49999) * 1000000000000000000000000;
    }  else if (floor <= 70000) {
-     attackMultiplier = 70000000 + (floor - 59999) * 10000000000000000;
+     attackMultiplier = 70000000 + (floor - 59999) * 10000000000000000000000000000000000000;
     } else if (floor <= 80000) {
-     attackMultiplier = 80000000 + (floor - 69999) * 10000000000000000000;
+     attackMultiplier = 80000000 + (floor - 69999) * 1000000000000000000000000000000000000000000000000;
     } else {
-      attackMultiplier = 90000000 + (floor - 79999) * 1000000000000000000000;
+      attackMultiplier = 90000000 + (floor - 79999) * 100000000000000000000000000000000000000000000000000000000000;
     }
 
     let attack = attackMultiplier * (10 + floor * 500);
@@ -15321,6 +15830,5 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
-
 </body>
 </html>
