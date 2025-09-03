@@ -887,7 +887,7 @@ button:hover {
             <p>23. 神器锻造系统：500转开启，探索获取材料，6个品质，集齐套装加格外属性。</p>
            <p>24. 星域探索：300转开启，获取新材料</p>
            <p>25. 宝石系统：800转开启，提供大量属性</p>
-           <p>26. 修仙系统：500转开启，开启经验获得条件是，获得一次灵根。灵根检测器，杂货铺购买</p>
+           <p>26. 修仙系统：500转开启，开启经验获得条件是：获得一次灵根和血脉。材料都是杂货铺购买</p>
         </div>
     </div>
 </div>
@@ -2096,6 +2096,16 @@ button:hover {
     </div>
 </div>
     <div class="exchange-item">
+    <div class="exchange-info">
+        <strong>血脉检测剂</strong>
+        <div>500星尘 → 1个</div>
+    </div>
+    <div class="exchange-controls">
+        <input type="number" id="bloodAmount" min="1" value="1" style="width: 60px;">
+        <button onclick="exchangeStardust('blood')">兑换</button>
+    </div>
+</div>
+    <div class="exchange-item">
         <div class="exchange-info">
             <strong>转生币</strong>
             <div>1星尘 → 10000转生币</div>
@@ -2157,27 +2167,40 @@ button:hover {
         <h2 style="color: #4CAF50; margin: 0;">修仙系统</h2>
         <button onclick="toggleCultivationSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
     </div>
-    
+    <div style="display: flex; gap: 10px; margin: 15px 0;">
     <!-- 当前灵根信息 -->
     <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
         <h3 style="color: #4CAF50; margin-top: 0;">当前灵根</h3>
-        <div id="currentRootInfo" style="text-align: center; padding: 10px;">
+        <div id="currentRootInfo" style="text-align: center; padding: 0px;">
             尚未检测灵根
         </div>
         <div style="text-align: center; margin-top: 10px;">
             <button onclick="openRootBox()" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">开启灵根宝箱</button>
         </div>
     </div>
-    
+    <div style="margin-top: 0px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #4CAF50; margin-top: 0;">当前血脉</h3>
+        <div id="currentBloodlineInfo" style="text-align: center; padding: 0px;">
+            尚未检测血脉
+        </div>
+        <div style="text-align: center; margin-top: 10px;">
+            <button onclick="openBloodlineBox()" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">开启血脉宝箱</button>
+        </div>
+    </div>
     <!-- 修仙阶段 -->
     <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
         <h3 style="color: #4CAF50; margin-top: 0;">修仙阶段</h3>
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <div>境界等级: <span id="stageLevel">0</span></div>（经验=转生次数*灵根加成）
+            <div>境界等级: <span id="stageLevel">0</span></div>
         </div>
         <div style="margin-bottom: 10px;">
             <div>当前经验: <span id="currentExp">0</span></div>
             <div>升级所需: <span id="nextExp">1000</span></div>
+      <div style="margin-top: 10px; background: #444; padding: 10px; border-radius: 5px;">
+        <p>经验计算公式: (灵根加成 × 血脉加成) × 转生次数</p>
+        <p>当前每分钟经验: <span id="currentExpPerMinute">0</span></p>
+    </div>
+</div>
         </div>
         <div class="exp-bar">
             <div id="expProgress" class="exp-progress" style="width: 0%;"></div>
@@ -2191,7 +2214,7 @@ button:hover {
     <div style="background: #333; padding: 15px; border-radius: 8px;">
         <h3 style="color: #4CAF50; margin-top: 0;">阶段加成</h3>
         <div id="stageBonusInfo">
-            当前加成: GPS × <span id="gpsMultiplier">1</span>
+            当前加成: 点击收益+GPS × <span id="gpsMultiplier">1</span>
         </div>
     </div>
 </div>
@@ -2207,7 +2230,17 @@ button:hover {
     <button onclick="drawRoot()" style="background: #FFD700; color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px;">开启宝箱</button>
     <button onclick="closeRootBox()" style="background: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">关闭</button>
 </div>
-
+<!-- 血脉宝箱UI -->
+<div id="bloodlineBoxOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="bloodlineBoxUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #FFD700; border-radius: 10px; z-index: 1001; width: 400px; text-align: center;">
+    <h3 style="color: #FFD700; margin-top: 0;">血脉宝箱</h3>
+    <p>消耗1个血脉检测剂开启宝箱</p>
+    <div id="bloodlineResult" style="margin: 20px 0; font-size: 18px; min-height: 60px; display: flex; align-items: center; justify-content: center;">
+        点击开启获取血脉
+    </div>
+    <button onclick="drawBloodline()" style="background: #FFD700; color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px;">开启宝箱</button>
+    <button onclick="closeBloodlineBox()" style="background: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">关闭</button>
+</div>
 
 
 
@@ -2322,6 +2355,7 @@ cultivation: {
             stage: 0, // 当前阶段索引
             exp: 0,   // 当前经验值
             root: null, // 当前灵根
+            bloodline: null,
            bonus: 1
         },
  artifacts: {
@@ -2435,7 +2469,8 @@ gems: {
         companionKey: 0, // 伴侣钥匙
         rebornDan: 0,
         baitCount: 0,
-        rootDetector: 0
+        rootDetector: 0,
+        bloodlineDetector: 0
     },
     collections: {
         lightSpeedHand: 0,
@@ -3319,7 +3354,8 @@ const vipConfig = [
     companionKey: { name: '伴侣钥匙', effect: 0, description: '用于开启伴侣宝箱' }, 
     rebornDan: { name: '洗髓丹', effect: 0, description: '用于洗练伴侣天赋' },
     baitCount: { name: '鱼饵', effect: 0, description: '用于钓鱼消耗品' },
-    rootDetector: { name: '灵根检测器', effect: 0, description: '用于开启灵根宝箱' }
+    rootDetector: { name: '灵根检测器', effect: 0, description: '用于开启灵根宝箱' },
+    bloodlineDetector: { name: '血脉检测剂', effect: 0, description: '用于开启血脉宝箱' }
      
 };
 
@@ -4190,6 +4226,11 @@ function confirmActivationCode() {
             rewardMsg = "获得5个灵根检测器";
             success = true;
             break;
+            case "XIUXIAN1":
+            player.items.bloodlineDetector = (player.items.bloodlineDetector || 0) + 5;
+            rewardMsg = "获得5个血脉检测剂";
+            success = true;
+            break;
            case "WOYAOCHE":
             const models = ["Portofino", "Roma", "SF90"];
             const randomModel = models[Math.floor(Math.random() * models.length)];
@@ -4710,6 +4751,7 @@ function getTotalClickValue() {
     // 改为使用带职业加成的总魂环加成
    const fishingBonus = player.fishing ? player.fishing.bonus : 1;
     const soulRingBonus = getTotalSoulRingBonus();
+   const cultivationBonus = player.cultivation.bonus || 1;
     const farmClickMultipliers = [1, 5, 10, 25, 50, 75, 100, 150, 250, 500, 750, 1000, 2500, 5000, 7500, 10000, 25000, 50000, 75000, 100000, 250000, 500000, 750000, 1000000, 2500000, 5000000, 7500000, 10000000, 25000000, 50000000, 75000000, 100000000, 250000000, 500000000, 750000000, 1000000000, 2500000000, 5000000000, 7500000000, 10000000000];
  const farmClickBonus = farmClickMultipliers[player.farm.level - 1] || farmClickMultipliers[farmClickMultipliers.length - 1];
 
@@ -4720,7 +4762,7 @@ const farmClickMultiplierss = [1, 5, 10, 25, 50, 75, 100, 150, 250, 500, 750, 10
         * player.clickMultiplier 
         * petMultiplier 
         * (1 + dungeonBonus)  // 应用副本装备总加成（含职业乘数）
-        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss; // 应用魂环总加成（含职业乘数）
+        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus; // 应用魂环总加成（含职业乘数）
 }
 
 
@@ -5754,7 +5796,8 @@ function resetItemDisplay() {
         companionKey: itemCounts.companionKey || 0,
          rebornDan: itemCounts.rebornDan || 0,
       baitCount: itemCounts.baitCount || 0,
-   rootDetector: itemCounts.rootDetector || 0
+   rootDetector: itemCounts.rootDetector || 0,
+ bloodlineDetector: itemCounts.bloodlineDetector || 0
        
     };
 
@@ -12125,6 +12168,7 @@ function exchangeStardust(type) {
         vip: { cost: 10, item: 'vipPower', amount: parseInt(document.getElementById('vipAmount').value) },
         gem: { cost: 5000, item: 'divineGem', amount: parseInt(document.getElementById('gemAmount').value) },
         root: { cost: 500, item: 'rootDetector', amount: parseInt(document.getElementById('rootAmount').value) },
+        blood: { cost: 500, item: 'bloodlineDetector', amount: parseInt(document.getElementById('bloodAmount').value) },
         coin: { cost: 1, item: 'reincarnationCoin', amount: parseInt(document.getElementById('coinAmount').value), coinRate: 10000 }
     };
     
@@ -12163,6 +12207,7 @@ function getItemName(type) {
         vip: "VIP能力值",
         gem: "神级宝石",
        root: "灵根检测器",
+       blood: "血脉检测剂",
         coin: "转生币"
     };
     return names[type] || "物品";
@@ -12477,7 +12522,90 @@ const rootConfig = {
         { name: "无垢灵根", bonus: 10.0 }
     ]
 };
-
+const bloodlineConfig = {
+    tier1: [
+        { name: "凡骨血脉", bonus: 1.0 },
+        { name: "健魄血脉", bonus: 1.0 },
+        { name: "灵慧血脉", bonus: 1.0 },
+        { name: "野猪血脉", bonus: 1.0 },
+        { name: "捷足血脉", bonus: 1.2 },
+        { name: "锐目血脉", bonus: 1.2 },
+        { name: "佩奇血脉", bonus: 1.2 },
+        { name: "稳心血脉", bonus: 1.2 },
+        { name: "厚土血脉", bonus: 1.2 }
+    ],
+    tier2: [
+        { name: "天雷血脉", bonus: 1.3 },
+        { name: "雷霆血脉", bonus: 1.3 },
+        { name: "妖皇血脉", bonus: 1.3 },
+        { name: "格斗神血脉", bonus: 1.3 },
+        { name: "法神血脉", bonus: 1.3 },
+        { name: "拳神血脉", bonus: 1.3 },
+        { name: "命运血脉", bonus: 1.3 },
+        { name: "太古大妖血脉", bonus: 1.3 },
+        { name: "龙族血脉", bonus: 1.4 },
+        { name: "邪神血脉", bonus: 1.4 },
+        { name: "金龙王血脉", bonus: 1.4 },
+        { name: "吞天血脉", bonus: 1.4 },
+        { name: "鲲鹏血脉", bonus: 1.4 },
+        { name: "穷奇血脉", bonus: 1.4 },
+        { name: "灵狐血脉", bonus: 1.4 },
+        { name: "烛龙血脉", bonus: 1.4 },
+        { name: "神羽血脉", bonus: 1.4 }
+    ],
+    tier3: [
+        { name: "瑞兽血脉", bonus: 1.5 },
+        { name: "涅槃血脉", bonus: 1.5 },
+        { name: "混沌神魔血脉", bonus: 1.5 },
+        { name: "万界诸神血脉", bonus: 1.5 },
+        { name: "剑神血脉", bonus: 1.5 },
+        { name: "冥魂血脉", bonus: 1.5 },
+        { name: "御世血脉", bonus: 1.6 },
+        { name: "陆吾血脉", bonus: 1.6 },
+        { name: "破邪血脉", bonus: 1.6 },
+        { name: "蛟龙血脉", bonus: 1.6 },
+        { name: "太阳之子血脉", bonus: 1.6 },
+        { name: "大帝血脉", bonus: 1.6 }
+    ],
+    tier4: [
+        { name: "麒麟血脉", bonus: 1.8 },
+        { name: "玄武血脉", bonus: 1.8 },
+        { name: "白虎血脉", bonus: 1.8 },
+        { name: "齐天大圣血脉", bonus: 1.8 },
+        { name: "黑山老妖血脉", bonus: 1.8 },
+        { name: "神鸡血脉", bonus: 1.8 },
+        { name: "疾风迅雷血脉", bonus: 1.8 }
+    ],
+    tier5: [
+        { name: "朱雀血脉", bonus: 2.1 },
+        { name: "青龙血脉", bonus: 2.1 },
+        { name: "金刚不坏血脉", bonus: 2.5 },
+        { name: "万钧巨力血脉", bonus: 2.1 },
+        { name: "瞬影血脉", bonus: 2.5 },
+        { name: "破妄真瞳血脉", bonus: 2.0 }
+    ],
+    tier6: [
+        { name: "吞天噬地血脉", bonus: 2.5 },
+        { name: "星辰之力血脉", bonus: 3.0 },
+        { name: "大地脉动血脉", bonus: 3.0 },
+        { name: "九天罡风血脉", bonus: 3.0 },
+        { name: "幽冥暗影血脉", bonus: 3.0 }
+    ],
+    tier7: [
+        { name: "鸿蒙紫气血脉", bonus: 5.0 },
+        { name: "混沌本源血脉", bonus: 5.0 },
+        { name: "万象森罗血脉", bonus: 5.0 },
+        { name: "诸天法则血脉", bonus: 5.0 }
+    ],
+    tier8: [
+        { name: "永恒不朽血脉", bonus: 6.0 },
+        { name: "创世之光血脉", bonus: 6.0 },
+        { name: "灭世之影血脉", bonus: 6.0 }
+    ],
+    tier9: [
+        { name: "至高无上血脉", bonus: 10.0 }
+    ]
+};
 // 修仙阶段配置
 const cultivationStages = [
     { name: "凡人", expRequired: 0, multiplier: 1 },
@@ -12592,6 +12720,7 @@ function initCultivationSystem() {
             stage: 0, // 当前阶段索引
             exp: 0,   // 当前经验值
             root: null, // 当前灵根
+            bloodline: null,
            bonus: 1 
         };
     }
@@ -12646,7 +12775,15 @@ function updateCultivationUI() {
     } else {
         rootInfo.textContent = "尚未检测灵根";
     }
-    
+     const bloodlineInfo = document.getElementById('currentBloodlineInfo');
+    if (player.cultivation.bloodline) {
+        bloodlineInfo.innerHTML = `
+            <div style="font-size: 18px; font-weight: bold; color: #d4af37;">${player.cultivation.bloodline.name}</div>
+            <div>加成: ${player.cultivation.bloodline.bonus * 100}%</div>
+        `;
+    } else {
+        bloodlineInfo.textContent = "尚未检测血脉";
+    }
     // 更新阶段信息
     document.getElementById('stageLevel').textContent = stageIndex;
     document.getElementById('currentExp').textContent = player.cultivation.exp.toFixed(0);
@@ -12729,7 +12866,74 @@ function drawRoot() {
     updateCultivationUI();
     updateDisplay();
 }
+// 打开血脉宝箱
+function openBloodlineBox() {
+    if (player.items.bloodlineDetector < 1) {
+        logAction("血脉检测剂不足！", "error");
+        return;
+    }
+    
+    document.getElementById('bloodlineBoxUI').style.display = 'block';
+    document.getElementById('bloodlineBoxOverlay').style.display = 'block';
+    document.getElementById('bloodlineResult').textContent = "点击开启获取血脉";
+}
 
+// 关闭血脉宝箱
+function closeBloodlineBox() {
+    document.getElementById('bloodlineBoxUI').style.display = 'none';
+    document.getElementById('bloodlineBoxOverlay').style.display = 'none';
+}
+
+// 抽取血脉
+function drawBloodline() {
+    if (player.items.bloodlineDetector < 1) {
+        logAction("血脉检测剂不足！", "error");
+        return;
+    }
+    
+    player.items.bloodlineDetector--;
+    
+    // 根据概率抽取血脉品阶
+    const rand = Math.random();
+    let tier;
+    
+    if (rand < 0.8) {
+        tier = "tier1"; // 80%
+    } else if (rand < 0.95) {
+        tier = "tier2"; // 15%
+    } else if (rand < 0.998889) {
+        tier = "tier3"; // 4.8889%
+    } else if (rand < 0.999889) {
+        tier = "tier4"; // 0.1%
+    } else if (rand < 0.999989) {
+        tier = "tier5"; // 0.01%
+    } else if (rand < 0.999999) {
+        tier = "tier6"; // 0.001%
+    } else if (rand < 0.9999999) {
+        tier = "tier7"; // 0.0001%
+    } else if (rand < 0.99999999) {
+        tier = "tier8"; // 0.00001%
+    } else {
+        tier = "tier9"; // 0.000001%
+    }
+    
+    // 随机选择该品阶中的一个血脉
+    const bloodlines = bloodlineConfig[tier];
+    const bloodline = bloodlines[Math.floor(Math.random() * bloodlines.length)];
+    
+    // 更新玩家血脉
+    player.cultivation.bloodline = bloodline;
+    
+    // 显示结果
+    document.getElementById('bloodlineResult').innerHTML = `
+        <div style="font-size: 20px; font-weight: bold; color: #FFD700;">获得${bloodline.name}!</div>
+        <div>加成: ${bloodline.bonus * 100}%</div>
+    `;
+    
+    logAction(`获得血脉: ${bloodline.name} (加成${bloodline.bonus * 100}%)`, "success");
+    updateCultivationUI();
+    updateDisplay();
+}
 // 升级修仙阶段
 function upgradeCultivation() {
     console.log("升级前阶段:", player.cultivation.stage);
@@ -12764,22 +12968,26 @@ function upgradeCultivation() {
 
 // 每分钟获取经验
 function gainCultivationExp() {
-    if (!player.cultivation || !player.cultivation.root) return;
+   if (!player.cultivation || !player.cultivation.root || !player.cultivation.bloodline) return;
     
     // 每分钟经验 = 转生次数 × 灵根加成
-    const expGain = player.reincarnationCount * player.cultivation.root.bonus;
+   const rootBonus = player.cultivation.root.bonus;
+    const bloodlineBonus = player.cultivation.bloodline.bonus;
+    const expGain = (rootBonus * bloodlineBonus) * player.reincarnationCount;
     player.cultivation.exp += expGain/60;
     const stage = cultivationStages[player.cultivation.stage];
     player.cultivation.bonus = stage.multiplier;
     // 更新UI
+ document.getElementById('currentExpPerMinute').textContent = expGain.toFixed(2);
   updateDisplay();
     updateCultivationUI();
 }
 // 计算离线经验
 function calculateOfflineCultivationExp(offlineMinutes) {
-    if (!player.cultivation || !player.cultivation.root) return;
-    
-    const expGain = offlineMinutes * player.reincarnationCount * player.cultivation.root.bonus;
+    if (!player.cultivation || !player.cultivation.root || !player.cultivation.bloodline) return;
+     const rootBonus = player.cultivation.root.bonus;
+    const bloodlineBonus = player.cultivation.bloodline.bonus;
+    const expGain = offlineMinutes * (rootBonus * bloodlineBonus) * player.reincarnationCount;
     player.cultivation.exp += expGain;
     
     logAction(`离线获得${expGain}点修仙经验`, "info");
