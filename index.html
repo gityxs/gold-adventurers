@@ -2241,6 +2241,45 @@ button:hover {
     <button onclick="drawBloodline()" style="background: #FFD700; color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px;">开启宝箱</button>
     <button onclick="closeBloodlineBox()" style="background: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">关闭</button>
 </div>
+<!-- 伴侣探险系统UI -->
+<div id="expeditionSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="expeditionSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #9C27B0; border-radius: 10px; z-index: 1001; width: 800px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #9C27B0; margin: 0;">伴侣探险系统</h2>
+        <button onclick="toggleExpeditionSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+    
+    <!-- 探险任务列表 -->
+    <div style="margin-bottom: 20px;">
+        <h3>探险任务（自动选择最高评分）</h3>
+        <div id="expeditionTasks" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 10px;">
+            <!-- 任务将动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 当前探险状态 -->
+    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3>当前探险（评分有加成倍数）</h3>
+        <div id="currentExpedition" style="margin-top: 10px;">
+            <p>没有进行中的探险</p>
+        </div>
+    </div>
+    
+    <!-- 探险历史记录 -->
+    <div style="margin-bottom: 20px;">
+        <h3>探险记录</h3>
+        <div id="expeditionHistory" style="max-height: 200px; overflow-y: auto; background: #333; padding: 10px; border-radius: 5px;">
+            <!-- 记录将动态生成 -->
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
 
 
 
@@ -2385,6 +2424,11 @@ cultivation: {
         level: 1,
         power: 0 // 累计VIP能力值数量
     },
+   companionExpedition: {
+            currentExpedition: null,
+            history: [],
+            lastUpdate: Date.now()
+        },
    bossBattleSnapshot: {
     playerAttack: 0,
     playerMultiAttack: 0,
@@ -4515,6 +4559,10 @@ if (speedBoostBtn) {
             }
           initFarmData();
          initExplorationSystem();
+        initExpeditionData();
+    
+    // 计算离线探险奖励
+    calculateOfflineExpeditionRewards();
         if (save.exploration) {
                 Object.assign(explorationData, save.exploration);
             }
@@ -7492,6 +7540,7 @@ function formatTime(milliseconds) {
  checkAutoDecompose();
     updateStockPrices(); 
     calculateBankInterest(); 
+  calculateOfflineExpeditionRewards();
    updateFundValues(); // 添加这一行 
  checkAutoReincarnation(); // 检查自动转生
  updateCompanionDisplay();
@@ -12525,6 +12574,7 @@ const rootConfig = {
 const bloodlineConfig = {
     tier1: [
         { name: "凡骨血脉", bonus: 1.0 },
+        { name: "麻瓜血脉", bonus: 1.0 },
         { name: "健魄血脉", bonus: 1.0 },
         { name: "灵慧血脉", bonus: 1.0 },
         { name: "野猪血脉", bonus: 1.0 },
@@ -12574,6 +12624,8 @@ const bloodlineConfig = {
         { name: "齐天大圣血脉", bonus: 1.8 },
         { name: "黑山老妖血脉", bonus: 1.8 },
         { name: "神鸡血脉", bonus: 1.8 },
+        { name: "宇智波血脉", bonus: 1.8 },
+        { name: "漩涡血脉", bonus: 1.8 },
         { name: "疾风迅雷血脉", bonus: 1.8 }
     ],
     tier5: [
@@ -12592,15 +12644,15 @@ const bloodlineConfig = {
         { name: "幽冥暗影血脉", bonus: 3.0 }
     ],
     tier7: [
-        { name: "鸿蒙紫气血脉", bonus: 5.0 },
-        { name: "混沌本源血脉", bonus: 5.0 },
-        { name: "万象森罗血脉", bonus: 5.0 },
-        { name: "诸天法则血脉", bonus: 5.0 }
+        { name: "鸿蒙紫气血脉", bonus: 4.0 },
+        { name: "混沌本源血脉", bonus: 4.0 },
+        { name: "万象森罗血脉", bonus: 4.0 },
+        { name: "诸天法则血脉", bonus: 4.0 }
     ],
     tier8: [
-        { name: "永恒不朽血脉", bonus: 6.0 },
-        { name: "创世之光血脉", bonus: 6.0 },
-        { name: "灭世之影血脉", bonus: 6.0 }
+        { name: "永恒不朽血脉", bonus: 5.0 },
+        { name: "创世之光血脉", bonus: 5.0 },
+        { name: "灭世之影血脉", bonus: 5.0 }
     ],
     tier9: [
         { name: "至高无上血脉", bonus: 10.0 }
@@ -13402,6 +13454,8 @@ function openCompanionSystem() {
     document.getElementById('companionSystem').style.display = 'block';
     document.getElementById('companionOverlay').style.display = 'block';
     updateCompanionDisplay();
+   calculateOfflineExpeditionRewards();
+    updateExpeditionUI();
 }
 
 // 关闭伴侣系统
@@ -13502,12 +13556,369 @@ const rarityConfig = companionRarities[companion.rarity] || {};
     ${companion.locked || !['epic', 'pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'].includes(companion.rarity) ? 'disabled' : ''}>
     合成
 </button>
+   <button onclick="toggleExpeditionSystem()" style="margin-top: 15px; background: #9C27B0; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">探险</button>
+</div>
             </div>
         `;
         listContainer.appendChild(card);
     });
 }
+const expeditionConfig = {
+    tasks: [
+        {
+            id: "forest",
+            name: "迷雾森林",
+            difficulty: "简单",
+            duration: 30, // 分钟
+            baseReward: {
+                rose: 3,
+                vipPower: 1,
+                bait: 1
+            },
+            description: "探索神秘的迷雾森林，寻找稀有资源",
+            companionRequirement: 3000 
+        },
+        {
+            id: "mountain",
+            name: "远古山脉",
+            difficulty: "中等",
+            duration: 60,
+            baseReward: {
+                rose: 10,
+                vipPower: 3,
+                bait: 3
+            },
+            description: "攀登危险的远古山脉，挑战极限",
+            companionRequirement: 5000
+        },
+        {
+            id: "ocean",
+            name: "深渊海洋",
+            difficulty: "困难",
+            duration: 120,
+            baseReward: {
+                rose: 30,
+                vipPower: 10,
+                bait: 10
+            },
+            description: "潜入神秘的深渊海洋，探索未知领域",
+            companionRequirement: 10000
+        },
+       {
+            id: "volcano",
+            name: "熔岩火山",
+            difficulty: "极难",
+            duration: 240,
+            baseReward: {
+                rose: 100,
+                vipPower: 35,
+                bait: 35
+            },
+            description: "穿越危险的熔岩火山，寻找传说宝藏",
+            companionRequirement: 15000
+        },
+        {
+            id: "emshen",
+            name: "虚空裂缝",
+            difficulty: "噩梦",
+            duration: 480,
+            baseReward: {
+                rose: 350,
+                vipPower: 120,
+                bait: 120
+            },
+            description: "穿越不稳定的虚空裂缝，直面维度之外的恐怖",
+            companionRequirement: 20000
+        },
+        {
+            id: "emyuan",
+            name: "星际深渊",
+            difficulty: "地狱",
+            duration: 960,
+            baseReward: {
+                rose: 1500,
+                vipPower: 480,
+                bait: 480
+            },
+            description: "勇闯无尽的星际深渊，挑战宇宙终极奥秘",
+            companionRequirement: 25000
+        }
+    ]
+};
 
+// 初始化伴侣探险数据
+function initExpeditionData() {
+    if (!player.companionExpedition) {
+        player.companionExpedition = {
+            currentExpedition: null,
+            history: [],
+            lastUpdate: Date.now()
+        };
+    }
+}
+
+// 切换探险系统显示
+function toggleExpeditionSystem() {
+    const ui = document.getElementById('expeditionSystemUI');
+    const overlay = document.getElementById('expeditionSystemOverlay');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        initExpeditionData();
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateExpeditionUI();
+    }
+}
+
+// 更新探险系统UI
+function updateExpeditionUI() {
+    // 更新任务列表
+    const tasksContainer = document.getElementById('expeditionTasks');
+    tasksContainer.innerHTML = '';
+    
+    expeditionConfig.tasks.forEach(task => {
+        const taskElement = document.createElement('div');
+        taskElement.style.background = '#333';
+        taskElement.style.padding = '15px';
+        taskElement.style.borderRadius = '8px';
+        taskElement.innerHTML = `
+            <h4>${task.name} (${task.difficulty})</h4>
+            <p>${task.description}</p>
+            <div style="margin: 10px 0;">
+                <div>所需时间: ${task.duration}分钟</div>
+                <div>最低伴侣评分: ${task.companionRequirement}</div>
+            </div>
+            <div style="margin: 10px 0;">
+                <strong>基础奖励:</strong>
+                <div>玫瑰花: ${task.baseReward.rose}</div>
+                <div>VIP能力值: ${task.baseReward.vipPower}</div>
+                <div>鱼饵: ${task.baseReward.bait}</div>
+            </div>
+            <button onclick="startExpedition('${task.id}')" 
+                    style="background: #9C27B0; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;"
+                    ${player.companionExpedition.currentExpedition ? 'disabled' : ''}>
+                开始探险
+            </button>
+        `;
+        tasksContainer.appendChild(taskElement);
+    });
+    
+    // 更新当前探险状态
+    const currentContainer = document.getElementById('currentExpedition');
+    if (player.companionExpedition.currentExpedition) {
+        const task = expeditionConfig.tasks.find(t => t.id === player.companionExpedition.currentExpedition.taskId);
+        const startTime = player.companionExpedition.currentExpedition.startTime;
+        const duration = task.duration * 60 * 1000; // 转换为毫秒
+        const endTime = startTime + duration;
+        const remainingTime = Math.max(0, endTime - Date.now());
+        const remainingMinutes = Math.ceil(remainingTime / (60 * 1000));
+        
+        currentContainer.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4>${task.name} (${task.difficulty})</h4>
+                    <div>伴侣: ${player.companionExpedition.currentExpedition.companionName}</div>
+                    <div>伴侣评分: ${player.companionExpedition.currentExpedition.companionScore}</div>
+                </div>
+                <div>
+                    <div>剩余时间: ${remainingMinutes}分钟</div>
+                </div>
+            </div>
+        `;
+    } else {
+        currentContainer.innerHTML = '<p>没有进行中的探险</p>';
+    }
+    
+    // 更新探险历史
+    const historyContainer = document.getElementById('expeditionHistory');
+    historyContainer.innerHTML = '';
+    
+    if (player.companionExpedition.history.length === 0) {
+        historyContainer.innerHTML = '<p>暂无探险记录</p>';
+    } else {
+        player.companionExpedition.history.slice(0, 5).forEach(record => {
+            const task = expeditionConfig.tasks.find(t => t.id === record.taskId);
+            const recordElement = document.createElement('div');
+            recordElement.style.marginBottom = '10px';
+            recordElement.style.paddingBottom = '10px';
+            recordElement.style.borderBottom = '1px solid #444';
+            recordElement.innerHTML = `
+                <div><strong>${task.name}</strong> (${record.companionName})</div>
+                <div>评分: ${record.companionScore} | 奖励倍数: ${record.rewardMultiplier.toFixed(2)}x</div>
+                <div>获得: 玫瑰花 x${record.rewards.rose}, VIP能力值 x${record.rewards.vipPower}, 鱼饵 x${record.rewards.bait}</div>
+                <div style="color: #aaa; font-size: 0.9em;">${new Date(record.endTime).toLocaleString()}</div>
+            `;
+            historyContainer.appendChild(recordElement);
+        });
+    }
+}
+
+// 开始探险
+// 伴侣数据结构增强
+class Companion {
+    constructor(id, name, rarity, score, talents) {
+        this.id = id;
+        this.name = name;
+        this.rarity = rarity;
+        this.score = score;
+        this.talents = talents;
+        this.locked = false; // 用户设置的锁定状态
+        this.onExpedition = false; // 是否在探险中
+        this.originalLockedState = false; // 原始锁定状态（用于恢复）
+    }
+}
+
+// 开始探险
+function startExpedition(taskId) {
+    if (player.companionExpedition.currentExpedition) {
+        logAction("已有进行中的探险", "error");
+        return;
+    }
+    
+    const task = expeditionConfig.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    // 检查是否有符合条件的伴侣
+    const eligibleCompanions = player.companions.filter(c => 
+        c.score >= task.companionRequirement && !c.onExpedition
+    );
+    
+    if (eligibleCompanions.length === 0) {
+        logAction("没有符合条件的伴侣", "error");
+        return;
+    }
+    
+    // 选择评分最高的伴侣
+    const companion = eligibleCompanions.reduce((max, c) => 
+        c.score > max.score ? c : max, eligibleCompanions[0]
+    );
+    
+    // 保存原始锁定状态
+    companion.originalLockedState = companion.locked;
+    
+    // 强制锁定伴侣
+    companion.locked = true;
+    
+    // 标记伴侣为探险中
+    companion.onExpedition = true;
+    
+    // 开始探险
+    player.companionExpedition.currentExpedition = {
+        taskId: task.id,
+        companionId: companion.id,
+        companionName: companion.name,
+        companionScore: companion.score,
+        startTime: Date.now()
+    };
+    
+    player.companionExpedition.lastUpdate = Date.now();
+    
+    logAction(`派遣${companion.name}进行${task.name}探险，伴侣已自动锁定`, "success");
+    updateExpeditionUI();
+    updateCompanionDisplay();
+}
+
+// 完成探险
+function completeExpedition(forceComplete = false) {
+    if (!player.companionExpedition.currentExpedition) return;
+    
+    const expedition = player.companionExpedition.currentExpedition;
+    const task = expeditionConfig.tasks.find(t => t.id === expedition.taskId);
+    const companion = player.companions.find(c => c.id === expedition.companionId);
+    
+    if (!task || !companion) return;
+    
+    // 计算实际探险时间
+    const startTime = expedition.startTime;
+    const duration = task.duration * 60 * 1000; // 转换为毫秒
+    const endTime = startTime + duration;
+    const currentTime = Date.now();
+    
+    // 如果强制提前结束，计算实际探险时间比例
+    const timeRatio = forceComplete ? 
+        Math.min(1, (currentTime - startTime) / duration) : 1;
+    
+    // 计算奖励倍数（基于伴侣评分）
+    const scoreRatio = expedition.companionScore / task.companionRequirement;
+    const rewardMultiplier = Math.min(5, Math.max(1, scoreRatio * timeRatio));
+    
+    // 计算实际奖励
+    const rewards = {
+        rose: Math.floor(task.baseReward.rose * rewardMultiplier),
+        vipPower: Math.floor(task.baseReward.vipPower * rewardMultiplier),
+        bait: Math.floor(task.baseReward.bait * rewardMultiplier)
+    };
+    
+    // 发放奖励
+    player.items.rose += rewards.rose;
+    player.items.vipPower += rewards.vipPower;
+    player.items.baitCount += rewards.bait;
+    
+    // 添加历史记录
+    player.companionExpedition.history.unshift({
+        taskId: task.id,
+        companionId: companion.id,
+        companionName: companion.name,
+        companionScore: companion.score,
+        rewardMultiplier: rewardMultiplier,
+        rewards: rewards,
+        startTime: startTime,
+        endTime: currentTime,
+        duration: (currentTime - startTime) / (60 * 1000) // 分钟
+    });
+    
+    // 限制历史记录数量
+    if (player.companionExpedition.history.length > 10) {
+        player.companionExpedition.history.pop();
+    }
+    
+    // 清除当前探险
+    player.companionExpedition.currentExpedition = null;
+    
+    // 解除伴侣的探险状态
+    companion.onExpedition = false;
+    
+    // 恢复原始锁定状态
+    companion.locked = companion.originalLockedState;
+    
+    logAction(
+        `${companion.name}完成${task.name}探险，获得奖励: 玫瑰花x${rewards.rose}, VIP能力值x${rewards.vipPower}, 鱼饵x${rewards.bait}`,
+        "success"
+    );
+    
+    logAction(
+        `${companion.name}已恢复${companion.locked ? "锁定" : "解锁"}状态`,
+        "info"
+    );
+    
+    updateExpeditionUI();
+    updateCompanionDisplay();
+    updateItemDisplay();
+}
+
+// 计算离线探险奖励
+function calculateOfflineExpeditionRewards() {
+    if (!player.companionExpedition || !player.companionExpedition.currentExpedition) return;
+    
+    const expedition = player.companionExpedition.currentExpedition;
+    const task = expeditionConfig.tasks.find(t => t.id === expedition.taskId);
+    const companion = player.companions.find(c => c.id === expedition.companionId);
+    
+    if (!task || !companion) return;
+    
+    const startTime = expedition.startTime;
+    const duration = task.duration * 60 * 1000; // 转换为毫秒
+    const endTime = startTime + duration;
+    const currentTime = Date.now();
+    
+    // 如果探险已经完成
+    if (currentTime >= endTime) {
+        completeExpedition();
+    }
+}
 // 抽取伴侣
 function drawCompanion() {
     if (player.items.companionKey < 1) {
@@ -13609,6 +14020,10 @@ function drawCompanion() {
 // 添加伴侣进阶函数
 function advanceCompanion(id) {
     const companion = player.companions.find(c => c.id === id);
+   if (companion && companion.onExpedition) {
+        logAction(`${companion.name}正在探险中，无法进阶！`, "error");
+        return;
+    }
     if (!companion) return;
 
     // 检查是否为可进阶品质
@@ -13709,6 +14124,10 @@ function washCompanion() {
     if (!currentWashCompanionId) return;
     
     const companion = player.companions.find(c => c.id === currentWashCompanionId);
+  if (companion && companion.onExpedition) {
+        logAction(`${companion.name}正在探险中，无法洗练！`, "error");
+        return;
+    }
     if (!companion) {
         closeWashPanel();
         return;
@@ -13841,6 +14260,10 @@ function calculateCompanionScore(companion) {
 // 切换锁定状态
 function toggleCompanionLock(id) {
     const companion = player.companions.find(c => c.id === id);
+     if (companion.onExpedition) {
+        logAction("伴侣在探险中，无法更改锁定状态", "error");
+        return;
+    }
     if (companion) {
         companion.locked = !companion.locked;
         logAction(`${companion.name}已${companion.locked ? '锁定' : '解锁'}`, 'success');
@@ -13887,16 +14310,16 @@ function getRarityName(rarity) {
 // 自动分解检查逻辑
 function checkAutoDecompose() {
     if (!player.autoDecompose.enabled) return;
-
+    
     const rarityOrder = ['white', 'blue', 'epic', 'pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'];
     const targetIndex = rarityOrder.indexOf(player.autoDecompose.belowRarity);
     if (targetIndex === -1) return;
-
+    
     // 找出所有低于等于目标品阶且未锁定的伴侣
     const toDecompose = player.companions.filter(c => 
         rarityOrder.indexOf(c.rarity) <= targetIndex && !c.locked
     );
-
+     
     if (toDecompose.length > 0) {
         const totalRoses = toDecompose.reduce((sum, c) => sum + companionRarities[c.rarity].decomposeRose, 0);
         player.items.rose += totalRoses;
@@ -13905,7 +14328,7 @@ function checkAutoDecompose() {
         player.companions = player.companions.filter(c => 
             !(rarityOrder.indexOf(c.rarity) <= targetIndex && !c.locked)
         );
-        
+      
         // 如果装备的伴侣被分解，取消装备
         if (toDecompose.some(c => c.id === player.equippedCompanionId)) {
             player.equippedCompanionId = null;
@@ -13934,6 +14357,10 @@ setInterval(checkAutoDecompose, 5000);
 // 分解单个伴侣
 function decomposeCompanion(id) {
     const index = player.companions.findIndex(c => c.id === id);
+      if (companion && companion.onExpedition) {
+        logAction(`${companion.name}正在探险中，无法分解！`, "error");
+        return;
+    }
     if (index === -1) return;
     
     const companion = player.companions[index];
@@ -13956,6 +14383,7 @@ function decomposeCompanion(id) {
 function batchDecompose() {
     const rarity = document.getElementById('decomposeRarity').value;
     const toDecompose = player.companions.filter(c => c.rarity === rarity && !c.locked);
+   
     if (toDecompose.length === 0) {
         logAction("没有可分解的伴侣", "error");
         return;
@@ -14113,7 +14541,16 @@ function combineCompanions() {
     
     const mainCompanion = player.companions.find(c => c.id === mainId);
     const secondaryCompanion = player.companions.find(c => c.id === secondaryId);
+     // 检查伴侣是否在探险中
+    if (mainCompanion && mainCompanion.onExpedition) {
+        logAction(`${mainCompanion.name}正在探险中，无法合成！`, "error");
+        return;
+    }
     
+    if (secondaryCompanion && secondaryCompanion.onExpedition) {
+        logAction(`${secondaryCompanion.name}正在探险中，无法合成！`, "error");
+        return;
+    }
     if (!mainCompanion || !secondaryCompanion) {
         logAction('选择的伴侣不存在', 'error');
         return;
