@@ -1315,13 +1315,15 @@ button:hover {
         <button onclick="closeCompanionSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-size: 14px;">关闭</button>
     </div>
     
-    
+      <div style="display: flex; gap: 10px; margin: 15px 0;">
     <!-- 伴侣等级与升级 -->
     <div style="margin: 15px 0; padding: 10px; background: #333; border-radius: 5px;">
         <h3>伴侣等级: Lv. <span id="companionLevel">1</span></h3>
         <p>升级消耗: <span id="upgradeCost">10</span> 玫瑰花</p>
         <button onclick="upgradeCompanion()" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">升级</button>
-
+      <button onclick="toggleExpeditionSystem()" style="margin-top: 15px; background: #9C27B0; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">探险</button>
+</div> 
+ 
      <div style="flex: 1; min-width: 400px; background: #2a2a2a; padding: 10px; border-radius: 5px;">
         <h3>伴侣属性加成</h3>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.9em;">
@@ -1332,8 +1334,8 @@ button:hover {
             <div>爆伤总和加成: <span id="critDamageTotalBonus">1x</span></div>
             <div>连击总和加成: <span id="comboTotalBonus">0</span></div>
             <div>全属性总和加成: <span id="allStatsTotalBonus">1x</span></div>
-        </div>
-    </div>
+</div>
+</div>
 </div>
     <div style="display: flex; gap: 10px; margin: 15px 0;">
     <!-- 伴侣宝箱 -->
@@ -2245,7 +2247,7 @@ button:hover {
 <div id="expeditionSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
 <div id="expeditionSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #9C27B0; border-radius: 10px; z-index: 1001; width: 800px; max-height: 80vh; overflow-y: auto;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="color: #9C27B0; margin: 0;">伴侣探险系统</h2>
+        <h2 style="color: #9C27B0; margin: 0;">伴侣探险</h2>
         <button onclick="toggleExpeditionSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
     </div>
     
@@ -8400,7 +8402,7 @@ function generateMonster() {
                     logBattleAction(`你抵消了怪物的攻击！剩余抵消次数：${playerBlock}`);
                 } else {
                     player.battle.playerHealth -= monster.attack; // 如果没有抵消次数，玩家受到伤害
-                    logBattleAction(`${monster.name}对你造成了${monster.attack.toLocaleString()}点伤害`);
+                    logBattleAction(`${monster.name}对你造成了${monster.attack.toFixed(0)}点伤害`);
                 }
             } else {
                 logBattleAction('你闪避了怪物的攻击！');
@@ -13101,7 +13103,7 @@ const titleConfig = {
     ],
     // 转生分支
     reincarnationBranch: [
-        { name: "初涉江湖", condition: (p) => p.reincarnationCount > 1, bonus: { healthMultiplier: 1.2 } },
+        { name: "初涉江湖", condition: (p) => p.reincarnationCount > 5, bonus: { healthMultiplier: 1.2 } },
         { name: "俗世门徒", condition: (p) => p.reincarnationCount > 10, bonus: { healthMultiplier: 1.2 } },
         { name: "人中龙凤", condition: (p) => p.reincarnationCount > 50, bonus: { healthMultiplier: 1.2 } },
         { name: "一方翘楚", condition: (p) => p.reincarnationCount > 100, bonus: { healthMultiplier: 1.2 } },
@@ -13117,8 +13119,8 @@ const titleConfig = {
     ],
     // 驯兽师分支
     tamerBranch: [
-        { name: "初级驯兽师", condition: (p) => p.pets?.thunderKirin?.level > 10, bonus: { critMultiplier: 2 } },
-        { name: "中级驯兽师", condition: (p) => p.pets?.netherQiongqi?.level > 10, bonus: { critMultiplier: 2 } },
+        { name: "初级驯兽师", condition: (p) => p.pets?.thunderKirin?.level > 50, bonus: { critMultiplier: 2 } },
+        { name: "中级驯兽师", condition: (p) => p.pets?.netherQiongqi?.level > 30, bonus: { critMultiplier: 2 } },
         { name: "高级驯兽师", condition: (p) => p.pets?.primordialZhuLong?.level > 10, bonus: { critMultiplier: 2 } },
         { name: "圣级驯兽师", condition: (p) => p.pets?.yanYuBiAn?.level > 10, bonus: { critMultiplier: 2 } },
         { name: "神级驯兽师", condition: (p) => p.pets?.yuyu2?.level > 10, bonus: { critMultiplier: 4 } },
@@ -13144,7 +13146,7 @@ const titleConfig = {
     // 特殊分支
     specialBranch: [
         { name: "萌新", condition: (p) => p.gold > 1, bonus: { attackMultiplier: 1 } },
-        { name: "公测玩家", condition: (p) => p.usedActivationCodes.includes("VIP666777"), bonus: { attackMultiplier: 2 } },
+        { name: "公测玩家", condition: (p) => p.usedActivationCodes.includes("VIP666777"), bonus: { attackMultiplier: 1 } },
         { name: "持剑学徒", condition: (p) => getEquipLevel(p, "废品") > 1, bonus: { attackMultiplier: 2 } },
         { name: "疾风剑者", condition: (p) => getEquipLevel(p, "废品") > 1000, bonus: { attackMultiplier: 2 } },
         { name: "断水剑师", condition: (p) => getEquipLevel(p, "废品") > 10000, bonus: { attackMultiplier: 2 } },
@@ -13152,7 +13154,7 @@ const titleConfig = {
         { name: "独孤剑皇", condition: (p) => getEquipLevel(p, "废品") > 500000, bonus: { attackMultiplier: 2 } },
         { name: "剑域之主", condition: (p) => getEquipLevel(p, "废品") > 1000000, bonus: { attackMultiplier: 2 } },
         { name: "万剑之神", condition: (p) => getEquipLevel(p, "废品") > 5000000, bonus: { attackMultiplier: 2 } },
-        { name: "鸿蒙剑祖", condition: (p) => getEquipLevel(p, "废品") > 10000000, bonus: { attackMultiplier: 2 } },
+        { name: "鸿蒙剑祖", condition: (p) => getEquipLevel(p, "废品") > 10000000, bonus: { attackMultiplier: 3 } },
         { name: "万劫剑神", condition: (p) => getEquipLevel(p, "废品") > 50000000, bonus: { attackMultiplier: 4 } },
         { name: "无上剑神", condition: (p) => getEquipLevel(p, "废品") > 100000000, bonus: { attackMultiplier: 4 } },
         { name: "剑狱之尊", condition: (p) => getEquipLevel(p, "废品") > 200000000, bonus: { attackMultiplier: 4 } },
@@ -13556,8 +13558,6 @@ const rarityConfig = companionRarities[companion.rarity] || {};
     ${companion.locked || !['epic', 'pink', 'orange', 'red', 'angel', 'emyyyy', 'jlyyyy'].includes(companion.rarity) ? 'disabled' : ''}>
     合成
 </button>
-   <button onclick="toggleExpeditionSystem()" style="margin-top: 15px; background: #9C27B0; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">探险</button>
-</div>
             </div>
         `;
         listContainer.appendChild(card);
@@ -14356,27 +14356,32 @@ function initAutoDecomposeUI() {
 setInterval(checkAutoDecompose, 5000);
 // 分解单个伴侣
 function decomposeCompanion(id) {
-    const index = player.companions.findIndex(c => c.id === id);
-      if (companion && companion.onExpedition) {
-        logAction(`${companion.name}正在探险中，无法分解！`, "error");
+    const companion = player.companions.find(c => c.id === id);
+    if (!companion) return;
+    
+    if (companion.locked) {
+        logAction("伴侣已锁定，无法分解！", "error");
         return;
     }
-    if (index === -1) return;
     
-    const companion = player.companions[index];
-    if (companion.locked) return;
+    // 获取分解奖励
+    const rarityConfig = companionRarities[companion.rarity];
+    const roses = rarityConfig ? rarityConfig.decomposeRose : 5; // 默认5朵玫瑰
     
-    const roses = companionRarities[companion.rarity].decomposeRose;
-    player.items.rose += roses;
-    player.companions.splice(index, 1);
+    // 移除伴侣
+    player.companions = player.companions.filter(c => c.id !== id);
     
-    // 如果分解的是当前装备的伴侣，取消装备
+    // 如果分解的是装备的伴侣，取消装备
     if (player.equippedCompanionId === id) {
         player.equippedCompanionId = null;
     }
     
-    logAction(`分解${companionRarities[companion.rarity].name}伴侣${companion.name}，获得${roses}玫瑰花`, 'success');
+    // 添加奖励
+    player.items.rose += roses;
+    
+    logAction(`分解${companion.name}获得${roses}朵玫瑰花`, "success");
     updateCompanionDisplay();
+    updateItemDisplay();
 }
 
 // 批量分解
