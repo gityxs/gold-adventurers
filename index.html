@@ -888,6 +888,7 @@ button:hover {
            <p>24. 星域探索：300转开启，获取新材料</p>
            <p>25. 宝石系统：800转开启，提供大量属性</p>
            <p>26. 修仙系统：500转开启，开启经验获得条件是：获得一次灵根和血脉。材料都是杂货铺购买</p>
+           <p>27. 宝图系统：600转开启，随机奖励或者打BOSS。</p>
         </div>
     </div>
 </div>
@@ -952,6 +953,7 @@ button:hover {
     <button onclick="toggleArtifactSystem()" style="margin-left: 10px;">神器锻造系统</button>
     <button onclick="toggleCultivationSystem()" style="margin-left: 10px;">修仙系统</button>
     <button onclick="toggleGemSystem()" style="margin-left: 10px;">宝石系统</button>
+    <button onclick="toggleTreasureMapSystem()">藏宝图系统</button>
     <button onclick="toggleSettingsUI()">设置</button>
 
 <h3>自动购买设置</h3>
@@ -2275,7 +2277,76 @@ button:hover {
         </div>
     </div>
 </div>
+<!-- 藏宝图系统界面 -->
+<div id="treasureMapSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="treasureMapSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #d4af37; border-radius: 10px; z-index: 1001; width: 800px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #d4af37; margin: 0;">藏宝图系统</h2>
+        <button onclick="toggleTreasureMapSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+    
+    <!-- 藏宝图钥匙信息 -->
+    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #d4af37; margin-top: 0;">藏宝图钥匙</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>当前数量: <span id="treasureKeyCount">0</span></div>
+            <button onclick="buyTreasureKey()" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">兑换钥匙 (1000星尘)</button>
+        </div>
+    </div>
+    
+    <!-- 开启藏宝图宝箱 -->
+    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #d4af37; margin-top: 0;">开启藏宝图宝箱</h3>
+        <p>消耗1个藏宝图钥匙随机获得一张藏宝图</p>
+        <button onclick="openTreasureChest()" style="background: #2196F3; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: font-weight: bold; margin-top: 10px;">开启宝箱</button>
+    </div>
+    
+    <!-- 我的藏宝图 -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: #d4af37; margin-top: 0;">我的藏宝图（开宝图前建议打一下打怪模式刷新属性）</h3>
+        <div id="treasureMapList" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-height: 300px; overflow-y: auto; padding: 10px; background: #333; border-radius: 5px;">
+            <!-- 藏宝图卡片会动态生成在这里 -->
+        </div>
+    </div>
+</div>
+<div id="treasureBattleOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="treasureBattleUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #d4af37; border-radius: 10px; z-index: 1001; width: 600px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #d4af37; margin: 0;">宝藏守卫者</h2>
+       <div id="treasureBattleStatus" style="color: #4CAF50; font-weight: bold;">战斗中...</div>
+    </div>
+    
+    <div class="player-info">
+        <p>生命: <span id="treasurePlayerHealth">0</span></p>
+        <p>攻击: <span id="treasurePlayerAttack">0</span></p>
+        <p>暴击率: <span id="treasurePlayerCritRate">0%</span></p>
+        <p>爆伤: <span id="treasurePlayerCritDamage">0%</span></p>
+    </div>
+    
+    <div class="monster-info">
+        <p>怪物名称: <span id="treasureMonsterName">宝藏守卫者</span></p>
+        <p>怪物品阶: <span id="treasureMonsterRank">无</span></p>
+        <p>怪物生命: <span id="treasureMonsterHealth">0</span></p>
+        <p>怪物攻击: <span id="treasureMonsterAttack">0</span></p>
+        <p>怪物词条: <span id="treasureMonsterModifiers">无</span></p>
+    </div>
+    
+    <div class="battle-controls">
+        <button onclick="attackTreasureMonster()">攻击</button>
+    </div>
+    
+    <div class="battle-log" id="treasureBattleLog" style="margin-top: 20px; height: 100px; overflow-y: auto; background: #333; padding: 10px; border-radius: 5px;"></div>
+</div>
 
+<!-- 藏宝图奖励界面 -->
+<div id="treasureRewardOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="treasureRewardUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #4CAF50; border-radius: 10px; z-index: 1001; width: 500px;">
+    <h2 style="color: #4CAF50; text-align: center; margin-top: 0;">藏宝图奖励</h2>
+    <div id="treasureRewardContent" style="text-align: center; margin: 20px 0;">
+        <!-- 奖励内容将在这里显示 -->
+    </div>
+    <button onclick="closeTreasureReward()" style="background: #2196F3; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; display: block; margin: 0 auto;">关闭</button>
+</div>
 
 
 
@@ -2437,6 +2508,11 @@ cultivation: {
     playerCritRate: 0,
     playerCritDamage: 0
 },
+treasure: {
+        keys: 0, // 藏宝图钥匙数量
+        maps: [], // 拥有的藏宝图
+        currentBattle: null // 当前战斗信息
+    },
  parking: {
     level: 1, // 停车位等级
     exp: 0, // 停车经验
@@ -4562,7 +4638,7 @@ if (speedBoostBtn) {
           initFarmData();
          initExplorationSystem();
         initExpeditionData();
-    
+    initTreasureMapSystem();
     // 计算离线探险奖励
     calculateOfflineExpeditionRewards();
         if (save.exploration) {
@@ -11141,7 +11217,7 @@ const missions = {
         name: "深空星域",
         time: 180,
         rewards: { 
-            stardust: { min: 1, max: 20 },
+            stardust: { min: 1, max: 25 },
             darkMatter: { min: 1, max: 30 },
              cosmicCrystal: { min: 1, max: 20 }
         },
@@ -11151,7 +11227,7 @@ const missions = {
         name: "黑洞边缘",
         time: 240,
         rewards: {
-            stardust: { min: 1, max: 20 },
+            stardust: { min: 1, max: 50 },
             darkMatter: { min: 1, max: 50 },
             cosmicCrystal: { min: 1, max: 50 }
         },
@@ -11952,8 +12028,8 @@ function calculateDecompositionReward(artifact) {
     // 获取基础收益
     const base = baseRewards[artifact.quality] || baseRewards.common;
     
-    // 升级加成：每级增加10%收益
-    const upgradeMultiplier = 1 + (artifact.upgradeLevel * 0.1);
+    // 升级加成：每级增加20%收益
+    const upgradeMultiplier = 1 + (artifact.upgradeLevel * 0.2);
     
     // 套装加成：套装神器额外增加50%收益
     const setMultiplier = artifact.set ? 1.5 : 1;
@@ -12468,6 +12544,532 @@ function upgradeGem(type, level) {
         updateGemUI();
     } else {
         logAction("宝石数量不足，无法合成！", "error");
+    }
+}
+
+// 藏宝图等级配置
+const treasureMapLevels = [
+    { level: 1, name: "一级藏宝图", monsterMinStage: 50, monsterMaxStage: 200, expReward: 10000, rewards: [
+        { type: "baitCount", amount: 1 },
+        { type: "companionKey", amount: 1 },
+        { type: "vipPower", amount: 10 },
+        { type: "rose", amount: 50 },
+        { type: "primaryGem", amount: 1 },
+        { type: "advancedGem", amount: 1 }
+    ]},
+    { level: 2, name: "二级藏宝图", monsterMinStage: 200, monsterMaxStage: 400, expReward: 50000, rewards: [
+        { type: "baitCount", amount: 3 },
+        { type: "companionKey", amount: 3 },
+        { type: "vipPower", amount: 30 },
+        { type: "rose", amount: 100 },
+        { type: "advancedGem", amount: 2 },
+        { type: "primaryGem", amount: 2 },
+        { type: "rebornDan", amount: 3 }
+    ]},
+    { level: 3, name: "三级藏宝图", monsterMinStage: 400, monsterMaxStage: 600, expReward: 100000, rewards: [
+        { type: "baitCount", amount: 5 },
+        { type: "companionKey", amount: 5 },
+        { type: "vipPower", amount: 50 },
+        { type: "rose", amount: 200 },
+        { type: "advancedGem", amount: 3 },
+        { type: "superiorGem", amount: 3 },
+        { type: "rebornDan", amount: 5 },
+        { type: "rootDetector", amount: 2 },
+        { type: "bloodlineDetector", amount: 2 }
+    ]},
+    { level: 4, name: "四级藏宝图", monsterMinStage: 600, monsterMaxStage: 800, expReward: 500000, rewards: [
+        { type: "baitCount", amount: 10 },
+        { type: "companionKey", amount: 10 },
+        { type: "vipPower", amount: 100 },
+        { type: "rose", amount: 500 },
+        { type: "superiorGem", amount: 4 },
+        { type: "divineGem", amount: 4 },
+        { type: "rebornDan", amount: 10 },
+        { type: "rootDetector", amount: 4 },
+        { type: "bloodlineDetector", amount: 4 }
+    ]},
+    { level: 5, name: "五级藏宝图", monsterMinStage: 800, monsterMaxStage: 1000, expReward: 1000000, rewards: [
+        { type: "baitCount", amount: 20 },
+        { type: "companionKey", amount: 20 },
+        { type: "vipPower", amount: 200 },
+        { type: "rose", amount: 1000 },
+        { type: "superiorGem", amount: 6 },
+        { type: "divineGem", amount: 6 },
+        { type: "rebornDan", amount: 20 },
+        { type: "rootDetector", amount: 6 },
+        { type: "bloodlineDetector", amount: 6 }
+    ]}
+];
+
+// 藏宝图品质配置
+const treasureMapQualities = [
+    { quality: 1, name: "普通", multiplier: 1.0 },
+    { quality: 2, name: "精良", multiplier: 2.0 },
+    { quality: 3, name: "稀有", multiplier: 3.0 },
+    { quality: 4, name: "史诗", multiplier: 4.0 },
+    { quality: 5, name: "传说", multiplier: 5.0 },
+    { quality: 6, name: "神话", multiplier: 6.0 }
+];
+
+// 切换藏宝图系统显示
+function toggleTreasureMapSystem() {
+    if (player.reincarnationCount < 600) {
+        alert("需要达到600转才能开启宝图系统！");
+        return;
+    }
+    const ui = document.getElementById('treasureMapSystemUI');
+    const overlay = document.getElementById('treasureMapSystemOverlay');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateTreasureMapDisplay();
+    }
+}
+
+// 更新藏宝图系统显示
+function updateTreasureMapDisplay() {
+    // 更新钥匙数量
+    document.getElementById('treasureKeyCount').textContent = player.treasure.keys;
+    
+    // 更新藏宝图列表
+    const container = document.getElementById('treasureMapList');
+    container.innerHTML = '';
+    
+    if (player.treasure.maps.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #888;">暂无藏宝图</div>';
+        return;
+    }
+    
+    player.treasure.maps.forEach((map, index) => {
+        const levelConfig = treasureMapLevels.find(l => l.level === map.level);
+        const qualityConfig = treasureMapQualities.find(q => q.quality === map.quality);
+        
+        const card = document.createElement('div');
+        card.style.background = '#444';
+        card.style.padding = '10px';
+        card.style.borderRadius = '5px';
+        card.style.border = `2px solid ${qualityConfig.quality >= 4 ? '#d4af37' : '#4CAF50'}`;
+        
+        card.innerHTML = `
+            <div style="font-weight: bold; color: ${qualityConfig.quality >= 4 ? '#d4af37' : '#4CAF50'};">${levelConfig.name}</div>
+            <div>品质: ${qualityConfig.name} (x${qualityConfig.multiplier})</div>
+            <button onclick="useTreasureMap(${index})" style="margin-top: 10px; width: 100%; background: #2196F3; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer;">使用</button>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+// 兑换藏宝图钥匙
+function buyTreasureKey() {
+    if (player.exploration.resources.stardust < 1000) {
+        logAction("星尘不足！", "error");
+        return;
+    }
+    
+    player.exploration.resources.stardust -= 1000;
+    player.treasure.keys++;
+    updateTreasureMapDisplay();
+    logAction("成功兑换1个藏宝图钥匙", "success");
+}
+
+// 开启藏宝图宝箱
+function openTreasureChest() {
+    if (player.treasure.keys < 1) {
+        logAction("藏宝图钥匙不足！", "error");
+        return;
+    }
+    
+    player.treasure.keys--;
+    
+    // 随机生成藏宝图等级
+    const levelRand = Math.random();
+    let level;
+    if (levelRand < 0.6) level = 1;
+    else if (levelRand < 0.85) level = 2;
+    else if (levelRand < 0.93) level = 3;
+    else if (levelRand < 0.98) level = 4;
+    else level = 5;
+    
+    // 随机生成藏宝图品质
+    const qualityRand = Math.random();
+    let quality;
+    if (qualityRand < 0.7) quality = 1;
+    else if (qualityRand < 0.95) quality = 2;
+    else if (qualityRand < 0.99889) quality = 3;
+    else if (qualityRand < 0.99989) quality = 4;
+    else if (qualityRand < 0.99999) quality = 5;
+    else quality = 6;
+    
+    // 创建藏宝图
+    const newMap = {
+        level: level,
+        quality: quality,
+        obtainedAt: Date.now()
+    };
+    
+    player.treasure.maps.push(newMap);
+    updateTreasureMapDisplay();
+    
+    const levelName = treasureMapLevels.find(l => l.level === level).name;
+    const qualityName = treasureMapQualities.find(q => q.quality === quality).name;
+    logAction(`获得${levelName}（${qualityName}品质）`, "success");
+}
+
+// 使用藏宝图
+function useTreasureMap(index) {
+    if (index < 0 || index >= player.treasure.maps.length) return;
+    
+    const map = player.treasure.maps[index];
+    const levelConfig = treasureMapLevels.find(l => l.level === map.level);
+    const qualityConfig = treasureMapQualities.find(q => q.quality === map.quality);
+    
+    // 移除藏宝图
+    player.treasure.maps.splice(index, 1);
+    updateTreasureMapDisplay();
+    
+    // 随机决定事件类型
+    const eventRand = Math.random();
+    
+    if (eventRand < 0.6) {
+        // 60% 遇到怪物
+        startTreasureBattle(map);
+    } else if (eventRand < 0.8) {
+        // 20% 直接获得奖励
+        giveTreasureRewards(map, false);
+    } else {
+        // 20% 没有奖励
+        showTreasureReward("没有获得任何奖励");
+    }
+}
+
+function generateTreasureMonster(minStage, maxStage) {
+    // 随机选择关卡
+    const stage = Math.floor(Math.random() * (maxStage - minStage + 1)) + minStage;
+    
+    // 复制打怪模式的属性生成逻辑
+    const monsterRanks = ['普通', '精英', '普通BOSS', '特殊BOSS', '领主BOSS', '霸主级BOSS', '王级BOSS', '皇级BOSS', '帝级BOSS', '神级BOSS', '圣级BOSS'];
+    const rankProbabilities = [0.45, 0.20, 0.10, 0.06, 0.05, 0.04, 0.03, 0.03, 0.02, 0.015, 0.005];
+    
+    // 随机生成怪物品阶
+    let rankIndex = 0;
+    let rand = Math.random();
+    for (let i = 0; i < rankProbabilities.length; i++) {
+        rand -= rankProbabilities[i];
+        if (rand < 0) {
+            rankIndex = i;
+            break;
+        }
+    }
+    const rank = monsterRanks[rankIndex];
+    
+    // 根据品阶选择词条
+    const modifierPool = monsterRankModifiers[rank].pool;
+    const selectCount = monsterRankModifiers[rank].selectCount;
+    const selectedModifiers = [];
+    const usedModifiers = new Set();
+    
+    for (let i = 0; i < selectCount; i++) {
+        let modifier;
+        do {
+            modifier = modifierPool[Math.floor(Math.random() * modifierPool.length)];
+        } while (usedModifiers.has(modifier));
+        usedModifiers.add(modifier);
+        selectedModifiers.push(modifier);
+    }
+    
+    // 计算怪物属性
+    const healthMultiplier = Math.pow(2, stage);
+    let attackMultiplier;
+  
+    if (stage <= 5) {
+        attackMultiplier = Math.floor(Math.random() * 3) + 1;
+    } else if (stage <= 15) {
+        attackMultiplier = 35 + (stage - 10) * 10;
+    } else if (stage <= 25) {
+        attackMultiplier = 50 + (stage - 10) * 10;
+    } else if (stage <= 40) {
+        attackMultiplier = 100 + (stage - 10) * 100;
+    } else if (stage <= 65) {
+        attackMultiplier = 1000 + (stage - 9) * 1000;
+    } else if (stage <= 90) {
+        attackMultiplier = 3500 + (stage - 64) * 10000;
+    } else if (stage <= 120) {
+        attackMultiplier = 35000 + (stage - 89) * 1000000;
+    } else if (stage <= 250) {
+        attackMultiplier = 350000 + (stage - 119) * 10000000;
+    } else if (stage <= 350) {
+        attackMultiplier = 3500000 + (stage - 249) * 1000000000;
+    } else if (stage <= 450) {
+        attackMultiplier = 450000000 + (stage - 349) * 100000000000;
+    } else if (stage <= 550) {
+        attackMultiplier = 5500009000 + (stage - 449) * 1000000000000000;
+    } else if (stage <= 650) {
+        attackMultiplier = 650000000900 + (stage - 549) * 1000000000000000000;
+    } else if (stage <= 700) {
+        attackMultiplier = 6500000000900 + (stage - 649) * 10000000000000000000000;
+    } else if (stage <= 750) {
+        attackMultiplier = 6500000000000900 + (stage - 699) * 10000000000000000000000000;
+    } else if (stage <= 790) {
+        attackMultiplier = 6500000000000000900 + (stage - 549) * 10000000000000000000000000000;
+    } else if (stage <= 820) {
+        attackMultiplier = 65000000000000000000900 + (stage - 549) * 10000000000000000000000000000000000;
+    } else if (stage <= 840) {
+        attackMultiplier = 6500000000000000000000000900 + (stage - 549) * 10000000000000000000000000000000000000000;
+    } else if (stage <= 860) {
+        attackMultiplier = 10000000000000000000000000000000 + (stage - 649) * 10000000000000000000000000000000000000000000000;
+    } else if (stage <= 900) {
+        attackMultiplier = 100000000000000000000000000000000000 + (stage - 749) * 10000000000000000000000000000000000000000000000000000000;
+    } else {
+        attackMultiplier = 1000000000000000000000000000000000000000 + (stage - 849) * 100000000000000000000000000000000000000000000000000000000000000000;
+    }
+    
+    // 应用词条效果
+    let attack = attackMultiplier;
+    let damageReduction = 0;
+    let dodgeChance = 0;
+    let blockCount = 0;
+    let attackCount = 1;
+    let damageTakenMultiplier = 1;
+    
+    selectedModifiers.forEach(modifier => {
+        const effect = monsterModifiers[modifier];
+        if (effect.attackMultiplier) attack *= effect.attackMultiplier;
+        if (effect.damageReduction) damageReduction += effect.damageReduction;
+        if (effect.dodgeChance) dodgeChance += effect.dodgeChance;
+        if (effect.blockCount) blockCount += effect.blockCount;
+        if (effect.attackCount) attackCount = effect.attackCount;
+        if (effect.damageTakenMultiplier) damageTakenMultiplier *= effect.damageTakenMultiplier;
+    });
+    
+    // 生成怪物
+    return {
+        name: "宝藏守卫者",
+        rank: rank,
+        health: 10000 * healthMultiplier,
+        attack: attack,
+        modifiers: selectedModifiers,
+        damageReduction: damageReduction,
+        dodgeChance: dodgeChance,
+        blockCount: blockCount,
+        attackCount: attackCount,
+        damageTakenMultiplier: damageTakenMultiplier
+    };
+}
+
+// 在宝藏守卫者战斗中使用独立的属性生成
+function startTreasureBattle(map) {
+    const levelConfig = treasureMapLevels.find(l => l.level === map.level);
+    
+    // 使用独立的属性生成函数
+    const monster = generateTreasureMonster(levelConfig.monsterMinStage, levelConfig.monsterMaxStage);
+    
+    // 保存战斗信息
+    player.treasure.currentBattle = {
+        map: map,
+        monster: monster,
+        playerHealth: player.battle.playerHealth,
+        playerAttack: player.battle.playerAttack,
+        playerCritRate: player.battle.playerCritRate,
+        playerCritDamage: player.battle.playerCritDamage,
+        battleEnded: false
+    };
+    
+    // 更新战斗界面
+    document.getElementById('treasurePlayerHealth').textContent = player.battle.playerHealth.toExponential(3);
+    document.getElementById('treasurePlayerAttack').textContent = player.battle.playerAttack.toExponential(3);
+    document.getElementById('treasurePlayerCritRate').textContent = (player.battle.playerCritRate * 100).toFixed(1) + "%";
+    document.getElementById('treasurePlayerCritDamage').textContent = (player.battle.playerCritDamage * 100).toFixed(1) + "%";
+    
+    document.getElementById('treasureMonsterName').textContent = monster.name;
+    document.getElementById('treasureMonsterRank').textContent = monster.rank;
+    document.getElementById('treasureMonsterHealth').textContent = monster.health.toExponential(3);
+    document.getElementById('treasureMonsterAttack').textContent = monster.attack.toExponential(3);
+    document.getElementById('treasureMonsterModifiers').textContent = monster.modifiers.join(', ') || '无';
+    
+    document.getElementById('treasureBattleLog').innerHTML = "";
+    
+    // 显示战斗界面
+    document.getElementById('treasureBattleOverlay').style.display = 'block';
+    document.getElementById('treasureBattleUI').style.display = 'block';
+}
+
+// 攻击宝藏守卫者
+function attackTreasureMonster() {
+    if (!player.treasure.currentBattle) return;
+    
+    const battle = player.treasure.currentBattle;
+   if (!battle || battle.battleEnded) return; // 检查战斗是否结束
+    const logContainer = document.getElementById('treasureBattleLog');
+    
+    // 玩家攻击
+    let playerDamage = battle.playerAttack;
+    
+    // 暴击判断
+    if (Math.random() < battle.playerCritRate) {
+        playerDamage *= battle.playerCritDamage;
+        logContainer.innerHTML += `<div>你发动暴击，造成${Math.floor(playerDamage)}点伤害！</div>`;
+    } else {
+        logContainer.innerHTML += `<div>你造成${Math.floor(playerDamage)}点伤害</div>`;
+    }
+    
+    battle.monster.health -= playerDamage;
+    document.getElementById('treasureMonsterHealth').textContent = Math.max(0, battle.monster.health);
+    
+    // 检查怪物是否被击败
+    if (battle.monster.health <= 0) {
+        logContainer.innerHTML += `<div style="color: #4CAF50;">你击败了宝藏守卫者！</div>`;
+        battle.battleEnded = true; // 标记战斗结束
+        
+        // 禁用攻击按钮
+        const attackBtn = document.querySelector('#treasureBattleUI button');
+        if (attackBtn) {
+            attackBtn.disabled = true;
+            attackBtn.style.background = '#999';
+        }
+        setTimeout(() => {
+            giveTreasureRewards(battle.map, true);
+            closeTreasureBattle();
+           updateTreasureBattleStatus();
+        }, 1000);
+        return;
+    }
+    
+    // 怪物反击
+    let monsterDamage = battle.monster.attack;
+    battle.playerHealth -= monsterDamage;
+    document.getElementById('treasurePlayerHealth').textContent = Math.max(0, battle.playerHealth);
+    logContainer.innerHTML += `<div>宝藏守卫者对你造成${Math.floor(monsterDamage)}点伤害</div>`;
+    
+    // 滚动到底部
+    logContainer.scrollTop = logContainer.scrollHeight;
+    
+    // 检查玩家是否被击败
+    if (battle.playerHealth <= 0) {
+        logContainer.innerHTML += `<div style="color: #f44336;">你被宝藏守卫者击败了！</div>`;
+          battle.battleEnded = true; // 标记战斗结束
+        
+        // 禁用攻击按钮
+        const attackBtn = document.querySelector('#treasureBattleUI button');
+        if (attackBtn) {
+            attackBtn.disabled = true;
+            attackBtn.style.background = '#999';
+        }
+        setTimeout(() => {
+            showTreasureReward("战斗失败，没有获得任何奖励");
+            closeTreasureBattle();     
+        }, 1000);
+    }
+}
+
+// 关闭宝藏战斗界面
+function closeTreasureBattle() {
+    document.getElementById('treasureBattleOverlay').style.display = 'none';
+    document.getElementById('treasureBattleUI').style.display = 'none';
+    player.treasure.currentBattle = null;
+  const attackBtn = document.querySelector('#treasureBattleUI button');
+        if (attackBtn) {
+            attackBtn.disabled = false;
+            attackBtn.style.background = '#999';
+        }
+}
+
+// 给予藏宝图奖励
+function giveTreasureRewards(map, isBattleWin) {
+    const levelConfig = treasureMapLevels.find(l => l.level === map.level);
+    const qualityConfig = treasureMapQualities.find(q => q.quality === map.quality);
+    
+    let rewardText = "";
+    
+    if (isBattleWin) {
+        // 战斗胜利奖励：修仙经验
+        const exp = levelConfig.expReward * qualityConfig.multiplier;
+        player.cultivation.exp += exp;
+        rewardText = `战斗胜利！获得${exp}点修仙经验`;
+    } else {
+        // 直接获得奖励：随机选择2个奖励
+        const rewards = [];
+        const rewardCount = 2;
+        
+        for (let i = 0; i < rewardCount; i++) {
+            const rewardIndex = Math.floor(Math.random() * levelConfig.rewards.length);
+            const reward = levelConfig.rewards[rewardIndex];
+            const amount = Math.ceil(reward.amount * qualityConfig.multiplier);
+            
+            // 添加奖励到玩家物品
+            player.items[reward.type] = (player.items[reward.type] || 0) + amount;
+            
+            // 获取奖励名称
+            let rewardName = "";
+            switch (reward.type) {
+                case "baitCount": rewardName = "鱼饵"; break;
+                case "companionKey": rewardName = "伴侣钥匙"; break;
+                case "vipPower": rewardName = "VIP能力值"; break;
+                case "rose": rewardName = "玫瑰花"; break;
+                case "primaryGem": rewardName = "初级宝石"; break;
+                case "advancedGem": rewardName = "高级宝石"; break;
+                case "superiorGem": rewardName = "极品宝石"; break;
+                case "divineGem": rewardName = "神级宝石"; break;
+                case "rebornDan": rewardName = "洗髓丹"; break;
+                case "rootDetector": rewardName = "灵根检测器"; break;
+                case "bloodlineDetector": rewardName = "血脉检测剂"; break;
+            }
+            
+            rewards.push(`${rewardName} x${amount}`);
+        }
+        
+        rewardText = `获得奖励：${rewards.join("，")}`;
+    }
+    
+    showTreasureReward(rewardText);
+}
+
+// 显示藏宝图奖励
+function showTreasureReward(message) {
+    document.getElementById('treasureRewardContent').innerHTML = message;
+    document.getElementById('treasureRewardOverlay').style.display = 'block';
+    document.getElementById('treasureRewardUI').style.display = 'block';
+}
+
+// 关闭藏宝图奖励界面
+function closeTreasureReward() {
+    document.getElementById('treasureRewardOverlay').style.display = 'none';
+    document.getElementById('treasureRewardUI').style.display = 'none';
+}
+
+// 在游戏加载时初始化藏宝图系统
+function initTreasureMapSystem() {
+    if (!player.treasure) {
+        player.treasure = {
+            keys: 0,
+            maps: [],
+            currentBattle: null
+        };
+    }
+}
+// 在战斗状态变化时更新状态提示
+function updateTreasureBattleStatus() {
+    const statusElement = document.getElementById('treasureBattleStatus');
+    if (!statusElement) return;
+    
+    const battle = player.treasure.currentBattle;
+    if (!battle) return;
+    
+    if (battle.battleEnded) {
+        if (battle.monster.health <= 0) {
+            statusElement.textContent = "战斗胜利";
+            statusElement.style.color = "#4CAF50";
+        } else if (battle.playerHealth <= 0) {
+            statusElement.textContent = "战斗失败";
+            statusElement.style.color = "#f44336";
+        }
+    } else {
+        statusElement.textContent = "战斗中...";
+        statusElement.style.color = "#FFC107";
     }
 }
 // 灵根配置
@@ -13154,7 +13756,7 @@ const titleConfig = {
         { name: "独孤剑皇", condition: (p) => getEquipLevel(p, "废品") > 500000, bonus: { attackMultiplier: 2 } },
         { name: "剑域之主", condition: (p) => getEquipLevel(p, "废品") > 1000000, bonus: { attackMultiplier: 2 } },
         { name: "万剑之神", condition: (p) => getEquipLevel(p, "废品") > 5000000, bonus: { attackMultiplier: 2 } },
-        { name: "鸿蒙剑祖", condition: (p) => getEquipLevel(p, "废品") > 10000000, bonus: { attackMultiplier: 3 } },
+        { name: "鸿蒙剑祖", condition: (p) => getEquipLevel(p, "废品") > 10000000, bonus: { attackMultiplier: 2 } },
         { name: "万劫剑神", condition: (p) => getEquipLevel(p, "废品") > 50000000, bonus: { attackMultiplier: 4 } },
         { name: "无上剑神", condition: (p) => getEquipLevel(p, "废品") > 100000000, bonus: { attackMultiplier: 4 } },
         { name: "剑狱之尊", condition: (p) => getEquipLevel(p, "废品") > 200000000, bonus: { attackMultiplier: 4 } },
@@ -16480,5 +17082,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
+
 </body>
 </html>
