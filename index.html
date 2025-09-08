@@ -902,7 +902,7 @@ button:hover {
     <div id="gameLogPage3" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>更新日志</h4>
-            <p>2025/9/7 : 减少宝图兑换数量，神器增加进阶，消耗进阶神石：宝图掉落。</p>
+            <p>2025/9/7 : 减少宝图兑换数量，神器增加进阶，消耗进阶神石：宝图掉落。（如果打怪模式显示血负了，脱一件神器在穿上就可以了）</p>
 
         </div>
     </div>
@@ -2062,7 +2062,7 @@ button:hover {
     <div class="exchange-item">
         <div class="exchange-info">
             <strong>鱼饵</strong>
-            <div>50星尘 → 1鱼饵</div>
+            <div>100星尘 → 2鱼饵</div>
         </div>
         <div class="exchange-controls">
             <input type="number" id="baitAmount" min="1" value="1" style="width: 60px;">
@@ -2084,7 +2084,7 @@ button:hover {
     <div class="exchange-item">
         <div class="exchange-info">
             <strong>玫瑰花</strong>
-            <div>5星尘 → 1玫瑰花</div>
+            <div>100星尘 → 20玫瑰花</div>
         </div>
         <div class="exchange-controls">
             <input type="number" id="roseAmount" min="1" value="1" style="width: 60px;">
@@ -2095,7 +2095,7 @@ button:hover {
     <div class="exchange-item">
         <div class="exchange-info">
             <strong>VIP能力值</strong>
-            <div>10星尘 → 1VIP能力值</div>
+            <div>100星尘 → 10VIP能力值</div>
         </div>
         <div class="exchange-controls">
             <input type="number" id="vipAmount" min="1" value="1" style="width: 60px;">
@@ -2136,7 +2136,7 @@ button:hover {
     <div class="exchange-item">
         <div class="exchange-info">
             <strong>转生币</strong>
-            <div>1星尘 → 10000转生币</div>
+            <div>100星尘 → 1000000转生币</div>
         </div>
         <div class="exchange-controls">
             <input type="number" id="coinAmount" min="1" value="1" style="width: 60px;">
@@ -2314,7 +2314,7 @@ button:hover {
         <h3 style="color: #d4af37; margin-top: 0;">藏宝图钥匙</h3>
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>当前数量: <span id="treasureKeyCount">0</span></div>
-            <button onclick="buyTreasureKey()" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">兑换钥匙 (500星尘)</button>
+            <button onclick="buyTreasureKey()" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">兑换钥匙 (100星尘)</button>
         </div>
     </div>
     
@@ -12434,14 +12434,14 @@ function updateGroceriesUI() {
 
 function exchangeStardust(type) {
     const exchangeRates = {
-        bait: { cost: 50, item: 'baitCount', amount: parseInt(document.getElementById('baitAmount').value) },
+        bait: { cost: 100, item: 'baitCount', amount: parseInt(document.getElementById('baitAmount').value), coinRate: 2 },
         key: { cost: 200, item: 'companionKey', amount: parseInt(document.getElementById('keyAmount').value) },
-        rose: { cost: 5, item: 'rose', amount: parseInt(document.getElementById('roseAmount').value) },
-        vip: { cost: 10, item: 'vipPower', amount: parseInt(document.getElementById('vipAmount').value) },
+        rose: { cost: 100, item: 'rose', amount: parseInt(document.getElementById('roseAmount').value), coinRate: 20  },
+        vip: { cost: 100, item: 'vipPower', amount: parseInt(document.getElementById('vipAmount').value), coinRate: 10  },
         gem: { cost: 5000, item: 'divineGem', amount: parseInt(document.getElementById('gemAmount').value) },
         root: { cost: 500, item: 'rootDetector', amount: parseInt(document.getElementById('rootAmount').value) },
         blood: { cost: 500, item: 'bloodlineDetector', amount: parseInt(document.getElementById('bloodAmount').value) },
-        coin: { cost: 1, item: 'reincarnationCoin', amount: parseInt(document.getElementById('coinAmount').value), coinRate: 10000 }
+        coin: { cost: 100, item: 'reincarnationCoin', amount: parseInt(document.getElementById('coinAmount').value), coinRate: 1000000 }
     };
     
     const config = exchangeRates[type];
@@ -12815,12 +12815,12 @@ function updateTreasureMapDisplay() {
 
 // 兑换藏宝图钥匙
 function buyTreasureKey() {
-    if (player.exploration.resources.stardust < 500) {
+    if (player.exploration.resources.stardust < 100) {
         logAction("星尘不足！", "error");
         return;
     }
     
-    player.exploration.resources.stardust -= 500;
+    player.exploration.resources.stardust -= 100;
     player.treasure.keys++;
     updateTreasureMapDisplay();
     logAction("成功兑换1个藏宝图钥匙", "success");
@@ -17215,6 +17215,7 @@ function updateRankings() {
  updateMysterySystemDisplay();
 updateItemDisplay();
 updateTraditionalLotteryDisplay();
+
 </script>
 <!--客服 开始-->
 <script src="//g8hh.github.io/static/js/jquery.min.js"></script>
@@ -17232,5 +17233,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
+
 </body>
 </html>
