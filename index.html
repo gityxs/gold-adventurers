@@ -843,6 +843,26 @@ button:hover {
         font-size: 12px;
         font-weight: bold;
     }
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #333;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, #9C27B0, #E91E63);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.tablink.active {
+    background: #9C27B0 !important;
+    font-weight: bold;
+}
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -889,6 +909,9 @@ button:hover {
            <p>25. 宝石系统：800转开启，提供大量属性</p>
            <p>26. 修仙系统：500转开启，开启经验获得条件是：获得一次灵根和血脉。材料都是杂货铺购买</p>
            <p>27. 宝图系统：600转开启，随机奖励或者打BOSS。</p>
+           <p>28. 夜店系统：600转开启，店铺每级加点击伤害，特殊事件消耗50-200星币，提升30-60分钟金币或者经验收益，获得的星币可以兑换藏宝图，或者打世界地图怪物消耗（后续会加其他材料兑换）。</p>
+           <p>29. 玩家等级：50转开启，每级10倍属性，世界地图怪物打怪升级。</p>
+           <p>30. 世界地图：100转开启，打怪掉玩家经验，每挑战一次消耗1星币，如果打的时候闪退界面，那就是打不过这关。（后续会加材料掉落）。</p>
         </div>
     </div>
 </div>
@@ -902,7 +925,9 @@ button:hover {
     <div id="gameLogPage3" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>更新日志</h4>
-            <p>2025/9/8 : 通天塔失败不会关闭自动攻击</p>
+              <p>2025/9/10 : 玩家等级：50转开启，每一级增加10倍效果。世界地图：100转开启：打怪经验可以给玩家升级每次生成怪物消耗1星币（后续会加掉落材料）（如果属性显示低打一下打怪模式）</p>
+             <p>2025/9/9 : 夜店：600转开启，生产星币，获得的星币可以兑换藏宝图或者升级（后续会加入更多东西兑换）已修复</p>
+             <p>2025/9/8 : 通天塔失败不会关闭自动攻击</p>
             <p>2025/9/7 : 减少宝图兑换数量，神器增加进阶，消耗进阶神石：宝图掉落。（如果打怪模式显示血负了，脱一件神器在穿上就可以了）</p>
 
         </div>
@@ -912,6 +937,7 @@ button:hover {
  <div class="player-name">
     <span id="playerName">勇者</span> <span id="playerClassName" style="color: #00f;"></span><span id="currentTitle" style="margin-left: 10px; color: #ffd700;"></span>
     <div class="vip-container" style="text-align: center; margin: 10px 0;">
+    <span id="playerLevelDisplay" style="margin-left: 10px; color: #4CAF50;">Lv.1</span>
   <div class="vip-level-display" style="font-size: 18px; font-weight: bold; background: linear-gradient(to right, #ffd700, #ffA500); -webkit-background-clip: text; color: transparent;">
     VIP等级: <span id="vipLevel">1</span>
   </div>
@@ -951,9 +977,11 @@ button:hover {
     <button onclick="clickGold()">点击获取金币</button>
     <button onclick="reincarnate()">转生</button>
     <button onclick="toggleAutoReincarnation()" style="margin-left: 10px;">自动转生: <span id="autoReincarnationStatus">关闭</span></button>
+    <button onclick="toggleLevelSystem()">玩家等级</button>
     <button onclick="toggleShopUI()">打开宝箱商店</button>
     <button onclick="toggleGroceriesUI()" style="margin-left: 10px;">杂货铺</button> 
     <button onclick="toggleMonsterUI()">打怪模式(优先打!)</button> 
+    <button onclick="toggleWorldMap()">世界地图</button>
     <button onclick="toggleTowerUI()">通天塔</button>
     <button onclick="toggleWorldBossUI()" style="background: linear-gradient(to bottom, #d4af37, #a67c00); color: #000; font-weight: bold; padding: 6px 12px; font-size: 12px;">世界BOSS</button>
     <button onclick="toggleFundSystem()">基金系统</button>
@@ -970,6 +998,7 @@ button:hover {
     <button onclick="toggleCultivationSystem()" style="margin-left: 10px;">修仙系统</button>
     <button onclick="toggleGemSystem()" style="margin-left: 10px;">宝石系统</button>
     <button onclick="toggleTreasureMapSystem()">藏宝图系统</button>
+    <button onclick="toggleNightClubSystem()" style="margin-left: 10px;">夜店系统</button>
     <button onclick="toggleSettingsUI()">设置</button>
 
 <h3>自动购买设置</h3>
@@ -2316,6 +2345,7 @@ button:hover {
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>当前数量: <span id="treasureKeyCount">0</span></div>
             <button onclick="buyTreasureKey()" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">兑换钥匙 (100星尘)</button>
+            <button onclick="buyTreasureKey1()" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">兑换钥匙 (100星币)</button>
         </div>
     </div>
     
@@ -2372,6 +2402,161 @@ button:hover {
     </div>
     <button onclick="closeTreasureReward()" style="background: #2196F3; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; display: block; margin: 0 auto;">关闭</button>
 </div>
+<!-- 夜店之王系统界面 -->
+<div id="nightClubOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="nightClubUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #9C27B0; border-radius: 10px; z-index: 1001; width: 850px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #9C27B0; padding-bottom: 10px;">
+        <h2 style="color: #9C27B0; margin: 0;">夜店之王</h2>
+        <button onclick="toggleNightClubSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-size: 14px;">关闭</button>
+    </div>
+    
+    <!-- 店铺信息 -->
+    <div style="margin-bottom: 20px; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <div>
+                <strong>店铺等级:</strong> <span id="nightClubLevel">1</span>
+                <div style="margin-top: 5px;">
+                    <div class="progress-bar">
+                        <div id="nightClubExpBar" class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div style="font-size: 0.9em; margin-top: 5px;">
+                        经验: <span id="nightClubExp">0</span>/<span id="nightClubExpNext">100</span>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <strong>星币:</strong> <span id="starCoinCount">0</span>
+                <div style="margin-top: 5px;">
+                    <strong>每分钟收益:</strong>
+                    <div>经验: <span id="expPerMinuteq">0</span></div>
+                    <div>星币: <span id="coinsPerMinute">0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 标签页 -->
+    <div class="nightclub-tabs" style="display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #444;">
+        <button class="tablink active" onclick="openNightClubTab('staff')" style="flex: 1; background: #333; color: white; border: none; padding: 8px; border-radius: 5px 5px 0 0; cursor: pointer;">店员</button>
+        <button class="tablink" onclick="openNightClubTab('equipment')" style="flex: 1; background: #333; color: white; border: none; padding: 8px; border-radius: 5px 5px 0 0; cursor: pointer;">设备</button>
+        <button class="tablink" onclick="openNightClubTab('special')" style="flex: 1; background: #333; color: white; border: none; padding: 8px; border-radius: 5px 5px 0 0; cursor: pointer;">特殊人群</button>
+        <button class="tablink" onclick="openNightClubTab('events')" style="flex: 1; background: #333; color: white; border: none; padding: 8px; border-radius: 5px 5px 0 0; cursor: pointer;">事件</button>
+    </div>
+    
+    <!-- 店员标签页 -->
+    <div id="nightClubStaff" class="nightclub-tabcontent">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+            <!-- 店员卡片将动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 设备标签页 -->
+    <div id="nightClubEquipment" class="nightclub-tabcontent" style="display:none;">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+            <!-- 设备卡片将动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 特殊人群标签页 -->
+    <div id="nightClubSpecial" class="nightclub-tabcontent" style="display:none;">
+        <div style="background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <h3 style="margin-top: 0; color: #9C27B0;">VIP客人</h3>
+            <p>VIP客人会定期光顾你的夜店，带来大量经验和星币！</p>
+            <div id="vipInfo" style="margin-top: 10px;">
+                <!-- VIP信息将动态显示 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 事件标签页 -->
+    <div id="nightClubEvents" class="nightclub-tabcontent" style="display:none;">
+        <div style="background: #222; padding: 15px; border-radius: 8px;">
+            <h3 style="margin-top: 0; color: #9C27B0;">当前事件（消耗50-200星币）</h3>
+            <div id="currentEvent" style="margin-bottom: 15px;">
+                <!-- 当前事件将动态显示 -->
+            </div>
+            <button onclick="triggerRandomEvent()" style="background: #9C27B0; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">触发随机事件</button>
+        </div>
+    </div>
+</div>
+<!-- 玩家等级系统界面 -->
+<div id="levelSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="levelSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #4CAF50; border-radius: 10px; z-index: 1001; width: 500px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #4CAF50; margin: 0;">玩家等级系统</h2>
+        <button onclick="toggleLevelSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <div>当前等级: <span id="currentPlayerLevel">1</span></div>
+        <div>当前经验: <span id="currentPlayerExp">0</span>/<span id="nextLevelExpq">10000</span></div>
+        <div>点击收益加成: <span id="clickBonus">0.01%</span></div>
+        <div>每秒金币加成: <span id="gpsBonus">0.01</span></div>
+    </div>
+    
+    <div class="exp-bar" style="height: 20px; background: #333; border-radius: 10px; margin: 10px 0;">
+        <div id="playerExpProgress" style="height: 100%; background: #4CAF50; border-radius: 10px; width: 0%;"></div>
+    </div>
+    
+    <div style="margin: 15px 0;">
+        <button onclick="upgradePlayerLevel(1)" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-right: 10px;">升级1级</button>
+        <button onclick="upgradePlayerLevel(10)" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">升级10级</button>
+    </div>
+</div>
+
+<!-- 世界地图界面 -->
+<div id="worldMapOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="worldMapUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #FFD700; border-radius: 10px; z-index: 1001; width: 800px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #FFD700; margin: 0;">世界地图</h2> 
+        <button onclick="toggleWorldMap()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+   
+    <div id="zoneList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+        <!-- 区域列表会动态生成 -->
+    </div>
+</div>
+
+<!-- 战斗界面 -->
+<div id="battleOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="battleUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #FF4500; border-radius: 10px; z-index: 1001; width: 600px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #FF4500; margin: 0;">战斗</h2>
+        <button onclick="closeBattle()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+    <div style="color: #FFD700; margin: 0;">
+    星币: <span id="battleRebornDanCount">0</span>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <div class="player-stats">
+            <h3>玩家属性</h3>
+            <div>生命: <span id="battlePlayerHealth">0</span></div>
+            <div>攻击: <span id="battlePlayerAttack">0</span></div>
+            <div>暴击率: <span id="battlePlayerCritRate">0%</span></div>
+            <div>爆伤: <span id="battlePlayerCritDamage">0%</span></div>
+        </div>
+        
+        <div class="monster-info">
+    <p>怪物名称: <span id="battleMonsterName">无</span></p>
+    <p>怪物词条: <span id="battleMonsterModifier">无</span></p>
+    <p>怪物生命: <span id="battleMonsterHealth">0</span>/<span id="battleMonsterMaxHealth">0</span></p>
+    <p>怪物攻击: <span id="battleMonsterAttack">0</span></p>
+    <p>复活次数: <span id="battleMonsterResurrections">0</span>/5</p>
+</div>
+    </div>
+    
+    <div class="battle-controls" style="text-align: center; margin: 20px 0;">
+<button onclick="toggleWorldMapAutoBattle()" style="background: #4CAF50; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+    自动战斗: <span id="worldMapAutoBattleStatus">关闭</span>
+</button>
+    </div>
+    
+    <div id="addbattleLog" style="height: 200px; overflow-y: auto; background: #333; padding: 10px; border-radius: 5px; margin-top: 10px;">
+        <!-- 战斗日志会动态显示 -->
+    </div></div></div>
+
+
+
+
 
 
 
@@ -2488,6 +2673,22 @@ button:hover {
     soulRingMultiplier: 1,    // 魂环总加成乘数（默认1倍）
     dungeonEquipMultiplier: 1 // 副本装备总加成乘数（默认1倍）
   },
+   battle: {
+    currentZone: null,
+    currentMonster: null,
+    monsterResurrections: 0,
+},
+  worldMapBattle: {
+    autoBattle: false,
+    autoBattleInterval: null
+},
+level: {
+    current: 1,
+    exp: 0,
+    nextLevelExp: 10000,
+    clickBonus: 1,
+    gpsBonus: 1
+},
 cultivation: {
             stage: 0, // 当前阶段索引
             exp: 0,   // 当前经验值
@@ -2534,6 +2735,10 @@ cultivation: {
     playerCritRate: 0,
     playerCritDamage: 0
 },
+ backgroundBattle: {
+    active: false,
+    interval: null
+},
 treasure: {
         keys: 0, // 藏宝图钥匙数量
         maps: [], // 拥有的藏宝图
@@ -2566,6 +2771,7 @@ treasure: {
     autoDecomposeFishEnabled: false
 
 },
+
 exploration: {
             speed: { level: 1, cost: 100 },
             capacity: { level: 1, cost: 100 },
@@ -2621,6 +2827,30 @@ gems: {
         bloodlineDetector: 0,
         advanceStone: 0
     },
+  nightClub: {
+    level: 1,
+    exp: 0,
+    starCoins: 0,
+    staff: [
+        { type: 'waiter', level: 1, expOutput: 0.5, coinsOutput: 0.2 },
+        { type: 'guard', level: 1, expOutput: 0.3, coinsOutput: 0.1 },
+        { type: 'dj', level: 1, expOutput: 1.0, coinsOutput: 0.5 },
+        { type: 'chef', level: 1, expOutput: 0.4, coinsOutput: 0.3 },
+        { type: 'hostess', level: 1, expOutput: 0.7, coinsOutput: 0.4 }
+    ],
+    equipment: [
+        { type: 'sound', level: 1, bonus: 1.05 },
+        { type: 'light', level: 1, bonus: 1.03 },
+        { type: 'bar', level: 1, bonus: 1.02 },
+        { type: 'dancefloor', level: 1, bonus: 1.04 }
+    ],
+    vip: {
+        lastVisit: 0,
+        nextVisit: 0
+    },
+    activeEvent: null,
+    lastUpdate: Date.now()
+},
     collections: {
         lightSpeedHand: 0,
         empHand: 0,
@@ -4349,6 +4579,11 @@ function confirmActivationCode() {
             rewardMsg = "获得3个高级宝石";
             success = true;
             break;
+        case "XINGBI":
+            player.nightClub.starCoins = (player.nightClub.starCoins || 0) + 300;
+            rewardMsg = "获得300星币";
+            success = true;
+            break;
         case "YUYU":
             player.cosmicstone += 2;
             rewardMsg = "获得2个宇宙石";
@@ -4548,7 +4783,19 @@ function calculateTotalGPS() {
             player.battle.autoSweepEnabled = save.battle.autoSweepEnabled;
         }
          updateAutoConvertDisplay();
-       
+        if (!player.battle) {
+        player.battle = {
+            playerHealth: 100 + player.reincarnationCount * 10,
+            playerAttack: getTotalClickValue(),
+            playerCritRate: 0.1 + player.attributes.critRate * 0.0005,
+            playerCritDamage: 1.5 + player.attributes.critDamage * 0.005,
+            currentZone: null,
+            currentMonster: null,
+            monsterResurrections: 0,
+            autoBattle: false,
+            autoBattleInterval: null
+        };
+    }
         
         
              // 确保加载通天塔数据
@@ -4668,6 +4915,7 @@ if (speedBoostBtn) {
          initExplorationSystem();
         initExpeditionData();
     initTreasureMapSystem();
+   initNightClubSystem();
     // 计算离线探险奖励
     calculateOfflineExpeditionRewards();
         if (save.exploration) {
@@ -4891,12 +5139,13 @@ const farmGPSEnhancement  = gpsEnhancements[player.farm.level - 1] || gpsEnhance
 
 const gpsEnhancementss =  [1, 5, 10, 25, 50, 75, 100, 150, 250, 500, 750, 1000, 2500, 5000, 7500, 10000, 25000, 50000, 75000, 100000, 250000, 500000, 750000, 1000000, 2500000, 5000000, 7500000, 10000000, 25000000, 50000000, 75000000, 100000000, 250000000, 500000000, 750000000, 1000000000, 2500000000, 5000000000, 7500000000, 10000000000];
 const farmGPSEnhancements  = gpsEnhancementss[player.parking.level - 1] || gpsEnhancementss[gpsEnhancementss.length - 1];
+    const gpsBonuss = player.level.gpsBonus * 1.00;   
 
 
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.gps * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.gpsMultiplier 
         * (1 + gpsBonus) 
-        * petMultiplier * (1 + dungeonBonus)* (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus;
+        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss;
 }
 
 function getTotalClickValue() {
@@ -4912,12 +5161,17 @@ function getTotalClickValue() {
 
 const farmClickMultiplierss = [1, 5, 10, 25, 50, 75, 100, 150, 250, 500, 750, 1000, 2500, 5000, 7500, 10000, 25000, 50000, 75000, 100000, 250000, 500000, 750000, 1000000, 2500000, 5000000, 7500000, 10000000, 25000000, 50000000, 75000000, 100000000, 250000000, 500000000, 750000000, 1000000000, 2500000000, 5000000000, 7500000000, 10000000000];
     const farmClickBonuss = farmClickMultiplierss[player.parking.level - 1] || farmClickMultiplierss[farmClickMultiplierss.length - 1];
+const farmClickMultipliersss = [1, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000];
+    const farmClickBonusss = farmClickMultipliersss[player.nightClub.level - 1] || farmClickMultipliersss[farmClickMultipliersss.length - 1];     
+           
+    const gpsBonusss = player.level.clickBonus * 1.00; 
+           
 
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.click * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.clickMultiplier 
         * petMultiplier 
         * (1 + dungeonBonus)  // 应用副本装备总加成（含职业乘数）
-        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus; // 应用魂环总加成（含职业乘数）
+        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus * farmClickBonusss * gpsBonusss; 
 }
 
 
@@ -6830,6 +7084,7 @@ function confirmRename() {
     document.getElementById("clickValue").textContent = display(getTotalClickValue());
     document.getElementById("vipPowerCount").textContent = player.items.vipPower || 0;
    document.getElementById("mysteryBonusDisplay").textContent = player.mystery.bonus;
+  document.getElementById('playerLevelDisplay').textContent = `Lv.${player.level.current}`;
 
 
     // 更新材料宝箱购买成本显示
@@ -7650,7 +7905,9 @@ function formatTime(milliseconds) {
     player.gold += gpsPerSecond; // 每秒增加GPS
     autoConvertCurrency(); 
   gainCultivationExp();
+ setInterval(calculateNightClubIncome, 1000);
   initAutoDecomposeUI();
+
     checkAutoBuy(); 
  checkAutoDecompose();
     updateStockPrices(); 
@@ -8183,6 +8440,7 @@ function toggleSettingsUI() {
         player.battle.playerAttack = getTotalClickValue();
       updateOfficialSystemDisplay();
         updateMonsterUI(); // 更新UI显示
+      updatePlayerBattleStats();
       
     }
 }
@@ -10735,6 +10993,828 @@ function initFarmData() {
         player.farm.fields.push({ planted: false });
     }
 }
+const worldZones = [
+    {
+        id: 'beginner',
+        name: '新手村',
+        minLevel: 1,
+        maxLevel: 49,
+        expRange: [1, 10],
+        monsterNames: ['小妖', '小怪', '小兽', '小魔', '小精', '小灵', '小魂', '小魄'],
+        modifiers: [
+            { name: '普通', health: 1.0, attack: 2.0 },
+            { name: '强壮', health: 1.5, attack: 3.2 },
+            { name: '野蛮', health: 2.2, attack: 2.5 },
+            { name: '弱小', health: 0.5, attack: 0.2 },
+            { name: '强大', health: 5.2, attack: 5.5 },
+            { name: '影子', health: 3.5, attack: 2.2 },
+            { name: '敏捷', health: 2.2, attack: 10.5 },
+            { name: '狂暴', health: 1.3, attack: 11.8 }
+        ]
+    },
+    {
+        id: 'forest',
+        name: '落木林',
+        minLevel: 50,
+        maxLevel: 99,
+        expRange: [10, 25],
+        monsterNames: ['树妖', '木精', '叶魔', '根魂', '枝魄', '森灵', '林怪', '藤妖'],
+        modifiers: [
+            { name: '剧毒', health: 3.2, attack: 1.8 },
+            { name: '缠绕', health: 5.8, attack: 31.2 },
+            { name: '吸血', health: 7.5, attack: 5.5 },
+            { name: '邪恶', health: 23.8, attack: 3.2 },
+            { name: '幽魂', health: 6.5, attack: 7.5 },
+            { name: '火焰', health: 7.8, attack: 8.2 },
+            { name: '冰霜', health: 9.5, attack: 13.5 },   
+            { name: '雷霆', health: 10.8, attack: 23.2 },
+            { name: '闪电', health: 5.5, attack: 5.5 },
+            { name: '再生', health: 7.0, attack: 1.0 }
+            
+        ]
+    },
+    {
+        id: 'plains',
+        name: '青风平原',
+        minLevel: 100,
+        maxLevel: 149,
+        expRange: [25, 50],
+        monsterNames: ['风灵', '草妖', '石魔', '土魂', '沙魄', '云精', '雾怪', '雨灵'],
+        modifiers: [
+            { name: '疾风', health: 21.0, attack: 12.0 },
+            { name: '厚土', health: 12.0, attack: 13.0 },
+            { name: '飞沙', health: 11.5, attack: 15.8 },
+            { name: '风暴', health: 21.0, attack: 18.0 },
+            { name: '流沙', health: 12.0, attack: 11.0 },
+            { name: '魅影', health: 21.5, attack: 21.8 },
+            { name: '龙卷风', health: 21.0, attack: 32.0 },
+            { name: '法师', health: 12.0, attack: 41.0 },
+            { name: '刺客', health: 12.5, attack: 51.8 },
+            { name: '迷雾', health: 15.8, attack: 21.5 }
+
+        ]
+    },
+    {
+        id: 'swamp',
+        name: '迷雾沼泽',
+        minLevel: 150,
+        maxLevel: 199,
+        expRange: [50, 100],
+        monsterNames: ['沼魔', '泥妖', '水精', '雾魂', '毒魄', '瘴灵', '腐怪', '湿妖'],
+        modifiers: [
+            { name: '剧毒', health: 10.5, attack: 20.0 },
+            { name: '腐蚀', health: 20.0, attack: 10.8 },
+            { name: '减速', health: 104.8, attack: 10.5 },
+            { name: '灼烧', health: 10.5, attack: 70.0 },
+            { name: '冰冻', health: 20.0, attack: 80.8 },
+            { name: '野蛮', health: 100.8, attack: 380.5 },
+            { name: '毒粉', health: 10.5, attack: 250.0 },
+            { name: '妖化', health: 20.0, attack: 140.8 },
+            { name: '电王', health: 140.8, attack: 130.5 },
+            { name: '致盲', health: 100.5, attack: 200.2 }
+        ]
+    },
+    {
+        id: 'nest',
+        name: '剧毒巢穴',
+        minLevel: 200,
+        maxLevel: 249,
+        expRange: [100, 250],
+        monsterNames: ['毒蛛', '蝎魔', '蛇妖', '蜈蚣精', '蟾蜍怪', '蜂后', '蚁王', '蝇魔'],
+        modifiers: [
+            { name: '致命毒液', health: 10.8, attack: 52.5 },
+            { name: '麻痹毒素', health: 280.0, attack: 172.0 },
+            { name: '神经毒素', health: 180.5, attack: 113.0 },
+            { name: '灵魂毒液', health: 30.8, attack: 412.5 },
+            { name: '肉体毒素', health: 280.0, attack: 221.0 },
+            { name: '轻微毒素', health: 20.5, attack: 433.0 },
+            { name: '智障毒液', health: 10.8, attack: 302.5 },
+            { name: '雷雨毒素', health: 23.0, attack: 602.0 },
+            { name: '闪电毒素', health: 101.5, attack: 333.0 },
+            { name: '腐蚀酸液', health: 87.5, attack: 702.2 }
+        ]
+    },
+    {
+        id: 'wetland',
+        name: '浅滩湿地',
+        minLevel: 250,
+        maxLevel: 299,
+        expRange: [250, 500],
+        monsterNames: ['水妖', '泽魔', '滩魂', '湿魄', '藻精', '贝怪', '蟹灵', '虾妖'],
+        modifiers: [
+            { name: '水之护盾', health: 32.0, attack: 12.5 },
+            { name: '潮汐之力', health: 11.8, attack: 52.8 },
+            { name: '深海恐惧', health: 21.5, attack: 23.5 },
+            { name: '水之战舰', health: 341.0, attack: 123.5 },
+            { name: '潮汐冰箭', health: 11.8, attack: 312.8 },
+            { name: '深海咆哮', health: 21.5, attack: 232.5 },
+            { name: '水王', health: 53.0, attack: 791.5 },
+            { name: '水皇', health: 551.8, attack: 552.8 },
+            { name: '水尊', health: 288.5, attack: 882.5 },
+            { name: '漩涡牵引', health: 26.0, attack: 356.0 }
+        ]
+    },
+    {
+        id: 'canyon',
+        name: '黑风峡谷',
+        minLevel: 300,
+        maxLevel: 349,
+        expRange: [500, 1000],
+        monsterNames: ['岩魔', '石怪', '山精', '谷魂', '崖魄', '壁妖', '穴灵', '洞魔'],
+        modifiers: [
+            { name: '岩甲', health: 40.0, attack: 100.8 },
+            { name: '落石', health: 20.5, attack: 300.0 },
+            { name: '地震', health: 30.5, attack: 200.8 },
+            { name: '石小妖', health: 2.0, attack: 10.8 },
+            { name: '石头怪', health: 20.5, attack: 30.0 },
+            { name: '石帝', health: 30.5, attack: 310.8 },
+            { name: '石妖', health: 100.0, attack: 120.8 },
+            { name: '石王', health: 20.5, attack: 300.0 },
+            { name: '石皇', health: 200.5, attack: 200.8 },
+            { name: '山崩', health: 200.0, attack: 300.5 }
+        ]
+    },
+    {
+        id: 'swamp2',
+        name: '迷雾沼泽深处',
+        minLevel: 350,
+        maxLevel: 399,
+        expRange: [1000, 2500],
+        monsterNames: ['沼王', '泥后', '水帝', '雾皇', '毒尊', '瘴圣', '腐神', '湿魔'],
+        modifiers: [
+            { name: '剧毒领域', health: 100.0, attack: 400.0 },
+            { name: '腐蚀领域', health: 20.0, attack: 300.5 },
+            { name: '迷雾领域', health: 30.5, attack: 200.5 },
+            { name: '氧化领域', health: 30.0, attack: 400.0 },
+            { name: '腐闪领域', health: 40.0, attack: 300.5 },
+            { name: '蜂石领域', health: 30.5, attack: 800.5 },
+            { name: '恶徒领域', health: 30.0, attack: 400.0 },
+            { name: '螣神领域', health: 40.0, attack: 100.5 },
+            { name: '山峰领域', health: 30.5, attack: 300.5 },
+            { name: '死亡领域', health: 100.0, attack: 500.0 }
+        ]
+    },
+    {
+        id: 'abyss',
+        name: '暗影深渊',
+        minLevel: 400,
+        maxLevel: 449,
+        expRange: [2500, 5000],
+        monsterNames: ['影魔', '暗妖', '渊魂', '冥魄', '夜精', '幽怪', '鬼灵', '魅魔'],
+        modifiers: [
+            { name: '暗影突袭', health: 30.5, attack: 700.0 },
+            { name: '深渊凝视', health: 150.0, attack: 310.0 },
+            { name: '虚空吞噬', health: 140.5, attack: 450.8 },
+            { name: '时间回溯', health: 230.5, attack: 500.0 },
+            { name: '精神屏障', health: 50.0, attack: 300.0 },
+            { name: '晶体穿刺', health: 210.5, attack: 100.8 },
+            { name: '空间封锁', health: 100.5, attack: 200.0 },
+            { name: '声波共振', health: 50.0, attack: 200.0 },
+            { name: '精神链接', health: 30.5, attack: 400.8 },
+            { name: '永夜降临', health: 200.0, attack: 600.0 }
+        ]
+    },
+    {
+        id: 'rift',
+        name: '混沌之隙',
+        minLevel: 450,
+        maxLevel: 499,
+        expRange: [5000, 10000],
+        monsterNames: ['混沌兽', '无序魔', '混乱妖', '虚空精', '扭曲魂', '裂痕魄', '次元怪', '位面灵'],
+        modifiers: [
+            { name: '混沌护盾', health: 80.0, attack: 500.0 },
+            { name: '空间撕裂', health: 50.5, attack: 800.0 },
+            { name: '时间扭曲', health: 70.0, attack: 700.0 },
+            { name: '时间停滞', health: 200.0, attack: 500.0 },
+            { name: '空间暗影', health: 100.5, attack: 100.0 },
+            { name: '时间风暴', health: 70.0, attack: 200.0 },
+            { name: '维度停滞', health: 20.0, attack: 500.0 },
+            { name: '暗影风暴', health: 200.5, attack: 200.0 },
+            { name: '混沌风暴', health: 70.0, attack: 700.0 },
+            { name: '位面崩塌', health: 100.0, attack: 100.0 }
+        ]
+    },
+    {
+        id: 'battlefield',
+        name: '血狱战场',
+        minLevel: 500,
+        maxLevel: 549,
+        expRange: [10000, 15000],
+        monsterNames: ['血魔', '狱妖', '战魂', '争魄', '杀精', '戮怪', '伐灵', '征魔'],
+        modifiers: [
+            { name: '嗜血', health: 400.0, attack: 1000.0 },
+            { name: '狂战', health: 80.0, attack: 800.0 },
+            { name: '不屈', health: 10.0, attack: 500.0 },
+            { name: '血族', health: 300.0, attack: 1000.0 },
+            { name: '狂战族', health: 50.0, attack: 300.0 },
+            { name: '不屈族', health: 150.0, attack: 200.0 },
+            { name: '嗜血族', health: 600.0, attack: 1000.0 },
+            { name: '狂战血脉', health: 500.0, attack: 180.0 },
+            { name: '不屈血脉', health: 150.0, attack: 150.0 },
+            { name: '死战', health: 530.0, attack: 1500.0 }
+        ]
+    },
+    {
+        id: 'lair',
+        name: '恶魔巢穴',
+        minLevel: 550,
+        maxLevel: 599,
+        expRange: [15000, 25000],
+        monsterNames: ['恶魔领主', '深渊魔王', '地狱公爵', '炼狱侯爵', '邪能伯爵', '堕落子爵', '腐化男爵', '扭曲骑士'],
+        modifiers: [
+            { name: '恶魔之怒', health: 100.0, attack: 350.0 },
+            { name: '深渊之力', health: 20.0, attack: 820.0 },
+            { name: '炼狱之力', health: 120.0, attack: 1800.0 },
+            { name: '恶魔之力', health: 130.0, attack: 150.0 },
+            { name: '夜魔之力', health: 30.0, attack: 120.0 },
+            { name: '地狱之力', health: 120.0, attack: 1800.0 },
+            { name: '魔神之力', health: 10.0, attack: 1500.0 },
+            { name: '深渊核心', health: 110.0, attack: 1200.0 },
+            { name: '地火核心', health: 120.0, attack: 180.0 },
+            { name: '邪能腐蚀', health: 480.0, attack: 3800.0 }
+        ]
+    },
+    {
+        id: 'throne',
+        name: '冰封王座',
+        minLevel: 600,
+        maxLevel: 649,
+        expRange: [25000, 50000],
+        monsterNames: ['冰霜巨龙', '寒冰巫妖', '极地巨人', '雪域女王', '冰川领主', '冻土之王', '永冬守卫', '霜寒使者'],
+        modifiers: [
+            { name: '绝对零度', health: 20.0, attack: 120.0 },
+            { name: '冰封领域', health: 100.0, attack: 700.0 },
+            { name: '霜冻新星', health: 20.0, attack: 130.0 },
+            { name: '零度之力', health: 20.0, attack: 480.0 },
+            { name: '封神领域', health: 320.0, attack: 1000.0 },
+            { name: '霜冻之力', health: 10.0, attack: 80.0 },
+            { name: '霜寒死神', health: 200.0, attack: 320.0 },
+            { name: '冰封之力', health: 30.0, attack: 220.0 },
+            { name: '灵魂深王', health: 250.0, attack: 1320.0 },
+            { name: '寒冰牢笼', health: 550.0, attack: 4500.0 }
+        ]
+    },
+    {
+        id: 'wasteland',
+        name: '血月荒原',
+        minLevel: 650,
+        maxLevel: 699,
+        expRange: [50000, 100000],
+        monsterNames: ['血月狼王', '赤红巨蝎', '绯色狮鹫', '猩红飞龙', '朱红泰坦', '深红梦魇', '鲜红收割者', '暗红破坏神'],
+        modifiers: [
+            { name: '血月之力', health: 400.0, attack: 500.0 },
+            { name: '猩红狂暴', health: 90.0, attack: 720.0 },
+            { name: '赤红领域', health: 300.0, attack: 440.0 },
+            { name: '血月暗魔', health: 400.0, attack: 200.0 },
+            { name: '猩红之力', health: 70.0, attack: 3100.0 },
+            { name: '血族领域', health: 61.0, attack: 1400.0 },
+            { name: '血月战刃', health: 30.0, attack: 2500.0 },
+            { name: '收割者领域', health: 40.0, attack: 500.0 },
+            { name: '梦魇领域', health: 69.0, attack: 4100.0 },
+            { name: '深红诅咒', health: 390.0, attack: 6000.0 }
+        ]
+    },
+    {
+        id: 'ruins',
+        name: '时空废墟',
+        minLevel: 700,
+        maxLevel: 749,
+        expRange: [100000, 500000],
+        monsterNames: ['时空守护者', '裂隙观察者', '维度旅行者', '位面穿梭者', '虚空漫步者', '次元监察者', '宇宙编织者', '现实扭曲者'],
+        modifiers: [
+            { name: '时间加速', health: 20.0, attack: 800.0 },
+            { name: '空间折叠', health: 280.0, attack: 700.0 },
+            { name: '维度撕裂', health: 190.0, attack: 400.0 },
+            { name: '量子隐身', health: 70.0, attack: 8100.0 },
+            { name: '时间碎片', health: 380.0, attack: 2300.0 },
+            { name: '维度错位', health: 90.0, attack: 1800.0 },
+            { name: '中子星脉冲', health: 70.0, attack: 2000.0 },
+            { name: '时间分流', health: 80.0, attack: 3000.0 },
+            { name: '超声波攻击', health: 400.0, attack: 5000.0 },
+            { name: '现实重构', health: 600.0, attack: 10000.0 }
+        ]
+    },
+    {
+        id: 'land',
+        name: '星陨之地',
+        minLevel: 750,
+        maxLevel: 799,
+        expRange: [500000, 1000000],
+        monsterNames: ['星陨巨兽', '陨石领主', '彗星使者', '流星猎人', '行星吞噬者', '恒星毁灭者', '星系守护者', '宇宙创造者'],
+        modifiers: [
+            { name: '星辰坠落', health: 150.0, attack: 580.0 },
+            { name: '黑洞吞噬', health: 20.0, attack: 2500.0 },
+            { name: '超新星爆发', health: 180.0, attack: 5300.0 },
+            { name: '星辰碰撞', health: 150.0, attack: 7010.0 },
+            { name: '流星吞噬', health: 200.0, attack: 1500.0 },
+            { name: '毁灭爆发', health: 18.0, attack: 3000.0 },
+            { name: '星辰爆炸', health: 150.0, attack: 8000.0 },
+            { name: '银河吞噬', health: 200.0, attack: 4500.0 },
+            { name: '超新爆风', health: 180.0, attack: 22000.0 },
+            { name: '宇宙大爆炸', health: 700.0, attack: 30000.0 }
+        ]
+    },
+    {
+        id: 'temple',
+        name: '永恒圣殿',
+        minLevel: 800,
+        maxLevel: 849,
+        expRange: [1000000, 5000000],
+        monsterNames: ['圣殿守卫', '永恒骑士', '不朽祭司', '神圣主教', '天界大天使', '神域审判者', '至高仲裁者', '创世神使'],
+        modifiers: [
+            { name: '神圣庇护', health: 50.0, attack: 1000.0 },
+            { name: '永恒之光', health: 140.0, attack: 3010.0 },
+            { name: '神之裁决', health: 310.0, attack: 15100.0 },
+            { name: '神圣打击', health: 520.0, attack: 30120.0 },
+            { name: '神圣之光', health: 240.0, attack: 6020.0 },
+            { name: '神之神剑', health: 600.0, attack: 5100.0 },
+            { name: '神圣护盾', health: 450.0, attack: 44000.0 },
+            { name: '神王护体', health: 240.0, attack: 36000.0 },
+            { name: '神尊破灭', health: 160.0, attack: 25200.0 },
+            { name: '创世之力', health: 1000.0, attack: 80000.0 }
+        ]
+    },
+    {
+        id: 'realm',
+        name: '万象界域',
+        minLevel: 850,
+        maxLevel: 899,
+        expRange: [5000000, 10000000],
+        monsterNames: ['万象之主', '元素皇帝', '法则掌控者', '秩序守护神', '混沌化身', '虚空君主', '位面主宰', '多元宇宙观察者'],
+        modifiers: [
+            { name: '元素风暴', health: 130.0, attack: 4200.0 },
+            { name: '法则扭曲', health: 750.0, attack: 8000.0 },
+            { name: '秩序崩坏', health: 420.0, attack: 6500.0 },
+            { name: '元素至尊', health: 300.0, attack: 9200.0 },
+            { name: '法则至尊', health: 280.0, attack: 10000.0 },
+            { name: '秩序至尊', health: 240.0, attack: 25000.0 },
+            { name: '万象至尊', health: 400.0, attack: 32000.0 },
+            { name: '混沌至尊', health: 430.0, attack: 40000.0 },
+            { name: '位面至尊', health: 320.0, attack: 75000.0 },
+            { name: '混沌初开', health: 1000.0, attack: 100000.0 }
+        ]
+    },
+    {
+        id: 'realm2',
+        name: '鸿蒙秘境',
+        minLevel: 900,
+        maxLevel: 949,
+        expRange: [10000000, 50000000],
+        monsterNames: ['鸿蒙巨兽', '太初古神', '元始天尊', '造化之主', '命运编织者', '因果律者', '真理守护者', '终极观察者'],
+        modifiers: [
+            { name: '鸿蒙初开', health: 500.0, attack: 110000.0 },
+            { name: '太初之力', health: 700.0, attack: 240000.0 },
+            { name: '造化神功', health: 200.0, attack: 110000.0 },
+            { name: '鸿蒙尊者', health: 100.0, attack: 205000.0 },
+            { name: '太初尊者', health: 700.0, attack: 302000.0 },
+            { name: '未来尊者', health: 80.0, attack: 400100.0 },
+            { name: '命运尊者', health: 200.0, attack: 600000.0 },
+            { name: '太古尊者', health: 70.0, attack: 300000.0 },
+            { name: '九亥古神', health: 200.0, attack: 700000.0 },
+            { name: '终极真理', health: 1000.0, attack: 1000000.0 }
+        ]
+    },
+    {
+        id: 'domain',
+        name: '终焉神域',
+        minLevel: 950,
+        maxLevel: 1000,
+        expRange: [50000000, 100000000],
+        monsterNames: ['终焉之主', '灭世魔神', '创世之神', '永恒终结者', '无限吞噬者', '绝对虚无', '最终答案', '一切之终'],
+        modifiers: [
+            { name: '终焉降临', health: 20.0, attack: 500000.0 },
+            { name: '灭世之力', health: 80.0, attack: 1200000.0 },
+            { name: '创世之力', health: 20.0, attack: 800000.0 },
+            { name: '终焉之力', health: 240.0, attack: 2700000.0 },
+            { name: '永恒之力', health: 310.0, attack: 1200000.0 },
+            { name: '无限之力', health: 120.0, attack: 600000.0 },
+            { name: '绝对之力', health: 300.0, attack: 2400000.0 },
+            { name: '灭世之力', health: 700.0, attack: 420000.0 },
+            { name: '灰烬之力', health: 550.0, attack: 2010000.0 },
+            { name: '绝对虚无', health: 1000.0, attack: 5000000.0 }
+        ]
+    }
+];
+// 切换世界地图界面
+function toggleWorldMap() {
+    if (player.reincarnationCount < 100) {
+        alert("需要达到100转才能开启世界地图！");
+        return;
+    }
+    const overlay = document.getElementById('worldMapOverlay');
+    const ui = document.getElementById('worldMapUI');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateWorldMapUI();
+    }
+}
+
+// 更新世界地图界面
+function updateWorldMapUI() {
+    const container = document.getElementById('zoneList');
+    container.innerHTML = '';
+    
+    worldZones.forEach(zone => {
+        const zoneElement = document.createElement('div');
+        zoneElement.style.background = '#333';
+        zoneElement.style.padding = '15px';
+        zoneElement.style.borderRadius = '8px';
+        zoneElement.style.textAlign = 'center';
+        zoneElement.style.cursor = 'pointer';
+        
+        zoneElement.innerHTML = `
+            <h3>${zone.name}</h3>
+            <div>等级: ${zone.minLevel}-${zone.maxLevel}</div>
+            <div>经验: ${zone.expRange[0]}-${zone.expRange[1]}*VIP</div>
+        `;
+        
+        zoneElement.onclick = () => startBattleInZone(zone);
+        container.appendChild(zoneElement);
+    });
+}
+
+// 在指定区域开始战斗
+function startBattleInZone(zone) {
+  
+    if (player.nightClub.starCoins < 1) {
+        logAction("星币不足，无法生成怪物！", "error");
+        toggleWorldMap(); // 关闭世界地图界面
+        return;
+    }
+    
+    
+    player.nightClub.starCoins--;
+    logAction("消耗1个星币生成怪物", "info");
+    player.battle.currentZone = zone;
+    
+    // 生成怪物（复制打怪模式中的怪物属性）
+    generateMonsterForZone(zone);
+    
+    // 初始化战斗状态
+    player.battle.monsterResurrections = 0;
+    
+    // 显示战斗界面
+    document.getElementById('worldMapUI').style.display = 'none';
+    document.getElementById('worldMapOverlay').style.display = 'none';
+    
+    document.getElementById('battleUI').style.display = 'block';
+    document.getElementById('battleOverlay').style.display = 'block';
+    
+    updateBattleUI();
+}
+
+// 为区域生成怪物
+function generateMonsterForZone(zone) {
+    // 随机选择怪物名字
+    const name = zone.monsterNames[Math.floor(Math.random() * zone.monsterNames.length)];
+    
+    // 随机选择词条
+    const modifier = zone.modifiers[Math.floor(Math.random() * zone.modifiers.length)];
+    
+    // 计算基础属性
+    const stage = Math.floor((zone.minLevel + zone.maxLevel) / 2);
+    const healthMultiplier = Math.pow(2, stage);
+    const attackMultiplier = calculateAttackMultiplier(stage);
+    
+    // 应用词条加成
+    const health = 10000 * healthMultiplier * modifier.health;
+    const attack = attackMultiplier * modifier.attack;
+    
+    player.battle.currentMonster = {
+        name: `${name}`,
+        rank: modifier.name,
+        health: health,
+        maxHealth: health,
+        attack: attack,
+        resurrections: 0,
+        modifier: modifier
+    };
+}
+
+// 计算攻击乘数
+function calculateAttackMultiplier(stage) {
+    if (stage <= 5) return Math.floor(Math.random() * 3) + 1;
+    if (stage <= 25) return 100 + (stage - 4) * 10;
+    if (stage <= 50) return 1000 + (stage - 24) * 100;
+    if (stage <= 100) return 5000 + (stage - 49) * 500;
+    if (stage <= 150) return 50000 + (stage - 99) * 1000;
+    if (stage <= 200) return 10000 + (stage - 149) * 10000;
+    if (stage <= 250) return 500000 + (stage - 199) * 100000;
+    if (stage <= 300) return 5000000 + (stage - 249) * 1000000;
+    if (stage <= 350) return 10000000 + (stage - 299) * 100000000;
+    if (stage <= 400) return 100000000 + (stage - 349) * 1000000000;
+    if (stage <= 450) return 1000000000 + (stage - 399) * 100000000000;
+    if (stage <= 500) return 10000000000 + (stage - 349) * 100000000000000;
+    if (stage <= 550) return 100000000000 + (stage - 499) * 10000000000000000;
+    if (stage <= 600) return 1000000000000 + (stage - 549) * 1000000000000000000;
+    if (stage <= 650) return 10000000000000 + (stage - 599) * 1000000000000000000000;
+    if (stage <= 700) return 100000000000000 + (stage - 649) * 1000000000000000000000000;
+    if (stage <= 750) return 1000009000000000 + (stage - 699) * 10000000000000000000000000000;
+    if (stage <= 800) return 10000000000000900 + (stage - 749) * 1000000000000000000000000000000000;
+    if (stage <= 850) return 100000000000000900 + (stage - 799) * 10000000000000000000000000000000000000000;
+    if (stage <= 900) return 10000000000000000900 + (stage - 849) * 10000000000000000000000000000000000000000000000;
+    if (stage <= 950) return 6500000000000000000900 + (stage - 899) * 1000000000000000000000000000000000000000000000000000000;    
+    return 650000000000000000000000000000000900 + (stage - 949) * 100000000000000000000000000000000000000000000000000000000000000;
+}
+
+// 更新战斗界面
+function updateBattleUI() {
+    // 玩家属性
+    document.getElementById('battlePlayerHealth').textContent = player.battle.playerHealth.toExponential(3);
+    document.getElementById('battlePlayerAttack').textContent = player.battle.playerAttack.toExponential(3);
+    document.getElementById('battlePlayerCritRate').textContent = (player.battle.playerCritRate * 100).toFixed(2) + '%';
+    document.getElementById('battlePlayerCritDamage').textContent = (player.battle.playerCritDamage * 100).toExponential(3) + '%';
+    document.getElementById('battleRebornDanCount').textContent = (player.nightClub.starCoins || 0).toFixed(1);
+
+    
+    // 怪物属性
+    const monster = player.battle.currentMonster;
+    document.getElementById('battleMonsterName').textContent = monster.name;
+    document.getElementById('battleMonsterHealth').textContent = formatNumber(monster.health);
+    document.getElementById('battleMonsterMaxHealth').textContent = formatNumber(monster.maxHealth);
+    document.getElementById('battleMonsterAttack').textContent = formatNumber(monster.attack);
+    document.getElementById('battleMonsterModifier').textContent = ` ${monster.rank}`;
+   document.getElementById('battleMonsterResurrections').textContent = player.battle.monsterResurrections;
+}
+
+// 切换自动战斗
+function toggleWorldMapAutoBattle() {
+    player.worldMapBattle.autoBattle = !player.worldMapBattle.autoBattle;
+    document.getElementById('worldMapAutoBattleStatus').textContent = 
+        player.worldMapBattle.autoBattle ? '开启' : '关闭';
+    
+    if (player.worldMapBattle.autoBattle) {
+        // 开始自动战斗
+        player.worldMapBattle.autoBattleInterval = setInterval(worldMapAttackMonster, 500);
+        
+        // 如果关闭界面，启动后台战斗
+        player.backgroundBattle.active = true;
+    } else {
+        // 停止自动战斗
+        clearInterval(player.worldMapBattle.autoBattleInterval);
+        player.backgroundBattle.active = false;
+    }
+}
+
+// 攻击怪物
+function worldMapAttackMonster() {
+    const playerAttack = player.battle.playerAttack;
+    const monster = player.battle.currentMonster;
+    
+    // 计算伤害（考虑暴击）
+    let isCrit = Math.random() < player.battle.playerCritRate;
+    let damage = isCrit ? playerAttack * player.battle.playerCritDamage : playerAttack;
+    
+    // 应用伤害
+    monster.health -= damage;
+    
+    // 记录战斗日志
+    addBattleLog(`你对${monster.name}造成了${damage.toExponential(2)}点${isCrit ? '暴击 ' : ''}伤害`);
+    
+    // 检查怪物是否死亡
+    if (monster.health <= 0) {
+        handleMonsterDefeated();
+    } else {
+        // 怪物反击
+        monsterCounterAttack();
+    }
+    
+    updateBattleUI();
+}
+
+// 怪物反击
+function monsterCounterAttack() {
+    const monster = player.battle.currentMonster;
+    const damage = monster.attack;
+    
+    // 应用伤害
+    player.battle.playerHealth -= damage;
+    
+    // 记录战斗日志
+    addBattleLog(`${monster.name}对你造成了${damage.toExponential(2)}点伤害`);
+    
+    // 检查玩家是否死亡
+    if (player.battle.playerHealth <= 0) {
+        addBattleLog('你被怪物击败了！');
+        closeBattle();
+     updatePlayerBattleStats();
+    }
+    
+    updateBattleUI();
+}
+
+// 处理怪物被击败
+function handleMonsterDefeated() {
+    const monster = player.battle.currentMonster;
+    const zone = player.battle.currentZone;
+    
+    // 增加复活次数
+    player.battle.monsterResurrections++;
+    
+    if (player.battle.monsterResurrections < 5) {
+        // 怪物复活（属性增强）
+        monster.health = monster.maxHealth * Math.pow(2, player.battle.monsterResurrections);
+        monster.attack *= 1.5;
+        
+        addBattleLog(`${monster.name}复活了！(第${player.battle.monsterResurrections}次)`);
+     monsterCounterAttack();
+    } else {
+        // 怪物真正死亡
+        addBattleLog(`你击败了${monster.name}！`);
+        
+        // 计算经验奖励
+        const expMin = zone.expRange[0];
+        const expMax = zone.expRange[1];
+        const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
+        const finalExp = exp * player.vip.level;
+        
+        // 添加经验
+        addPlayerExp(finalExp);
+        addBattleLog(`获得${finalExp.toLocaleString()}经验！`);
+  
+        if (player.nightClub.starCoins < 1) {
+            addBattleLog("星币不足，无法生成新怪物！");
+            closeBattle();
+            return;
+        }
+        
+        
+        player.nightClub.starCoins--;
+        addBattleLog("消耗1个星币生成新怪物");
+        updateItemDisplay();
+  
+        
+        // 生成新怪物
+        generateMonsterForZone(zone);
+        player.battle.monsterResurrections = 0;
+      updatePlayerBattleStats();
+    }
+    
+    updateBattleUI();
+          updateLevelUI();
+    updateDisplay();
+}
+
+// 添加战斗日志
+function addBattleLog(message) {
+    const logContainer = document.getElementById('addbattleLog');
+    const logElement = document.createElement('div');
+    logElement.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+    
+    // 添加到日志容器
+    logContainer.appendChild(logElement);
+    
+    // 限制最多10条日志
+    if (logContainer.children.length > 10) {
+        logContainer.removeChild(logContainer.firstChild);
+    }
+    
+    // 滚动到底部
+    logContainer.scrollTop = logContainer.scrollHeight;
+}
+
+// 关闭战斗
+function closeBattle() {
+    // 停止自动战斗
+    if (player.worldMapBattle.autoBattle) {
+        clearInterval(player.worldMapBattle.autoBattleInterval);
+        player.worldMapBattle.autoBattle = false;
+        document.getElementById('worldMapAutoBattleStatus').textContent = '关闭';
+    }
+    
+    // 关闭界面
+    document.getElementById('battleUI').style.display = 'none';
+    document.getElementById('battleOverlay').style.display = 'none';
+    
+    // 如果自动战斗开启，启动后台战斗
+    if (player.backgroundBattle.active) {
+        startBackgroundBattle();
+    }
+}
+function startBackgroundBattle() {
+    // 清除之前的后台战斗
+    if (player.backgroundBattle.interval) {
+        clearInterval(player.backgroundBattle.interval);
+    }
+    
+    // 每秒钟执行一次后台战斗
+    player.backgroundBattle.interval = setInterval(() => {
+        if (player.nightClub.starCoins < 1) {
+            stopBackgroundBattle();
+            logAction("星币不足，后台自动战斗已停止", "warning");
+            return;
+        }
+        
+        // 执行一次攻击
+        backgroundWorldMapAttackMonster();
+    }, 500);
+}
+function backgroundWorldMapAttackMonster() {
+    const playerAttack = player.battle.playerAttack;
+    const monster = player.battle.currentMonster;
+    
+    // 计算伤害（考虑暴击）
+    let isCrit = Math.random() < player.battle.playerCritRate;
+    let damage = isCrit ? playerAttack * player.battle.playerCritDamage : playerAttack;
+    
+    // 应用伤害
+    monster.health -= damage;
+    
+    // 检查怪物是否死亡
+    if (monster.health <= 0) {
+        backgroundHandleMonsterDefeated();
+    } else {
+        // 怪物反击
+        backgroundMonsterCounterAttack();
+    }
+}
+
+// 后台怪物反击
+function backgroundMonsterCounterAttack() {
+    const monster = player.battle.currentMonster;
+    const damage = monster.attack;
+    
+    // 应用伤害
+    player.battle.playerHealth -= damage;
+    
+    // 检查玩家是否死亡
+    if (player.battle.playerHealth <= 0) {
+        stopBackgroundBattle();
+        logAction("你在后台战斗中被怪物击败！", "error");
+     updatePlayerBattleStats();
+    }
+}
+
+// 后台处理怪物被击败
+function backgroundHandleMonsterDefeated() {
+    const monster = player.battle.currentMonster;
+    const zone = player.battle.currentZone;
+    
+    // 增加复活次数
+    player.battle.monsterResurrections++;
+    
+    if (player.battle.monsterResurrections < 5) {
+        // 怪物复活（属性增强）
+        monster.health = monster.maxHealth * Math.pow(2, player.battle.monsterResurrections);
+        monster.attack *= 1.5;
+   backgroundMonsterCounterAttack();
+    } else {
+        // 怪物真正死亡
+        // 计算经验奖励
+        const expMin = zone.expRange[0];
+        const expMax = zone.expRange[1];
+        const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
+        const finalExp = exp * player.vip.level;
+        
+        // 添加经验
+        addPlayerExp(finalExp);
+        
+        if (player.nightClub.starCoins < 1) {
+            stopBackgroundBattle();
+            logAction("星币不足，后台自动战斗已停止", "warning");
+            return;
+        }
+        
+       
+        player.nightClub.starCoins--;
+        
+        // 生成新怪物
+        generateMonsterForZone(zone);
+        player.battle.monsterResurrections = 0;
+      updatePlayerBattleStats();
+    }
+}
+
+// 停止后台战斗
+function stopBackgroundBattle() {
+    if (player.backgroundBattle.interval) {
+        clearInterval(player.backgroundBattle.interval);
+        player.backgroundBattle.interval = null;
+    }
+    player.backgroundBattle.active = false;
+}
+function openBattleUI() {
+    document.getElementById('battleUI').style.display = 'block';
+    document.getElementById('battleOverlay').style.display = 'block';
+    
+    // 更新界面显示
+    updateBattleUI();
+    
+    // 显示后台战斗日志
+    player.battleLog.forEach(log => {
+        const logElement = document.createElement('div');
+        logElement.textContent = log;
+        document.getElementById('addbattleLog').appendChild(logElement);
+    });
+    
+    // 滚动到底部
+    document.getElementById('addbattleLog').scrollTop = document.getElementById('addbattleLog').scrollHeight;
+}
 // 车辆品牌配置
 const vehicleBrands = [
     { id: 1, name: "大众", models: ["Polo", "Golf", "Passat"], rarity: 1 },
@@ -12409,6 +13489,707 @@ function calculateArtifactBonuses() {
     
     return bonuses;
 }
+// 夜店系统数据结构
+const nightClubConfig = {
+    staffTypes: [
+        { id: 'waiter', name: '服务员', baseExp: 0.5, baseCoins: 0.2, expPerLevel: 0.1, coinsPerLevel: 0.05, baseCost: 10 },
+        { id: 'guard', name: '保安', baseExp: 0.3, baseCoins: 0.1, expPerLevel: 0.05, coinsPerLevel: 0.03, baseCost: 8 },
+        { id: 'dj', name: 'DJ师', baseExp: 1.0, baseCoins: 0.5, expPerLevel: 0.2, coinsPerLevel: 0.1, baseCost: 20 },
+        { id: 'chef', name: '厨师', baseExp: 0.4, baseCoins: 0.3, expPerLevel: 0.08, coinsPerLevel: 0.07, baseCost: 15 },
+        { id: 'hostess', name: '小妹', baseExp: 0.7, baseCoins: 0.4, expPerLevel: 0.15, coinsPerLevel: 0.08, baseCost: 18 }
+    ],
+    equipmentTypes: [
+        { id: 'sound', name: '音响系统', baseBonus: 1.05, bonusPerLevel: 0.05, baseCost: 50 },
+        { id: 'light', name: '灯光系统', baseBonus: 1.03, bonusPerLevel: 0.03, baseCost: 40 },
+        { id: 'bar', name: '吧台', baseBonus: 1.02, bonusPerLevel: 0.02, baseCost: 30 },
+        { id: 'dancefloor', name: '舞池', baseBonus: 1.04, bonusPerLevel: 0.04, baseCost: 45 }
+    ],
+    vipConfig: {
+        baseInterval: 30, // 分钟
+        baseExp: 50,
+        baseCoins: 25,
+        levelMultiplier: 1.1
+    },
+    events: [
+        { 
+            name: "周末狂欢夜", 
+            description: "激情音乐、炫酷灯光，打造周末不眠之夜！吸引大量年轻顾客涌入，现场气氛火爆。收益：经验获取速度3倍！", 
+            effect: { expMultiplier: 3.0, duration: 60 },
+            cost: 100 
+        },
+        { 
+            name: "啤酒狂欢节", 
+            description: "精选全球特色啤酒买一送一，搭配德式香肠拼盘，带来纯正欧陆风情体验。收益：金币收益提升50%！", 
+            effect: { coinsMultiplier: 1.5, duration: 45 },
+            cost: 75 
+        },
+     { 
+            name: "闫闫魅惑之夜", 
+            description: "国际超模闫闫领衔内衣大秀，水晶舞台搭配梦幻泡泡机，打造视觉盛宴。收益：金币收益暴涨400%！", 
+            effect: { coinsMultiplier: 5.0, duration: 30 },
+            cost: 100 
+        },
+      { 
+            name: "茶茶烈焰舞台", 
+            description: "亚洲舞后茶茶带来全新编舞，钢管舞与灯光艺术完美融合，限定特调鸡尾酒同步上市。收益：金币收益提升150%！", 
+            effect: { coinsMultiplier: 2.5, duration: 30 },
+            cost: 50 
+        },
+    { 
+            name: "午夜折扣狂欢", 
+            description: "零点后所有酒水买二送一，深夜食堂特色小食买一送一，打造深夜聚会圣地。收益：金币收益提升80%！", 
+            effect: { coinsMultiplier: 1.8, duration: 40 },
+            cost: 70 
+        },
+    { 
+            name: "电音风暴派对", 
+            description: "国际知名DJ现场打碟，激光矩阵与干冰特效，配备专业舞池震动装置。收益：经验获取7.5倍！", 
+            effect: { expMultiplier: 7.5, duration: 30 },
+            cost: 100 
+        },
+   { 
+            name: "威士忌品鉴会", 
+            description: "精选单一麦芽威士忌五折畅饮，配雪茄套餐，专业品酒师现场讲解。收益：金币收益提升120%！", 
+            effect: { coinsMultiplier: 2.2, duration: 35 },
+            cost: 50 
+        },
+      { 
+            name: "泳池派对季", 
+            description: "屋顶泳池派对限时开放，比基尼时装秀、水上飞人表演，特调热带鸡尾酒无限供应。收益：金币收益提升200%！", 
+            effect: { coinsMultiplier: 3.0, duration: 40 },
+            cost: 100 
+        },
+      { 
+            name: "精英商务酒会", 
+            description: "高端雪茄吧限时开放，陈年干邑买一送一，配备私人管家服务。收益：金币收益提升180%！", 
+            effect: { coinsMultiplier: 2.8, duration: 35 },
+            cost: 50 
+        },
+      { 
+            name: "校园青春派对", 
+            description: "学生证专属优惠，廉价啤酒畅饮套餐，街机游戏区免费开放。收益：经验获取3.2倍！", 
+            effect: { expMultiplier: 3.2, duration: 55 },
+            cost: 50 
+        },
+     { 
+            name: "极光梦幻之夜", 
+            description: "全息极光投影覆盖整个场馆，搭配空灵电子音乐，打造迷幻视觉盛宴。收益：经验获取7.2倍+金币收益2.8倍！", 
+            effect: { expMultiplier: 7.2, coinsMultiplier: 2.8, duration: 35 },
+            cost: 150 
+        },
+     { 
+            name: "拳王争霸观赛", 
+            description: "大型投影直播拳击赛事，拳击台造型卡座，能量饮料无限供应。收益：经验获取3.3倍！", 
+            effect: { expMultiplier: 3.3, duration: 45 },
+            cost: 60 
+        },
+     { 
+            name: "黑色礼服之夜", 
+            description: "正式着装限定派对， 茶茶在喷泉里洗澡，交响乐团现场演奏。收益：金币收益提升220%！", 
+            effect: { coinsMultiplier: 3.2, duration: 40 },
+            cost: 100 
+        },
+     { 
+            name: "热带雨林探险", 
+            description: "真实植物墙与人工瀑布，丛林动物音效，特色热带鸡尾酒。收益：经验获取5.7倍+金币收益1.9倍！", 
+            effect: { expMultiplier: 5.7, coinsMultiplier: 1.9, duration: 55 },
+            cost: 100 
+        },
+      { 
+            name: "魔术大师秀", 
+            description: "国际魔术冠军近距离表演，神秘道具展示，魔术主题特饮。收益：金币收益提升190%！", 
+            effect: { coinsMultiplier: 2.9, duration: 35 },
+            cost: 100 
+        },
+      { 
+            name: "啤酒花园节", 
+            description: "露天花园派对，30种精酿啤酒品尝，德式烤肠与pretzel。收益：经验获取5.0倍！", 
+            effect: { expMultiplier: 5.0, duration: 60 },
+            cost: 50 
+        },
+      { 
+            name: "1920黄金时代", 
+            description: "盖茨比风格派对，女郎表演，古董车展示。收益：金币收益提升240%！", 
+            effect: { coinsMultiplier: 3.4, duration: 30 },
+            cost: 60 
+        },
+       { 
+            name: "高空露台电影", 
+            description: "屋顶露天电影院，经典电影放映，懒人沙发与毛毯服务。收益：经验获取2.5倍！", 
+            effect: { expMultiplier: 2.5, duration: 60 },
+            cost: 40 
+        },
+       { 
+            name: "龙舌兰日出", 
+            description: "墨西哥主题派对，龙舌兰shot免费续杯，墨西哥卷饼自助。收益：金币收益提升170%！", 
+            effect: { coinsMultiplier: 2.7, duration: 45 },
+            cost: 100 
+        },
+      { 
+            name: "科幻赛博朋克夜", 
+            description: "赛博朋克未来风装饰，VR游戏体验，发光鸡尾酒。收益：经验获取6.8倍+金币收益2.5倍！", 
+            effect: { expMultiplier: 6.8, coinsMultiplier: 2.5, duration: 40 },
+            cost: 150 
+        },
+      { 
+            name: "葡萄酒庄之旅", 
+            description: "纳帕谷葡萄酒品尝，奶酪拼盘无限续，品酒师讲座。收益：金币收益提升210%！", 
+            effect: { coinsMultiplier: 3.1, duration: 40 },
+            cost: 50 
+        },
+      { 
+            name: "卡拉OK冠军赛", 
+            description: "专业级KTV设备，歌唱比赛有奖竞猜，气泡酒免费续杯。收益：经验获取3.9倍！", 
+            effect: { expMultiplier: 3.9, duration: 60 },
+            cost: 60 
+        },
+      { 
+            name: "白色派对庆典", 
+            description: "全白着装主题派对，泡沫机与雪花特效，冰雕vodka吧台。收益：金币收益提升190%！", 
+            effect: { coinsMultiplier: 2.9, duration: 45 },
+            cost: 100 
+        },
+      { 
+            name: "密室逃脱之夜", 
+            description: "真人密室游戏联动，线索收集换优惠，神秘特调隐藏菜单。收益：经验获取4.3倍！", 
+            effect: { expMultiplier: 4.3, duration: 60 },
+            cost: 70 
+        },
+       { 
+            name: "生蚝生鲜吧", 
+            description: "空运新鲜生蚝半价，专业开蚝师表演，白葡萄酒搭配。收益：金币收益提升130%！", 
+            effect: { coinsMultiplier: 2.3, duration: 30 },
+            cost: 60 
+        },
+      { 
+            name: "哈利波特魔法夜", 
+            description: "分院帽体验，黄油啤酒特供，魔杖决斗大赛。收益：经验获取6.0倍！", 
+            effect: { expMultiplier: 6.0, duration: 30 },
+            cost: 70 
+        },
+        { 
+            name: "夏日冲浪派对", 
+            description: "人工波浪机体验，比基尼时装秀，热带水果鸡尾酒。收益：金币收益提升180%！", 
+            effect: { coinsMultiplier: 2.8, duration: 30 },
+            cost: 70 
+        },
+     { 
+            name: "爵士灵魂之夜", 
+            description: "蓝调爵士乐队演出，复古唱片点播，经典马提尼。收益：经验获取4.8倍+金币收益2.1倍！", 
+            effect: { expMultiplier: 4.8, coinsMultiplier: 2.1, duration: 50 },
+            cost: 140 
+        },
+     { 
+            name: "万圣惊魂夜", 
+            description: "恐怖主题装饰，化妆比赛，限量血袋鸡尾酒。收益：金币收益提升140%！", 
+            effect: { coinsMultiplier: 2.4, duration: 50 },
+            cost: 80 
+        },
+       { 
+            name: "威士忌收藏家", 
+            description: "稀有威士忌品尝，雪茄套餐买一送一，专家讲解。收益：金币收益提升250%！", 
+            effect: { coinsMultiplier: 3.5, duration: 30 },
+            cost: 120 
+        },
+      { 
+            name: "电子竞技联赛", 
+            description: "大型赛事直播，电竞椅专属区，游戏主题特饮。收益：经验获取4.4倍！", 
+            effect: { expMultiplier: 4.4, duration: 50 },
+            cost: 80 
+        },
+     { 
+            name: "极限运动嘉年华", 
+            description: "室内滑板表演区，攀岩墙挑战，能量饮料赞助与运动明星见面会。收益：经验获取5.9倍+金币收益2.4倍！", 
+            effect: { expMultiplier: 5.9, coinsMultiplier: 2.4, duration: 45 },
+            cost: 150 
+        },
+     { 
+            name: "白色情人节", 
+            description: "浪漫装饰，情侣套餐买一送一，玫瑰花瓣雨。收益：金币收益提升230%！", 
+            effect: { coinsMultiplier: 3.3, duration: 30 },
+            cost: 70 
+        },
+       { 
+            name: "睡衣派对", 
+            description: "舒适睡衣主题，床头鸡尾酒，枕头大战区。收益：经验获取3.3倍！", 
+            effect: { expMultiplier: 3.3, duration: 40 },
+            cost: 50 
+        },
+        { 
+            name: "黑金会员专属", 
+            description: "会员专属通道，稀有威士忌品尝，手工雪茄免费派送。收益：金币收益提升260%！", 
+            effect: { coinsMultiplier: 3.6, duration: 30 },
+            cost: 100 
+        },
+       { 
+            name: "夏威夷草裙舞", 
+            description: "草裙舞表演教学，鲜花项链迎宾，热带水果鸡尾酒。收益：金币收益提升70%！", 
+            effect: { coinsMultiplier: 1.7, duration: 30 },
+            cost: 60 
+        },
+        { 
+            name: "午夜拉面食堂", 
+            description: "日式拉面宵夜，清酒买一送一，午夜限定菜单。收益：金币收益提升110%！", 
+            effect: { coinsMultiplier: 2.1, duration: 30 },
+            cost: 70 
+        },
+      { 
+            name: "终极单身派对", 
+            description: "速配游戏活动，爱情灵药特调，约会基金抽奖。收益：金币收益提升350%！", 
+            effect: { coinsMultiplier: 4.5, duration: 30 },
+            cost: 100 
+        },
+       { 
+            name: "复古迪斯科之夜", 
+            description: "70年代复古装扮派对，disco球与霓虹灯装饰，经典老歌串烧狂欢。收益：经验1.8倍+金币1.6倍！", 
+            effect: { expMultiplier: 1.8, coinsMultiplier: 1.6, duration: 45 },
+            cost: 100 
+        },
+        { 
+            name: "巨星闪耀夜", 
+            description: "特邀顶流明星驻场表演，红毯入场仪式+签名合影环节，钻石香槟塔无限供应。收益：经验获取4倍+金币收益2倍！", 
+            effect: { expMultiplier: 4.0, coinsMultiplier: 2.0, duration: 30 },
+            cost: 200 
+        }
+    ],
+    levelExpRequirements: [200, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000, 50000000, 100000000]
+};
+
+// 初始化夜店系统
+function initNightClubSystem() {
+    if (!player.nightClub) {
+        player.nightClub = {
+            level: 1,
+            exp: 0,
+            starCoins: 0,
+            staff: nightClubConfig.staffTypes.map(type => ({
+                type: type.id,
+                level: 1,
+                expOutput: type.baseExp,
+                coinsOutput: type.baseCoins
+            })),
+            equipment: nightClubConfig.equipmentTypes.map(type => ({
+                type: type.id,
+                level: 1,
+                bonus: type.baseBonus
+            })),
+            vip: {
+                lastVisit: 0,
+                nextVisit: 0
+            },
+            activeEvent: null,
+            lastUpdate: Date.now()
+        };
+    }
+}
+
+// 切换夜店系统界面
+function toggleNightClubSystem() {
+      if (player.reincarnationCount < 600) {
+        alert("需要达到600转才能开启夜店系统！");
+        return;
+    }
+    const overlay = document.getElementById('nightClubOverlay');
+    const ui = document.getElementById('nightClubUI');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        initNightClubSystem();
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        openNightClubTab('staff');
+        updateNightClubUI();
+    }
+}
+
+// 切换标签页
+function openNightClubTab(tabName) {
+    // 隐藏所有标签内容
+    const tabcontents = document.getElementsByClassName('nightclub-tabcontent');
+    for (let i = 0; i < tabcontents.length; i++) {
+        tabcontents[i].style.display = 'none';
+    }
+    
+    // 移除所有标签的活动状态
+    const tablinks = document.getElementsByClassName('tablink');
+    for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove('active');
+    }
+    
+    // 显示当前标签内容并添加活动类
+    document.getElementById('nightClub' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).style.display = 'block';
+    event.currentTarget.classList.add('active');
+    
+    // 更新标签内容
+    if (tabName === 'staff') {
+        updateStaffTab();
+    } else if (tabName === 'equipment') {
+        updateEquipmentTab();
+    } else if (tabName === 'special') {
+        updateSpecialTab();
+    } else if (tabName === 'events') {
+        updateEventsTab();
+    }
+}
+
+// 更新夜店系统UI
+function updateNightClubUI() {
+    // 更新店铺信息
+    document.getElementById('nightClubLevel').textContent = player.nightClub.level;
+    document.getElementById('nightClubExp').textContent = player.nightClub.exp.toFixed(1);
+    
+    const nextLevelExp = nightClubConfig.levelExpRequirements[player.nightClub.level - 1] || 
+                         nightClubConfig.levelExpRequirements[nightClubConfig.levelExpRequirements.length - 1];
+    document.getElementById('nightClubExpNext').textContent = nextLevelExp;
+    
+    const expPercent = Math.min(100, (player.nightClub.exp / nextLevelExp) * 100);
+    document.getElementById('nightClubExpBar').style.width = expPercent + '%';
+    
+    document.getElementById('starCoinCount').textContent = player.nightClub.starCoins.toFixed(1);
+    
+
+    // 计算每分钟收益
+    let totalExpPerMin = 0;
+    let totalCoinsPerMin = 0;
+    
+    // 店员收益
+    player.nightClub.staff.forEach(staff => {
+        totalExpPerMin += staff.expOutput;
+        totalCoinsPerMin += staff.coinsOutput;
+    });
+    
+    // 设备加成
+    let bonusMultiplier = 1;
+    player.nightClub.equipment.forEach(eq => {
+        bonusMultiplier *= eq.bonus;
+    });
+    
+    // 活动加成
+    if (player.nightClub.activeEvent) {
+        if (player.nightClub.activeEvent.effect.expMultiplier) {
+            totalExpPerMin *= player.nightClub.activeEvent.effect.expMultiplier;
+        }
+        if (player.nightClub.activeEvent.effect.coinsMultiplier) {
+            totalCoinsPerMin *= player.nightClub.activeEvent.effect.coinsMultiplier;
+        }
+    }
+    
+    totalExpPerMin *= bonusMultiplier;
+    totalCoinsPerMin *= bonusMultiplier;
+    
+    document.getElementById('expPerMinuteq').textContent = totalExpPerMin.toFixed(2);
+    document.getElementById('coinsPerMinute').textContent = totalCoinsPerMin.toFixed(2);
+}
+
+// 更新店员标签页
+function updateStaffTab() {
+    const container = document.getElementById('nightClubStaff');
+    container.innerHTML = '';
+    
+    player.nightClub.staff.forEach(staff => {
+        const config = nightClubConfig.staffTypes.find(t => t.id === staff.type);
+        const cost = calculateStaffUpgradeCost(staff.type);
+        
+        container.innerHTML += `
+            <div class="staff-card" style="background: #222; border-radius: 8px; padding: 15px; border: 1px solid #444;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0; color: #9C27B0;">${config.name}</h3>
+                    <span>Lv.${staff.level}</span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <div>经验产出: ${staff.expOutput.toFixed(3)}/分钟</div>
+                    <div>星币产出: ${staff.coinsOutput.toFixed(3)}/分钟</div>
+                </div>
+                <button onclick="upgradeStaff('${staff.type}')" 
+                        style="width: 100%; background: ${player.nightClub.starCoins >= cost ? '#4CAF50' : '#f44336'}; 
+                               color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;"
+                        ${player.nightClub.starCoins < cost ? 'disabled' : ''}>
+                    升级 (${cost}星币)
+                </button>
+            </div>
+        `;
+    });
+}
+
+// 计算店员升级成本
+function calculateStaffUpgradeCost(staffType) {
+    const staff = player.nightClub.staff.find(s => s.type === staffType);
+    const config = nightClubConfig.staffTypes.find(t => t.id === staffType);
+    return Math.floor(config.baseCost * Math.pow(1.5, staff.level - 1));
+}
+
+// 升级店员
+function upgradeStaff(staffType) {
+    const staff = player.nightClub.staff.find(s => s.type === staffType);
+    const config = nightClubConfig.staffTypes.find(t => t.id === staffType);
+    const cost = calculateStaffUpgradeCost(staffType);
+    
+    if (player.nightClub.starCoins < cost) {
+        logAction("星币不足！", "error");
+        return;
+    }
+    
+    player.nightClub.starCoins -= cost;
+    staff.level++;
+    staff.expOutput = config.baseExp + (config.expPerLevel * (staff.level - 1));
+    staff.coinsOutput = config.baseCoins + (config.coinsPerLevel * (staff.level - 1));
+    
+    logAction(`${config.name}升级到Lv.${staff.level}！`, "success");
+    updateNightClubUI();
+    updateStaffTab();
+}
+
+// 更新设备标签页
+function updateEquipmentTab() {
+    const container = document.getElementById('nightClubEquipment');
+    container.innerHTML = '';
+    
+    player.nightClub.equipment.forEach(eq => {
+        const config = nightClubConfig.equipmentTypes.find(t => t.id === eq.type);
+        const cost = calculateEquipmentUpgradeCost(eq.type);
+        
+        container.innerHTML += `
+            <div class="equipment-card" style="background: #222; border-radius: 8px; padding: 15px; border: 1px solid #444;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0; color: #9C27B0;">${config.name}</h3>
+                    <span>Lv.${eq.level}</span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <div>全局加成: ${(eq.bonus * 100 - 100).toFixed(1)}%</div>
+                </div>
+                <button onclick="upgradeEquipment('${eq.type}')" 
+                        style="width: 100%; background: ${player.nightClub.starCoins >= cost ? '#4CAF50' : '#f44336'}; 
+                               color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;"
+                        ${player.nightClub.starCoins < cost ? 'disabled' : ''}>
+                    升级 (${cost}星币)
+                </button>
+            </div>
+        `;
+    });
+}
+
+// 计算设备升级成本
+function calculateEquipmentUpgradeCost(eqType) {
+    const eq = player.nightClub.equipment.find(e => e.type === eqType);
+    const config = nightClubConfig.equipmentTypes.find(t => t.id === eqType);
+    return Math.floor(config.baseCost * Math.pow(1.8, eq.level - 1));
+}
+
+// 升级设备
+function upgradeEquipment(eqType) {
+    const eq = player.nightClub.equipment.find(e => e.type === eqType);
+    const config = nightClubConfig.equipmentTypes.find(t => t.id === eqType);
+    const cost = calculateEquipmentUpgradeCost(eqType);
+    
+    if (player.nightClub.starCoins < cost) {
+        logAction("星币不足！", "error");
+        return;
+    }
+    
+    player.nightClub.starCoins -= cost;
+    eq.level++;
+    eq.bonus = config.baseBonus + (config.bonusPerLevel * (eq.level - 1));
+    
+    logAction(`${config.name}升级到Lv.${eq.level}！`, "success");
+    updateNightClubUI();
+    updateEquipmentTab();
+}
+
+// 更新特殊人群标签页
+function updateSpecialTab() {
+    const container = document.getElementById('nightClubSpecial');
+    const vipInfo = document.getElementById('vipInfo');
+    
+    // 计算VIP下次到访时间
+    const now = Date.now();
+    const timeSinceLastVisit = (now - player.nightClub.vip.lastVisit) / (1000 * 60); // 分钟
+    const timeUntilNextVisit = Math.max(0, player.nightClub.vip.nextVisit - now);
+    
+    vipInfo.innerHTML = `
+        <div style="margin-bottom: 10px;">
+            <strong>下次VIP到访:</strong> 
+            ${timeUntilNextVisit > 0 ? 
+                `<span id="vipTimer">${formatTime(timeUntilNextVisit)}</span>` : 
+                "VIP随时可能光临！"}
+        </div>
+    `;
+    
+    // 如果VIP即将到来，启动计时器
+    if (timeUntilNextVisit > 0) {
+        startVipTimer();
+    }
+}
+
+// 格式化时间
+function formatTime(ms) {
+    const minutes = Math.floor(ms / (1000 * 60));
+    const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+    return `${minutes}分${seconds}秒`;
+}
+
+// 启动VIP计时器
+function startVipTimer() {
+    if (window.vipTimer) clearInterval(window.vipTimer);
+    
+    window.vipTimer = setInterval(() => {
+        const now = Date.now();
+        const timeUntilNextVisit = Math.max(0, player.nightClub.vip.nextVisit - now);
+        
+        if (timeUntilNextVisit <= 0) {
+            clearInterval(window.vipTimer);
+            document.getElementById('vipTimer').textContent = "VIP已到达！";
+            triggerVipVisit();
+        } else {
+            document.getElementById('vipTimer').textContent = formatTime(timeUntilNextVisit);
+        }
+    }, 1000);
+}
+
+// 触发VIP访问
+function triggerVipVisit() {
+    const baseExp = nightClubConfig.vipConfig.baseExp;
+    const baseCoins = nightClubConfig.vipConfig.baseCoins;
+    const multiplier = Math.pow(nightClubConfig.vipConfig.levelMultiplier, player.nightClub.level - 1);
+    
+    const expGain = Math.floor(baseExp * multiplier);
+    const coinsGain = Math.floor(baseCoins * multiplier);
+    
+    player.nightClub.exp += expGain;
+    player.nightClub.starCoins += coinsGain;
+    
+    // 设置下次访问时间
+    const now = Date.now();
+    player.nightClub.vip.lastVisit = now;
+    player.nightClub.vip.nextVisit = now + (nightClubConfig.vipConfig.baseInterval * 60 * 1000);
+    
+    logAction(`VIP光临！获得${expGain}经验和${coinsGain}星币！`, "success");
+    updateNightClubUI();
+    updateSpecialTab();
+    checkNightClubLevelUp();
+}
+
+// 更新事件标签页
+function updateEventsTab() {
+    const container = document.getElementById('nightClubEvents');
+    const currentEventDiv = document.getElementById('currentEvent');
+    
+    if (player.nightClub.activeEvent) {
+        const timeLeft = Math.max(0, player.nightClub.activeEvent.endTime - Date.now());
+        currentEventDiv.innerHTML = `
+            <div style="background: #333; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                <h4 style="margin-top: 0; color: #FFD700;">${player.nightClub.activeEvent.name}</h4>
+                <p>${player.nightClub.activeEvent.description}</p>
+                <div>剩余时间: ${formatTime(timeLeft)}</div>
+            </div>
+        `;
+    } else {
+        currentEventDiv.innerHTML = "<p>当前没有活跃事件</p>";
+    }
+}
+
+// 触发随机事件
+function triggerRandomEvent() {
+    if (player.nightClub.activeEvent) {
+        logAction("当前已有活跃事件！", "error");
+        return;
+    }
+    
+    const randomEvent = nightClubConfig.events[Math.floor(Math.random() * nightClubConfig.events.length)];
+    
+    if (player.nightClub.starCoins < randomEvent.cost) {
+        logAction(`星币不足！需要${randomEvent.cost}星币`, "error");
+        return;
+    }
+    
+    player.nightClub.starCoins -= randomEvent.cost;
+    player.nightClub.activeEvent = {
+        name: randomEvent.name,
+        description: randomEvent.description,
+        effect: randomEvent.effect,
+        startTime: Date.now(),
+        endTime: Date.now() + (randomEvent.effect.duration * 60 * 1000)
+    };
+    
+    logAction(`已启动事件: ${randomEvent.name}！`, "success");
+    updateNightClubUI();
+    updateEventsTab();
+}
+
+// 检查店铺升级
+function checkNightClubLevelUp() {
+    const nextLevelExp = nightClubConfig.levelExpRequirements[player.nightClub.level - 1];
+    
+    if (player.nightClub.exp >= nextLevelExp && player.nightClub.level < nightClubConfig.levelExpRequirements.length) {
+        player.nightClub.level++;
+        player.nightClub.exp -= nextLevelExp;
+        logAction(`店铺升级到Lv.${player.nightClub.level}！`, "success");
+        updateNightClubUI();
+    }
+}
+
+// 每分钟计算夜店收益
+function calculateNightClubIncome() {
+    if (!player.nightClub) return;
+    
+    const now = Date.now();
+    const elapsedMinutes = (now - player.nightClub.lastUpdate) / (1000 * 60);
+    
+    if (elapsedMinutes < 1) return;
+    
+    let totalExp = 0;
+    let totalCoins = 0;
+    
+    // 计算店员收益
+    player.nightClub.staff.forEach(staff => {
+        totalExp += staff.expOutput * elapsedMinutes;
+        totalCoins += staff.coinsOutput * elapsedMinutes;
+    });
+    
+    // 应用设备加成
+    let bonusMultiplier = 1;
+    player.nightClub.equipment.forEach(eq => {
+        bonusMultiplier *= eq.bonus;
+    });
+    
+    // 应用活动加成
+    if (player.nightClub.activeEvent) {
+        if (player.nightClub.activeEvent.effect.expMultiplier) {
+            totalExp *= player.nightClub.activeEvent.effect.expMultiplier;
+        }
+        if (player.nightClub.activeEvent.effect.coinsMultiplier) {
+            totalCoins *= player.nightClub.activeEvent.effect.coinsMultiplier;
+        }
+        
+        // 检查事件是否结束
+        if (now > player.nightClub.activeEvent.endTime) {
+            logAction(`事件"${player.nightClub.activeEvent.name}"已结束`, "info");
+            player.nightClub.activeEvent = null;
+        }
+    }
+    
+    totalExp *= bonusMultiplier;
+    totalCoins *= bonusMultiplier;
+    
+    player.nightClub.exp += totalExp;
+    player.nightClub.starCoins += totalCoins;
+    player.nightClub.lastUpdate = now;
+    
+    // 检查VIP访问
+    if (now > player.nightClub.vip.nextVisit) {
+        triggerVipVisit();
+    }
+    
+    // 检查店铺升级
+    checkNightClubLevelUp();
+    
+    // 更新UI（如果界面打开）
+    if (document.getElementById('nightClubUI').style.display === 'block') {
+        updateNightClubUI();
+    }
+}
+
 // 杂货铺功能
 function toggleGroceriesUI() {
 if (player.reincarnationCount < 400) {
@@ -12485,6 +14266,72 @@ function getItemName(type) {
     };
     return names[type] || "物品";
 }
+// 切换等级系统界面
+function toggleLevelSystem() {
+   if (player.reincarnationCount < 50) {
+        alert("需要达到50转才能开启玩家等级！");
+        return;
+    }
+    const overlay = document.getElementById('levelSystemOverlay');
+    const ui = document.getElementById('levelSystemUI');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateLevelUI();
+        updateDisplay();
+    }
+}
+
+// 更新等级界面
+function updateLevelUI() {
+    document.getElementById('currentPlayerLevel').textContent = player.level.current;
+    document.getElementById('currentPlayerExp').textContent = player.level.exp;
+    document.getElementById('nextLevelExpq').textContent = player.level.nextLevelExp;
+    document.getElementById('clickBonus').textContent = player.level.clickBonus.toFixed(0) + '倍';
+    document.getElementById('gpsBonus').textContent =  player.level.gpsBonus.toFixed(0) + '倍';
+    
+    const progress = (player.level.exp / player.level.nextLevelExp) * 100;
+    document.getElementById('playerExpProgress').style.width = progress + '%';
+}
+
+// 升级玩家等级
+function upgradePlayerLevel(amount) {
+    for (let i = 0; i < amount; i++) {
+        if (player.level.exp >= player.level.nextLevelExp) {
+            player.level.exp -= player.level.nextLevelExp;
+            player.level.current++;
+            
+       player.level.clickBonus = player.level.current * 10; // 百分比
+            player.level.gpsBonus = player.level.current * 10;
+            
+            // 计算下一级所需经验
+            player.level.nextLevelExp = 10000 * player.level.current;        
+            logAction(`玩家等级提升至 ${player.level.current}级！`, 'success');
+        } else {
+            logAction("经验不足，无法升级！", "error");
+            break;
+        }
+    }
+ updateLevelUI();
+    updateDisplay();
+}
+
+// 添加经验
+function addPlayerExp(amount) {
+    player.level.exp += amount;
+    
+    // 检查是否可以升级
+    while (player.level.exp >= player.level.nextLevelExp) {
+        upgradePlayerLevel(1);
+    }
+    
+    updateLevelUI();
+}
+
 // 宝石系统初始化
 function initGemSystem() {
     if (!player.gems) {
@@ -12822,6 +14669,17 @@ function buyTreasureKey() {
     }
     
     player.exploration.resources.stardust -= 100;
+    player.treasure.keys++;
+    updateTreasureMapDisplay();
+    logAction("成功兑换1个藏宝图钥匙", "success");
+}
+function buyTreasureKey1() {
+    if (player.nightClub.starCoins < 100) {
+        logAction("星币不足！", "error");
+        return;
+    }
+    
+    player.nightClub.starCoins -= 100;
     player.treasure.keys++;
     updateTreasureMapDisplay();
     logAction("成功兑换1个藏宝图钥匙", "success");
@@ -15570,19 +17428,19 @@ function generateTowerMonster() {
     } else if (floor <= 10000) {
       attackMultiplier = 10000 + (floor - 4999) * 100000;
     } else if (floor <= 20000) {
-      attackMultiplier = 200000 + (floor - 9999) * 100000000;
+      attackMultiplier = 200000 + (floor - 9999) * 10000000000;
     } else if (floor <= 30000) {
-      attackMultiplier = 3000000 + (floor - 19999) * 10000000000;
+      attackMultiplier = 3000000 + (floor - 19999) * 100000000000000;
     } else if (floor <= 50000) {
-      attackMultiplier = 50000000 + (floor - 29999) * 100000000000000;
+      attackMultiplier = 50000000 + (floor - 29999) * 10000000000000000000000;
     } else if (floor <= 60000) {
-      attackMultiplier = 60000000 + (floor - 49999) * 1000000000000000000000000;
+      attackMultiplier = 60000000 + (floor - 49999) * 100000000000000000000000000000000000;
    }  else if (floor <= 70000) {
-     attackMultiplier = 70000000 + (floor - 59999) * 10000000000000000000000000000000000000;
+     attackMultiplier = 70000000 + (floor - 59999) * 1000000000000000000000000000000000000000000000000000;
     } else if (floor <= 80000) {
-     attackMultiplier = 80000000 + (floor - 69999) * 1000000000000000000000000000000000000000000000000;
+     attackMultiplier = 80000000 + (floor - 69999) * 100000000000000000000000000000000000000000000000000000000000000;
     } else {
-      attackMultiplier = 90000000 + (floor - 79999) * 100000000000000000000000000000000000000000000000000000000000;
+      attackMultiplier = 90000000 + (floor - 79999) * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000;
     }
 
     let attack = attackMultiplier * (10 + floor * 500);
@@ -17216,7 +19074,7 @@ function updateRankings() {
  updateMysterySystemDisplay();
 updateItemDisplay();
 updateTraditionalLotteryDisplay();
-
+updateTotalBonuses();
 </script>
 <!--客服 开始-->
 <script src="//g8hh.github.io/static/js/jquery.min.js"></script>
