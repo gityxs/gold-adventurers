@@ -912,6 +912,7 @@ button:hover {
            <p>28. 夜店系统：600转开启，店铺每级加点击伤害，特殊事件消耗50-200星币，提升30-60分钟金币或者经验收益，获得的星币可以兑换藏宝图，或者打世界地图怪物消耗（后续会加其他材料兑换）。</p>
            <p>29. 玩家等级：50转开启，每级10倍属性，世界地图怪物打怪升级。</p>
            <p>30. 世界地图：100转开启，打怪掉玩家经验，每挑战一次消耗1星币，如果打的时候闪退界面，那就是打不过这关。（后续会加材料掉落）。</p>
+          <p>31. 直播系统：500转开启，每级增加点击伤害，粉丝数增加GPS加成，流量是获得多倍经验</p>
         </div>
     </div>
 </div>
@@ -925,9 +926,10 @@ button:hover {
     <div id="gameLogPage3" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>更新日志</h4>
-              <p>2025/9/10 : 玩家等级：50转开启，每一级增加10倍效果。世界地图：100转开启：打怪经验可以给玩家升级每次生成怪物消耗1星币（后续会加掉落材料）（如果属性显示低打一下打怪模式）</p>
-             <p>2025/9/9 : 夜店：600转开启，生产星币，获得的星币可以兑换藏宝图或者升级（后续会加入更多东西兑换）已修复</p>
-             <p>2025/9/8 : 通天塔失败不会关闭自动攻击</p>
+            <p>2025/9/11 : 修复农田和离线时间异常显示，  增加直播：500转开启，每级增加点击伤害，粉丝数增加GPS加成，流量是获得多倍经验（每次进游戏建议结束直播在重新开播，不这样可能没礼物）（第一次加载记得刷新一下页面，第一次直播经验显示异常，刷新后正常）</p>
+            <p>2025/9/10 : 玩家等级：50转开启，每一级增加10倍效果。世界地图：100转开启：打怪经验可以给玩家升级每次生成怪物消耗1星币（后续会加掉落材料）（如果属性显示低打一下打怪模式）</p>
+            <p>2025/9/9 : 夜店：600转开启，生产星币，获得的星币可以兑换藏宝图或者升级（后续会加入更多东西兑换）已修复</p>
+            <p>2025/9/8 : 通天塔失败不会关闭自动攻击</p>
             <p>2025/9/7 : 减少宝图兑换数量，神器增加进阶，消耗进阶神石：宝图掉落。（如果打怪模式显示血负了，脱一件神器在穿上就可以了）</p>
 
         </div>
@@ -999,6 +1001,7 @@ button:hover {
     <button onclick="toggleGemSystem()" style="margin-left: 10px;">宝石系统</button>
     <button onclick="toggleTreasureMapSystem()">藏宝图系统</button>
     <button onclick="toggleNightClubSystem()" style="margin-left: 10px;">夜店系统</button>
+    <button onclick="toggleLiveStreamSystem()" class="tab-button">直播系统</button>
     <button onclick="toggleSettingsUI()">设置</button>
 
 <h3>自动购买设置</h3>
@@ -2553,7 +2556,84 @@ button:hover {
     <div id="addbattleLog" style="height: 200px; overflow-y: auto; background: #333; padding: 10px; border-radius: 5px; margin-top: 10px;">
         <!-- 战斗日志会动态显示 -->
     </div></div></div>
-
+<!-- 直播系统UI -->
+<div id="liveStreamSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="liveStreamSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f23; color: white; padding: 20px; border: 3px solid #ff00ff; border-radius: 10px; z-index: 1001; width: 800px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #ff00ff; padding-bottom: 10px;">
+        <h2 style="color: #ff00ff; margin: 0;">直播系统</h2>
+        <button onclick="toggleLiveStreamSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-size: 14px;">关闭</button>
+    </div>
+    
+    <!-- 直播状态和等级信息 -->
+    <div style="margin-bottom: 20px; background: #1a1a2a; padding: 15px; border-radius: 8px;">
+        <div style="display: flex; justify-content: space-between;">
+            <div>
+                <strong>直播等级:</strong> <span id="liveStreamLevel">1</span>
+                <strong>经验:</strong> <span id="liveStreamExp">0</span>/<span id="liveStreamNextExp">100</span>
+            </div>
+            <div>
+                <strong>在线观众:</strong> <span id="liveViewerCount">0</span>
+            </div>
+            <div>
+                <strong>粉丝数:</strong> <span id="totalLiveEarnings">0</span> 
+            </div>
+        </div>
+        <div class="exp-bar" style="margin-top: 10px;">
+            <div id="liveExpProgress" class="exp-progress" style="width: 0%;"></div>
+        </div>
+    </div>
+    
+    <!-- 直播控制 -->
+    <div style="margin-bottom: 20px; text-align: center;">
+        <button id="startLiveBtn" onclick="startLiveStream()" style="background: #ff00ff; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">开始直播</button>
+        <button id="boostLiveBtn" onclick="boostLiveStream()" style="background: #2196F3; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">推广流量 (1000星币)</button>
+    </div>
+    
+    <!-- 直播内容区域 -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+        <!-- 直播窗口 -->
+        <div style="background: #000; border-radius: 8px; overflow: hidden; position: relative;">
+            <div id="liveStreamVideo" style="height: 300px; background: linear-gradient(to bottom, #1a1a2a, #0f0f23); display: flex; justify-content: center; align-items: center; color: #aaa;">
+                <div id="liveStatus" style="text-align: center;">直播未开始</div>
+            </div>
+            <div style="padding: 10px; background: #1a1a2a;">
+                <h3 style="margin: 0; color: #ff00ff;">我的直播间</h3>
+                <div style="display: flex; align-items: center; margin-top: 5px;">
+                    <span style="background: #f44336; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px; margin-right: 10px;">LIVE</span>
+                    <span id="liveTopic">转生大陆冒险日记</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 观众列表 -->
+        <div style="background: #1a1a2a; border-radius: 8px; padding: 15px;">
+            <h3 style="color: #ff00ff; margin-top: 0;">在线观众</h3>
+            <div id="viewerList" style="max-height: 200px; overflow-y: auto;">
+                <div style="text-align: center; color: #666; padding: 20px 0;">暂无观众</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 弹幕区域 -->
+    <div style="margin-top: 20px; background: #1a1a2a; border-radius: 8px; padding: 15px;">
+        <h3 style="color: #ff00ff; margin-top: 0;">弹幕互动</h3>
+        <div id="danmakuContainer" style="height: 200px; overflow-y: auto; background: #0a0a1a; border-radius: 5px; padding: 10px; margin-bottom: 10px;">
+            <div class="danmaku-message">欢迎来到直播间！发送消息与其他观众互动吧！</div>
+        </div>
+        <div style="display: flex;">
+            <input type="text" id="danmakuInput" placeholder="发送弹幕..." style="flex: 1; padding: 8px; border: 1px solid #444; border-radius: 3px; background: #0a0a1a; color: white;">
+            <button onclick="sendDanmaku()" style="background: #ff00ff; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer; margin-left: 10px;">发送</button>
+        </div>
+    </div>
+    
+    <!-- 打赏记录 -->
+    <div style="margin-top: 20px; background: #1a1a2a; border-radius: 8px; padding: 15px;">
+        <h3 style="color: #ff00ff; margin-top: 0;">打赏记录</h3>
+        <div id="donationHistory" style="max-height: 150px; overflow-y: auto;">
+            <div style="text-align: center; color: #666; padding: 20px 0;">暂无打赏记录</div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -2682,6 +2762,17 @@ button:hover {
     autoBattle: false,
     autoBattleInterval: null
 },
+liveStream: {
+            level: 1,
+            exp: 0,
+            totalEarnings: 1000,
+            isLive: false,
+            lastLiveStart: 0,
+            totalLiveTime: 0,
+            expMultiplier: 1,
+            viewers: [],
+            donationHistory: []
+        },
 level: {
     current: 1,
     exp: 0,
@@ -5140,12 +5231,14 @@ const farmGPSEnhancement  = gpsEnhancements[player.farm.level - 1] || gpsEnhance
 const gpsEnhancementss =  [1, 5, 10, 25, 50, 75, 100, 150, 250, 500, 750, 1000, 2500, 5000, 7500, 10000, 25000, 50000, 75000, 100000, 250000, 500000, 750000, 1000000, 2500000, 5000000, 7500000, 10000000, 25000000, 50000000, 75000000, 100000000, 250000000, 500000000, 750000000, 1000000000, 2500000000, 5000000000, 7500000000, 10000000000];
 const farmGPSEnhancements  = gpsEnhancementss[player.parking.level - 1] || gpsEnhancementss[gpsEnhancementss.length - 1];
     const gpsBonuss = player.level.gpsBonus * 1.00;   
+   const gpsBonusss = player.liveStream.totalEarnings * 0.001;  
+
 
 
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.gps * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.gpsMultiplier 
         * (1 + gpsBonus) 
-        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss;
+        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * gpsBonusss;
 }
 
 function getTotalClickValue() {
@@ -5165,13 +5258,16 @@ const farmClickMultipliersss = [1, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 1
     const farmClickBonusss = farmClickMultipliersss[player.nightClub.level - 1] || farmClickMultipliersss[farmClickMultipliersss.length - 1];     
            
     const gpsBonusss = player.level.clickBonus * 1.00; 
+
+const farmClickMultiplierssa = [1, 10, 25, 50, 75, 100, 200, 400, 600, 800, 1000, 2000, 4000, 6000, 8000, 10000, 20000, 40000, 60000, 80000, 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000, 2000000, 4000000, 6000000, 8000000, 10000000, 25000000, 50000000, 75000000, 100000000, 200000000];
+    const farmClickBonussa = farmClickMultiplierssa[player.liveStream.level - 1] || farmClickMultiplierssa[farmClickMultiplierssa.length - 1];
            
 
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.click * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.clickMultiplier 
         * petMultiplier 
         * (1 + dungeonBonus)  // 应用副本装备总加成（含职业乘数）
-        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus * farmClickBonusss * gpsBonusss; 
+        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus * farmClickBonusss * gpsBonusss * farmClickBonussa; 
 }
 
 
@@ -7906,6 +8002,7 @@ function formatTime(milliseconds) {
     autoConvertCurrency(); 
   gainCultivationExp();
  setInterval(calculateNightClubIncome, 1000);
+ setInterval(updateLiveStreamExperience, 1000);
   initAutoDecomposeUI();
 
     checkAutoBuy(); 
@@ -10732,7 +10829,7 @@ function updateFarmDisplay() {
             seedDiv.innerHTML = `
                 <div><strong>${seed.name}</strong></div>
                 <div>数量: ${count}</div>
-                <div>时间: ${formatTime(seed.growthTime)}</div>
+                <div>时间: ${formatTimeq(seed.growthTime)}</div>
             `;
             
             seedContainer.appendChild(seedDiv);
@@ -10760,7 +10857,7 @@ function openSeedSelection(fieldIndex) {
             seedDiv.innerHTML = `
                 <div><strong>${seed.name}</strong></div>
                 <div>数量: ${count}</div>
-                <div>时间: ${formatTime(seed.growthTime)}</div>
+                <div>时间: ${formatTimeq(seed.growthTime)}</div>
             `;
             
             seedDiv.onclick = () => plantSeed(fieldIndex, seed.id);
@@ -10952,7 +11049,7 @@ function dropSeedAfterDecompose() {
     }
 }
 // 时间格式化辅助函数
-function formatTime(seconds) {
+function formatTimeq(seconds) {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
@@ -10993,6 +11090,616 @@ function initFarmData() {
         player.farm.fields.push({ planted: false });
     }
 }
+const liveStreamSystem = {
+    level: 1,
+    exp: 0,
+    expToNextLevel: [1000, 5000, 7500, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 55000, 60000, 65000, 70000, 75000, 80000, 85000, 90000, 95000, 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000, 2500000, 5000000, 7500000, 10000000, 25000000, 50000000, 75000000, 100000000, 10000000000],
+    isLive: false,
+    viewers: [],
+    viewerCount: 0,
+    maxViewers: 10,
+    totalEarnings: 1000,
+    expMultiplier: 1,
+    lastUpdate: Date.now(),
+    aiMessages: [
+        "主播今天玩什么？",
+        "加油！支持主播！",
+        "这个游戏看起来好有趣",
+        "刚刚的打斗太精彩了！",
+        "主播技术真好",
+        "求教学怎么快速转生",
+        "关注了，下次还来",
+        "礼物已送上，继续加油",
+        "今天运气不错啊",
+        "这个装备怎么获得的？",
+        "6666666",
+        "我喜欢你主播",
+        "太强了",
+         "主播嫁给我",
+        "哈哈哈，这个操作笑死我了",
+        "主播多大了？",
+        "什么时候下次直播？",
+        "求背景音乐名字",
+        "画质好清晰啊",
+        "卡了吗？怎么不动了",
+        "第一次来看，感觉不错！",
+        "求问主播用的什么鼠标？",
+        "支持支持！打赏走一波",
+        "这个角色怎么加点？",
+        "新来的，关注了",
+        "背景音乐好好听！",
+        "刚刚那下没看清，能回放吗？",
+        "主播吃饭了吗",
+        "这游戏需要氪金吗？",
+        "太厉害了吧，学到了",
+        "卡了卡了，主播那边还好吗？",
+        "下次能玩无限升级吗？",
+        "礼物收到了吗？主播",
+        "666，必须录屏了",
+        "今天直播到几点呀？",
+        "新手能玩这个游戏吗？",
+        "主播加油，别慌！",
+        "求组队一起玩！",
+        "这个地图怎么解锁？",
+        "哈哈哈，主播被坑了",
+        "关注了，主播多更新",
+        "主播今天状态不错啊",
+        "网络有点卡，刷新试试",
+        "这个技能怎么放的？",
+        "刚刚那波失误有点可惜",
+        "求主播带飞！",
+        "这个游戏什么时候上线的？",
+        "主播累不累？歇会儿吧",
+        "新来的，求问这是什么游戏？",
+        "太精彩了，全程没快进",
+        "主播用的什么显卡？画质这么好",
+        "下次直播能提前说一声吗？",
+        "什么时候下次直播？",
+        "刚刚那下反应好快！",
+        "卡退了，重新进来了",
+        "求问这个游戏怎么下载？",
+        "主播技术比我朋友好多了",
+        "哈哈哈，主播的表情太逗了",
+        "这个游戏有手游吗？",
+        "主播快回复一下我的问题呀",
+        "网络怎么回事，老是卡顿",
+        "主播明天几点直播？",
+        "求教学怎么躲这个技能",
+        "这个游戏画质真不错",
+        "支持主播，会一直关注",
+        "主播用的什么耳机？",
+        "这个角色哪个职业最强？",
+        "新来的，求主播带一下",
+        "这个游戏需要什么配置？",
+        "背景音乐是什么歌？好熟悉",
+        "卡了，主播能等一下吗？",
+        "主播今天直播内容好丰富",
+        "求问怎么快速升级？",
+        "礼物已刷，主播看得到吗？",
+        "主播技术真的没话说，太强了",
+        "新来的，觉得主播很有趣",
+        "主播什么时候换游戏玩？",
+        "关注了，下次开播提醒我",
+        "支持主播，打赏不能少",
+        "网络恢复了吗？刚才好卡",
+        "求问这个游戏有攻略吗？",
+        "这个游戏多人玩吗？",
+        "关注了，主播要常开播哦",
+        "主播今天心情不错呀",
+        "新来的，求问主播常玩什么游戏？",
+        "主播技术比我想象中好太多",
+        "礼物送上，祝主播越来越好",
+        "卡了卡了，大家都卡吗？",
+        "主播明天还播这个游戏吗？",
+        "支持主播，会推荐朋友来看",
+        "关注了，主播多玩点新游戏",
+        "主播今天直播时长多久呀？",
+        "礼物已送，主播辛苦了",
+        "主播什么时候开粉丝群？",
+        "求问怎么获得金币快？",
+        "刚刚的打斗太精彩了！",
+        "支持主播，每天都来看",
+        "关注了，主播记得回关哦",
+        "关注了，下次还来",
+        "网络终于不卡了",
+        "今天运气不错啊",
+        "这个装备怎么获得的？",
+        "主播技术真的很专业",
+        "这个游戏有等级上限吗？",
+        "哈哈哈，这个操作笑死我了",
+        "支持主播，打赏走起",
+        "新来的，觉得直播很精彩",
+        "背景音乐是谁唱的",
+        "关注了，主播多搞点福利活动",
+        "主播今天吃的什么呀？",
+        "新来的，关注了不后悔",
+        "主播技术越来越好的",
+        "这个游戏看起来好有趣",
+        "刚刚的打斗太精彩了！",
+        "主播技术真好",
+        "求教学怎么快速转生",
+        "关注了，下次还来",
+        "礼物已送上，继续加油",
+        "今天运气不错啊",
+        "美女",
+        "支持主播，永远是粉丝",
+        "这个游戏怎么创建角色？",
+        "这个游戏有公会系统吗？",
+        "关注了，下次开播不见不散",
+        "求教学怎么放风筝",
+         "老公吃饭了吗",
+        "老婆吃饭了吗",
+        "牛逼",
+        "好厉害",
+       "CPDD",
+        "画质好清晰啊",
+        "主播我喜欢你！",
+        "你好菜啊",
+        "加油！支持主播！",
+        "这个游戏看起来好有趣",
+        "刚刚的打斗太精彩了！",
+        "网络又卡了，服了",
+        "支持主播，会一直陪伴",
+        "关注了，下次还来",
+        "礼物已送上，继续加油",
+        "这个游戏画面风格我喜欢",
+        "这个游戏怎么举报外挂？",
+        "主播下次能早点直播吗？",
+        "这个游戏有师徒系统吗？",
+        "哈哈哈，这个操作笑死我了",
+        "主播有女朋友吗？",
+        "什么时候下次直播？",
+        "求背景音乐名字",
+        "画质好清晰啊",
+        "卡了吗？怎么不动了",
+        "礼物送上，主播越来越火",
+        "加油！支持主播！",
+        "这个装备怎么镶嵌宝石？",
+        "新来的，关注了，主播多播哦",  
+        "晚安，先睡了",
+        "明天还直播吗？"
+    ],
+    aiNames: [
+        "闫闫", "花花", "茶茶", "鱼鱼", "通远","叶子", "沉鱼", "探探", "凡", "尝试", "胖大仙", "水芙蓉", "亲情相爱一家人", "伍思凯", "吖晴儿", 
+        "苏菲", "王荣", "瑶瑶", "悸声", "反骨仔", "冰糖红茶", "蝴蝶效应,", "悦悦", "老倪", "慕白", "轩辕", "阿孝", "yuan", "王北的北,", "我已经在拉扯了", "林贝", "慕白", "阿迪", "微软是你", "王汝刚", "刘禹锡", "艾夫华", "渥太华", "阿杰", "阿道夫", "豆腐花茜茜", "阿法和阿伟","峰", "好人", "奥格威", "阿睿", "星嗄","阿华田", "子女不能", "开膛手杰华", "埃弗阿福", "黑丝姐姐", "黑菲","爱喝牛奶", "骚粉", "王如玉", "血红女爵", "水果",
+        "萩", "我不高兴", "山麒麟", "管者", "阿斯巴甜","圣光", "征服他哥", "字画大师", "诗人睡睡", "孙国辉",
+        "君子不气", "空白", "香香", "浪荡丶", "啦喇菈辣","十分", "神烦狗", "张枫五", "偶见", "孙国伟",
+        "Tung", "迷雾", "源", "泯潮猫", "寻良","冰箭", "赵哥", "张德荣", "三国英", "清茶", 
+        "有意思", "非酋本酋", "肝双", "氪金佬", "舍尔", "赵哥帅", "张宝华", "祝福鱼", "珍贵仁",
+         "Cardiac", "战无极", "凹凸曼", "白饭鱼", "独钓寒江雪",
+        "锅巴", "花海", "怀安", "金刚骷髅娃", "锦瑟笙箫落",
+        "旧", "举着戒指对你笑i", "磊哥", "凛", "六号线",
+        "Numb", "柠檬妖精", "PoRo", "随风", "墨清",
+        "桃子姐姐", "温存i", "我叫MMT", "我呀我", "小末影", "风影", "笑气气", "炫月", "燁燁",
+        "一梦千年", "佳音如期", "功不唐捐", "卡子哥", "晨曦",
+        "帅到分手", "午夜飞升", "星君", "预言", "成",
+        "红尘", "幻月", "幻雪", "山与海", "虾仁哥哥",
+        "风之奇影", "爱上风", "Dddddddd", "珊迪", "木子升", "建议击毙", "潮起潮落", "风云祭", "100分",
+        "谷丶然", "无敌的话", "勿忘", "Rayn", "哈哈哈哈哈",
+        "钵钵鸡", "笑气气", "花海", "Æternø", "天赋与努力",
+        "晨落", "徒手", "柠檬", "余晖", "隐",
+        "D", "三都", "大白菜帮子", "佳南",  "休闲玩家"
+    ],
+    donationMessages: [
+        "送上小心心！",
+        "给你点鼓励！",
+        "支持主播！",
+        "继续加油！",
+        "小小礼物不成敬意",
+        "今天的表现太棒了！",
+        "值得鼓励！",
+        "希望主播越来越好",
+        "这是你应得的！",
+        "打赏一波，主播辛苦了！",
+        "希望越来越好，礼物支持",
+        "一点心意，买杯奶茶喝~！",
+        "看得尽兴，打赏表示",
+        "关注很久了，今天送个礼物",
+        "今天的直播超赞，打赏！",
+        "主播加油，礼物来了哦",
+        "小小礼物，不成敬意，继续加油",
+        "每天必看，今天打赏一下",
+        "这波太秀了，送礼物！",
+        "希望你一直播下去，礼物支持",
+        "主播辛苦了，送个小礼物",
+        "支持你到底，打赏一波",
+        "感谢带来欢乐，礼物请查收",
+        "主播越来越好了，送个礼物",
+        "今天看得过瘾，必须打赏",
+        "喜欢你的直播，送点心意",
+        "感谢分享，礼物送上！",
+        "这波操作值个礼物！",
+        "主播真棒，必须鼓励！",
+        "感谢你的直播陪伴"
+    ]
+};
+
+// 初始化直播系统
+function initLiveStreamSystem() {
+    if (!player.liveStream) {
+        player.liveStream = {
+            level: 1,
+            exp: 0,
+            totalEarnings: 1000,
+            isLive: false,
+            lastLiveStart: 0,
+            totalLiveTime: 0,
+            expMultiplier: 1,
+            viewers: [],
+            donationHistory: []
+        };
+    }
+}
+
+// 切换直播系统界面
+function toggleLiveStreamSystem() {
+    if (player.reincarnationCount < 500) {
+        alert("需要达到500转才能开启直播系统！");
+        return;
+    }
+    const overlay = document.getElementById('liveStreamSystemOverlay');
+    const ui = document.getElementById('liveStreamSystemUI');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        initLiveStreamSystem();
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateLiveStreamUI();
+    }
+}
+
+// 更新直播系统UI
+function updateLiveStreamUI() {
+    document.getElementById('liveStreamLevel').textContent = player.liveStream.level;
+    document.getElementById('liveStreamExp').textContent = Math.floor(player.liveStream.exp);
+    document.getElementById('liveStreamNextExp').textContent = liveStreamSystem.expToNextLevel[player.liveStream.level - 1] || 10000;
+    document.getElementById('totalLiveEarnings').textContent = (player.liveStream.totalEarnings/10).toFixed(0);
+    document.getElementById('liveViewerCount').textContent = player.liveStream.viewers.length;
+    
+    // 更新经验条
+    const expPercent = Math.min(100, (player.liveStream.exp / (liveStreamSystem.expToNextLevel[player.liveStream.level - 1] || 10000)) * 100);
+    document.getElementById('liveExpProgress').style.width = `${expPercent}%`;
+    
+    // 更新观众列表
+    const viewerList = document.getElementById('viewerList');
+    viewerList.innerHTML = '';
+    
+    if (player.liveStream.viewers.length === 0) {
+        viewerList.innerHTML = '<div style="text-align: center; color: #666; padding: 20px 0;">暂无观众</div>';
+    } else {
+        player.liveStream.viewers.forEach(viewer => {
+            const viewerElement = document.createElement('div');
+            viewerElement.style.marginBottom = '5px';
+            viewerElement.style.padding = '5px';
+            viewerElement.style.background = '#0a0a1a';
+            viewerElement.style.borderRadius = '3px';
+            viewerElement.innerHTML = `👤 ${viewer.name}`;
+            viewerList.appendChild(viewerElement);
+        });
+    }
+    
+    // 更新打赏记录
+    const donationHistory = document.getElementById('donationHistory');
+    donationHistory.innerHTML = '';
+    
+    if (player.liveStream.donationHistory.length === 0) {
+        donationHistory.innerHTML = '<div style="text-align: center; color: #666; padding: 20px 0;">暂无打赏记录</div>';
+    } else {
+        // 只显示最近10条记录
+        const recentDonations = player.liveStream.donationHistory.slice(-10);
+        recentDonations.forEach(donation => {
+            const donationElement = document.createElement('div');
+            donationElement.style.marginBottom = '5px';
+            donationElement.style.padding = '5px';
+            donationElement.style.background = '#0a0a1a';
+            donationElement.style.borderRadius = '3px';
+            donationElement.innerHTML = `🎁 ${donation.viewer} 打赏了 ${donation.amount} 朵玫瑰花 - ${donation.message}`;
+            donationHistory.appendChild(donationElement);
+        });
+    }
+    
+    // 更新直播状态
+    const liveStatus = document.getElementById('liveStatus');
+    const startLiveBtn = document.getElementById('startLiveBtn');
+    
+    if (player.liveStream.isLive) {
+        liveStatus.innerHTML = `<div style="font-size: 24px; color: #ff00ff;">直播中</div><div>已直播: ${formatTime(Date.now() - player.liveStream.lastLiveStart)}</div>`;
+        startLiveBtn.textContent = '结束直播';
+        startLiveBtn.style.background = '#f44336';
+    } else {
+        liveStatus.textContent = '直播未开始';
+        startLiveBtn.textContent = '开始直播';
+        startLiveBtn.style.background = '#ff00ff';
+    }
+}
+
+// 开始直播
+function startLiveStream() {
+    if (player.liveStream.isLive) {
+        stopLiveStream();
+        return;
+    }
+    
+    player.liveStream.isLive = true;
+    player.liveStream.lastLiveStart = Date.now();
+    player.liveStream.viewers = [];
+    
+    // 添加初始观众
+    addViewers(5);
+    
+    // 开始观众和互动定时器
+    player.liveStream.viewerInterval = setInterval(updateViewers, 10000); // 每10秒更新观众
+    player.liveStream.interactionInterval = setInterval(generateInteractions, 10000); // 每10秒生成互动
+   
+    updateLiveStreamUI();
+    addDanmakuMessage("系统", "直播开始了！欢迎大家来到直播间！", "system");
+    
+    logAction("开始直播", "success");
+}
+
+// 停止直播
+function stopLiveStream() {
+    if (!player.liveStream.isLive) return;
+    
+    player.liveStream.isLive = false;
+    const liveTime = Date.now() - player.liveStream.lastLiveStart;
+    player.liveStream.totalLiveTime += liveTime;
+    
+    // 计算经验
+    const expGain = Math.floor(liveTime / 1000) * player.liveStream.expMultiplier;
+    player.liveStream.exp += expGain;
+    
+    // 检查升级
+    checkLiveLevelUp();
+    
+    // 清除定时器
+    clearInterval(player.liveStream.viewerInterval);
+    clearInterval(player.liveStream.interactionInterval);
+    
+    // 清空观众
+    player.liveStream.viewers = [];
+    
+    updateLiveStreamUI();
+    addDanmakuMessage("系统", "直播已结束，感谢观看！", "system");
+    
+    logAction(`结束直播，获得 ${expGain} 直播经验`, "success");
+}
+
+// 推广流量
+function boostLiveStream() {
+    if (player.nightClub.starCoins < 1000) {
+        logAction("星币不足！", "error");
+        return;
+    }
+    
+    player.nightClub.starCoins -= 1000;
+    player.liveStream.expMultiplier = 2;
+    
+    // 设置1小时的加速效果
+    player.liveStream.boostEndTime = Date.now() + 1 * 60 * 60 * 1000;
+    
+    // 添加更多观众
+    addViewers(5);
+    
+    updateLiveStreamUI();
+    addDanmakuMessage("系统", "主播使用了流量推广，直播间人气上升！", "system");
+    
+    logAction("使用流量推广，直播经验获取速度提升2倍，持续1小时", "success");
+}
+
+// 添加观众
+function addViewers(count) {
+    if (!player.liveStream.isLive) return;
+    
+    for (let i = 0; i < count; i++) {
+        if (player.liveStream.viewers.length >= liveStreamSystem.maxViewers) break;
+        
+        const viewerName = liveStreamSystem.aiNames[Math.floor(Math.random() * liveStreamSystem.aiNames.length)];
+        player.liveStream.viewers.push({
+            id: Date.now() + Math.random(),
+            name: viewerName,
+            joinTime: Date.now(),
+            activity: Math.random() // 活跃度
+        });
+    }
+    
+    updateLiveStreamUI();
+}
+
+// 更新观众
+function updateViewers() {
+    if (!player.liveStream.isLive) return;
+    
+    // 随机有观众离开
+    if (player.liveStream.viewers.length > 0 && Math.random() < 0.4) {
+        const leaveIndex = Math.floor(Math.random() * player.liveStream.viewers.length);
+        const leaveViewer = player.liveStream.viewers[leaveIndex];
+        player.liveStream.viewers.splice(leaveIndex, 1);
+        
+        addDanmakuMessage("系统", `${leaveViewer.name} 离开了直播间`, "system");
+    }
+    
+    // 随机有新观众加入
+    if (player.liveStream.viewers.length < liveStreamSystem.maxViewers && Math.random() < 0.6) {
+        addViewers(1);
+        const newViewer = player.liveStream.viewers[player.liveStream.viewers.length - 1];
+        addDanmakuMessage("系统", `${newViewer.name} 进入了直播间`, "system");
+    }
+    
+    updateLiveStreamUI();
+}
+
+// 生成互动消息
+function generateInteractions() {
+    if (!player.liveStream.isLive || player.liveStream.viewers.length === 0) return;
+    
+    // 随机生成1-4条互动消息
+    const messageCount = Math.floor(Math.random() * 4) + 1;
+    
+    for (let i = 0; i < messageCount; i++) {
+        const viewerIndex = Math.floor(Math.random() * player.liveStream.viewers.length);
+        const viewer = player.liveStream.viewers[viewerIndex];
+        
+        const message = liveStreamSystem.aiMessages[Math.floor(Math.random() * liveStreamSystem.aiMessages.length)];
+        addDanmakuMessage(viewer.name, message, "viewer");
+        
+        // 有小概率打赏
+        if (Math.random() < 0.1) {
+            generateDonation(viewer);
+        }
+    }
+}
+
+// 生成打赏
+function generateDonation(viewer) {
+    // 打赏金额基于直播等级
+    const baseAmount = player.liveStream.level * 10;
+    const amount = Math.floor(baseAmount * (0.5 + Math.random() * 10.5));
+    
+    player.items.rose += amount;
+    player.liveStream.totalEarnings += amount;
+    
+    const message = liveStreamSystem.donationMessages[Math.floor(Math.random() * liveStreamSystem.donationMessages.length)];
+    
+    // 记录打赏
+    player.liveStream.donationHistory.push({
+        viewer: viewer.name,
+        amount: amount,
+        message: message,
+        time: Date.now()
+    });
+    
+    addDanmakuMessage("系统", `🎉 ${viewer.name} 打赏了 ${amount} 朵玫瑰花！${message}`, "donation");
+    updateLiveStreamUI();
+    updateDisplay();
+}
+
+// 发送弹幕
+function sendDanmaku() {
+    const input = document.getElementById('danmakuInput');
+    const message = input.value.trim();
+    
+    if (message === '') return;
+    
+    addDanmakuMessage(player.name, message, "player");
+    input.value = '';
+    
+    // 玩家发送消息后，AI观众有概率回应
+    if (player.liveStream.viewers.length > 0 && Math.random() < 0.5) {
+        setTimeout(() => {
+            const viewerIndex = Math.floor(Math.random() * player.liveStream.viewers.length);
+            const viewer = player.liveStream.viewers[viewerIndex];
+            
+            let response;
+            if (message.includes('?')) {
+                response = "这个问题问得好！";
+            } else if (message.includes('谢谢') || message.includes('感谢')) {
+                response = "不客气~";
+            } else {
+                response = "同意主播！" ;
+            }
+            
+            addDanmakuMessage(viewer.name, response, "viewer");
+        }, 1000 + Math.random() * 2000);
+    }
+}
+
+// 添加弹幕消息
+function addDanmakuMessage(sender, message, type) {
+    const container = document.getElementById('danmakuContainer');
+    const messageElement = document.createElement('div');
+    messageElement.className = 'danmaku-message';
+    
+    // 根据消息类型设置样式
+    switch(type) {
+        case "system":
+            messageElement.style.color = '#ff00ff';
+            break;
+        case "donation":
+            messageElement.style.color = '#FFD700';
+            messageElement.style.fontWeight = 'bold';
+            break;
+        case "player":
+            messageElement.style.color = '#4CAF50';
+            break;
+        default:
+            messageElement.style.color = '#ccc';
+    }
+    
+    messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    container.appendChild(messageElement);
+    
+    // 自动滚动到底部
+    container.scrollTop = container.scrollHeight;
+    
+    // 限制消息数量
+    if (container.children.length > 100) {
+        container.removeChild(container.children[0]);
+    }
+}
+
+// 检查直播等级提升
+function checkLiveLevelUp() {
+    const nextLevelExp = liveStreamSystem.expToNextLevel[player.liveStream.level - 1] || 10000000000;
+    
+    if (player.liveStream.exp >= nextLevelExp) {
+        player.liveStream.level++;
+        player.liveStream.exp -= nextLevelExp;
+        
+        // 增加最大观众数
+        liveStreamSystem.maxViewers = 10 + Math.floor(player.liveStream.level * 5);
+        
+        addDanmakuMessage("系统", `恭喜！直播等级提升到 ${player.liveStream.level} 级！`, "system");
+        logAction(`直播等级提升到 ${player.liveStream.level} 级！`, "success");
+        
+        // 递归检查是否还能升级
+        checkLiveLevelUp();
+    }
+    
+    updateLiveStreamUI();
+}
+
+// 格式化时间
+function formatTime(ms) {
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    
+    return `${hours.toString().padStart(2, '0')}:${(minutes % 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
+}
+
+// 在游戏主循环中更新直播经验
+function updateLiveStreamExperience() {
+    if (player.liveStream && player.liveStream.isLive) {
+        const now = Date.now();
+        const elapsed = now - player.liveStream.lastUpdate;
+        player.liveStream.lastUpdate = now;
+        
+        // 检查加速是否结束
+        if (player.liveStream.boostEndTime && now > player.liveStream.boostEndTime) {
+            player.liveStream.expMultiplier = 1;
+            player.liveStream.boostEndTime = null;
+            addDanmakuMessage("系统", "流量推广效果已结束", "system");
+        }
+        
+        // 每秒获得1点经验乘以倍率
+        const expGain = (elapsed / 1000) * player.liveStream.expMultiplier;
+        player.liveStream.exp += expGain;
+        
+        // 检查升级
+        checkLiveLevelUp();
+        
+        // 更新UI
+        updateLiveStreamUI();
+    }
+}
+
+
+
+
 const worldZones = [
     {
         id: 'beginner',
@@ -13665,7 +14372,7 @@ const nightClubConfig = {
             name: "哈利波特魔法夜", 
             description: "分院帽体验，黄油啤酒特供，魔杖决斗大赛。收益：经验获取6.0倍！", 
             effect: { expMultiplier: 6.0, duration: 30 },
-            cost: 70 
+            cost: 200 
         },
         { 
             name: "夏日冲浪派对", 
@@ -13677,7 +14384,7 @@ const nightClubConfig = {
             name: "爵士灵魂之夜", 
             description: "蓝调爵士乐队演出，复古唱片点播，经典马提尼。收益：经验获取4.8倍+金币收益2.1倍！", 
             effect: { expMultiplier: 4.8, coinsMultiplier: 2.1, duration: 50 },
-            cost: 140 
+            cost: 200 
         },
      { 
             name: "万圣惊魂夜", 
@@ -13695,13 +14402,13 @@ const nightClubConfig = {
             name: "电子竞技联赛", 
             description: "大型赛事直播，电竞椅专属区，游戏主题特饮。收益：经验获取4.4倍！", 
             effect: { expMultiplier: 4.4, duration: 50 },
-            cost: 80 
+            cost: 150 
         },
      { 
             name: "极限运动嘉年华", 
             description: "室内滑板表演区，攀岩墙挑战，能量饮料赞助与运动明星见面会。收益：经验获取5.9倍+金币收益2.4倍！", 
             effect: { expMultiplier: 5.9, coinsMultiplier: 2.4, duration: 45 },
-            cost: 150 
+            cost: 200 
         },
      { 
             name: "白色情人节", 
@@ -13743,7 +14450,7 @@ const nightClubConfig = {
             name: "复古迪斯科之夜", 
             description: "70年代复古装扮派对，disco球与霓虹灯装饰，经典老歌串烧狂欢。收益：经验1.8倍+金币1.6倍！", 
             effect: { expMultiplier: 1.8, coinsMultiplier: 1.6, duration: 45 },
-            cost: 100 
+            cost: 150 
         },
         { 
             name: "巨星闪耀夜", 
