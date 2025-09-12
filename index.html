@@ -1,4 +1,5 @@
-﻿<html>
+﻿<!DOCTYPE html>
+<html>
 <head>
     <meta charset="UTF-8">
     <title>金币冒险者 - 完整版</title>
@@ -43,6 +44,15 @@
        .yeyu13 { color: #C0C0C0; border-left: 4px solid #C0C0C0; }
        .yeyu14 { color: #8A2BE5; border-left: 4px solid #8A2BE5; }
          .yeyu15 { color: #FF4530; border-left: 4px solid #FF4530; }
+      .yeyu16 { color: #C0C0C0; border-left: 4px solid #C0C0C0; }
+       .yeyu17 { color: #8A2BE5; border-left: 4px solid #8A2BE5; }
+         .yeyu18 { color: #FF4530; border-left: 4px solid #FF4530; }
+        .yeyu19 { color: #4B0082; border-left: 4px solid #4B0082; }
+         .yeyu20 { color: #FFD770; border-left: 4px solid #FFD770; }
+         .yeyu21 { color: #8B0000; border-left: 4px solid #8B0000; }
+       .yeyu22 { color: #C0C0C0; border-left: 4px solid #C0C0C0; }
+       .yeyu23 { color: #8A2BE5; border-left: 4px solid #8A2BE5; }
+         .yeyu24 { color: #FF4530; border-left: 4px solid #FF4530; }
    .ultimate2 { color: #00CED1; border-left: 4px solid #00CED1; }
 .ultimate3 { color: #8A2BE2; border-left: 4px solid #8A2BE2; } 
 .ultimate4 { color: #FFD700; border-left: 4px solid #FFD700; } 
@@ -863,6 +873,46 @@ button:hover {
     background: #9C27B0 !important;
     font-weight: bold;
 }
+/* 添加弹幕动画效果 */
+@keyframes danmakuMove {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+.danmaku {
+    animation: danmakuMove linear forwards;
+   pointer-events: none;
+}
+/* 添加一些动画效果 */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+#giftBoxBtn {
+    animation: pulse 2s infinite;
+    transition: all 0.3s;
+}
+
+#giftBoxBtn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(255, 94, 98, 0.5);
+}
+
+#boxInner {
+    cursor: pointer;
+    transition: transform 1s;
+}
+
+#giftBoxModal div {
+    color: #ffffff;
+}
+
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -880,7 +930,7 @@ button:hover {
             <h4>游戏公告介绍</h4>
             <p>QQ群：864788026  有问题可以进群问</p>
             <p>1. 转生系统：玩家可以通过转生重置游戏进度，并获得转生币，用于提升转生属性（转生要求必须普通装备10000+转生次数*20）。</p>
-            <p>   转生币等级兑换比例：普通10000=1  稀有5000=1 史诗1000=1 传说300=1 远古200=1 神圣125=1 奥术100=1 天空33=1 地狱20=1 星界12.5=1  原初10=1 超凡3=1 量子2=1 究极1=1  混沌1=3 永恒1=5 虚无1=10 创世1=20 神域1=30 终焉1=40 星辰1=50 起源1=60 时光1=70 造物1=80 银河1=90 天界1=100 星云1=200 星河1=300 纪元1=400 鸿蒙1=500 星穹1=600 亘古1=700 万象1=800 太虚1=900 九垓1=1000 </p>
+            <p>   转生币等级兑换比例：普通10000=1  稀有5000=1 史诗1000=1 传说300=1 远古200=1 神圣125=1 奥术100=1 天空33=1 地狱20=1 星界12.5=1  原初10=1 超凡3=1 量子2=1 究极1=1  混沌1=3 永恒1=5 虚无1=10 创世1=20 神域1=30 终焉1=40 星辰1=50 起源1=60 时光1=70 造物1=80 银河1=90 天界1=100 星云1=200 星河1=300 纪元1=400 鸿蒙1=500 星穹1=600 亘古1=700 万象1=800 太虚1=900 九垓1=1000  穿梭1=2000  恒古1=3000 虚空1=4000 蔚来1=5000 神罚1=6000  时空1=7000  未来1=8000  从前1=9000   星澜1=10000</p>
             <p>2. 宠物系统：玩家可以通过升级宠物来提升装备属性加成。</p>
             <p>3. 离线系统：现在离线也能奥秘经验和银行和股票，彩票更新，升级装备。</p>
             <p>4. 新增股票系统，显示实时股价和持有情况，每10分钟股价随机波动±1%~10%，离线时间自动计算股价波动，所有交易使用转生币结算，实时显示价格变化趋势</p>
@@ -926,6 +976,7 @@ button:hover {
     <div id="gameLogPage3" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>更新日志</h4>
+            <p>2025/9/12 : 直播：盲盒出的礼物不加玫瑰花，只加粉丝数量，更新加了新3个宝箱9装备20成就3宠物3称号。</p>
             <p>2025/9/11 : 修复农田和离线时间异常显示，  增加直播：500转开启，每级增加点击伤害，粉丝数增加GPS加成，流量是获得多倍经验（每次进游戏建议结束直播在重新开播，不这样可能没礼物）（第一次加载记得刷新一下页面，第一次直播经验显示异常，刷新后正常）</p>
             <p>2025/9/10 : 玩家等级：50转开启，每一级增加10倍效果。世界地图：100转开启：打怪经验可以给玩家升级每次生成怪物消耗1星币（后续会加掉落材料）（如果属性显示低打一下打怪模式）</p>
             <p>2025/9/9 : 夜店：600转开启，生产星币，获得的星币可以兑换藏宝图或者升级（后续会加入更多东西兑换）已修复</p>
@@ -966,6 +1017,9 @@ button:hover {
     <div class="currency">灵髓石: <span id="lingtone">0</span></div>
     <div class="currency">幻空石: <span id="huangtone">0</span></div>
     <div class="currency">冥源石: <span id="mingtone">0</span></div>
+    <div class="currency">虚空石: <span id="xutong">0</span></div>
+    <div class="currency">时空石: <span id="shitone">0</span></div>
+    <div class="currency">未来石: <span id="weitone">0</span></div>
     <div class="currency">转生币: <span id="reincarnationCoin">0</span></div>
     <div>每秒金币（GPS）: <span id="gps">1</span></div>
     <div>点击收益: <span id="clickValue">1</span></div>
@@ -1544,6 +1598,9 @@ button:hover {
         <button onclick="buyChest(10)">星云宝箱（1灵髓石）</button>
         <button onclick="buyChest(11)">鸿蒙宝箱（1幻空石）</button>
         <button onclick="buyChest(12)">太虚宝箱（1冥源石）</button>
+        <button onclick="buyChest(13)">虚空宝箱（1虚空石）</button>
+        <button onclick="buyChest(14)">时空宝箱（1时空石）</button>
+        <button onclick="buyChest(15)">未来宝箱（1未来石）</button>
      <button onclick="buyMaterialChest()">材料宝箱（<span id="materialChestCost">1</span>钻石）</button>
     <button onclick="buyTechniqueChest()">功法秘籍宝箱（<span id="techniqueChestCost">1</span>转生币）</button>
     </div>
@@ -1641,6 +1698,9 @@ button:hover {
         <button id="autoChest10" class="auto-buy-btn" onclick="toggleAutoBuy(10)">星云宝箱自动购买：关闭</button>
         <button id="autoChest11" class="auto-buy-btn" onclick="toggleAutoBuy(11)">鸿蒙宝箱自动购买：关闭</button>
         <button id="autoChest12" class="auto-buy-btn" onclick="toggleAutoBuy(12)">太虚宝箱自动购买：关闭</button>
+        <button id="autoChest13" class="auto-buy-btn" onclick="toggleAutoBuy(13)">虚空宝箱自动购买：关闭</button>
+        <button id="autoChest14" class="auto-buy-btn" onclick="toggleAutoBuy(14)">时空宝箱自动购买：关闭</button>
+        <button id="autoChest15" class="auto-buy-btn" onclick="toggleAutoBuy(15)">未来宝箱自动购买：关闭</button>
         <button id="autoMaterialChest" class="auto-buy-btn" onclick="toggleAutoBuyMaterialChest()">材料宝箱自动购买：关闭</button>
         <button id="autoTechniqueChest" class="auto-buy-btn" onclick="toggleAutoBuyTechniqueChest()">功法秘籍宝箱自动购买：关闭</button>
     </div>
@@ -1661,6 +1721,9 @@ button:hover {
         <button id="autoConvertHundunstone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('hundunstone')">混沌石自动兑换：关闭</button>
         <button id="autoConvertLingtone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('lingtone')">灵髓石自动兑换：关闭</button>
         <button id="autoConvertHuangtone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('huangtone')">幻空石自动兑换：关闭</button>
+        <button id="autoConvertMingtone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('mingtone')">冥源石自动兑换：关闭</button>
+        <button id="autoConvertXutong" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('xutong')">虚空石自动兑换：关闭</button>
+        <button id="autoConvertShitone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('shitone')">时空石自动兑换：关闭</button>
     </div>
     <div style="text-align: center; margin-top: 15px;">
         <button onclick="toggleAutoConvertUI()" style="background: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">关闭</button>
@@ -2587,15 +2650,37 @@ button:hover {
     <div style="margin-bottom: 20px; text-align: center;">
         <button id="startLiveBtn" onclick="startLiveStream()" style="background: #ff00ff; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">开始直播</button>
         <button id="boostLiveBtn" onclick="boostLiveStream()" style="background: #2196F3; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">推广流量 (1000星币)</button>
+        <button id="giftBoxBtn" onclick="openGiftBox()" style="background: linear-gradient(to right, #ff9966, #ff5e62); color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px; box-shadow: 0 4px 8px rgba(255, 94, 98, 0.4);">盲盒宝箱</button>
     </div>
     
     <!-- 直播内容区域 -->
     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
         <!-- 直播窗口 -->
         <div style="background: #000; border-radius: 8px; overflow: hidden; position: relative;">
-            <div id="liveStreamVideo" style="height: 300px; background: linear-gradient(to bottom, #1a1a2a, #0f0f23); display: flex; justify-content: center; align-items: center; color: #aaa;">
-                <div id="liveStatus" style="text-align: center;">直播未开始</div>
-            </div>
+           <!-- 在直播窗口添加弹幕容器 -->
+<div id="liveStreamVideo" style="height: 300px; background: linear-gradient(to bottom, #1a1a2a, #0f0f23); position: relative; overflow: hidden;">
+    <div id="liveStatus" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #aaa; text-align: center; z-index: 1;">
+        直播未开始
+    </div>
+    <div id="danmakuContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none;"></div>
+</div>
+
+<!-- 在直播控制区域添加弹幕控制 -->
+<div style="margin-top: 10px; display: flex; justify-content: space-between;">
+    <div>
+        <label>
+            <input type="checkbox" id="danmakuToggle" checked> 显示弹幕
+        </label>
+        <label style="margin-left: 10px;">
+            速度: <input type="range" id="danmakuSpeed" min="1" max="10" value="5">
+        </label>
+    </div>
+    <div>
+        <label>
+            密度: <input type="range" id="danmakuDensity" min="1" max="10" value="3">
+        </label>
+    </div>
+</div>
             <div style="padding: 10px; background: #1a1a2a;">
                 <h3 style="margin: 0; color: #ff00ff;">我的直播间</h3>
                 <div style="display: flex; align-items: center; margin-top: 5px;">
@@ -2608,7 +2693,7 @@ button:hover {
         <!-- 观众列表 -->
         <div style="background: #1a1a2a; border-radius: 8px; padding: 15px;">
             <h3 style="color: #ff00ff; margin-top: 0;">在线观众</h3>
-            <div id="viewerList" style="max-height: 200px; overflow-y: auto;">
+            <div id="viewerList" style="max-height: 320px; overflow-y: auto;">
                 <div style="text-align: center; color: #666; padding: 20px 0;">暂无观众</div>
             </div>
         </div>
@@ -2617,7 +2702,7 @@ button:hover {
     <!-- 弹幕区域 -->
     <div style="margin-top: 20px; background: #1a1a2a; border-radius: 8px; padding: 15px;">
         <h3 style="color: #ff00ff; margin-top: 0;">弹幕互动</h3>
-        <div id="danmakuContainer" style="height: 200px; overflow-y: auto; background: #0a0a1a; border-radius: 5px; padding: 10px; margin-bottom: 10px;">
+        <div id="danmakuContainerq" style="height: 200px; overflow-y: auto; background: #0a0a1a; border-radius: 5px; padding: 10px; margin-bottom: 10px;">
             <div class="danmaku-message">欢迎来到直播间！发送消息与其他观众互动吧！</div>
         </div>
         <div style="display: flex;">
@@ -2631,6 +2716,47 @@ button:hover {
         <h3 style="color: #ff00ff; margin-top: 0;">打赏记录</h3>
         <div id="donationHistory" style="max-height: 150px; overflow-y: auto;">
             <div style="text-align: center; color: #666; padding: 20px 0;">暂无打赏记录</div>
+        </div>
+    </div>
+</div>
+<!-- 盲盒宝箱模态框 -->
+<div id="giftBoxModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
+    <div style="background: #1a1a2a; border-radius: 15px; padding: 30px; width: 80%; max-width: 600px; text-align: center; border: 3px solid #ff9966; box-shadow: 0 0 30px rgba(255, 153, 102, 0.6);">
+        <h2 style="color: #ff9966; margin-top: 0;">神秘盲盒宝箱</h2>
+        <p style="color: #ccc;">花费 <span style="color: #2196F3; font-weight: bold;">500星币</span> 开启盲盒，有机会获得超值礼物！</p>
+        
+        <div id="giftBox" style="position: relative; width: 200px; height: 200px; margin: 20px auto; perspective: 1000px;">
+            <div id="boxInner" style="position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 1s;">
+                <div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: linear-gradient(135deg, #ff9966, #ff5e62); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: white; font-weight: bold; box-shadow: 0 10px 20px rgba(0,0,0,0.3);">
+                    <div style="text-align: center;">
+                        <div style="font-size: 40px;">🎁</div>
+                        <div>点击开启</div>
+                    </div>
+                </div>
+                <div id="giftResult" style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: linear-gradient(135deg, #5c6bc0, #3949ab); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: white; font-weight: bold; transform: rotateY(180deg); flex-direction: column; padding: 20px; box-sizing: border-box;">
+                    <div id="giftIcon" style="font-size: 50px; margin-bottom: 15px;">🎁</div>
+                    <div id="giftName" style="font-size: 24px; margin-bottom: 10px;">未知礼物</div>
+                    <div id="giftValue" style="font-size: 20px;">价值: 0 玫瑰花</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="drawGift()" style="background: linear-gradient(to right, #ff9966, #ff5e62); color: white; border: none; padding: 10px 30px; border-radius: 30px; cursor: pointer; font-size: 18px; font-weight: bold; box-shadow: 0 4px 8px rgba(255, 94, 98, 0.4);">开启盲盒 (500✨)</button>
+            <button onclick="closeGiftBox()" style="background: #555; color: white; border: none; padding: 10px 30px; border-radius: 30px; cursor: pointer; font-size: 18px; margin-left: 15px;">关闭</button>
+        </div>
+        
+        <div style="margin-top: 30px; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px;">
+            <h3 style="color: #ff9966; margin-top: 0;">奖品概率</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; text-align: left;">
+                <div><span style="color: #4CAF50;">鲜花:</span> 70% (10,000)</div>
+                <div><span style="color: #2196F3;">墨镜:</span> 19.889% (25,000)</div>
+                <div><span style="color: #FFC107;">礼花筒:</span> 7% (50,000)</div>
+                <div><span style="color: #E91E63;">比心兔兔:</span> 3% (100,000)</div>
+                <div><span style="color: #9C27B0;">热气球:</span> 0.1% (520,000)</div>
+                <div><span style="color: #FF5722;">跑车:</span> 0.01% (1,200,000)</div>
+                <div><span style="color: #00BCD4;">嘉年华:</span> 0.001% (2,800,000)</div>
+            </div>
         </div>
     </div>
 </div>
@@ -2743,6 +2869,9 @@ button:hover {
     lingtone: 0,
     huangtone: 0,
     mingtone: 0,
+    xutong: 0,
+    shitone: 0,
+    weitone: 0,
     reincarnationCoin: 0,
     reincarnationCount: 0,
     equipment: [],
@@ -2771,7 +2900,8 @@ liveStream: {
             totalLiveTime: 0,
             expMultiplier: 1,
             viewers: [],
-            donationHistory: []
+            donationHistory: [],
+           lastDanmaku: null
         },
 level: {
     current: 1,
@@ -2964,8 +3094,10 @@ gems: {
          yuyu2: { level: 0, cost: 1, multiplier: 39062.50 },   
               yuyu3: { level: 0, cost: 1, multiplier: 195312.50 },
          yuyu4: { level: 0, cost: 1, multiplier: 976562.50 },
-              yuyu5: { level: 0, cost: 1, multiplier: 5882812.50 }
-   
+              yuyu5: { level: 0, cost: 1, multiplier: 5882812.50 },
+              yuyu6: { level: 0, cost: 1, multiplier: 29414062.50 },
+         yuyu7: { level: 0, cost: 1, multiplier: 147070312.50 },
+              yuyu8: { level: 0, cost: 1, multiplier: 735351562.50 }   
     },
     dungeonEquipment: [],
      techniques: {}, 
@@ -3027,6 +3159,15 @@ gems: {
     "first_yeyu13": false,
     "first_yeyu14": false,
     "first_yeyu15": false,
+    "first_yeyu16": false,
+    "first_yeyu17": false,
+    "first_yeyu18": false,
+    "first_yeyu19": false,
+    "first_yeyu20": false,
+    "first_yeyu21": false,
+    "first_yeyu22": false,
+    "first_yeyu23": false,
+    "first_yeyu24": false,
     "common_chest_100": false,
     "common_chest_10000": false,
     "common_chest_1000000": false,
@@ -3087,6 +3228,21 @@ gems: {
     "yeyu5_chest_1000000": false,
     "yeyu5_chest_10000000": false,
     "yeyu5_chest_100000000": false,
+    "yeyu6_chest_100": false,
+    "yeyu6_chest_10000": false,
+    "yeyu6_chest_1000000": false,
+    "yeyu6_chest_10000000": false,
+    "yeyu6_chest_100000000": false,
+    "yeyu7_chest_100": false,
+    "yeyu7_chest_10000": false,
+    "yeyu7_chest_1000000": false,
+    "yeyu7_chest_10000000": false,
+    "yeyu7_chest_100000000": false,
+    "yeyu8_chest_100": false,
+    "yeyu8_chest_10000": false,
+    "yeyu8_chest_1000000": false,
+    "yeyu8_chest_10000000": false,
+    "yeyu8_chest_100000000": false,
     "max_stage_10": false,
     "max_stage_30": false,
     "max_stage_60": false,
@@ -3139,6 +3295,15 @@ gems: {
     "yuyu5_10": false,
     "yuyu5_50": false,
     "yuyu5_100": false,
+    "yuyu6_10": false,
+    "yuyu6_50": false,
+    "yuyu6_100": false,
+    "yuyu7_10": false,
+    "yuyu7_50": false,
+    "yuyu7_100": false,
+    "yuyu8_10": false,
+    "yuyu8_50": false,
+    "yuyu8_100": false,
 
     // 新增魂环成就状态
     "year1_10": false,
@@ -3328,7 +3493,7 @@ gems: {
       },
             actionLogs: [], 
             goldLogs: [],
-            autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false], 
+            autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], 
             autoBuySpeedBoost: false,
             onlineBoostEnabled: false,
             autoBuyMaterialChest: false, 
@@ -3450,7 +3615,15 @@ gems: {
     "yeyu13": { gpsMultiplier: 4.30, description: "获得万象装备，GPS +430%" },
     "yeyu14": { gpsMultiplier: 4.40, description: "获得太虚装备，GPS +440%" },
     "yeyu15": { gpsMultiplier: 4.50, description: "获得九垓装备，GPS +450%" },
- 
+    "yeyu16": { gpsMultiplier: 4.60, description: "获得穿梭装备，GPS +460%" },
+    "yeyu17": { gpsMultiplier: 4.70, description: "获得恒古装备，GPS +470%" },
+    "yeyu18": { gpsMultiplier: 4.80, description: "获得虚空装备，GPS +480%" },    
+     "yeyu19": { gpsMultiplier: 4.90, description: "获得蔚来装备，GPS +490%" },
+    "yeyu20": { gpsMultiplier: 5.00, description: "获得神罚装备，GPS +500%" },
+    "yeyu21": { gpsMultiplier: 5.10, description: "获得时空装备，GPS +510%" },    
+    "yeyu22": { gpsMultiplier: 5.20, description: "获得未来装备，GPS +520%" },
+    "yeyu23": { gpsMultiplier: 5.30, description: "获得从前装备，GPS +530%" },
+    "yeyu24": { gpsMultiplier: 5.40, description: "获得星澜装备，GPS +540%" },    
     // 新增成就奖励
     "common_chest_100": { gpsMultiplier: 0.10, description: "购买普通宝箱总数达到100个，GPS +10%" },
     "common_chest_10000": { gpsMultiplier: 0.20, description: "购买普通宝箱总数达到1万个，GPS +20%" },
@@ -3492,26 +3665,41 @@ gems: {
     "yeyu1_chest_1000000": { gpsMultiplier: 2.30, description: "购买星辰宝箱总数达到100万个，GPS +230%" },
     "yeyu1_chest_10000000": { gpsMultiplier: 3.30, description: "购买星辰宝箱总数达到1000万个，GPS +330%" },
     "yeyu1_chest_100000000": { gpsMultiplier: 5.30, description: "购买星辰宝箱总数达到1亿个，GPS +530%" },
-    "yeyu2_chest_100": { gpsMultiplier: 0.70, description: "购买银河宝箱总数达到100个，GPS +90%" },
-    "yeyu2_chest_10000": { gpsMultiplier: 1.40, description: "购买银河宝箱总数达到1万个，GPS +160%" },
-    "yeyu2_chest_1000000": { gpsMultiplier: 2.20, description: "购买银河宝箱总数达到100万个，GPS +240%" },
-    "yeyu2_chest_10000000": { gpsMultiplier: 3.20, description: "购买银河宝箱总数达到1000万个，GPS +340%" },
-    "yeyu2_chest_100000000": { gpsMultiplier: 5.20, description: "购买银河宝箱总数达到1亿个，GPS +540%" },
-        "yeyu3_chest_100": { gpsMultiplier: 0.70, description: "购买星云宝箱总数达到100个，GPS +100%" },
-    "yeyu3_chest_10000": { gpsMultiplier: 1.40, description: "购买星云宝箱总数达到1万个，GPS +170%" },
-    "yeyu3_chest_1000000": { gpsMultiplier: 2.20, description: "购买星云宝箱总数达到100万个，GPS +250%" },
-    "yeyu3_chest_10000000": { gpsMultiplier: 3.20, description: "购买星云宝箱总数达到1000万个，GPS +350%" },
-    "yeyu3_chest_100000000": { gpsMultiplier: 5.20, description: "购买星云宝箱总数达到1亿个，GPS +550%" },
-        "yeyu4_chest_100": { gpsMultiplier: 0.70, description: "购买鸿蒙宝箱总数达到100个，GPS +110%" },
-    "yeyu4_chest_10000": { gpsMultiplier: 1.40, description: "购买鸿蒙宝箱总数达到1万个，GPS +180%" },
-    "yeyu4_chest_1000000": { gpsMultiplier: 2.20, description: "购买鸿蒙宝箱总数达到100万个，GPS +260%" },
-    "yeyu4_chest_10000000": { gpsMultiplier: 3.20, description: "购买鸿蒙宝箱总数达到1000万个，GPS +360%" },
-    "yeyu4_chest_100000000": { gpsMultiplier: 5.20, description: "购买鸿蒙宝箱总数达到1亿个，GPS +560%" },
-        "yeyu5_chest_100": { gpsMultiplier: 0.70, description: "购买太虚宝箱总数达到100个，GPS +120%" },
-    "yeyu5_chest_10000": { gpsMultiplier: 1.40, description: "购买太虚宝箱总数达到1万个，GPS +190%" },
-    "yeyu5_chest_1000000": { gpsMultiplier: 2.20, description: "购买太虚宝箱总数达到100万个，GPS +270%" },
-    "yeyu5_chest_10000000": { gpsMultiplier: 3.20, description: "购买太虚宝箱总数达到1000万个，GPS +370%" },
-    "yeyu5_chest_100000000": { gpsMultiplier: 5.20, description: "购买太虚宝箱总数达到1亿个，GPS +570%" },
+    "yeyu2_chest_100": { gpsMultiplier: 0.90, description: "购买银河宝箱总数达到100个，GPS +90%" },
+    "yeyu2_chest_10000": { gpsMultiplier: 1.60, description: "购买银河宝箱总数达到1万个，GPS +160%" },
+    "yeyu2_chest_1000000": { gpsMultiplier: 2.40, description: "购买银河宝箱总数达到100万个，GPS +240%" },
+    "yeyu2_chest_10000000": { gpsMultiplier: 3.40, description: "购买银河宝箱总数达到1000万个，GPS +340%" },
+    "yeyu2_chest_100000000": { gpsMultiplier: 5.40, description: "购买银河宝箱总数达到1亿个，GPS +540%" },
+        "yeyu3_chest_100": { gpsMultiplier: 1.00, description: "购买星云宝箱总数达到100个，GPS +100%" },
+    "yeyu3_chest_10000": { gpsMultiplier: 1.70, description: "购买星云宝箱总数达到1万个，GPS +170%" },
+    "yeyu3_chest_1000000": { gpsMultiplier: 2.50, description: "购买星云宝箱总数达到100万个，GPS +250%" },
+    "yeyu3_chest_10000000": { gpsMultiplier: 3.50, description: "购买星云宝箱总数达到1000万个，GPS +350%" },
+    "yeyu3_chest_100000000": { gpsMultiplier: 5.50, description: "购买星云宝箱总数达到1亿个，GPS +550%" },
+        "yeyu4_chest_100": { gpsMultiplier: 1.10, description: "购买鸿蒙宝箱总数达到100个，GPS +110%" },
+    "yeyu4_chest_10000": { gpsMultiplier: 1.80, description: "购买鸿蒙宝箱总数达到1万个，GPS +180%" },
+    "yeyu4_chest_1000000": { gpsMultiplier: 2.60, description: "购买鸿蒙宝箱总数达到100万个，GPS +260%" },
+    "yeyu4_chest_10000000": { gpsMultiplier: 3.60, description: "购买鸿蒙宝箱总数达到1000万个，GPS +360%" },
+    "yeyu4_chest_100000000": { gpsMultiplier: 5.60, description: "购买鸿蒙宝箱总数达到1亿个，GPS +560%" },
+        "yeyu5_chest_100": { gpsMultiplier: 1.20, description: "购买太虚宝箱总数达到100个，GPS +120%" },
+    "yeyu5_chest_10000": { gpsMultiplier: 1.90, description: "购买太虚宝箱总数达到1万个，GPS +190%" },
+    "yeyu5_chest_1000000": { gpsMultiplier: 2.70, description: "购买太虚宝箱总数达到100万个，GPS +270%" },
+    "yeyu5_chest_10000000": { gpsMultiplier: 3.70, description: "购买太虚宝箱总数达到1000万个，GPS +370%" },
+    "yeyu5_chest_100000000": { gpsMultiplier: 5.70, description: "购买太虚宝箱总数达到1亿个，GPS +570%" },
+       "yeyu6_chest_100": { gpsMultiplier: 1.30, description: "购买星云宝箱总数达到100个，GPS +130%" },
+    "yeyu6_chest_10000": { gpsMultiplier: 2.00, description: "购买星云宝箱总数达到1万个，GPS +200%" },
+    "yeyu6_chest_1000000": { gpsMultiplier: 2.80, description: "购买星云宝箱总数达到100万个，GPS +280%" },
+    "yeyu6_chest_10000000": { gpsMultiplier: 3.70, description: "购买星云宝箱总数达到1000万个，GPS +370%" },
+    "yeyu6_chest_100000000": { gpsMultiplier: 5.70, description: "购买星云宝箱总数达到1亿个，GPS +570%" },
+    "yeyu7_chest_100": { gpsMultiplier: 1.40, description: "购买鸿蒙宝箱总数达到100个，GPS +140%" },
+    "yeyu7_chest_10000": { gpsMultiplier: 2.10, description: "购买鸿蒙宝箱总数达到1万个，GPS +210%" },
+    "yeyu7_chest_1000000": { gpsMultiplier: 2.90, description: "购买鸿蒙宝箱总数达到100万个，GPS +290%" },
+    "yeyu7_chest_10000000": { gpsMultiplier: 3.80, description: "购买鸿蒙宝箱总数达到1000万个，GPS +380%" },
+    "yeyu7_chest_100000000": { gpsMultiplier: 5.80, description: "购买鸿蒙宝箱总数达到1亿个，GPS +580%" },
+    "yeyu8_chest_100": { gpsMultiplier: 1.50, description: "购买太虚宝箱总数达到100个，GPS +120%" },
+    "yeyu8_chest_10000": { gpsMultiplier: 2.20, description: "购买太虚宝箱总数达到1万个，GPS +220%" },
+    "yeyu8_chest_1000000": { gpsMultiplier: 3.00, description: "购买太虚宝箱总数达到100万个，GPS +300%" },
+    "yeyu8_chest_10000000": { gpsMultiplier: 3.90, description: "购买太虚宝箱总数达到1000万个，GPS +390%" },
+    "yeyu8_chest_100000000": { gpsMultiplier: 5.90, description: "购买太虚宝箱总数达到1亿个，GPS +590%" },
     "max_stage_10": { gpsMultiplier: 0.20, description: "达到最大关卡10，GPS +20%" },
     "max_stage_30": { gpsMultiplier: 0.50, description: "达到最大关卡30，GPS +50%" },
     "max_stage_60": { gpsMultiplier: 0.80, description: "达到最大关卡60，GPS +80%" },
@@ -3564,6 +3752,15 @@ gems: {
     "yuyu5_10": { gpsMultiplier: 2.20, description: "玄渊白犼达到10级，GPS +220%" },
     "yuyu5_50": { gpsMultiplier: 4.50, description: "玄渊白犼达到50级，GPS +450%" },
     "yuyu5_100": { gpsMultiplier: 6.00, description: "玄渊白犼达到100级，GPS +600%" },
+    "yuyu6_10": { gpsMultiplier: 2.50, description: "灾祸蜚牛达到10级，GPS +250%" },
+    "yuyu6_50": { gpsMultiplier: 5.00, description: "灾祸蜚牛达到50级，GPS +500%" },
+    "yuyu6_100": { gpsMultiplier: 6.50, description: "灾祸蜚牛达到100级，GPS +650%" },
+    "yuyu7_10": { gpsMultiplier: 2.80, description: "寂灭罗睺达到10级，GPS +280%" },
+    "yuyu7_50": { gpsMultiplier: 5.50, description: "寂灭罗睺达到50级，GPS +550%" },
+    "yuyu7_100": { gpsMultiplier: 7.00, description: "寂灭罗睺达到100级，GPS +700%" },
+    "yuyu8_10": { gpsMultiplier: 3.10, description: "永劫蚩尤达到10级，GPS +310%" },
+    "yuyu8_50": { gpsMultiplier: 6.50, description: "永劫蚩尤达到50级，GPS +650%" },
+    "yuyu8_100": { gpsMultiplier: 7.50, description: "永劫蚩尤达到100级，GPS +750%" },
 
     // 新增魂环成就
     "year1_10": { gpsMultiplier: 0.20, description: "一年魂环达到10级，GPS +20%" },
@@ -3959,8 +4156,16 @@ const mysteryConfig = [
          yeyu12: { name: '亘古', gps: 1000000000000000000000000000000000, click: 100000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.00 },
          yeyu13: { name: '万象', gps: 50000000000000000000000000000000000000, click: 500000000000000000000000000000000000, prob: 0.0000001, growthRate: 8.50 },
          yeyu14: { name: '太虚', gps: 60000000000000000000000000000000000000, click: 600000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.00 },
-         yeyu15: { name: '九垓', gps: 100000000000000000000000000000000000000, click: 1000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.50 }
-       
+         yeyu15: { name: '九垓', gps: 100000000000000000000000000000000000000, click: 1000000000000000000000000000000000000, prob: 0.0000001, growthRate: 9.50 },
+          yeyu16: { name: '穿梭', gps: 10000000000000000000000000000000000000000, click: 100000000000000000000000000000000000000, prob: 0.0000001, growthRate: 10.00 },
+         yeyu17: { name: '恒古', gps: 100000000000000000000000000000000000000000, click: 1000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 10.50 },
+         yeyu18: { name: '虚空', gps: 500000000000000000000000000000000000000000, click: 5000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 11.00 },
+         yeyu19: { name: '蔚来', gps: 100000000000000000000000000000000000000000000, click: 1000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 11.50 },
+         yeyu20: { name: '神罚', gps: 1000000000000000000000000000000000000000000000, click: 10000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 12.00 },
+         yeyu21: { name: '时空', gps: 5000000000000000000000000000000000000000000000, click: 50000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 12.50 },
+         yeyu22: { name: '未来', gps: 1000000000000000000000000000000000000000000000000, click: 10000000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 13.00 },
+         yeyu23: { name: '从前', gps: 10000000000000000000000000000000000000000000000000, click: 100000000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 13.50 },
+         yeyu24: { name: '星澜', gps: 50000000000000000000000000000000000000000000000000, click: 50000000000000000000000000000000000000000000000000, prob: 0.0000001, growthRate: 14.00 }
         };
 
         // 副本装备配置
@@ -4044,23 +4249,29 @@ const mysteryConfig = [
     9: [ { rarity: 'yeyu3', prob: 0.8 }, { rarity: 'yeyu4', prob: 0.14 }, { rarity: 'yeyu5', prob: 0.05 }, { rarity: 'yeyu6', prob: 0.01 } ],
     10: [ { rarity: 'yeyu6', prob: 0.8 }, { rarity: 'yeyu7', prob: 0.14 }, { rarity: 'yeyu8', prob: 0.05 }, { rarity: 'yeyu9', prob: 0.01 } ],
     11: [ { rarity: 'yeyu9', prob: 0.8 }, { rarity: 'yeyu10', prob: 0.14 }, { rarity: 'yeyu11', prob: 0.05 }, { rarity: 'yeyu12', prob: 0.01 } ],
-    12: [ { rarity: 'yeyu12', prob: 0.8 }, { rarity: 'yeyu13', prob: 0.14 }, { rarity: 'yeyu14', prob: 0.05 }, { rarity: 'yeyu15', prob: 0.01 } ]
+    12: [ { rarity: 'yeyu12', prob: 0.8 }, { rarity: 'yeyu13', prob: 0.14 }, { rarity: 'yeyu14', prob: 0.05 }, { rarity: 'yeyu15', prob: 0.01 } ],
+    13: [ { rarity: 'yeyu15', prob: 0.8 }, { rarity: 'yeyu16', prob: 0.14 }, { rarity: 'yeyu17', prob: 0.05 }, { rarity: 'yeyu18', prob: 0.01 } ],
+    14: [ { rarity: 'yeyu18', prob: 0.8 }, { rarity: 'yeyu19', prob: 0.14 }, { rarity: 'yeyu20', prob: 0.05 }, { rarity: 'yeyu21', prob: 0.01 } ],
+    15: [ { rarity: 'yeyu21', prob: 0.8 }, { rarity: 'yeyu22', prob: 0.14 }, { rarity: 'yeyu23', prob: 0.05 }, { rarity: 'yeyu24', prob: 0.01 } ]
 };
 
         // 宠物配置
         const petConfig = {
-            thunderKirin: { name: '苍雷麒麟', currency: 'gold', multiplier: 0.10 }, // 每级10%
-            chaosTaotie: { name: '混沌饕餮', currency: 'diamond', multiplier: 0.50 }, // 每级50%
-            netherQiongqi: { name: '九幽穷奇', currency: 'titanium', multiplier: 2.50 }, // 每级250%
-            abyssKun: { name: '霸渊巨鲲', currency: 'starstone', multiplier: 12.50 }, // 每级1250%
-            primordialZhuLong: { name: '太初烛龙', currency: 'cosmicstone', multiplier: 62.50 }, // 每级6250%
-        wanJunSuanNi: { name: '万钧狻猊', currency: 'superstone', multiplier: 312.50 }, // 每级31250%
-          yanYuBiAn: { name: '炎狱狴犴', currency: 'otherworldstone', multiplier: 1562.50 }, // 156250每级156250%
-          yuyu1: { name: '赤霄夔龙', currency: 'xingjiestone', multiplier: 7812.50 }, // 每级781250%
-          yuyu2: { name: '震岳白泽', currency: 'hundunstone', multiplier: 39062.50 }, // 每级3906250%
-         yuyu3: { name: '焚天蛊雕', currency: 'lingtone', multiplier: 195312.50 }, // 每级19531250%
-         yuyu4: { name: '血煞梼杌', currency: 'huangtone', multiplier: 976562.50 }, // 每级9765650%
-        yuyu5: { name: '玄渊白犼', currency: 'mingtone', multiplier: 5882812.50 } // 每级58828150%
+            thunderKirin: { name: '苍雷麒麟', currency: 'gold', multiplier: 0.10 }, 
+            chaosTaotie: { name: '混沌饕餮', currency: 'diamond', multiplier: 0.50 }, 
+            netherQiongqi: { name: '九幽穷奇', currency: 'titanium', multiplier: 2.50 }, 
+            abyssKun: { name: '霸渊巨鲲', currency: 'starstone', multiplier: 12.50 }, 
+            primordialZhuLong: { name: '太初烛龙', currency: 'cosmicstone', multiplier: 62.50 }, 
+        wanJunSuanNi: { name: '万钧狻猊', currency: 'superstone', multiplier: 312.50 }, 
+          yanYuBiAn: { name: '炎狱狴犴', currency: 'otherworldstone', multiplier: 1562.50 }, 
+          yuyu1: { name: '赤霄夔龙', currency: 'xingjiestone', multiplier: 7812.50 }, 
+          yuyu2: { name: '震岳白泽', currency: 'hundunstone', multiplier: 39062.50 }, 
+         yuyu3: { name: '焚天蛊雕', currency: 'lingtone', multiplier: 195312.50 }, 
+         yuyu4: { name: '血煞梼杌', currency: 'huangtone', multiplier: 976562.50 }, 
+        yuyu5: { name: '玄渊白犼', currency: 'mingtone', multiplier: 5882812.50 },
+         yuyu6: { name: '灾祸蜚牛', currency: 'xutong', multiplier: 29414062.50 }, 
+         yuyu7: { name: '寂灭罗睺', currency: 'shitone', multiplier: 147070312.50 }, 
+        yuyu8: { name: '永劫蚩尤', currency: 'weitone', multiplier: 735351562.50 } 
      };
 
         // 魂环配置
@@ -4175,6 +4386,15 @@ const mysteryConfig = [
      'yeyu13',
     'yeyu14',     
     'yeyu15',  
+   'yeyu16',
+    'yeyu17',  
+     'yeyu18',
+    'yeyu19',     
+    'yeyu20',  
+    'yeyu21', 
+    'yeyu22',
+    'yeyu23',  
+     'yeyu24', 
     'ultimate1',     
     'ultimate2',   
     'ultimate3',       
@@ -4367,7 +4587,7 @@ function autoReincarnate() {
                 totalReincarnationCoin += eq.level * 400.0;
                 break;
             case 'yeyu10':
-                totalReincarnationCoin += eq.level * 400.0;
+                totalReincarnationCoin += eq.level * 500.0;
                 break;
             case 'yeyu11':
                 totalReincarnationCoin += eq.level * 600.0;
@@ -4383,6 +4603,33 @@ function autoReincarnate() {
                 break;
             case 'yeyu15':
                 totalReincarnationCoin += eq.level * 1000.0;
+                break;
+            case 'yeyu16':
+                totalReincarnationCoin += eq.level * 2000.0;
+                break;
+            case 'yeyu17':
+                totalReincarnationCoin += eq.level * 3000.0;
+                break;
+            case 'yeyu18':
+                totalReincarnationCoin += eq.level * 4000.0;
+                break;
+            case 'yeyu19':
+                totalReincarnationCoin += eq.level * 5000.0;
+                break;
+            case 'yeyu20':
+                totalReincarnationCoin += eq.level * 6000.0;
+                break;
+            case 'yeyu21':
+                totalReincarnationCoin += eq.level * 7000.0;
+                break;
+            case 'yeyu22':
+                totalReincarnationCoin += eq.level * 8000.0;
+                break;
+            case 'yeyu23':
+                totalReincarnationCoin += eq.level * 9000.0;
+                break;
+            case 'yeyu24':
+                totalReincarnationCoin += eq.level * 10000.0;
                 break;
         }
     });
@@ -4407,6 +4654,9 @@ function autoReincarnate() {
     player.lingtone = 0;
     player.huangtone = 0;
     player.mingtone = 0;
+    player.xutong = 0;
+    player.shitone = 0;
+    player.weitone = 0;   
  // 重置材料宝箱购买成本
             player.materialChestCost = 1;
             player.techniqueChestCost = 1;
@@ -4538,7 +4788,7 @@ function autoReincarnate() {
                         totalReincarnationCoin += eq.level * 400.0;
                         break;
                      case 'yeyu10':
-                        totalReincarnationCoin += eq.level * 400.0;
+                        totalReincarnationCoin += eq.level * 500.0;
                         break;
                      case 'yeyu11':
                         totalReincarnationCoin += eq.level * 600.0;
@@ -4555,7 +4805,33 @@ function autoReincarnate() {
                      case 'yeyu15':
                         totalReincarnationCoin += eq.level * 1000.0;
                         break;
-
+                    case 'yeyu16':
+                        totalReincarnationCoin += eq.level * 2000.0;
+                        break;
+                    case 'yeyu17':
+                        totalReincarnationCoin += eq.level * 3000.0;
+                        break;
+                     case 'yeyu18':
+                        totalReincarnationCoin += eq.level * 4000.0;
+                        break;
+                     case 'yeyu19':
+                        totalReincarnationCoin += eq.level * 5000.0;
+                        break;
+                     case 'yeyu20':
+                        totalReincarnationCoin += eq.level * 6000.0;
+                        break;
+                     case 'yeyu21':
+                        totalReincarnationCoin += eq.level * 7000.0;
+                        break; 
+                       case 'yeyu22':
+                        totalReincarnationCoin += eq.level * 8000.0;
+                        break;
+                    case 'yeyu23':
+                        totalReincarnationCoin += eq.level * 9000.0;
+                        break;
+                     case 'yeyu24':
+                        totalReincarnationCoin += eq.level * 10000.0;
+                        break;
                 }
             });
 
@@ -4579,7 +4855,9 @@ function autoReincarnate() {
             player.lingtone = 0;
             player.huangtone = 0;
             player.mingtone = 0;
-
+            player.xutong = 0;
+            player.shitone = 0;
+            player.weitone = 0;
 
             // 重置材料宝箱购买成本
             player.materialChestCost = 1;
@@ -4917,7 +5195,7 @@ function calculateTotalGPS() {
             updateVipDisplay(); // 立即更新VIP显示
 
             // 确保自动购买状态被正确加载
-            player.autoBuy = save.autoBuy || [false, false, false, false, false, false, false, false, false, false, false, false];
+            player.autoBuy = save.autoBuy || [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
             player.autoBuyMaterialChest = save.autoBuyMaterialChest || false;
            player.autoBuyTechniqueChest = save.autoBuyTechniqueChest || false;
             // 强制覆盖宠物的 multiplier，同时保留等级和其他数据
@@ -4931,7 +5209,7 @@ function calculateTotalGPS() {
             player.autoBuy.forEach((enabled, index) => {
                 const btn = document.getElementById(`autoChest${index + 1}`);
                 if (btn) {
-                    btn.textContent = `${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚'][index]}宝箱自动购买：${enabled ? '开启' : '关闭'}`;
+                    btn.textContent = `${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚', '虚空', '时空', '未来'][index]}宝箱自动购买：${enabled ? '开启' : '关闭'}`;
                 }
             });
    
@@ -5045,7 +5323,10 @@ if (speedBoostBtn) {
                 { currency: "hundunstone", amount: 1 },
                 { currency: "lingtone", amount: 1 },
                 { currency: "huangtone", amount: 1 },
-                { currency: "mingtone", amount: 1 }
+                { currency: "mingtone", amount: 1 },
+                { currency: "xutong", amount: 1 },
+                { currency: "shitone", amount: 1 },
+                { currency: "weitone", amount: 1 }                
             ][index];
 
             // 计算最大可购买数量：分钟数 × 每分钟500个
@@ -5059,7 +5340,7 @@ if (speedBoostBtn) {
                 player[costConfig.currency] -= actualBuy * costConfig.amount;
                 
                 // 更新宝箱计数
-                const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse','yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5'][index];
+                const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse','yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6', 'yeyu7', 'yeyu8'][index];
                 player.chestCounts[chestType] += actualBuy;
                 
                 // 批量处理装备获取（这里简化处理，实际可根据需要调整概率计算）
@@ -5152,12 +5433,15 @@ function handleVipPowerGain() {
          yuyu2: { level: 0, cost: 1, multiplier: 39062.50 },
           yuyu3: { level: 0, cost: 1, multiplier: 195312.50 },
          yuyu4: { level: 0, cost: 1, multiplier: 976562.50 },
-          yuyu5: { level: 0, cost: 1, multiplier: 5882812.50 }
+          yuyu5: { level: 0, cost: 1, multiplier: 5882812.50 },
+          yuyu6: { level: 0, cost: 1, multiplier: 29414062.50 },
+         yuyu7: { level: 0, cost: 1, multiplier: 147070312.50 },
+          yuyu8: { level: 0, cost: 1, multiplier: 735351562.50 }
         },
         dungeonEquipment: oldSave.dungeonEquipment || [],
         soulRings: oldSave.soulRings || [],
         achievements: oldSave.achievements || player.achievements,
-        autoBuy: oldSave.autoBuy || [false, false, false, false, false, false, false, false, false, false, false, false], // 新增宝箱自动购买状态
+        autoBuy: oldSave.autoBuy || [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 新增宝箱自动购买状态
         autoBuyMaterialChest: oldSave.autoBuyMaterialChest || false,
         autoBuyTechniqueChest: oldSave.autoBuyTechniqueChest || false,
         gpsMultiplier: oldSave.gpsMultiplier || 1,
@@ -5165,7 +5449,7 @@ function handleVipPowerGain() {
         autoConvert: oldSave.autoConvert || false,
         autoConvertCurrency: oldSave.autoConvertCurrency || { gold: false, diamond: false, titanium: false, starstone: false },
         clickTimestamps: oldSave.clickTimestamps || [],
-        chestCounts: oldSave.chestCounts || { common: 0, advanced: 0, rare: 0, epic: 0, legendary: 0, chaos: 0, apocalypse: 0, yeyu1: 0, yeyu2: 0, yeyu3: 0, yeyu4: 0, yeyu5: 0 }, // 新增宝箱计数
+        chestCounts: oldSave.chestCounts || { common: 0, advanced: 0, rare: 0, epic: 0, legendary: 0, chaos: 0, apocalypse: 0, yeyu1: 0, yeyu2: 0, yeyu3: 0, yeyu4: 0, yeyu5: 0, yeyu6: 0, yeyu7: 0, yeyu8: 0 }, // 新增宝箱计数
         reincarnationCoin: oldSave.reincarnationCoin || 0,
         reincarnationCount: oldSave.reincarnationCount || 0,
         reincarnationStats: oldSave.reincarnationStats || {
@@ -5285,7 +5569,10 @@ const farmClickMultiplierssa = [1, 10, 25, 50, 75, 100, 200, 400, 600, 800, 1000
         { from: 'xingjiestone', to: 'hundunstone', rate: 1e25 },
         { from: 'hundunstone', to: 'lingtone', rate: 1e25 },
         { from: 'lingtone', to: 'huangtone', rate: 1e25 },
-        { from: 'huangtone', to: 'mingtone', rate: 1e25 }
+        { from: 'huangtone', to: 'mingtone', rate: 1e25 },
+        { from: 'mingtone', to: 'xutong', rate: 1e25 },
+        { from: 'xutong', to: 'shitone', rate: 1e25 },
+        { from: 'shitone', to: 'weitone', rate: 1e25 }        
     ];
 
     conversions.forEach(({ from, to, rate }) => {
@@ -5330,7 +5617,10 @@ const farmClickMultiplierssa = [1, 10, 25, 50, 75, 100, 200, 400, 600, 800, 1000
         { currency: "hundunstone", amount: 1 },
         { currency: "lingtone", amount: 1 }, 
         { currency: "huangtone", amount: 1 },
-        { currency: "mingtone", amount: 1 }
+        { currency: "mingtone", amount: 1 }, 
+        { currency: "xutong", amount: 1 }, 
+        { currency: "shitone", amount: 1 },
+        { currency: "weitone", amount: 1 }       
     ][type - 1];
 
     if (player[costConfig.currency] >= costConfig.amount) {
@@ -5340,11 +5630,11 @@ const farmClickMultiplierssa = [1, 10, 25, 50, 75, 100, 200, 400, 600, 800, 1000
         handleEquipment(selectedRarity);
 
         // 更新宝箱购买计数
-        const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5'][type - 1];
+        const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6', 'yeyu7', 'yeyu8'][type - 1];
         player.chestCounts[chestType]++;
         checkChestAchievements(chestType, player.chestCounts[chestType]);
     } else {
-        logAction(`${costConfig.currency}不足！无法购买${['普通','高级','稀有','史诗','传说','混沌','终焉','星辰','银河','星云','鸿蒙','太虚'][type-1]}宝箱`, 'error');
+        logAction(`${costConfig.currency}不足！无法购买${['普通','高级','稀有','史诗','传说','混沌','终焉','星辰','银河','星云','鸿蒙','太虚', '虚空', '时空', '未来'][type-1]}宝箱`, 'error');
     }
     updateDisplay();
 }
@@ -5559,7 +5849,10 @@ function onCollectionAdded(collectionType) {
                 { currency: "hundunstone", amount: 1 },
                 { currency: "lingtone", amount: 1 },
                 { currency: "huangtone", amount: 1 },
-                { currency: "mingtone", amount: 1 }
+                { currency: "mingtone", amount: 1 },
+                { currency: "xutong", amount: 1 },
+                { currency: "shitone", amount: 1 },
+                { currency: "weitone", amount: 1 }              
             ][index];
             
             if (player[costConfig.currency] >= costConfig.amount) {
@@ -5574,7 +5867,7 @@ function onCollectionAdded(collectionType) {
                     
                     // 统计装备升级总级数
                     let totalLevelsUp = 0;
-                    const chestTypeName = ['普通','高级','稀有','史诗','传说','混沌','终焉','星辰','银河','星云','鸿蒙','太虚'][index];
+                    const chestTypeName = ['普通','高级','稀有','史诗','传说','混沌','终焉','星辰','银河','星云','鸿蒙','太虚', '虚空', '时空', '未来'][index];
                     
                     // 批量处理装备获取并统计升级计数
                     for (let i = 0; i < actualBuy; i++) {
@@ -5585,7 +5878,7 @@ function onCollectionAdded(collectionType) {
                     }
                     
                     // 更新宝箱计数
-                    const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5'][index];
+                    const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6', 'yeyu7', 'yeyu8'][index];
                     player.chestCounts[chestType] += actualBuy;
                     checkChestAchievements(chestType, player.chestCounts[chestType]);
                     
@@ -5611,8 +5904,8 @@ if (player.autoBuyTechniqueChest && player.reincarnationCoin >= player.technique
     const index = typeIndex - 1; // 将宝箱类型转换为数组索引
     player.autoBuy[index] = !player.autoBuy[index]; // 切换状态
     const btn = document.getElementById(`autoChest${typeIndex}`);
-    btn.textContent = `${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚'][index]}宝箱自动购买：${player.autoBuy[index] ? '开启' : '关闭'}`;
-    logAction(`${player.autoBuy[index] ? '开启' : '关闭'}自动购买${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚'][index]}宝箱`, 'info');
+    btn.textContent = `${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚', '虚空', '时空', '未来'][index]}宝箱自动购买：${player.autoBuy[index] ? '开启' : '关闭'}`;
+    logAction(`${player.autoBuy[index] ? '开启' : '关闭'}自动购买${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚', '虚空', '时空', '未来'][index]}宝箱`, 'info');
 }
 
         // 切换自动购买材料宝箱状态
@@ -5645,7 +5938,7 @@ if (player.autoBuyTechniqueChest && player.reincarnationCoin >= player.technique
 function updateAutoConvertDisplay() {
     const currencies = ['gold', 'diamond', 'titanium', 'starstone', 'cosmicstone', 
                         'superstone', 'otherworldstone', 'xingjiestone', 'hundunstone', 
-                        'lingtone', 'huangtone', 'mingtone'];
+                        'lingtone', 'huangtone', 'mingtone', 'xutong', 'shitone', 'weitone'];
     
     currencies.forEach(currency => {
         const btn = document.getElementById(`autoConvert${currency.charAt(0).toUpperCase() + currency.slice(1)}`);
@@ -5669,7 +5962,10 @@ function getCurrencyName(currency) {
         hundunstone: '混沌石',
         lingtone: '灵髓石',
         huangtone: '幻空石',
-        mingtone: '冥源石'
+        mingtone: '冥源石',
+        xutong: '虚空石',
+        shitone: '时空石',
+        weitone: '未来石'      
     };
     return names[currency] || currency;
 }
@@ -5712,7 +6008,7 @@ function toggleAutoConvertCurrency(currency) {
      'ancient', 'divine', 'arcane', 'celestial',
      'infernal', 'astral', 'primeval', 'transcendental',
      'quantum', 'ultimate', 'chaos', 'eternal',
-     'void', 'genesis', 'divineRealm', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6','yeyu7', 'yeyu8', 'yeyu9', 'yeyu10', 'yeyu11', 'yeyu12','yeyu13', 'yeyu14', 'yeyu15', 
+     'void', 'genesis', 'divineRealm', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6','yeyu7', 'yeyu8', 'yeyu9', 'yeyu10', 'yeyu11', 'yeyu12','yeyu13', 'yeyu14', 'yeyu15', 'yeyu16', 'yeyu17', 'yeyu18','yeyu19', 'yeyu20', 'yeyu21', 'yeyu22', 'yeyu23', 'yeyu24', 
     'common_chest_100',
     'common_chest_10000',
     'common_chest_1000000',
@@ -5773,6 +6069,21 @@ function toggleAutoConvertCurrency(currency) {
     'yeyu5_chest_1000000',
     'yeyu5_chest_10000000',
     'yeyu5_chest_100000000',
+    'yeyu6_chest_100',
+    'yeyu6_chest_10000',
+    'yeyu6_chest_1000000',
+    'yeyu6_chest_10000000',
+    'yeyu6_chest_100000000',
+    'yeyu7_chest_100',
+    'yeyu7_chest_10000',
+    'yeyu7_chest_1000000',
+    'yeyu7_chest_10000000',
+    'yeyu7_chest_100000000',
+    'yeyu8_chest_100',
+    'yeyu8_chest_10000',
+    'yeyu8_chest_1000000',
+    'yeyu8_chest_10000000',
+    'yeyu8_chest_100000000',
   'max_stage_10', 'max_stage_30', 'max_stage_60', 'max_stage_90',
    'max_stage_120', 'max_stage_200', 'max_stage_300', 'max_stage_400',
    'max_stage_500', 'max_stage_600', 'max_stage_700', 'max_stage_800',
@@ -5813,6 +6124,15 @@ function toggleAutoConvertCurrency(currency) {
     'yuyu5_10',
     'yuyu5_50',
     'yuyu5_100',
+    'yuyu6_10',
+    'yuyu6_50',
+    'yuyu6_100',
+    'yuyu7_10',
+    'yuyu7_50',
+    'yuyu7_100',
+    'yuyu8_10',
+    'yuyu8_50',
+    'yuyu8_100',
      'year1_10',
     'year10_10',
     'year100_10',
@@ -6213,7 +6533,10 @@ function resetPetDisplay() {
         yuyu2: { level: petData.yuyu2?.level || 0, cost: petData.yuyu2?.cost || 1, multiplier: 39062.50 },
        yuyu3: { level: petData.yuyu3?.level || 0, cost: petData.yuyu3?.cost || 1, multiplier: 195312.50 },
         yuyu4: { level: petData.yuyu4?.level || 0, cost: petData.yuyu4?.cost || 1, multiplier: 976562.50 },
-       yuyu5: { level: petData.yuyu5?.level || 0, cost: petData.yuyu5?.cost || 1, multiplier: 5882812.50 }
+       yuyu5: { level: petData.yuyu5?.level || 0, cost: petData.yuyu5?.cost || 1, multiplier: 5882812.50 },
+       yuyu6: { level: petData.yuyu6?.level || 0, cost: petData.yuyu6?.cost || 1, multiplier: 29414062.50 },
+        yuyu7: { level: petData.yuyu7?.level || 0, cost: petData.yuyu7?.cost || 1, multiplier: 147070312.50 },
+       yuyu8: { level: petData.yuyu8?.level || 0, cost: petData.yuyu8?.cost || 1, multiplier: 735351562.50 }
     };
 
     // 更新宠物页面显示
@@ -6242,7 +6565,10 @@ function updatePetDisplay() {
         hundunstone: '混沌石',
         lingtone: '灵髓石',
         huangtone: '幻空石',
-        mingtone: '冥源石'
+        mingtone: '冥源石',
+        xutong: '虚空石',
+        shitone: '时空石',
+        weitone: '未来石'  
     };
     
     petContainer.innerHTML = Object.entries(player.pets)
@@ -7173,6 +7499,9 @@ function confirmRename() {
     document.getElementById("lingtone").textContent = display(player.lingtone);
     document.getElementById("huangtone").textContent = display(player.huangtone);
     document.getElementById("mingtone").textContent = display(player.mingtone);
+    document.getElementById("xutong").textContent = display(player.xutong);
+    document.getElementById("shitone").textContent = display(player.shitone);
+    document.getElementById("weitone").textContent = display(player.weitone);
     document.getElementById("reincarnationCoin").textContent = display(player.reincarnationCoin);
     document.getElementById("reincarnationCount").textContent = player.reincarnationCount;
     document.getElementById("maxStage").textContent = player.battle.maxStage;
@@ -7500,6 +7829,9 @@ function formatTime(milliseconds) {
                         lingtone: 0,
                         huangtone: 0,
                         mingtone: 0,
+                        xutong: 0,
+                        shitone: 0,
+                        weitone: 0,
                         reincarnationCoin: 0,
                         reincarnationCount: 0,
                         equipment: [],
@@ -7537,8 +7869,10 @@ function formatTime(milliseconds) {
                               yuyu2: { level: 0, cost: 1, multiplier: 39062.50 },
                             yuyu3: { level: 0, cost: 1, multiplier: 195312.50 },
                               yuyu4: { level: 0, cost: 1, multiplier: 976562.50 },
-                            yuyu5: { level: 0, cost: 1, multiplier: 5882812.50 }
-
+                            yuyu5: { level: 0, cost: 1, multiplier: 5882812.50 },
+                            yuyu6: { level: 0, cost: 1, multiplier: 29414062.50 },
+                              yuyu7: { level: 0, cost: 1, multiplier: 147070312.50 },
+                            yuyu8: { level: 0, cost: 1, multiplier: 735351562.50 }
                         },
                         dungeonEquipment: [], // 新增副本装备
                         soulRings: [], // 新增魂环系统
@@ -7590,7 +7924,15 @@ function formatTime(milliseconds) {
         first_yeyu13: false,
         first_yeyu14: false,
         first_yeyu15: false,
-
+        first_yeyu16: false,
+        first_yeyu17: false,
+        first_yeyu18: false,
+        first_yeyu19: false,
+        first_yeyu20: false,
+        first_yeyu21: false,
+        first_yeyu22: false,
+        first_yeyu23: false,
+        first_yeyu24: false,
         // 宝箱成就
         common_chest_100: false,
         common_chest_10000: false,
@@ -7652,7 +7994,21 @@ function formatTime(milliseconds) {
         yeyu5_chest_1000000: false,
         yeyu5_chest_10000000: false,
         yeyu5_chest_100000000: false,
-
+        yeyu6_chest_100: false,
+        yeyu6_chest_10000: false,
+        yeyu6_chest_1000000: false,
+        yeyu6_chest_10000000: false,
+        yeyu6_chest_100000000: false,
+        yeyu7_chest_100: false,
+        yeyu7_chest_10000: false,
+        yeyu7_chest_1000000: false,
+        yeyu7_chest_10000000: false,
+        yeyu7_chest_100000000: false,
+        yeyu8_chest_100: false,
+        yeyu8_chest_10000: false,
+        yeyu8_chest_1000000: false,
+        yeyu8_chest_10000000: false,
+        yeyu8_chest_100000000: false,
         "max_stage_10": false,
     "max_stage_30": false,
     "max_stage_60": false,
@@ -7705,6 +8061,15 @@ function formatTime(milliseconds) {
     "yuyu5_10": false,
     "yuyu5_50": false,
     "yuyu5_100": false,
+    "yuyu6_10": false,
+    "yuyu6_50": false,
+    "yuyu6_100": false,
+    "yuyu7_10": false,
+    "yuyu7_50": false,
+    "yuyu7_100": false,
+    "yuyu8_10": false,
+    "yuyu8_50": false,
+    "yuyu8_100": false,
     // 新增魂环成就状态
     "year1_10": false,
     "year10_10": false,
@@ -7895,7 +8260,7 @@ function formatTime(milliseconds) {
                         },
                         actionLogs: [], // 新增：统一存储所有操作日志
                         goldLogs: [], // 保留原有金币日志（如果仍需单独使用）
-                        autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
+                        autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
                         autoBuyMaterialChest: false, // 新增：自动购买材料宝箱的状态
                       autoBuyTechniqueChest: false,
                         gpsMultiplier: 1,
@@ -8002,7 +8367,7 @@ function formatTime(milliseconds) {
     autoConvertCurrency(); 
   gainCultivationExp();
  setInterval(calculateNightClubIncome, 1000);
- setInterval(updateLiveStreamExperience, 1000);
+ updateLiveStreamUI();
   initAutoDecomposeUI();
 
     checkAutoBuy(); 
@@ -8029,6 +8394,9 @@ function formatTime(milliseconds) {
                         lingtone: 0,
                         huangtone: 0,
                         mingtone: 0,
+                        xutong: 0,
+                        shitone: 0,
+                        weitone: 0,
                         reincarnationCoin: 0,
                         reincarnationCount: 0,
                         equipment: [],
@@ -8066,8 +8434,10 @@ function formatTime(milliseconds) {
                               yuyu2: { level: 0, cost: 1, multiplier: 39062.50 },
                             yuyu3: { level: 0, cost: 1, multiplier: 195312.50 },
                               yuyu4: { level: 0, cost: 1, multiplier: 976562.50 },
-                            yuyu5: { level: 0, cost: 1, multiplier: 5882812.50 }
-
+                            yuyu5: { level: 0, cost: 1, multiplier: 5882812.50 },
+                            yuyu6: { level: 0, cost: 1, multiplier: 29414062.50 },
+                              yuyu7: { level: 0, cost: 1, multiplier: 147070312.50 },
+                            yuyu8: { level: 0, cost: 1, multiplier: 735351562.50 }
                         },
                         dungeonEquipment: [], // 新增副本装备
                         soulRings: [], // 新增魂环系统
@@ -8119,7 +8489,15 @@ function formatTime(milliseconds) {
         first_yeyu13: false,
         first_yeyu14: false,
         first_yeyu15: false,
-
+        first_yeyu16: false,
+        first_yeyu17: false,
+        first_yeyu18: false,
+        first_yeyu19: false,
+        first_yeyu20: false,
+        first_yeyu21: false,
+        first_yeyu22: false,
+        first_yeyu23: false,
+        first_yeyu24: false,
         // 宝箱成就
         common_chest_100: false,
         common_chest_10000: false,
@@ -8181,7 +8559,21 @@ function formatTime(milliseconds) {
         yeyu5_chest_1000000: false,
         yeyu5_chest_10000000: false,
         yeyu5_chest_100000000: false,
-
+        yeyu6_chest_100: false,
+        yeyu6_chest_10000: false,
+        yeyu6_chest_1000000: false,
+        yeyu6_chest_10000000: false,
+        yeyu6_chest_100000000: false,
+        yeyu7_chest_100: false,
+        yeyu7_chest_10000: false,
+        yeyu7_chest_1000000: false,
+        yeyu7_chest_10000000: false,
+        yeyu7_chest_100000000: false,
+        yeyu8_chest_100: false,
+        yeyu8_chest_10000: false,
+        yeyu8_chest_1000000: false,
+        yeyu8_chest_10000000: false,
+        yeyu8_chest_100000000: false,
         "max_stage_10": false,
     "max_stage_30": false,
     "max_stage_60": false,
@@ -8234,6 +8626,15 @@ function formatTime(milliseconds) {
     "yuyu5_10": false,
     "yuyu5_50": false,
     "yuyu5_100": false,
+    "yuyu6_10": false,
+    "yuyu6_50": false,
+    "yuyu6_100": false,
+    "yuyu7_10": false,
+    "yuyu7_50": false,
+    "yuyu7_100": false,
+    "yuyu8_10": false,
+    "yuyu8_50": false,
+    "yuyu8_100": false,
     // 新增魂环成就状态
     "year1_10": false,
     "year10_10": false,
@@ -8424,7 +8825,7 @@ function formatTime(milliseconds) {
                         },
                         actionLogs: [], // 新增：统一存储所有操作日志
                         goldLogs: [], // 保留原有金币日志（如果仍需单独使用）
-                        autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
+                        autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
                         autoBuyMaterialChest: false, // 新增：自动购买材料宝箱的状态
                       autoBuyTechniqueChest: false,
                         gpsMultiplier: 1,
@@ -8563,12 +8964,12 @@ function toggleSettingsUI() {
     "不死": { damageReduction: 0.999999 }, // 受到伤害减少99%
 
     // 攻击类词条
-    "强击": { attackMultiplier: 10.10 }, 
-    "突击": { attackMultiplier: 100.20 }, 
-    "嗜血": { attackMultiplier: 1000.30 }, 
-    "炼狱": { attackMultiplier: 10000.40 }, 
-    "修罗": { attackMultiplier: 100000.50 }, 
-    "死神": { attackMultiplier: 1000000.00 }, 
+    "强击": { attackMultiplier: 2.10 }, 
+    "突击": { attackMultiplier: 3.20 }, 
+    "嗜血": { attackMultiplier: 4.30 }, 
+    "炼狱": { attackMultiplier: 5.40 }, 
+    "修罗": { attackMultiplier: 6.50 }, 
+    "死神": { attackMultiplier: 10.00 }, 
 
     // 闪避类词条
     "初级闪避": { dodgeChance: 0.5 },
@@ -8578,12 +8979,12 @@ function toggleSettingsUI() {
     "神级闪避": { dodgeChance: 0.9 }, 
 
     // 特殊效果类词条
-    "抵消": { blockCount: 10 }, // 可以抵消玩家10次攻击
-    "金光": { blockCount: 100 }, // 可以抵消玩家100次攻击
-    "神盾": { blockCount: 1000 }, // 可以抵消玩家1000次攻击
+    "抵消": { blockCount: 2 }, // 可以抵消玩家2次攻击
+    "金光": { blockCount: 3 }, // 可以抵消玩家3次攻击
+    "神盾": { blockCount: 5 }, // 可以抵消玩家5次攻击
 
     // 特殊攻击类词条
-    "连击": { attackCount: 5 }, // 攻击5次
+    "连击": { attackCount: 3 }, // 攻击5次
     "虚弱": { damageTakenMultiplier: 1.50 } // 受到玩家伤害增加50%
 };
  
@@ -11101,6 +11502,7 @@ const liveStreamSystem = {
     totalEarnings: 1000,
     expMultiplier: 1,
     lastUpdate: Date.now(),
+   danmakuGeneratorActive: false,
     aiMessages: [
         "主播今天玩什么？",
         "加油！支持主播！",
@@ -11260,10 +11662,10 @@ const liveStreamSystem = {
         "明天还直播吗？"
     ],
     aiNames: [
-        "闫闫", "花花", "茶茶", "鱼鱼", "通远","叶子", "沉鱼", "探探", "凡", "尝试", "胖大仙", "水芙蓉", "亲情相爱一家人", "伍思凯", "吖晴儿", 
+        "闫闫", "花花", "茶茶", "鱼鱼", "通元","叶子", "沉鱼", "探探", "凡", "尝试", "胖大仙", "水芙蓉", "亲情相爱一家人", "伍思凯", "吖晴儿", 
         "苏菲", "王荣", "瑶瑶", "悸声", "反骨仔", "冰糖红茶", "蝴蝶效应,", "悦悦", "老倪", "慕白", "轩辕", "阿孝", "yuan", "王北的北,", "我已经在拉扯了", "林贝", "慕白", "阿迪", "微软是你", "王汝刚", "刘禹锡", "艾夫华", "渥太华", "阿杰", "阿道夫", "豆腐花茜茜", "阿法和阿伟","峰", "好人", "奥格威", "阿睿", "星嗄","阿华田", "子女不能", "开膛手杰华", "埃弗阿福", "黑丝姐姐", "黑菲","爱喝牛奶", "骚粉", "王如玉", "血红女爵", "水果",
         "萩", "我不高兴", "山麒麟", "管者", "阿斯巴甜","圣光", "征服他哥", "字画大师", "诗人睡睡", "孙国辉",
-        "君子不气", "空白", "香香", "浪荡丶", "啦喇菈辣","十分", "神烦狗", "张枫五", "偶见", "孙国伟",
+        "君子不气", "空白", "香香", "浪荡丶", "啦喇菈辣","十分", "神烦狗", "张枫五", "偶见", "孙国伟","时迁", "Plan B", "冥王", "阿顺帆",
         "Tung", "迷雾", "源", "泯潮猫", "寻良","冰箭", "赵哥", "张德荣", "三国英", "清茶", 
         "有意思", "非酋本酋", "肝双", "氪金佬", "舍尔", "赵哥帅", "张宝华", "祝福鱼", "珍贵仁",
          "Cardiac", "战无极", "凹凸曼", "白饭鱼", "独钓寒江雪",
@@ -11313,6 +11715,171 @@ const liveStreamSystem = {
         "感谢你的直播陪伴"
     ]
 };
+const danmakuSystem = {
+    active: true,
+    speed: 5, // 1-10
+    density: 3, // 1-10
+    container: null,
+    colors: {
+        system: '#ff00ff',
+        viewer: '#ffffff',
+        player: '#4CAF50',
+        donation: '#FFD700'
+    },
+    tracks: [], // 弹幕轨道
+    trackHeight: 30, // 每条轨道的高度
+    maxTracks: 10, // 最大轨道数
+    fontSizes: [14, 16, 18, 20],
+    styles: ['normal', 'bold', 'italic']
+};
+// 初始化弹幕系统
+function initDanmakuSystem() {
+    danmakuSystem.container = document.getElementById('danmakuContainer');
+    
+    // 初始化轨道
+    const containerHeight = danmakuSystem.container.clientHeight;
+    danmakuSystem.maxTracks = Math.floor(containerHeight / danmakuSystem.trackHeight);
+    danmakuSystem.tracks = [];
+    
+    for (let i = 0; i < danmakuSystem.maxTracks; i++) {
+        danmakuSystem.tracks.push({
+            occupied: false,
+            lastUsed: 0
+        });
+    }
+    
+    // 设置弹幕控制事件
+    document.getElementById('danmakuToggle').addEventListener('change', function() {
+        danmakuSystem.active = this.checked;
+        if (!this.checked) {
+            clearDanmaku();
+        }
+    });
+    
+    document.getElementById('danmakuSpeed').addEventListener('input', function() {
+        danmakuSystem.speed = parseInt(this.value);
+    });
+    
+    document.getElementById('danmakuDensity').addEventListener('input', function() {
+        danmakuSystem.density = parseInt(this.value);
+    });
+}
+
+// 清除弹幕函数（修复）
+function clearDanmaku() {
+    if (!danmakuSystem.container) return;
+    
+    // 获取所有弹幕元素
+    const danmakuElements = danmakuSystem.container.querySelectorAll('.danmaku');
+    
+    // 遍历所有弹幕元素
+    danmakuElements.forEach(danmaku => {
+        // 获取所有正在运行的动画
+        const animations = danmaku.getAnimations();
+        
+        // 取消所有动画
+        animations.forEach(animation => {
+            animation.cancel();
+        });
+        
+        // 移除元素
+        danmaku.remove();
+    });
+    
+    // 重置所有轨道状态
+    if (danmakuSystem.tracks) {
+        for (let i = 0; i < danmakuSystem.tracks.length; i++) {
+            danmakuSystem.tracks[i].occupied = false;
+            danmakuSystem.tracks[i].lastUsed = Date.now();
+        }
+    }
+}
+
+// 添加弹幕到直播画面
+function addDanmakuToScreen(sender, message, type) {
+    if (!danmakuSystem.active || !player.liveStream.isLive || !danmakuSystem.container) return;
+    
+    // 找到可用的轨道
+    const availableTrack = findAvailableTrack();
+    if (availableTrack === -1) return;
+    
+    // 创建弹幕元素
+    const danmaku = document.createElement('div');
+    danmaku.className = 'danmaku';
+    danmaku.style.position = 'absolute';
+    danmaku.style.top = `${availableTrack * danmakuSystem.trackHeight}px`;
+    danmaku.style.right = '0';
+    danmaku.style.color = danmakuSystem.colors[type] || '#ffffff';
+    danmaku.style.fontSize = `${danmakuSystem.fontSizes[Math.floor(Math.random() * danmakuSystem.fontSizes.length)]}px`;
+    danmaku.style.fontWeight = Math.random() > 0.7 ? 'bold' : 'normal';
+    danmaku.style.fontStyle = Math.random() > 0.8 ? 'italic' : 'normal';
+    danmaku.style.textShadow = '1px 1px 2px rgba(0,0,0,0.7)';
+    danmaku.style.whiteSpace = 'nowrap';
+    danmaku.style.zIndex = '2';
+    danmaku.style.opacity = '0.9';
+    danmaku.style.transform = 'translateX(100%)';
+    danmaku.innerHTML = `<span style="color: #aaa;">${sender}:</span> ${message}`;
+    
+    // 添加到容器
+    danmakuSystem.container.appendChild(danmaku);
+    
+    // 标记轨道占用
+    danmakuSystem.tracks[availableTrack].occupied = true;
+    
+    // 计算动画时间
+    const containerWidth = danmakuSystem.container.clientWidth;
+    const danmakuWidth = danmaku.offsetWidth;
+    const distance = containerWidth + danmakuWidth;
+    const duration = distance / (danmakuSystem.speed * 50);
+    
+    // 应用动画
+    const animation = danmaku.animate(
+        [
+            { transform: 'translateX(100%)' },
+            { transform: `translateX(-${danmakuWidth}px)` }
+        ],
+        {
+            duration: duration * 1000,
+            easing: 'linear'
+        }
+    );
+    
+    animation.onfinish = () => {
+        // 动画完成后移除元素并释放轨道
+        if (danmaku.parentNode === danmakuSystem.container) {
+            danmaku.remove();
+        }
+        if (availableTrack < danmakuSystem.tracks.length) {
+            danmakuSystem.tracks[availableTrack].occupied = false;
+            danmakuSystem.tracks[availableTrack].lastUsed = Date.now();
+        }
+    };
+}
+
+// 查找可用轨道
+function findAvailableTrack() {
+    if (!danmakuSystem.tracks || danmakuSystem.tracks.length === 0) return -1;
+    
+    // 按最后使用时间排序
+    const sortedTracks = [...danmakuSystem.tracks]
+        .map((track, index) => ({ ...track, index }))
+        .sort((a, b) => a.lastUsed - b.lastUsed);
+    
+    for (let i = 0; i < sortedTracks.length; i++) {
+        if (!sortedTracks[i].occupied) {
+            return sortedTracks[i].index;
+        }
+    }
+    
+    // 如果没有空闲轨道，尝试使用最久未使用的轨道
+    const oldestTrack = sortedTracks[0];
+    if (Date.now() - oldestTrack.lastUsed > 5000) {
+        return oldestTrack.index;
+    }
+    
+    return -1;
+}
+
 
 // 初始化直播系统
 function initLiveStreamSystem() {
@@ -11326,7 +11893,8 @@ function initLiveStreamSystem() {
             totalLiveTime: 0,
             expMultiplier: 1,
             viewers: [],
-            donationHistory: []
+            donationHistory: [],
+            lastDanmaku: null
         };
     }
 }
@@ -11355,12 +11923,12 @@ function toggleLiveStreamSystem() {
 function updateLiveStreamUI() {
     document.getElementById('liveStreamLevel').textContent = player.liveStream.level;
     document.getElementById('liveStreamExp').textContent = Math.floor(player.liveStream.exp);
-    document.getElementById('liveStreamNextExp').textContent = liveStreamSystem.expToNextLevel[player.liveStream.level - 1] || 10000;
+    document.getElementById('liveStreamNextExp').textContent = liveStreamSystem.expToNextLevel[player.liveStream.level - 1] || 10000000000;
     document.getElementById('totalLiveEarnings').textContent = (player.liveStream.totalEarnings/10).toFixed(0);
     document.getElementById('liveViewerCount').textContent = player.liveStream.viewers.length;
     
     // 更新经验条
-    const expPercent = Math.min(100, (player.liveStream.exp / (liveStreamSystem.expToNextLevel[player.liveStream.level - 1] || 10000)) * 100);
+    const expPercent = Math.min(100, (player.liveStream.exp / (liveStreamSystem.expToNextLevel[player.liveStream.level - 1] || 10000000000)) * 100);
     document.getElementById('liveExpProgress').style.width = `${expPercent}%`;
     
     // 更新观众列表
@@ -11406,7 +11974,7 @@ function updateLiveStreamUI() {
     const startLiveBtn = document.getElementById('startLiveBtn');
     
     if (player.liveStream.isLive) {
-        liveStatus.innerHTML = `<div style="font-size: 24px; color: #ff00ff;">直播中</div><div>已直播: ${formatTime(Date.now() - player.liveStream.lastLiveStart)}</div>`;
+        liveStatus.innerHTML = `<div style="font-size: 24px; color: #ff00ff;">直播中</div><div>已直播: ${formatTimew(Date.now() - player.liveStream.lastLiveStart)}</div>`;
         startLiveBtn.textContent = '结束直播';
         startLiveBtn.style.background = '#f44336';
     } else {
@@ -11415,6 +11983,37 @@ function updateLiveStreamUI() {
         startLiveBtn.style.background = '#ff00ff';
     }
 }
+function generateAIDanmaku() {
+    if (!player.liveStream.isLive || !danmakuSystem.active) {
+        liveStreamSystem.danmakuGeneratorActive = false;
+        return;
+    }
+    
+const minInterval = 10000 - (danmakuSystem.density * 800);
+    const maxInterval = 20000 - (danmakuSystem.density * 1500);
+    const interval = Math.random() * (maxInterval - minInterval) + minInterval;
+    
+    liveStreamSystem.danmakuGeneratorTimer = setTimeout(() => {
+        if (player.liveStream.isLive && player.liveStream.viewers.length > 0) {
+            const viewerIndex = Math.floor(Math.random() * player.liveStream.viewers.length);
+            const viewer = player.liveStream.viewers[viewerIndex];
+            const message = liveStreamSystem.aiMessages[Math.floor(Math.random() * liveStreamSystem.aiMessages.length)];
+            addDanmakuMessageq(viewer.name, message, "viewer");
+            
+            // 有小概率打赏
+            if (Math.random() < 0.05) {
+                generateDonation(viewer);
+            }
+        }
+        
+        // 递归调用前检查直播状态
+        if (player.liveStream.isLive) {
+            generateAIDanmaku();
+        } else {
+            liveStreamSystem.danmakuGeneratorActive = false;
+        }
+    }, interval);
+}
 
 // 开始直播
 function startLiveStream() {
@@ -11422,21 +12021,28 @@ function startLiveStream() {
         stopLiveStream();
         return;
     }
-    
+     // 清除可能存在的弹幕生成器
+    if (liveStreamSystem.danmakuGeneratorActive) {
+        clearDanmakuGenerator();
+    }
     player.liveStream.isLive = true;
     player.liveStream.lastLiveStart = Date.now();
     player.liveStream.viewers = [];
-    
+     liveStreamSystem.maxViewers = 10 + Math.floor(player.liveStream.level * 5);
     // 添加初始观众
-    addViewers(5);
-    
+    addViewers(liveStreamSystem.maxViewers*0.86);
+     
     // 开始观众和互动定时器
     player.liveStream.viewerInterval = setInterval(updateViewers, 10000); // 每10秒更新观众
     player.liveStream.interactionInterval = setInterval(generateInteractions, 10000); // 每10秒生成互动
-   
+   initDanmakuSystem();
+ // 启动弹幕生成器（确保只启动一次）
+    if (!liveStreamSystem.danmakuGeneratorActive) {
+        generateAIDanmaku();
+        liveStreamSystem.danmakuGeneratorActive = true;
+    }
     updateLiveStreamUI();
-    addDanmakuMessage("系统", "直播开始了！欢迎大家来到直播间！", "system");
-    
+    addDanmakuMessageq("系统", "直播开始了！欢迎大家来到直播间！", "system");
     logAction("开始直播", "success");
 }
 
@@ -11451,22 +12057,32 @@ function stopLiveStream() {
     // 计算经验
     const expGain = Math.floor(liveTime / 1000) * player.liveStream.expMultiplier;
     player.liveStream.exp += expGain;
-    
+     liveStreamSystem.maxViewers = 10 + Math.floor(player.liveStream.level * 5);
     // 检查升级
     checkLiveLevelUp();
     
     // 清除定时器
     clearInterval(player.liveStream.viewerInterval);
     clearInterval(player.liveStream.interactionInterval);
-    
+    clearDanmakuGenerator();
     // 清空观众
     player.liveStream.viewers = [];
+    clearDanmaku();
     
     updateLiveStreamUI();
-    addDanmakuMessage("系统", "直播已结束，感谢观看！", "system");
+    addDanmakuMessageq("系统", "直播已结束，感谢观看！", "system");
     
     logAction(`结束直播，获得 ${expGain} 直播经验`, "success");
+    
 }
+function clearDanmakuGenerator() {
+    if (liveStreamSystem.danmakuGeneratorTimer) {
+        clearTimeout(liveStreamSystem.danmakuGeneratorTimer);
+        liveStreamSystem.danmakuGeneratorTimer = null;
+    }
+    liveStreamSystem.danmakuGeneratorActive = false;
+}
+
 
 // 推广流量
 function boostLiveStream() {
@@ -11482,10 +12098,10 @@ function boostLiveStream() {
     player.liveStream.boostEndTime = Date.now() + 1 * 60 * 60 * 1000;
     
     // 添加更多观众
-    addViewers(5);
+    addViewers(liveStreamSystem.maxViewers*0.4);
     
     updateLiveStreamUI();
-    addDanmakuMessage("系统", "主播使用了流量推广，直播间人气上升！", "system");
+    addDanmakuMessageq("系统", "主播使用了流量推广，直播间人气上升！", "system");
     
     logAction("使用流量推广，直播经验获取速度提升2倍，持续1小时", "success");
 }
@@ -11519,14 +12135,14 @@ function updateViewers() {
         const leaveViewer = player.liveStream.viewers[leaveIndex];
         player.liveStream.viewers.splice(leaveIndex, 1);
         
-        addDanmakuMessage("系统", `${leaveViewer.name} 离开了直播间`, "system");
+        addDanmakuMessageq("系统", `${leaveViewer.name} 离开了直播间`, "system");
     }
     
     // 随机有新观众加入
     if (player.liveStream.viewers.length < liveStreamSystem.maxViewers && Math.random() < 0.6) {
         addViewers(1);
         const newViewer = player.liveStream.viewers[player.liveStream.viewers.length - 1];
-        addDanmakuMessage("系统", `${newViewer.name} 进入了直播间`, "system");
+        addDanmakuMessageq("系统", `${newViewer.name} 进入了直播间`, "system");
     }
     
     updateLiveStreamUI();
@@ -11536,18 +12152,18 @@ function updateViewers() {
 function generateInteractions() {
     if (!player.liveStream.isLive || player.liveStream.viewers.length === 0) return;
     
-    // 随机生成1-4条互动消息
-    const messageCount = Math.floor(Math.random() * 4) + 1;
+    // 随机生成1-8条互动消息
+    const messageCount = Math.floor(Math.random() * 7) + 1;
     
     for (let i = 0; i < messageCount; i++) {
         const viewerIndex = Math.floor(Math.random() * player.liveStream.viewers.length);
         const viewer = player.liveStream.viewers[viewerIndex];
         
         const message = liveStreamSystem.aiMessages[Math.floor(Math.random() * liveStreamSystem.aiMessages.length)];
-        addDanmakuMessage(viewer.name, message, "viewer");
+        addDanmakuMessageq(viewer.name, message, "viewer");
         
         // 有小概率打赏
-        if (Math.random() < 0.1) {
+        if (Math.random() < 0.05) {
             generateDonation(viewer);
         }
     }
@@ -11556,8 +12172,8 @@ function generateInteractions() {
 // 生成打赏
 function generateDonation(viewer) {
     // 打赏金额基于直播等级
-    const baseAmount = player.liveStream.level * 10;
-    const amount = Math.floor(baseAmount * (0.5 + Math.random() * 10.5));
+    const baseAmount = player.liveStream.level * 1;
+    const amount = Math.floor(baseAmount * (1 + Math.random() * 50));
     
     player.items.rose += amount;
     player.liveStream.totalEarnings += amount;
@@ -11572,7 +12188,7 @@ function generateDonation(viewer) {
         time: Date.now()
     });
     
-    addDanmakuMessage("系统", `🎉 ${viewer.name} 打赏了 ${amount} 朵玫瑰花！${message}`, "donation");
+    addDanmakuMessageq("系统", `🎉 ${viewer.name} 打赏了 ${amount} 朵玫瑰花！${message}`, "donation");
     updateLiveStreamUI();
     updateDisplay();
 }
@@ -11584,7 +12200,7 @@ function sendDanmaku() {
     
     if (message === '') return;
     
-    addDanmakuMessage(player.name, message, "player");
+    addDanmakuMessageq(player.name, message, "player");
     input.value = '';
     
     // 玩家发送消息后，AI观众有概率回应
@@ -11602,14 +12218,14 @@ function sendDanmaku() {
                 response = "同意主播！" ;
             }
             
-            addDanmakuMessage(viewer.name, response, "viewer");
+            addDanmakuMessageq(viewer.name, response, "viewer");
         }, 1000 + Math.random() * 2000);
     }
 }
 
 // 添加弹幕消息
-function addDanmakuMessage(sender, message, type) {
-    const container = document.getElementById('danmakuContainer');
+function addDanmakuMessageq(sender, message, type) {
+    const container = document.getElementById('danmakuContainerq');
     const messageElement = document.createElement('div');
     messageElement.className = 'danmaku-message';
     
@@ -11631,12 +12247,13 @@ function addDanmakuMessage(sender, message, type) {
     
     messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
     container.appendChild(messageElement);
-    
+      if (player.liveStream.isLive) {
+        addDanmakuToScreen(sender, message, type);}
     // 自动滚动到底部
     container.scrollTop = container.scrollHeight;
-    
+   
     // 限制消息数量
-    if (container.children.length > 100) {
+    if (container.children.length > 30) {
         container.removeChild(container.children[0]);
     }
 }
@@ -11650,9 +12267,9 @@ function checkLiveLevelUp() {
         player.liveStream.exp -= nextLevelExp;
         
         // 增加最大观众数
-        liveStreamSystem.maxViewers = 10 + Math.floor(player.liveStream.level * 5);
+         liveStreamSystem.maxViewers = 10 + Math.floor(player.liveStream.level * 5);
         
-        addDanmakuMessage("系统", `恭喜！直播等级提升到 ${player.liveStream.level} 级！`, "system");
+        addDanmakuMessageq("系统", `恭喜！直播等级提升到 ${player.liveStream.level} 级！`, "system");
         logAction(`直播等级提升到 ${player.liveStream.level} 级！`, "success");
         
         // 递归检查是否还能升级
@@ -11663,7 +12280,7 @@ function checkLiveLevelUp() {
 }
 
 // 格式化时间
-function formatTime(ms) {
+function formatTimew(ms) {
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
@@ -11682,7 +12299,7 @@ function updateLiveStreamExperience() {
         if (player.liveStream.boostEndTime && now > player.liveStream.boostEndTime) {
             player.liveStream.expMultiplier = 1;
             player.liveStream.boostEndTime = null;
-            addDanmakuMessage("系统", "流量推广效果已结束", "system");
+            addDanmakuMessageq("系统", "流量推广效果已结束", "system");
         }
         
         // 每秒获得1点经验乘以倍率
@@ -11697,6 +12314,160 @@ function updateLiveStreamExperience() {
     }
 }
 
+// 礼物数据
+const giftBoxSystem = {
+    gifts: [
+        { name: "鲜花", value: 10000, probability: 70, icon: "💐", color: "#4CAF50" },
+        { name: "墨镜", value: 25000, probability: 19.889, icon: "🕶️", color: "#2196F3" },
+        { name: "礼花筒", value: 50000, probability: 7, icon: "🎆", color: "#FFC107" },
+        { name: "比心兔兔", value: 100000, probability: 3, icon: "🐰💖", color: "#E91E63" },
+        { name: "热气球", value: 520000, probability: 0.1, icon: "🎈", color: "#9C27B0" },
+        { name: "跑车", value: 1200000, probability: 0.01, icon: "🏎️", color: "#FF5722" },
+        { name: "嘉年华", value: 2800000, probability: 0.001, icon: "🎪", color: "#00BCD4" }
+    ],
+    drawCost: 50
+};
+
+// 打开盲盒宝箱界面
+function openGiftBox() {
+    document.getElementById('giftBoxModal').style.display = 'flex';
+    resetGiftBox();
+}
+
+// 关闭盲盒宝箱界面
+function closeGiftBox() {
+    document.getElementById('giftBoxModal').style.display = 'none';
+}
+
+// 重置盲盒显示
+function resetGiftBox() {
+    const boxInner = document.getElementById('boxInner');
+    boxInner.style.transform = 'rotateY(0deg)';
+    
+    document.getElementById('giftIcon').textContent = '🎁';
+    document.getElementById('giftName').textContent = '未知礼物';
+    document.getElementById('giftValue').textContent = '价值: 0 玫瑰花';
+}
+
+// 抽取礼物
+function drawGift() {
+    if (player.nightClub.starCoins < 500) {
+        logAction("星币不足！", "error");
+        return;
+    }
+    
+    // 扣除星币
+    player.nightClub.starCoins -= 500;
+   
+    
+    // 计算总概率
+    const totalProbability = giftBoxSystem.gifts.reduce((sum, gift) => sum + gift.probability, 0);
+    
+    // 生成随机数
+    const random = Math.random() * totalProbability;
+    
+    // 确定获得的礼物
+    let cumulative = 0;
+    let selectedGift = null;
+    
+    for (const gift of giftBoxSystem.gifts) {
+        cumulative += gift.probability;
+        if (random <= cumulative) {
+            selectedGift = gift;
+            break;
+        }
+    }
+    
+    // 如果没有选中礼物（理论上不会发生），默认给鲜花
+    if (!selectedGift) {
+        selectedGift = giftBoxSystem.gifts[0];
+    }
+    
+    // 更新直播总收益
+    player.liveStream.totalEarnings += selectedGift.value;
+    
+    // 记录打赏
+    player.liveStream.donationHistory.push({
+        viewer: "主播自己",
+        amount: selectedGift.value,
+        message: `获得${selectedGift.name}`,
+        time: Date.now()
+    });
+    
+    // 显示礼物结果
+    showGiftResult(selectedGift);
+    
+    // 添加弹幕消息
+    addDanmakuMessageq("系统", `恭喜主播从盲盒中，抽到了${selectedGift.name}`, "system");
+    
+    // 更新UI
+    updateLiveStreamUI();
+    updateDisplay();
+    
+    logAction(`开启盲盒获得${selectedGift.name}，价值${selectedGift.value}朵玫瑰花`, "success");
+}
+
+// 显示礼物结果
+function showGiftResult(gift) {
+    const boxInner = document.getElementById('boxInner');
+    const giftIcon = document.getElementById('giftIcon');
+    const giftName = document.getElementById('giftName');
+    const giftValue = document.getElementById('giftValue');
+    
+    // 更新礼物信息
+    giftIcon.textContent = gift.icon;
+    giftName.textContent = gift.name;
+    giftName.style.color = gift.color;
+    giftValue.textContent = `价值: ${gift.value.toLocaleString()} 玫瑰花`;
+    
+    // 添加动画效果
+    boxInner.style.transform = 'rotateY(180deg)';
+    
+    // 添加粒子效果
+    createParticles();
+}
+
+// 创建粒子效果
+function createParticles() {
+    const giftBox = document.getElementById('giftBox');
+    const colors = ['#ff9966', '#ff5e62', '#ffcc00', '#4CAF50', '#2196F3'];
+    
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '8px';
+        particle.style.height = '8px';
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.borderRadius = '50%';
+        particle.style.zIndex = '10';
+        
+        // 随机位置
+        const posX = Math.random() * 200;
+        const posY = Math.random() * 200;
+        particle.style.left = `${posX}px`;
+        particle.style.top = `${posY}px`;
+        
+        giftBox.appendChild(particle);
+        
+        // 动画效果
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 100 + Math.random() * 100;
+        const duration = 1000 + Math.random() * 500;
+        
+        particle.animate(
+            [
+                { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                { transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`, opacity: 0 }
+            ],
+            {
+                duration: duration,
+                easing: 'ease-out'
+            }
+        ).onfinish = () => {
+            particle.remove();
+        };
+    }
+}
 
 
 
@@ -15516,31 +16287,31 @@ function generateTreasureMonster(minStage, maxStage) {
     } else if (stage <= 120) {
         attackMultiplier = 35000 + (stage - 89) * 100000000;
     } else if (stage <= 250) {
-        attackMultiplier = 350000 + (stage - 119) * 100000000000;
+        attackMultiplier = 350000 + (stage - 119) * 1000000000000;
     } else if (stage <= 350) {
-        attackMultiplier = 3500000 + (stage - 249) * 1000000000000000;
+        attackMultiplier = 3500000 + (stage - 249) * 10000000000000000;
     } else if (stage <= 450) {
-        attackMultiplier = 450000000 + (stage - 349) * 1000000000000000000;
+        attackMultiplier = 450000000 + (stage - 349) * 100000000000000000000;
     } else if (stage <= 550) {
-        attackMultiplier = 5500009000 + (stage - 449) * 100000000000000000000000;
+        attackMultiplier = 5500009000 + (stage - 449) * 10000000000000000000000000;
     } else if (stage <= 650) {
-        attackMultiplier = 650000000900 + (stage - 549) * 10000000000000000000000000000;
+        attackMultiplier = 650000000900 + (stage - 549) * 1000000000000000000000000000000;
     } else if (stage <= 700) {
-        attackMultiplier = 6500000000900 + (stage - 649) * 1000000000000000000000000000000000;
+        attackMultiplier = 6500000000900 + (stage - 649) * 10000000000000000000000000000000000000;
     } else if (stage <= 750) {
-        attackMultiplier = 6500000000000900 + (stage - 699) * 10000000000000000000000000000000000000;
+        attackMultiplier = 6500000000000900 + (stage - 699) * 100000000000000000000000000000000000000000;
     } else if (stage <= 790) {
-        attackMultiplier = 6500000000000000900 + (stage - 549) * 100000000000000000000000000000000000000000;
+        attackMultiplier = 6500000000000000900 + (stage - 549) * 100000000000000000000000000000000000000000000000;
     } else if (stage <= 820) {
-        attackMultiplier = 65000000000000000000900 + (stage - 549) * 100000000000000000000000000000000000000000000000000;
+        attackMultiplier = 65000000000000000000900 + (stage - 549) * 100000000000000000000000000000000000000000000000000000;
     } else if (stage <= 840) {
-        attackMultiplier = 6500000000000000000000000900 + (stage - 549) * 1000000000000000000000000000000000000000000000000000000000;
+        attackMultiplier = 6500000000000000000000000900 + (stage - 549) * 100000000000000000000000000000000000000000000000000000000000000;
     } else if (stage <= 860) {
-        attackMultiplier = 10000000000000000000000000000000 + (stage - 649) * 1000000000000000000000000000000000000000000000000000000000000000000;
+        attackMultiplier = 10000000000000000000000000000000 + (stage - 649) * 100000000000000000000000000000000000000000000000000000000000000000000000000;
     } else if (stage <= 900) {
-        attackMultiplier = 100000000000000000000000000000000000 + (stage - 749) * 100000000000000000000000000000000000000000000000000000000000000000000000000000;
+        attackMultiplier = 100000000000000000000000000000000000 + (stage - 749) * 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
     } else {
-        attackMultiplier = 1000000000000000000000000000000000000000 + (stage - 849) * 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+        attackMultiplier = 1000000000000000000000000000000000000000 + (stage - 849) * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
     }
     
     // 应用词条效果
@@ -16444,7 +17215,10 @@ const titleConfig = {
         { name: "神级驯兽师", condition: (p) => p.pets?.yuyu2?.level > 10, bonus: { critMultiplier: 4 } },
         { name: "人级驯兽师", condition: (p) => p.pets?.yuyu3?.level > 10, bonus: { critMultiplier: 4 } },
         { name: "地级驯兽师", condition: (p) => p.pets?.yuyu4?.level > 10, bonus: { critMultiplier: 4 } },
-        { name: "天级驯兽师", condition: (p) => p.pets?.yuyu5?.level > 10, bonus: { critMultiplier: 4 } }
+        { name: "天级驯兽师", condition: (p) => p.pets?.yuyu5?.level > 10, bonus: { critMultiplier: 4 } },
+        { name: "帝级驯兽师", condition: (p) => p.pets?.yuyu6?.level > 10, bonus: { critMultiplier: 4 } },
+        { name: "仙级驯兽师", condition: (p) => p.pets?.yuyu7?.level > 10, bonus: { critMultiplier: 4 } },
+        { name: "创世级驯兽师", condition: (p) => p.pets?.yuyu8?.level > 10, bonus: { critMultiplier: 4 } }
     ],
     // 魂环分支
     soulRingBranch: [
@@ -16889,7 +17663,7 @@ const expeditionConfig = {
             difficulty: "简单",
             duration: 30, // 分钟
             baseReward: {
-                rose: 3,
+                rose: 30,
                 vipPower: 1,
                 bait: 1
             },
@@ -16902,7 +17676,7 @@ const expeditionConfig = {
             difficulty: "中等",
             duration: 60,
             baseReward: {
-                rose: 10,
+                rose: 80,
                 vipPower: 3,
                 bait: 3
             },
@@ -16915,7 +17689,7 @@ const expeditionConfig = {
             difficulty: "困难",
             duration: 120,
             baseReward: {
-                rose: 30,
+                rose: 200,
                 vipPower: 10,
                 bait: 10
             },
@@ -16928,7 +17702,7 @@ const expeditionConfig = {
             difficulty: "极难",
             duration: 240,
             baseReward: {
-                rose: 100,
+                rose: 500,
                 vipPower: 35,
                 bait: 35
             },
@@ -16941,7 +17715,7 @@ const expeditionConfig = {
             difficulty: "噩梦",
             duration: 480,
             baseReward: {
-                rose: 350,
+                rose: 1200,
                 vipPower: 120,
                 bait: 120
             },
@@ -16954,7 +17728,7 @@ const expeditionConfig = {
             difficulty: "地狱",
             duration: 960,
             baseReward: {
-                rose: 1500,
+                rose: 3000,
                 vipPower: 480,
                 bait: 480
             },
@@ -18131,23 +18905,23 @@ function generateTowerMonster() {
     } else if (floor <= 1000) {
       attackMultiplier = 1000 + (floor - 299) * 100;
     } else if (floor <= 5000) {
-      attackMultiplier = 5000 + (floor - 999) * 1000;
+      attackMultiplier = 5000 + (floor - 999) * 10000;
     } else if (floor <= 10000) {
-      attackMultiplier = 10000 + (floor - 4999) * 100000;
+      attackMultiplier = 10000 + (floor - 4999) * 10000000;
     } else if (floor <= 20000) {
-      attackMultiplier = 200000 + (floor - 9999) * 10000000000;
+      attackMultiplier = 200000 + (floor - 9999) * 10000000000000;
     } else if (floor <= 30000) {
-      attackMultiplier = 3000000 + (floor - 19999) * 100000000000000;
+      attackMultiplier = 3000000 + (floor - 19999) * 100000000000000000000;
     } else if (floor <= 50000) {
-      attackMultiplier = 50000000 + (floor - 29999) * 10000000000000000000000;
+      attackMultiplier = 50000000 + (floor - 29999) * 100000000000000000000000000000;
     } else if (floor <= 60000) {
-      attackMultiplier = 60000000 + (floor - 49999) * 100000000000000000000000000000000000;
+      attackMultiplier = 60000000 + (floor - 49999) * 100000000000000000000000000000000000000000;
    }  else if (floor <= 70000) {
-     attackMultiplier = 70000000 + (floor - 59999) * 1000000000000000000000000000000000000000000000000000;
+     attackMultiplier = 70000000 + (floor - 59999) * 10000000000000000000000000000000000000000000000000000000000;
     } else if (floor <= 80000) {
-     attackMultiplier = 80000000 + (floor - 69999) * 100000000000000000000000000000000000000000000000000000000000000;
+     attackMultiplier = 80000000 + (floor - 69999) * 10000000000000000000000000000000000000000000000000000000000000000000000;
     } else {
-      attackMultiplier = 90000000 + (floor - 79999) * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+      attackMultiplier = 90000000 + (floor - 79999) * 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
     }
 
     let attack = attackMultiplier * (10 + floor * 500);
@@ -19180,8 +19954,8 @@ function loadWorldBossData() {
                     
                     // 2. 新增：计算真实玩家的离线自动攻击伤害
                     if (worldBossData.isAutoAttacking) { // 仅当开启自动攻击时计算
-                        // 玩家每秒攻击13次（与startAutoAttack一致）
-                        const attacksPerSecond = 13;
+                        // 玩家每秒攻击11次（与startAutoAttack一致）
+                        const attacksPerSecond = 11;
                         const totalAttacks = offlineSeconds * attacksPerSecond;
                         
                         // 计算单次攻击的平均伤害（参考calculatePlayerDamage逻辑）
@@ -19379,9 +20153,9 @@ function loadWorldBossData() {
                 const attackMultiplier = 0.2 + Math.random() * 30; 
                 const attack = Math.floor(player.battle.playerAttack * attackMultiplier);
                 const multiAttack = Math.max(1, 
-                    Math.floor(player.battle.playerMultiAttack * (0.3 + Math.random() * 1.1))); 
+                    Math.floor(player.battle.playerMultiAttack * (0.3 + Math.random() * 1.5))); 
                 const critRate = 0.5 + Math.random() * 1.9; 
-                const critDamage = player.battle.playerCritDamage * (0.3 + Math.random() * 1.1);
+                const critDamage = player.battle.playerCritDamage * (0.3 + Math.random() * 1.5);
                 
                 worldBossData.virtualPlayers.push({
                     name: name,
