@@ -976,6 +976,7 @@ button:hover {
     <div id="gameLogPage3" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>更新日志</h4>
+            <p>2025/9/14 : 优化扫荡严重卡顿，修复杂货铺兑换异常只能兑换1个的BUG</p>
             <p>2025/9/12 : 直播：盲盒出的礼物不加玫瑰花，只加粉丝数量，更新加了新3个宝箱9装备20成就3宠物3称号。</p>
             <p>2025/9/11 : 修复农田和离线时间异常显示，  增加直播：500转开启，每级增加点击伤害，粉丝数增加GPS加成，流量是获得多倍经验（每次进游戏建议结束直播在重新开播，不这样可能没礼物）（第一次加载记得刷新一下页面，第一次直播经验显示异常，刷新后正常）</p>
             <p>2025/9/10 : 玩家等级：50转开启，每一级增加10倍效果。世界地图：100转开启：打怪经验可以给玩家升级每次生成怪物消耗1星币（后续会加掉落材料）（如果属性显示低打一下打怪模式）</p>
@@ -9820,11 +9821,10 @@ function autoSweepProcess() {
     let soulRingDrops = 0;
     let itemDrops = 0;
     
-    // 模拟扫荡过程
-    for (let stage = currentStage; stage < targetStage; stage++) {
+     for (let stage = currentStage; stage < targetStage; stage++) {
         player.battle.currentStage = stage;
         
-        // 固定掉落3个副本装备
+        // 固定掉落3个副本装备 - 使用静默方式添加
         for (let i = 0; i < 3; i++) {
             const dungeonDrops = getDropRatesByStage(stage);
             const rand = Math.random();
@@ -9833,20 +9833,20 @@ function autoSweepProcess() {
             for (const [rarity, prob] of Object.entries(dungeonDrops)) {
                 cumulativeProb += prob;
                 if (rand < cumulativeProb) {
-                    addDungeonEquipment(rarity);
+                    addDungeonEquipmentSilent(rarity); // 使用静默版本
                     dungeonEquipmentDrops++;
                     break;
                 }
             }
         }
         
-        // 魂环掉落
-        const soulRingResult = simulateSoulRingDrop(stage);
+        // 魂环掉落 - 使用静默方式
+        const soulRingResult = simulateSoulRingDropSilent(stage);
         if (soulRingResult) {
             soulRingDrops++;
         }
         
-        // 道具掉落
+      // 道具掉落 - 保持原样（如果需要也可以静默）
         const itemResult = simulateItemDrop(stage);
         if (itemResult) {
             itemDrops++;
@@ -9861,6 +9861,101 @@ function autoSweepProcess() {
     logBattleAction(`获得副本装备: ${dungeonEquipmentDrops}件，魂环: ${soulRingDrops}个，道具: ${itemDrops}个`);
       updateOfficialSystemDisplay();
         updateMonsterUI(); 
+}
+// 静默添加副本装备（不显示提示）
+function addDungeonEquipmentSilent(rarity) {
+    const config = dungeonEquipmentTypes[rarity];
+    const growthRate = Math.random() * (config.growthRange[1] - config.growthRange[0]) + config.growthRange[0];
+
+    const existingEq = player.dungeonEquipment.find(eq => eq.rarity === rarity);
+    if (existingEq) {
+        existingEq.quantity = (existingEq.quantity || 1) + 1;
+        if (existingEq.quantity >= 3) {
+            existingEq.level++;
+            existingEq.quantity = 0;
+        }
+    } else {
+        const newEq = {
+            name: config.name,
+            rarity: rarity,
+            level: 1,
+            growthRate: growthRate,
+            quantity: 1
+        };
+        player.dungeonEquipment.push(newEq);
+    }
+}
+
+// 静默添加魂环（不显示提示）
+function simulateSoulRingDropSilent(stage) {
+    const soulRingDrops = [
+        { minStage: 1, type: 'year1', chance: 0.02 },
+        { minStage: 15, type: 'year10', chance: 0.02 },
+        { minStage: 25, type: 'year100', chance: 0.02 },
+        { minStage: 35, type: 'year1000', chance: 0.02 },
+        { minStage: 45, type: 'year10000', chance: 0.01 },
+        { minStage: 55, type: 'year10000', chance: 0.01 },
+        { minStage: 65, type: 'year100000', chance: 0.01 },
+        { minStage: 75, type: 'year1000000', chance: 0.01 },
+        { minStage: 90, type: 'year10000000', chance: 0.01 },
+        { minStage: 120, type: 'year100000000', chance: 0.01 },
+        { minStage: 140, type: 'year2', chance: 0.01 },
+        { minStage: 160, type: 'year3', chance: 0.01 },
+        { minStage: 180, type: 'year4', chance: 0.01 },
+        { minStage: 200, type: 'year5', chance: 0.01 },
+        { minStage: 220, type: 'year6', chance: 0.01 },
+        { minStage: 240, type: 'year7', chance: 0.01 },
+        { minStage: 260, type: 'year8', chance: 0.01 },
+        { minStage: 280, type: 'year9', chance: 0.01 },
+        { minStage: 300, type: 'year11', chance: 0.01 },
+        { minStage: 320, type: 'year12', chance: 0.01 },
+        { minStage: 340, type: 'year13', chance: 0.01 },
+        { minStage: 360, type: 'year14', chance: 0.01 },
+        { minStage: 380, type: 'year15', chance: 0.01 },
+        { minStage: 400, type: 'year16', chance: 0.01 },
+        { minStage: 420, type: 'year17', chance: 0.01 },
+        { minStage: 440, type: 'year18', chance: 0.01 },
+        { minStage: 460, type: 'year19', chance: 0.01 },
+        { minStage: 480, type: 'year20', chance: 0.01 },
+        { minStage: 500, type: 'year21', chance: 0.01 },
+        { minStage: 520, type: 'year22', chance: 0.01 },
+        { minStage: 540, type: 'year23', chance: 0.01 },
+        { minStage: 560, type: 'year24', chance: 0.01 },
+        { minStage: 580, type: 'year25', chance: 0.01 },
+        { minStage: 600, type: 'year26', chance: 0.01 },
+        { minStage: 620, type: 'year27', chance: 0.01 },
+        { minStage: 640, type: 'year28', chance: 0.01 },
+        { minStage: 660, type: 'year29', chance: 0.01 },
+        { minStage: 680, type: 'year30', chance: 0.01 },
+        { minStage: 700, type: 'year31', chance: 0.01 },
+        { minStage: 720, type: 'year32', chance: 0.01 },
+        { minStage: 740, type: 'year33', chance: 0.01 },
+        { minStage: 780, type: 'year34', chance: 0.01 },
+        { minStage: 800, type: 'year35', chance: 0.01 },
+        { minStage: 820, type: 'year36', chance: 0.01 },
+        { minStage: 850, type: 'year37', chance: 0.01 }
+    ];
+    
+    for (const drop of soulRingDrops) {
+        if (stage >= drop.minStage && Math.random() < drop.chance) {
+            addSoulRingSilent(drop.type); // 使用静默版本
+            return true;
+        }
+    }
+    return false;
+}
+
+function addSoulRingSilent(type) {
+    const existing = player.soulRings.find(r => r.type === type);
+    if(existing) {
+        existing.level++;
+    } else {
+        player.soulRings.push({
+            type: type,
+            level: 1,
+            multiplier: soulRingTypes[type].baseMult
+        });
+    }
 }
   function addAttributePoint(attribute, amount) {
     // 计算实际要加的点数
@@ -15696,8 +15791,8 @@ function exchangeStardust(type) {
     const exchangeRates = {
         bait: { cost: 100, item: 'baitCount', amount: parseInt(document.getElementById('baitAmount').value), coinRate: 2 },
         key: { cost: 200, item: 'companionKey', amount: parseInt(document.getElementById('keyAmount').value) },
-        rose: { cost: 100, item: 'rose', amount: parseInt(document.getElementById('roseAmount').value), coinRate: 20  },
-        vip: { cost: 100, item: 'vipPower', amount: parseInt(document.getElementById('vipAmount').value), coinRate: 10  },
+        rose: { cost: 100, item: 'rose', amount: parseInt(document.getElementById('roseAmount').value), coinRate: 20 },
+        vip: { cost: 100, item: 'vipPower', amount: parseInt(document.getElementById('vipAmount').value), coinRate: 10 },
         gem: { cost: 5000, item: 'divineGem', amount: parseInt(document.getElementById('gemAmount').value) },
         root: { cost: 500, item: 'rootDetector', amount: parseInt(document.getElementById('rootAmount').value) },
         blood: { cost: 500, item: 'bloodlineDetector', amount: parseInt(document.getElementById('bloodAmount').value) },
@@ -15707,6 +15802,12 @@ function exchangeStardust(type) {
     const config = exchangeRates[type];
     if (!config) return;
     
+    // 输入验证
+    if (isNaN(config.amount) || config.amount <= 0) {
+        logAction("请输入有效的兑换数量！", "error");
+        return;
+    }
+    
     const totalCost = config.cost * config.amount;
     const stardust = player.exploration.resources.stardust;
     
@@ -15715,17 +15816,19 @@ function exchangeStardust(type) {
         return;
     }
     
-    // 扣除星尘
     player.exploration.resources.stardust -= totalCost;
     
-    // 给予物品
+    // 修复点：所有带coinRate的物品都应用倍数
+    const multiplier = config.coinRate || 1;
+    const actualAmount = config.amount * multiplier;
+    
     if (type === 'coin') {
-        player[config.item] += config.amount * config.coinRate;
+        player[config.item] += actualAmount;
     } else {
-        player.items[config.item] = (player.items[config.item] || 0) + config.amount;
+        player.items[config.item] = (player.items[config.item] || 0) + actualAmount;
     }
     
-    logAction(`成功兑换: ${config.amount}${getItemName(type)}`, "success");
+    logAction(`成功兑换: ${actualAmount}${getItemName(type)}`, "success");
     updateGroceriesUI();
     updateDisplay();
     saveGame();
