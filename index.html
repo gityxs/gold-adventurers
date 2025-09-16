@@ -912,7 +912,40 @@ button:hover {
 #giftBoxModal div {
     color: #ffffff;
 }
-
+ 
+    .exchange-btn {
+        background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+    
+    .exchange-btn:hover {
+        background: linear-gradient(to bottom, #66BB6A, #388E3C);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    .exchange-btn:active {
+        transform: translateY(0);
+    }
+    
+    .exchange-item {
+        transition: all 0.3s;
+    }
+    
+    .exchange-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    .gem-icon {
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+    }
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -976,6 +1009,7 @@ button:hover {
     <div id="gameLogPage3" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>更新日志</h4>
+           <p>2025/9/14 : 增加TXT导入存档，增加藏宝图商店，宝藏金币：宝图怪物掉落</p>
             <p>2025/9/14 : 优化扫荡严重卡顿，修复杂货铺兑换异常只能兑换1个的BUG</p>
             <p>2025/9/12 : 直播：盲盒出的礼物不加玫瑰花，只加粉丝数量，更新加了新3个宝箱9装备20成就3宠物3称号。</p>
             <p>2025/9/11 : 修复农田和离线时间异常显示，  增加直播：500转开启，每级增加点击伤害，粉丝数增加GPS加成，流量是获得多倍经验（每次进游戏建议结束直播在重新开播，不这样可能没礼物）（第一次加载记得刷新一下页面，第一次直播经验显示异常，刷新后正常）</p>
@@ -1617,13 +1651,16 @@ button:hover {
         <button onclick="showActivationCodeDialog()">激活码兑换</button>
         <button onclick="saveGame()">保存游戏</button>
         <button onclick="loadGame()">加载游戏</button>
-        <button onclick="exportSave()">导出存档（自动复制）</button>
-        <button onclick="downloadSave()">下载存档</button>
+        <button onclick="exportSave()">导出存档（自动复制）</button>        
         <button onclick="importSave()">导入存档</button>
+        <button onclick="downloadSave()">下载TXT存档</button>
+         <button onclick="importEncryptedSave()">导入TXT存档</button>
         <button onclick="resetGame()" style="background-color: #ff4444; color: white; border: none;">重置游戏</button>
     </div>
     <button onclick="toggleSettingsUI()">关闭设置</button>
 </div>
+<input type="file" id="fileInput" accept=".txt" style="display: none;">
+
 
 <!-- 半透明遮罩层 -->
 <div id="settingsOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
@@ -2421,6 +2458,7 @@ button:hover {
         <h3 style="color: #d4af37; margin-top: 0;">开启藏宝图宝箱</h3>
         <p>消耗1个藏宝图钥匙随机获得一张藏宝图</p>
         <button onclick="openTreasureChest()" style="background: #2196F3; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: font-weight: bold; margin-top: 10px;">开启宝箱</button>
+        <button onclick="openTreasureShop()" style="background: #9C27B0; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">藏宝图商店</button>
     </div>
     
     <!-- 我的藏宝图 -->
@@ -2854,6 +2892,146 @@ button:hover {
         </div>
     </div>
     <div id="bossOverlay"></div>
+<!-- 新增宝石商店模态框 -->
+<div id="treasureShopOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="treasureShopUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #9C27B0; border-radius: 10px; z-index: 1001; width: 600px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #9C27B0; margin: 0;">藏宝图商店</h2>
+        <button onclick="closeTreasureShop()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+    
+    <div style="margin-bottom: 15px; text-align: center; font-size: 18px;">
+        当前宝藏金币: <span id="currentPrimaryGemqCount" style="color: #FFD700; font-weight: bold;">0</span>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+        <!-- 兑换选项1: 50玫瑰花 -->
+        <div class="exchange-item" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border-left: 4px solid #e91e63;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin: 0 0 5px 0; color: #e91e63;">玫瑰花束</h4>
+                    <p style="margin: 0;">兑换50朵玫瑰花</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 5px;">
+                        <span style="margin-right: 5px;">消耗:</span>
+                        <span class="gem-cost" style="color: #FFD700; font-weight: bold;">1</span>
+                        <span class="gem-icon" style="display: inline-block; width: 20px; height: 20px; background: linear-gradient(to bottom, #FFD700, #B8860B); border-radius: 50%; margin-left: 5px;"></span>
+                    </div>
+                    <button onclick="exchangeItem(1)" class="exchange-btn">兑换</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 兑换选项2: VIP能力值 -->
+        <div class="exchange-item" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border-left: 4px solid #2196F3;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin: 0 0 5px 0; color: #2196F3;">VIP能力值</h4>
+                    <p style="margin: 0;">兑换10点VIP能力值</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 5px;">
+                        <span style="margin-right: 5px;">消耗:</span>
+                        <span class="gem-cost" style="color: #FFD700; font-weight: bold;">1</span>
+                        <span class="gem-icon" style="display: inline-block; width: 20px; height: 20px; background: linear-gradient(to bottom, #FFD700, #B8860B); border-radius: 50%; margin-left: 5px;"></span>
+                    </div>
+                    <button onclick="exchangeItem(2)" class="exchange-btn">兑换</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 兑换选项3: 鱼饵 -->
+        <div class="exchange-item" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border-left: 4px solid #4CAF50;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin: 0 0 5px 0; color: #4CAF50;">鱼饵</h4>
+                    <p style="margin: 0;">兑换1个鱼饵</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 5px;">
+                        <span style="margin-right: 5px;">消耗:</span>
+                        <span class="gem-cost" style="color: #FFD700; font-weight: bold;">1</span>
+                        <span class="gem-icon" style="display: inline-block; width: 20px; height: 20px; background: linear-gradient(to bottom, #FFD700, #B8860B); border-radius: 50%; margin-left: 5px;"></span>
+                    </div>
+                    <button onclick="exchangeItem(3)" class="exchange-btn">兑换</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 兑换选项4: 伴侣钥匙 -->
+        <div class="exchange-item" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border-left: 4px solid #FF9800;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin: 0 0 5px 0; color: #FF9800;">伴侣钥匙</h4>
+                    <p style="margin: 0;">兑换1把伴侣钥匙</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 5px;">
+                        <span style="margin-right: 5px;">消耗:</span>
+                        <span class="gem-cost" style="color: #FFD700; font-weight: bold;">2</span>
+                        <span class="gem-icon" style="display: inline-block; width: 20px; height: 20px; background: linear-gradient(to bottom, #FFD700, #B8860B); border-radius: 50%; margin-left: 5px;"></span>
+                    </div>
+                    <button onclick="exchangeItem(4)" class="exchange-btn">兑换</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 兑换选项5: 灵根检测器 -->
+        <div class="exchange-item" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border-left: 4px solid #9C27B0;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin: 0 0 5px 0; color: #9C27B0;">灵根检测器</h4>
+                    <p style="margin: 0;">兑换1个灵根检测器</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 5px;">
+                        <span style="margin-right: 5px;">消耗:</span>
+                        <span class="gem-cost" style="color: #FFD700; font-weight: bold;">5</span>
+                        <span class="gem-icon" style="display: inline-block; width: 20px; height: 20px; background: linear-gradient(to bottom, #FFD700, #B8860B); border-radius: 50%; margin-left: 5px;"></span>
+                    </div>
+                    <button onclick="exchangeItem(5)" class="exchange-btn">兑换</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 兑换选项6: 血脉检测剂 -->
+        <div class="exchange-item" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border-left: 4px solid #673AB7;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin: 0 0 5px 0; color: #673AB7;">血脉检测剂</h4>
+                    <p style="margin: 0;">兑换1个血脉检测剂</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 5px;">
+                        <span style="margin-right: 5px;">消耗:</span>
+                        <span class="gem-cost" style="color: #FFD700; font-weight: bold;">5</span>
+                        <span class="gem-icon" style="display: inline-block; width: 20px; height: 20px; background: linear-gradient(to bottom, #FFD700, #B8860B); border-radius: 50%; margin-left: 5px;"></span>
+                    </div>
+                    <button onclick="exchangeItem(6)" class="exchange-btn">兑换</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 兑换选项7: 进阶神石 -->
+        <div class="exchange-item" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border-left: 4px solid #F44336;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin: 0 0 5px 0; color: #F44336;">进阶神石</h4>
+                    <p style="margin: 0;">兑换1个进阶神石</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 5px;">
+                        <span style="margin-right: 5px;">消耗:</span>
+                        <span class="gem-cost" style="color: #FFD700; font-weight: bold;">30</span>
+                        <span class="gem-icon" style="display: inline-block; width: 20px; height: 20px; background: linear-gradient(to bottom, #FFD700, #B8860B); border-radius: 50%; margin-left: 5px;"></span>
+                    </div>
+                    <button onclick="exchangeItem(7)" class="exchange-btn">兑换</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -3047,7 +3225,8 @@ gems: {
         baitCount: 0,
         rootDetector: 0,
         bloodlineDetector: 0,
-        advanceStone: 0
+        advanceStone: 0,
+        primaryGemq: 0
     },
   nightClub: {
     level: 1,
@@ -4024,7 +4203,8 @@ const vipConfig = [
     baitCount: { name: '鱼饵', effect: 0, description: '用于钓鱼消耗品' },
     rootDetector: { name: '灵根检测器', effect: 0, description: '用于开启灵根宝箱' },
     bloodlineDetector: { name: '血脉检测剂', effect: 0, description: '用于开启血脉宝箱' },
-    advanceStone: { name: '进阶神石', effect: 0, description: '用于进阶神器' }
+    advanceStone: { name: '进阶神石', effect: 0, description: '用于进阶神器' },  
+   primaryGemq: { name: '宝藏金币', effect: 0, description: '用于兑换藏宝图商店物品' }
      
 };
 
@@ -5043,6 +5223,10 @@ function confirmActivationCode() {
         logAction(`激活码兑换成功：${rewardMsg}`, "success");
         updateDisplay(); // 更新界面显示
         cancelActivationCode();
+         saveGame();
+      setTimeout(() => {
+                location.reload(true);
+            }, 1000);
     }
 }
 // 添加VIP等级计算函数
@@ -5288,6 +5472,7 @@ if (speedBoostBtn) {
    initNightClubSystem();
     // 计算离线探险奖励
     calculateOfflineExpeditionRewards();
+        
         if (save.exploration) {
                 Object.assign(explorationData, save.exploration);
             }
@@ -5411,7 +5596,7 @@ function handleVipPowerGain() {
             ...(oldSave.achievements || {}) // 覆盖旧存档的成就数据
         },
         equipment: oldSave.equipment || [],
-        items: oldSave.items || { primaryGem: 0, advancedGem: 0, superiorGem: 0, divineGem: 0, vipPower: 0, refineStone: 0 },
+        items: oldSave.items || { primaryGem: 0, advancedGem: 0, superiorGem: 0, divineGem: 0, vipPower: 0, refineStone: 0, rose: 0, companionKey: 0, rebornDan: 0, baitCount: 0, rootDetector: 0, bloodlineDetector: 0, advanceStone: 0, primaryGemq: 0  },
         collections: oldSave.collections || {
             lightSpeedHand: 0,
             empHand: 0,
@@ -6630,8 +6815,8 @@ function resetItemDisplay() {
       baitCount: itemCounts.baitCount || 0,
    rootDetector: itemCounts.rootDetector || 0,
  bloodlineDetector: itemCounts.bloodlineDetector || 0,
- advanceStone: itemCounts.advanceStone || 0
-       
+ advanceStone: itemCounts.advanceStone || 0, 
+ primaryGemq: itemCounts.primaryGemq || 0     
     };
 
     // 更新道具页面显示
@@ -7733,23 +7918,106 @@ function downloadSave() {
         console.error('存档下载错误:', error);
     }
 }
+function importEncryptedSave() {
+    // 检查冷却时间
+    const lastImportTime = localStorage.getItem('lastImportTime');
+    if (lastImportTime) {
+        const currentTime = Date.now();
+        const timeDiff = currentTime - parseInt(lastImportTime);
+        const cooldown = 6 * 60 * 60 * 1000; // 6小时冷却时间
+        
+        if (timeDiff < cooldown) {
+            const remaining = Math.ceil((cooldown - timeDiff) / (60 * 1000));
+            logAction(`导入功能冷却中，请等待 ${remaining} 分钟后再试`, "error");
+            return;
+        }
+    }
+    
+    // 触发文件选择器
+    document.getElementById('fileInput').click();
+    
+    // 添加文件选择事件监听
+    document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+}
+
+// 处理文件选择
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // 检查文件类型
+    if (file.type !== "text/plain" && !file.name.endsWith('.txt')) {
+        logAction("请选择.txt格式的存档文件", "error");
+        return;
+    }
+    
+    // 读取文件内容
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const encryptedData = e.target.result;
+            decryptAndLoadSave(encryptedData);
+        } catch (error) {
+            logAction("存档导入失败：" + error.message, "error");
+            console.error("存档导入错误:", error);
+        }
+    };
+    reader.readAsText(file);
+}
+
+// 解密并加载存档
+function decryptAndLoadSave(encryptedData) {
+    try {
+        // 解密数据
+        const decrypted = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
+        const saveData = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+        
+        // 应用存档数据
+        player = migrateSaveData(saveData);
+        updateDisplay();
+        logAction('加密存档导入成功！', 'success');
+        
+        // 更新导入时间
+        localStorage.setItem('lastImportTime', Date.now().toString());
+       saveGame();
+      setTimeout(() => {
+                location.reload(true);
+            }, 1000);
+    } catch (error) {
+        logAction('存档导入失败：无效的存档或密钥错误', 'error');
+        console.error('导入错误:', error);
+    }
+}
+// 存档迁移函数（确保兼容性）
+function migrateSaveData(save) {
+    // 这里添加必要的存档迁移逻辑
+    // 确保旧版存档能兼容新版游戏
+    
+    return {
+        ...player, // 使用默认值
+        ...save    // 覆盖为导入的数据
+    };
+}
 
         // 导入存档
     function importSave() {
+    // 检查冷却时间
+    const lastImportTime = localStorage.getItem('lastImportTime');
+    if (lastImportTime) {
+        const currentTime = Date.now();
+        const timeDiff = currentTime - parseInt(lastImportTime);
+        const cooldown = 6 * 60 * 60 * 1000; // 6小时冷却时间
+        
+        if (timeDiff < cooldown) {
+            const remaining = Math.ceil((cooldown - timeDiff) / (60 * 1000));
+            logAction(`导入功能冷却中，请等待 ${remaining} 分钟后再试`, "error");
+            return;
+        }
+    }
+    
     showCustomPrompt('请输入加密存档代码：', async (encryptedData) => {
         if (!encryptedData) return;
-
-        // 检查冷却时间
-        const lastImportTime = await getEncryptedTime('lastImportTime');
-        if (lastImportTime) {
-            const currentTime = Date.now();
-            const timeDiff = currentTime - lastImportTime;
-            if (timeDiff < 6 * 60 * 60 * 1000) { // 6小时
-                logAction("导入存档冷却中，请等待" + formatTime(6 * 60 * 60 * 1000 - timeDiff) + "后再试。", "error");
-                return;
-            }
-        }
-
+        
         try {
             // 解密存档数据
             const decrypted = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
@@ -7759,9 +8027,13 @@ function downloadSave() {
             player = migrateSaveData(saveData);
             updateDisplay();
             logAction('存档已成功导入！', 'success');
-
-            // 加密存储当前时间戳
-            await setEncryptedTime('lastImportTime', Date.now());
+            
+            // 更新导入时间
+            localStorage.setItem('lastImportTime', Date.now().toString());
+      saveGame();
+      setTimeout(() => {
+                location.reload(true);
+            }, 1000);
         } catch (error) {
             logAction('存档导入失败：无效的存档或密钥错误', 'error');
             console.error('导入错误:', error);
@@ -8370,7 +8642,6 @@ function formatTime(milliseconds) {
  setInterval(calculateNightClubIncome, 1000);
  updateLiveStreamUI();
   initAutoDecomposeUI();
-
     checkAutoBuy(); 
  checkAutoDecompose();
     updateStockPrices(); 
@@ -16120,6 +16391,101 @@ function upgradeGem(type, level) {
         logAction("宝石数量不足，无法合成！", "error");
     }
 }
+// 打开藏宝图商店
+    function openTreasureShop() {
+        document.getElementById('treasureShopOverlay').style.display = 'block';
+        document.getElementById('treasureShopUI').style.display = 'block';
+        updateGemDisplay();
+    }
+    
+    // 关闭藏宝图商店
+    function closeTreasureShop() {
+        document.getElementById('treasureShopOverlay').style.display = 'none';
+        document.getElementById('treasureShopUI').style.display = 'none';
+    }
+    
+    // 更新宝石数量显示
+    function updateGemDisplay() {
+        document.getElementById('currentPrimaryGemqCount').textContent = player.items.primaryGemq || 0;
+    }
+    
+    // 兑换物品函数
+    function exchangeItem(type) {
+        let cost, item, amount;
+        
+        switch(type) {
+            case 1: // 玫瑰花
+                cost = 1;
+                item = 'rose';
+                amount = 50;
+                break;
+            case 2: // VIP能力值
+                cost = 1;
+                item = 'vipPower';
+                amount = 10;
+                break;
+            case 3: // 鱼饵
+                cost = 1;
+                item = 'baitCount';
+                amount = 1;
+                break;
+            case 4: // 伴侣钥匙
+                cost = 2;
+                item = 'companionKey';
+                amount = 1;
+                break;
+            case 5: // 灵根检测器
+                cost = 5;
+                item = 'rootDetector';
+                amount = 1;
+                break;
+            case 6: // 血脉检测剂
+                cost = 5;
+                item = 'bloodlineDetector';
+                amount = 1;
+                break;
+            case 7: // 进阶神石
+                cost = 30;
+                item = 'advanceStone';
+                amount = 1;
+                break;
+            default:
+                return;
+        }
+        
+        // 检查金币数量
+        if (player.items.primaryGemq >= cost) {
+            // 扣除金币
+            player.items.primaryGemq -= cost;
+            
+            // 添加物品
+            if (!player.items[item]) player.items[item] = 0;
+            player.items[item] += amount;
+            
+            // 更新显示
+            updateGemDisplay();
+            updateDisplay();
+            
+            // 显示成功消息
+            let itemName = '';
+            switch(item) {
+                case 'rose': itemName = '玫瑰花'; break;
+                case 'vipPower': itemName = 'VIP能力值'; break;
+                case 'baitCount': itemName = '鱼饵'; break;
+                case 'companionKey': itemName = '伴侣钥匙'; break;
+                case 'rootDetector': itemName = '灵根检测器'; break;
+                case 'bloodlineDetector': itemName = '血脉检测剂'; break;
+                case 'advanceStone': itemName = '进阶神石'; break;
+            }
+            
+            logAction(`宝藏金币成功兑换: ${amount}${itemName}`, 'success');
+        } else {
+            logAction('宝藏金币不足！', 'error');
+        }
+    }
+
+
+
 
 // 藏宝图等级配置
 const treasureMapLevels = [
@@ -16578,7 +16944,12 @@ function giveTreasureRewards(map, isBattleWin) {
         // 战斗胜利奖励：修仙经验
         const exp = levelConfig.expReward * qualityConfig.multiplier;
         player.cultivation.exp += exp;
+      
         rewardText = `战斗胜利！获得${exp}点修仙经验`;
+    if (Math.random() < 0.1) {
+            player.items.primaryGemq = (player.items.primaryGemq || 0) + 1;
+            rewardText += "<br>获得宝藏金币x1！";
+        }
     } else {
         // 直接获得奖励：随机选择2个奖励
         const rewards = [];
@@ -20676,6 +21047,5 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
-
 </body>
 </html>
