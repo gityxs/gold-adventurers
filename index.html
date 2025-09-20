@@ -996,6 +996,7 @@ button:hover {
            <p>29. 玩家等级：50转开启，每级10倍属性，世界地图怪物打怪升级。</p>
            <p>30. 世界地图：100转开启，打怪掉玩家经验，每挑战一次消耗1星币，如果打的时候闪退界面，那就是打不过这关。（后续会加材料掉落）。</p>
           <p>31. 直播系统：500转开启，每级增加点击伤害，粉丝数增加GPS加成，流量是获得多倍经验</p>
+        <p>31. 宗门系统：1000转开启，每级GPS收益，功法库提升功法秘笈加成。</p>
         </div>
     </div>
 </div>
@@ -1009,7 +1010,8 @@ button:hover {
     <div id="gameLogPage3" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>更新日志</h4>
-           <p>2025/9/14 : 增加TXT导入存档，增加藏宝图商店，宝藏金币：宝图怪物掉落</p>
+           <p>2025/9/20 : 增加宗门，提升功法秘笈大量加成，忠诚度影响获得任务收益，大于忠诚50加低于减。宗门令牌：宝藏金币兑换，香囊：宝图打怪掉落</p>
+           <p>2025/9/16 : 增加TXT导入存档，增加藏宝图商店，宝藏金币：宝图怪物掉落</p>
             <p>2025/9/14 : 优化扫荡严重卡顿，修复杂货铺兑换异常只能兑换1个的BUG</p>
             <p>2025/9/12 : 直播：盲盒出的礼物不加玫瑰花，只加粉丝数量，更新加了新3个宝箱9装备20成就3宠物3称号。</p>
             <p>2025/9/11 : 修复农田和离线时间异常显示，  增加直播：500转开启，每级增加点击伤害，粉丝数增加GPS加成，流量是获得多倍经验（每次进游戏建议结束直播在重新开播，不这样可能没礼物）（第一次加载记得刷新一下页面，第一次直播经验显示异常，刷新后正常）</p>
@@ -1064,6 +1066,9 @@ button:hover {
     <div>当前官职: <span id="currentOfficialTitle">无</span></div>
     <div>当前奥秘: <span id="currentMysteryTitle">初级秘法师 1阶1级</span></div>
     <div>修仙境界: <span id="currentStageq">凡人</span></div>
+     <div id="sectNameDisplay" style="color: #8B4513; font-weight: bold; margin-top: 5px;">
+        <!-- 宗门名称将在这里显示 -->
+    </div>
 
     <button onclick="clickGold()">点击获取金币</button>
     <button onclick="reincarnate()">转生</button>
@@ -1091,6 +1096,7 @@ button:hover {
     <button onclick="toggleTreasureMapSystem()">藏宝图系统</button>
     <button onclick="toggleNightClubSystem()" style="margin-left: 10px;">夜店系统</button>
     <button onclick="toggleLiveStreamSystem()" class="tab-button">直播系统</button>
+    <button onclick="toggleSectSystem()" class="system-btn">宗门系统</button>
     <button onclick="toggleSettingsUI()">设置</button>
 
 <h3>自动购买设置</h3>
@@ -3023,12 +3029,102 @@ button:hover {
                 <div style="text-align: right;">
                     <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 5px;">
                         <span style="margin-right: 5px;">消耗:</span>
-                        <span class="gem-cost" style="color: #FFD700; font-weight: bold;">30</span>
+                        <span class="gem-cost" style="color: #FFD700; font-weight: bold;">20</span>
                         <span class="gem-icon" style="display: inline-block; width: 20px; height: 20px; background: linear-gradient(to bottom, #FFD700, #B8860B); border-radius: 50%; margin-left: 5px;"></span>
                     </div>
                     <button onclick="exchangeItem(7)" class="exchange-btn">兑换</button>
                 </div>
             </div>
+        </div>
+  <!-- 兑换选项7: 宗门令牌 -->
+        <div class="exchange-item" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border-left: 4px solid #F44336;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin: 0 0 5px 0; color: #F54336;">宗门令牌</h4>
+                    <p style="margin: 0;">兑换1个宗门令牌</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 5px;">
+                        <span style="margin-right: 5px;">消耗:</span>
+                        <span class="gem-cost" style="color: #FFD700; font-weight: bold;">50</span>
+                        <span class="gem-icon" style="display: inline-block; width: 20px; height: 20px; background: linear-gradient(to bottom, #FFD700, #B8860B); border-radius: 50%; margin-left: 5px;"></span>
+                    </div>
+                    <button onclick="exchangeItem(8)" class="exchange-btn">兑换</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 宗门系统界面 -->
+<div id="sectSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="sectSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #8B4513; border-radius: 10px; z-index: 1001; width: 850px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #8B4513; padding-bottom: 10px;">
+        <h2 style="color: #8B4513; margin: 0;">宗门系统</h2>
+        <button onclick="toggleSectSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-size: 14px;">关闭</button>
+    </div>
+    
+    <!-- 宗门信息区域 -->
+    <div id="sectInfoContainer" style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+        <!-- 宗门信息将动态生成 -->
+    </div>
+    
+    <!-- 标签页导航 -->
+    <div class="sect-tabs" style="display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #444;">
+        <button class="sect-tablink active" onclick="openSectTab('members')" style="flex: 1; background: #333; color: white; border: none; padding: 8px; border-radius: 5px 5px 0 0; cursor: pointer;">成员管理</button>
+        <button class="sect-tablink" onclick="openSectTab('missions')" style="flex: 1; background: #333; color: white; border: none; padding: 8px; border-radius: 5px 5px 0 0; cursor: pointer;">任务派遣</button>
+        <button class="sect-tablink" onclick="openSectTab('techniques')" style="flex: 1; background: #333; color: white; border: none; padding: 8px; border-radius: 5px 5px 0 0; cursor: pointer;">功法库</button>
+        <button class="sect-tablink" onclick="openSectTab('settings')" style="flex: 1; background: #333; color: white; border: none; padding: 8px; border-radius: 5px 5px 0 0; cursor: pointer;">宗门设置</button>
+    </div>
+    
+    <!-- 成员管理标签页 -->
+    <div id="sectMembers" class="sect-tabcontent">
+        <div style="margin-bottom: 15px;">
+            <button onclick="recruitMember()" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-right: 10px;">招募弟子</button>
+            <span>消耗: <span id="recruitCost">100</span> 灵石</span>
+        </div>
+        <div id="memberList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-height: 300px; overflow-y: auto;">
+            <!-- 成员卡片将动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 任务派遣标签页 -->
+    <div id="sectMissions" class="sect-tabcontent" style="display:none;">
+        <div id="missionList" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px;">
+            <!-- 任务卡片将动态生成 -->
+        </div>
+        <div id="activeMissions" style="background: #333; padding: 15px; border-radius: 8px;">
+            <h3 style="color: #8B4513; margin-top: 0;">进行中的任务</h3>
+            <div id="activeMissionList">
+                <!-- 进行中的任务将动态生成 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 功法库标签页 -->
+    <div id="sectTechniques" class="sect-tabcontent" style="display:none;">
+        <div style="margin-bottom: 15px;">
+            <button onclick="upgradeAllTechniques()" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-right: 10px;">一键升级所有功法</button>
+            <span>消耗: <span id="upgradeAllCost">1000</span> 灵石</span>
+        </div>
+        <div id="techniqueList" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-height: 300px; overflow-y: auto;">
+            <!-- 功法卡片将动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 宗门设置标签页 -->
+    <div id="sectSettings" class="sect-tabcontent" style="display:none;">
+        <div style="margin-bottom: 15px;">
+            <label for="sectNameInput">宗门名称:</label>
+            <input type="text" id="sectNameInput" style="margin-left: 10px; padding: 5px; background: #444; color: white; border: 1px solid #666; border-radius: 3px;">
+            <button onclick="changeSectName()" style="background: #FF9800; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-left: 10px;">修改名称</button>
+        </div>
+        <div style="margin-bottom: 15px;">
+            <p>创建于: <span id="sectCreationDate">未创建</span></p>
+            <p>宗门宗旨: <span id="sectMotto">自强不息，厚德载物</span></p>
+        </div>
+        <div>
+            <button onclick="disbandSect()" style="background: #f44336; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">解散宗门</button>
+            <p style="color: #ff4444; font-size: 0.9em; margin-top: 5px;">警告: 解散宗门将失去所有成员和宗门等级！！！</p>
         </div>
     </div>
 </div>
@@ -3061,6 +3157,18 @@ button:hover {
     soulRingMultiplier: 1,    // 魂环总加成乘数（默认1倍）
     dungeonEquipMultiplier: 1 // 副本装备总加成乘数（默认1倍）
   },
+  sect: {
+            created: false,
+            name: "",
+            level: 0,
+            exp: 0,
+            spiritStones: 0,
+            members: [],
+            missions: [],
+            techniques: {},
+            creationTime: 0,
+            maxMembers: 5
+        },
    battle: {
     currentZone: null,
     currentMonster: null,
@@ -3226,7 +3334,9 @@ gems: {
         rootDetector: 0,
         bloodlineDetector: 0,
         advanceStone: 0,
-        primaryGemq: 0
+        primaryGemq: 0,
+        zongmen: 0,
+        roseq: 0  
     },
   nightClub: {
     level: 1,
@@ -4204,8 +4314,9 @@ const vipConfig = [
     rootDetector: { name: '灵根检测器', effect: 0, description: '用于开启灵根宝箱' },
     bloodlineDetector: { name: '血脉检测剂', effect: 0, description: '用于开启血脉宝箱' },
     advanceStone: { name: '进阶神石', effect: 0, description: '用于进阶神器' },  
-   primaryGemq: { name: '宝藏金币', effect: 0, description: '用于兑换藏宝图商店物品' }
-     
+   primaryGemq: { name: '宝藏金币', effect: 0, description: '用于兑换藏宝图商店物品' },
+   zongmen: { name: '宗门令牌', effect: 0, description: '创建宗门消耗的必须品' },  
+   roseq: { name: '香囊', effect: 0, description: '赠送宗门成员增加忠诚度' }
 };
 
         // 收藏物配置
@@ -5466,6 +5577,7 @@ if (speedBoostBtn) {
                 calculateBankInterest();
             }
           initFarmData();
+        updateSectNameDisplay();
          initExplorationSystem();
         initExpeditionData();
     initTreasureMapSystem();
@@ -5596,7 +5708,7 @@ function handleVipPowerGain() {
             ...(oldSave.achievements || {}) // 覆盖旧存档的成就数据
         },
         equipment: oldSave.equipment || [],
-        items: oldSave.items || { primaryGem: 0, advancedGem: 0, superiorGem: 0, divineGem: 0, vipPower: 0, refineStone: 0, rose: 0, companionKey: 0, rebornDan: 0, baitCount: 0, rootDetector: 0, bloodlineDetector: 0, advanceStone: 0, primaryGemq: 0  },
+        items: oldSave.items || { primaryGem: 0, advancedGem: 0, superiorGem: 0, divineGem: 0, vipPower: 0, refineStone: 0, rose: 0, companionKey: 0, rebornDan: 0, baitCount: 0, rootDetector: 0, bloodlineDetector: 0, advanceStone: 0, primaryGemq: 0, zongmen: 0, roseq: 0 },
         collections: oldSave.collections || {
             lightSpeedHand: 0,
             empHand: 0,
@@ -5703,12 +5815,14 @@ const farmGPSEnhancements  = gpsEnhancementss[player.parking.level - 1] || gpsEn
     const gpsBonuss = player.level.gpsBonus * 1.00;   
    const gpsBonusss = player.liveStream.totalEarnings * 0.001;  
 
+const gpsEnhancementsp =  [1, 2, 5, 10, 20, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000];
+const farmGPSEnhancementp  = gpsEnhancementsp[player.sect.level - 1] || gpsEnhancementsp[gpsEnhancementsp.length - 1];
 
 
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.gps * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.gpsMultiplier 
         * (1 + gpsBonus) 
-        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * gpsBonusss;
+        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * gpsBonusss * farmGPSEnhancementp;
 }
 
 function getTotalClickValue() {
@@ -6676,7 +6790,6 @@ function addTechnique(type) {
 }
 
 function calculateTechniqueBonuses() {
-    // 重置所有加成
     const bonuses = {
         health: 0,
         attack: 0,
@@ -6689,7 +6802,12 @@ function calculateTechniqueBonuses() {
     Object.entries(player.techniques).forEach(([techId, level]) => {
         const tech = techniqueConfig[techId];
         if (tech && tech.effect) {
-            bonuses[tech.type] += level * tech.effect;
+            // 获取宗门功法等级加成
+            const sectLevel = player.sect.techniques[techId] || 0;
+            const sectMultiplier = 1 + (sectLevel * 2); // 每级增加2倍效果
+            
+            // 应用宗门加成
+            bonuses[tech.type] += level * tech.effect * sectMultiplier;
         }
     });
 
@@ -6816,7 +6934,9 @@ function resetItemDisplay() {
    rootDetector: itemCounts.rootDetector || 0,
  bloodlineDetector: itemCounts.bloodlineDetector || 0,
  advanceStone: itemCounts.advanceStone || 0, 
- primaryGemq: itemCounts.primaryGemq || 0     
+ primaryGemq: itemCounts.primaryGemq || 0, 
+  zongmen: itemCounts.zongmen || 0, 
+roseq: itemCounts.roseq || 0
     };
 
     // 更新道具页面显示
@@ -7848,6 +7968,7 @@ function confirmRename() {
         // 加载游戏
         function loadGame() {
     loadSave();
+   updateSectNameDisplay();
     updateDisplay();
    calculateTotalGPS();
  player.traditionalLotteryPurchased = localStorage.getItem('traditionalLotteryPurchased') === 'true';
@@ -10400,14 +10521,15 @@ function updatePlayerBattleStats() {
    const artifactBonuses = calculateArtifactBonuses();
     // 保存职业加成到player对象
     player.classBonuses = classBonuses;
-    const bonuses = calculateGemBonuses();
+    const bonuses = calculateGemBonuses(); 
+    const techBonuses = calculateTechniqueBonuses();
 
     // 2. 计算玩家生命（应用伴侣生命加成）
     player.battle.playerHealth = Math.floor(
         player.reincarnationCount * 
         (1 + player.attributes.healthBonus + player.attributes.health * 0.01) *
         classBonuses.healthMultiplier * titleBonuses.healthMultiplier *
-        companionBonuses.healthMultiplier * (1 + artifactBonuses.health) * (1 + bonuses.health / 100)// 应用伴侣生命加成
+        companionBonuses.healthMultiplier * (1 + artifactBonuses.health) * (1 + bonuses.health / 100) *  (1 + techBonuses.health)// 应用伴侣生命加成
     );
 
     // 3. 计算玩家攻击（应用伴侣攻击加成）
@@ -10415,7 +10537,7 @@ function updatePlayerBattleStats() {
         getTotalClickValue() * 
         (1 + player.attributes.attackBonus + player.attributes.attack * 0.01) *
         classBonuses.attackMultiplier * titleBonuses.attackMultiplier *
-        officialBonus * companionBonuses.attackMultiplier * (1 + artifactBonuses.attack) * (1 + bonuses.attack / 100) // 应用伴侣攻击加成
+        officialBonus * companionBonuses.attackMultiplier * (1 + artifactBonuses.attack) * (1 + bonuses.attack / 100) *  (1 + techBonuses.attack) // 应用伴侣攻击加成
     );
 
     // 4. 计算暴击率（应用伴侣暴击率加成）
@@ -10423,7 +10545,7 @@ function updatePlayerBattleStats() {
         classBonuses.critChance;
     player.battle.playerCritRate = Math.min(
         0.9,
-        baseCritRate * companionBonuses.critRateMultiplier // 应用伴侣暴击率乘数
+        baseCritRate * companionBonuses.critRateMultiplier +  (1 + techBonuses.critRate) // 应用伴侣暴击率乘数
     );
 
     // 5. 计算爆伤（应用伴侣爆伤加成和全属性加成）
@@ -10431,7 +10553,7 @@ function updatePlayerBattleStats() {
         player.attributes.critDamageBonus + 
         player.attributes.critDamage * 0.0025) *
         classBonuses.critMultiplier * titleBonuses.critMultiplier *
-        companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100); // 应用伴侣爆伤加成
+        companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100) *  (1 + techBonuses.critDamage) ; // 应用伴侣爆伤加成
 
     // 6. 计算连击次数（应用伴侣连击加成）
     player.battle.playerMultiAttack = Math.max(1,
@@ -15333,6 +15455,806 @@ function calculateArtifactBonuses() {
     
     return bonuses;
 }
+function initSectData() {
+    if (!player.sect) {
+        player.sect = {
+            created: false,
+            name: "",
+            level: 0,
+            exp: 0,
+            spiritStones: 0,
+            members: [],
+            missions: [],
+            techniques: {},
+            creationTime: 0,
+            maxMembers: 5
+        };
+    }
+}
+
+// 切换宗门系统界面
+function toggleSectSystem() {
+    if (player.reincarnationCount < 1000) {
+        alert("需要达到1000转才能开启宗门系统！");
+        return;
+    }
+    
+    const ui = document.getElementById('sectSystemUI');
+    const overlay = document.getElementById('sectSystemOverlay');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        initSectData();
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateSectUI();
+    }
+}
+
+// 创建宗门
+function createSect() {
+    if (player.sect.created) {
+        logAction("你已经创建过宗门了！", "error");
+        return;
+    }
+    
+    if (player.items.zongmen < 1) {
+        logAction("宗门令牌不足，无法创建宗门！", "error");
+        return;
+    }
+    
+    // 消耗宗门令牌
+    player.items.zongmen--;
+    
+    // 初始化宗门数据
+    player.sect = {
+        created: true,
+        name: "无名宗门",
+        level: 1,
+        exp: 0,
+        spiritStones: 1000,
+        members: [],
+        missions: [],
+        techniques: {},
+        creationTime: Date.now(),
+        maxMembers: 5
+    };
+    
+    // 自动添加掌门（玩家自己）
+    player.sect.members.push({
+        id: "leader",
+        name: player.name,
+        aptitude: "SS",
+        loyalty: 100,
+        status: "idle",
+        joinTime: Date.now()
+    });
+    
+    logAction("成功创建宗门！", "success");
+    updateSectUI();
+   updateSectNameDisplay();
+}
+
+// 更新宗门界面
+function updateSectUI() {
+    if (!player.sect.created) {
+        document.getElementById('sectInfoContainer').innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+                <h3 style="color: #8B4513;">尚未创建宗门</h3>
+                <p>创建宗门需要消耗1个宗门令牌</p>
+                <button onclick="createSect()" style="background: #8B4513; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">创建宗门</button>
+            </div>
+        `;
+        return;
+    }
+    
+    // 更新宗门信息
+    document.getElementById('sectInfoContainer').innerHTML = `
+        <div style="display: flex; justify-content: space-between;">
+            <div>
+                <h3 style="color: #8B4513; margin: 0;">${player.sect.name}</h3>
+                <div>等级: ${player.sect.level} | 声望: ${player.sect.exp}/${getNextLevelExp()}</div>
+                <div>成员: ${player.sect.members.length}/${player.sect.maxMembers}</div>
+            </div>
+            <div style="text-align: right;">
+                <div>灵石: <span style="color: #FFD700;">${player.sect.spiritStones.toFixed(0)}</span></div>
+                <div>功法数量: ${Object.keys(player.sect.techniques).length}</div>
+            </div>
+        </div>
+    `;
+     // 更新招募消耗显示
+    document.getElementById('recruitCost').textContent = calculateRecruitCost().toFixed(0);
+    // 更新成员列表
+    updateMemberList();
+    
+    // 更新任务列表
+    updateMissionList();
+    
+    // 更新功法列表
+    updateTechniqueList();
+    
+    // 更新设置页面
+    document.getElementById('sectNameInput').value = player.sect.name;
+    document.getElementById('sectCreationDate').textContent = new Date(player.sect.creationTime).toLocaleDateString();
+}
+
+// 更新成员列表
+function updateMemberList() {
+    const container = document.getElementById('memberList');
+    container.innerHTML = '';
+    
+    player.sect.members.forEach(member => {
+        const memberCard = document.createElement('div');
+        memberCard.className = 'member-card';
+        memberCard.style.background = '#444';
+        memberCard.style.padding = '10px';
+        memberCard.style.borderRadius = '5px';
+        
+        // 根据资质设置颜色
+        let aptitudeColor = '#ccc';
+        if (member.aptitude === 'SSS') aptitudeColor = '#FFD700';
+        else if (member.aptitude === 'SS') aptitudeColor = '#FF6B6B';
+        else if (member.aptitude === 'S') aptitudeColor = '#4ECDC4';
+        else if (member.aptitude === 'A') aptitudeColor = '#FF9FF3';
+        else if (member.aptitude === 'B') aptitudeColor = '#FECA57';
+        else if (member.aptitude === 'C') aptitudeColor = '#54A0FF';
+        
+        // 检查成员是否在任务中
+        const isOnMission = member.status === 'onMission';
+        
+        memberCard.innerHTML = `
+            <div style="display: flex; justify-content: space-between;">
+                <div style="font-weight: bold;">${member.name}</div>
+                <div style="color: ${aptitudeColor};">${member.aptitude}</div>
+            </div>
+            <div>忠诚度: ${member.loyalty}</div>
+            <div>状态: ${isOnMission ? '<span style="color: #FF9800;">任务中</span>' : '空闲'}</div>
+            ${member.id !== 'leader' && !isOnMission ? `
+            <button onclick="expelMember('${member.id}')" style="margin-top: 10px; background: #f44336; color: white; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">驱逐</button>
+            <button onclick="giftMember('${member.id}')" style="background: #4CAF50; color: white; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; font-size: 12px; flex: 1;">赠礼</button>
+            ` : ''}
+        `;
+        
+        container.appendChild(memberCard);
+    });
+}
+function updateSectNameDisplay() {
+    const sectNameDisplay = document.getElementById('sectNameDisplay');
+    
+    if (player.sect && player.sect.created) {
+        sectNameDisplay.textContent = `宗门: ${player.sect.name}`;
+        sectNameDisplay.style.display = 'block';
+    } else {
+        sectNameDisplay.style.display = 'none';
+    }
+}
+function giftMember(memberId) {
+    const member = player.sect.members.find(m => m.id === memberId);
+    if (!member) return;
+    
+    // 检查玫瑰花数量
+    if (player.items.roseq < 1) {
+        logAction("香囊不足！", "error");
+        return;
+    }
+    
+    // 检查忠诚度是否已达上限
+    if (member.loyalty >= 100) {
+        logAction(`${member.name}的忠诚度已达上限！`, "info");
+        return;
+    }
+    
+    // 消耗香囊
+    player.items.roseq--;
+    
+    // 增加忠诚度
+    member.loyalty += 5;
+    if (member.loyalty > 100) member.loyalty = 100;
+    
+    logAction(`赠送给${member.name}一个香囊，忠诚度提升5点！`, "success");
+    updateSectUI();
+    updateDisplay();
+}
+// 招募弟子
+function recruitMember() {
+    if (!player.sect.created) {
+        logAction("请先创建宗门！", "error");
+        return;
+    }
+    
+    if (player.sect.members.length >= player.sect.maxMembers) {
+        logAction("宗门成员已满！", "error");
+        return;
+    }
+    
+    const cost = calculateRecruitCost();
+    if (player.sect.spiritStones < cost) {
+        logAction(`灵石不足！需要 ${cost} 灵石`, "error");
+        return;
+    }
+    
+    // 消耗灵石
+    player.sect.spiritStones -= cost;
+    
+    // 随机生成弟子属性
+    const aptitudes = ['C', 'B', 'A', 'S', 'SS', 'SSS'];
+    const weights = [0.60, 0.25, 0.10, 0.039, 0.01, 0.001]; 
+    
+    let rand = Math.random();
+    let aptitude = 'C';
+    for (let i = 0; i < weights.length; i++) {
+        rand -= weights[i];
+        if (rand <= 0) {
+            aptitude = aptitudes[i];
+            break;
+        }
+    }
+    
+    // 生成随机名字
+    const familyNames = ['赵', '钱', '孙', '李', '周', '吴', '郑', '王', '冯', '陈', '褚', '卫'];
+    const givenNames = ['明', '华', '强', '伟', '芳', '娜', '秀英', '勇', '军', '杰', '磊', '超', '鹏', '婷'];
+    const name = familyNames[Math.floor(Math.random() * familyNames.length)] + 
+                 givenNames[Math.floor(Math.random() * givenNames.length)];
+    
+    // 添加新成员
+    const newMember = {
+        id: 'member_' + Date.now(),
+        name: name,
+        aptitude: aptitude,
+        loyalty: 70 + Math.floor(Math.random() * 20), // 70-89的忠诚度
+        status: 'idle',
+        joinTime: Date.now()
+    };
+    
+    player.sect.members.push(newMember);
+    
+    logAction(`成功招募弟子: ${name} (${aptitude}资质)`, "success");
+    document.getElementById('recruitCost').textContent = calculateRecruitCost().toFixed(0);
+    updateSectUI();
+}
+
+// 计算招募成本
+function calculateRecruitCost() {
+    return 100 * Math.pow(1.1, player.sect.members.length);
+}
+
+// 驱逐弟子
+function expelMember(memberId) {
+    const memberIndex = player.sect.members.findIndex(m => m.id === memberId);
+    if (memberIndex === -1) return;
+    
+    const member = player.sect.members[memberIndex];
+    
+    // 移除成员
+    player.sect.members.splice(memberIndex, 1);
+    
+    // 降低其他成员忠诚度（1-5点）
+    player.sect.members.forEach(m => {
+        if (m.id !== 'leader') {
+            m.loyalty -= 1 + Math.floor(Math.random() * 4);
+            if (m.loyalty < 0) m.loyalty = 0;
+        }
+    });
+    
+    logAction(`已驱逐弟子: ${member.name}`, "info");
+    updateSectUI();
+}
+
+// 切换宗门标签页
+function openSectTab(tabName) {
+    // 隐藏所有标签内容
+    document.querySelectorAll('.sect-tabcontent').forEach(tab => {
+        tab.style.display = 'none';
+    });
+    
+    // 移除所有标签的active类
+    document.querySelectorAll('.sect-tablink').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // 显示选中的标签内容并添加active类
+    document.getElementById('sect' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).style.display = 'block';
+    event.currentTarget.classList.add('active');
+}
+
+// 初始化宗门任务
+function initSectMissions() {
+    return [
+        {
+            id: "gather_stones",
+            name: "采集灵石",
+            description: "派遣弟子前往灵脉采集灵石",
+            requiredAptitude: "C",
+            duration: 3600000, // 1小时
+            reward: { stones: 130, exp: 50 },
+            difficulty: 1
+        },
+        {
+            id: "hunt_demon",
+            name: "剿灭妖兽",
+            description: "清除宗门附近的低阶妖兽",
+            requiredAptitude: "B",
+            duration: 7200000, // 2小时
+            reward: { stones: 300, exp: 100 },
+            difficulty: 2
+        },
+        {
+            id: "explore_ruins",
+            name: "探索遗迹",
+            description: "探索古代修士遗留的洞府遗迹",
+            requiredAptitude: "A",
+            duration: 10800000, // 3小时
+            reward: { stones: 600, exp: 200, itemChance: 0.3 },
+            difficulty: 3
+        },
+        {
+            id: "guard_caravan",
+            name: "护送商队",
+            description: "护送商队通过危险区域",
+            requiredAptitude: "S",
+            duration: 14400000, // 4小时
+            reward: { stones: 1200, exp: 400, itemChance: 0.5 },
+            difficulty: 4
+        },
+        {
+            id: "compete_tournament",
+            name: "参加论道大会",
+            description: "代表宗门参加修仙界论道大会",
+            requiredAptitude: "SS",
+            duration: 21600000, // 6小时
+            reward: { stones: 2500, exp: 800, itemChance: 0.7 },
+            difficulty: 5
+        },
+        {
+            id: "slay_ancient_demon",
+            name: "讨伐上古魔头",
+            description: "讨伐苏醒的上古魔头，维护修仙界和平",
+            requiredAptitude: "SSS",
+            duration: 43200000, // 12小时
+            reward: { stones: 6500, exp: 2000, itemChance: 0.9 },
+            difficulty: 6
+        }
+    ];
+}
+
+// 更新任务列表
+function updateMissionList() {
+    const missionContainer = document.getElementById('missionList');
+    const activeMissionContainer = document.getElementById('activeMissionList');
+    
+    missionContainer.innerHTML = '';
+    activeMissionContainer.innerHTML = '';
+    
+    // 获取任务列表
+    const missions = initSectMissions();
+    
+    // 显示可用任务
+    missions.forEach(mission => {
+        const missionCard = document.createElement('div');
+        missionCard.className = 'mission-card';
+        missionCard.style.background = '#444';
+        missionCard.style.padding = '10px';
+        missionCard.style.borderRadius = '5px';
+        
+        missionCard.innerHTML = `
+            <h4 style="margin: 0 0 10px 0; color: #8B4513;">${mission.name}</h4>
+            <p style="margin: 0 0 10px 0; font-size: 0.9em;">${mission.description}</p>
+            <div style="font-size: 0.9em; margin-bottom: 10px;">
+                <div>要求资质: ${mission.requiredAptitude}</div>
+                <div>耗时: ${formatTimes(mission.duration)}</div>
+                <div>奖励: ${mission.reward.stones}灵石, ${mission.reward.exp}声望</div>
+            </div>
+            <button onclick="startMission('${mission.id}')" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; width: 100%;">派遣弟子</button>
+        `;
+        
+        missionContainer.appendChild(missionCard);
+    });
+    
+    // 显示进行中的任务
+    if (player.sect.missions.length === 0) {
+        activeMissionContainer.innerHTML = '<p>当前没有进行中的任务</p>';
+    } else {
+        player.sect.missions.forEach(mission => {
+            const missionItem = document.createElement('div');
+            missionItem.style.marginBottom = '10px';
+            missionItem.style.padding = '10px';
+            missionItem.style.background = '#555';
+            missionItem.style.borderRadius = '5px';
+            
+            const remaining = mission.startTime + mission.duration - Date.now();
+            const progress = remaining > 0 ? 100 - (remaining / mission.duration * 100) : 100;
+            
+            missionItem.innerHTML = `
+                <div style="display: flex; justify-content: space-between;">
+                    <div>${mission.name}</div>
+                    <div>${formatTimes(remaining > 0 ? remaining : 0)}</div>
+                </div>
+                <div style="height: 5px; background: #444; border-radius: 3px; margin-top: 5px;">
+                    <div style="height: 100%; background: #8B4513; border-radius: 3px; width: ${progress}%;"></div>
+                </div>
+            `;
+            
+            activeMissionContainer.appendChild(missionItem);
+        });
+    }
+}
+
+// 开始任务
+function startMission(missionId) {
+    if (!player.sect.created) {
+        logAction("请先创建宗门！", "error");
+        return;
+    }
+    
+    // 获取任务详情
+    const missions = initSectMissions();
+    const mission = missions.find(m => m.id === missionId);
+    if (!mission) return;
+    
+    // 查找符合条件的空闲弟子
+    const aptitudesOrder = { 'C': 1, 'B': 2, 'A': 3, 'S': 4, 'SS': 5, 'SSS': 6 };
+    const requiredLevel = aptitudesOrder[mission.requiredAptitude];
+    
+    const availableMembers = player.sect.members.filter(member => 
+        member.status === 'idle' && aptitudesOrder[member.aptitude] >= requiredLevel
+    );
+    
+    if (availableMembers.length === 0) {
+        logAction("没有符合条件的空闲弟子！", "error");
+        return;
+    }
+    
+    // 选择忠诚度最高的弟子
+    availableMembers.sort((a, b) => b.loyalty - a.loyalty);
+    const member = availableMembers[0];
+    
+    // 更新弟子状态
+    member.status = 'onMission';
+    
+    // 添加任务
+    player.sect.missions.push({
+        id: missionId,
+        name: mission.name,
+        memberId: member.id,
+        startTime: Date.now(),
+        duration: mission.duration,
+        reward: mission.reward
+    });
+ // 计算预计加成
+    const loyaltyBonus = calculateLoyaltyBonus(member.loyalty);
+    const bonusPercent = (loyaltyBonus * 100 - 100).toFixed(1);
+    
+    logAction(`派遣 ${member.name} 执行任务: ${mission.name} (预计忠诚度${loyaltyBonus >= 1 ? '+' : ''}${bonusPercent}%奖励)`, "success");
+    updateSectUI();
+    
+    // 设置任务完成计时器
+    setTimeout(() => completeMission(missionId), mission.duration);
+}
+
+function completeMission(missionId) {
+    const missionIndex = player.sect.missions.findIndex(m => m.id === missionId);
+    if (missionIndex === -1) return;
+    
+    const mission = player.sect.missions[missionIndex];
+    const member = player.sect.members.find(m => m.id === mission.memberId);
+    
+    if (member) {
+        // 恢复弟子状态
+        member.status = 'idle';
+        
+      // 计算忠诚度加成/减成
+        const loyaltyBonus = calculateLoyaltyBonus(member.loyalty);
+        
+        // 发放奖励（应用忠诚度加成）
+        const stonesReward = Math.floor(mission.reward.stones * loyaltyBonus);
+        const expReward = Math.floor(mission.reward.exp * loyaltyBonus);
+        
+        player.sect.spiritStones += stonesReward;
+        player.sect.exp += expReward;
+        
+       if (mission.reward.itemChance && Math.random() < mission.reward.itemChance) {
+            // 随机获得一种物品
+            const items = ['primaryGem', 'advancedGem', 'rebornDan', 'cultivationPill'];
+            const randomItem = items[Math.floor(Math.random() * items.length)];
+            player.items[randomItem] = (player.items[randomItem] || 0) + 1;
+            
+            logAction(`${member.name}完成任务带回${getItemName(randomItem)}！(忠诚度加成: ${(loyaltyBonus * 100 - 100).toFixed(1)}%)`, "success");
+        } else {
+            logAction(`${member.name}完成任务，获得${stonesReward}灵石和${expReward}声望！(忠诚度加成: ${(loyaltyBonus * 100 - 100).toFixed(1)}%)`, "success");
+        }
+        // 根据忠诚度变化调整忠诚度
+        // 高奖励会增加忠诚度，低奖励会减少忠诚度
+        const loyaltyChange = Math.floor((loyaltyBonus - 1) * 5);
+        member.loyalty += loyaltyChange;
+        
+        // 确保忠诚度在合理范围内
+        if (member.loyalty < 0) member.loyalty = 0;
+        if (member.loyalty > 100) member.loyalty = 100;
+        
+        if (loyaltyChange > 0) {
+            logAction(`${member.name}的忠诚度提升了${loyaltyChange}点！`, "info");
+        } else if (loyaltyChange < 0) {
+            logAction(`${member.name}的忠诚度降低了${Math.abs(loyaltyChange)}点！`, "warning");
+        }
+        // 检查升级
+        checkSectLevelUp();
+        
+        // 移除任务
+        player.sect.missions.splice(missionIndex, 1);
+        
+        // 更新UI - 这会重新渲染成员列表，显示驱逐按钮
+        updateSectUI();
+    }
+}
+function calculateLoyaltyBonus(loyalty) {
+    if (loyalty >= 50) {
+        // 高于50忠诚度，每点增加1%奖励
+        return 1 + (loyalty - 50) * 0.01;
+    } else {
+        // 低于50忠诚度，每点减少1%奖励
+        return 1 - (50 - loyalty) * 0.01;
+    }
+}
+// 检查宗门升级
+function checkSectLevelUp() {
+    const nextLevelExp = getNextLevelExp();
+    if (player.sect.exp >= nextLevelExp) {
+        player.sect.level++;
+        player.sect.exp -= nextLevelExp;
+        
+        // 升级奖励
+        player.sect.maxMembers += 2;
+        player.sect.spiritStones += 500 * player.sect.level;
+        
+        logAction(`宗门升级至${player.sect.level}级！成员上限增加至${player.sect.maxMembers}`, "success");
+    }
+}
+
+// 获取下一级所需经验
+function getNextLevelExp() {
+    return 1000 * Math.pow(1.5, player.sect.level - 1);
+}
+
+// 更新功法列表
+function updateTechniqueList() {
+    const container = document.getElementById('techniqueList');
+    container.innerHTML = '';
+    
+    // 获取玩家所有功法
+    const techniques = Object.keys(player.techniques).filter(t => t !== 'none');
+    
+    if (techniques.length === 0) {
+        container.innerHTML = '<p>尚未习得任何功法</p>';
+        return;
+    }
+    
+    techniques.forEach(techId => {
+        const techLevel = player.techniques[techId] || 1;
+        const sectTechLevel = player.sect.techniques[techId] || 1;
+        
+        // 获取功法配置
+        const techConfig = techniqueConfig[techId];
+        const techName = techConfig ? techConfig.name : techId;
+        
+        // 计算当前加成效果
+        const baseEffect = techConfig ? techConfig.effect : 0;
+        const sectMultiplier = 1 + (sectTechLevel * 2); // 每级增加2倍效果
+        const totalEffect = techLevel * baseEffect * sectMultiplier;
+        
+        // 格式化效果显示
+        let effectDisplay = '';
+        if (techConfig && techConfig.type) {
+            switch (techConfig.type) {
+                case 'health':
+                    effectDisplay = `生命加成: +${(totalEffect * 100).toFixed(1)}%`;
+                    break;
+                case 'attack':
+                    effectDisplay = `攻击加成: +${(totalEffect * 100).toFixed(1)}%`;
+                    break;
+                case 'critRate':
+                    effectDisplay = `暴击率: +${(totalEffect * 100).toFixed(1)}%`;
+                    break;
+                case 'critDamage':
+                    effectDisplay = `爆伤加成: +${(totalEffect * 100).toFixed(1)}%`;
+                    break;
+                case 'multiAttack':
+                    effectDisplay = `连击次数: +${totalEffect.toFixed(1)}`;
+                    break;
+                default:
+                    effectDisplay = `效果: +${(totalEffect * 100).toFixed(1)}%`;
+            }
+        }
+        
+        const techCard = document.createElement('div');
+        techCard.className = 'tech-card';
+        techCard.style.background = '#444';
+        techCard.style.padding = '10px';
+        techCard.style.borderRadius = '5px';
+        
+        techCard.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="margin: 0; color: #8B4513;">${techName}</h4>
+                <div style="font-size: 0.9em;">宗门等级: ${sectTechLevel}</div>
+            </div>
+            <div style="margin: 10px 0; font-size: 0.9em;">
+                <div>个人等级: ${techLevel}</div>
+                <div>${effectDisplay}</div>
+                <div>升级消耗: ${calculateUpgradeCost(techId).toFixed(0)}灵石</div>
+            </div>
+            <button onclick="upgradeTechnique('${techId}')" style="background: #2196F3; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; width: 100%;">升级功法</button>
+        `;
+        
+        container.appendChild(techCard);
+    });
+    
+
+    
+    // 更新一键升级成本
+    document.getElementById('upgradeAllCost').textContent = calculateUpgradeAllCost().toFixed(0);
+}
+
+// 升级功法
+function upgradeTechnique(techName) {
+    if (!player.sect.created) {
+        logAction("请先创建宗门！", "error");
+        return;
+    }
+    
+    const cost = calculateUpgradeCost(techName);
+    if (player.sect.spiritStones < cost) {
+        logAction(`灵石不足！需要 ${cost} 灵石`, "error");
+        return;
+    }
+    
+    // 消耗灵石
+    player.sect.spiritStones -= cost;
+    
+    // 升级功法
+    if (!player.sect.techniques[techName]) {
+        player.sect.techniques[techName] = 1;
+    } else {
+        player.sect.techniques[techName]++;
+    }
+     
+       
+
+    logAction(`成功升级功法: ${techName} (当前宗门等级: ${player.sect.techniques[techName]})`, "success");
+   updatePlayerBattleStats();
+    updateSectUI();
+}
+
+// 计算功法升级成本
+function calculateUpgradeCost(techName) {
+    const currentLevel = player.sect.techniques[techName] || 0;
+    return 100 * Math.pow(1.2, currentLevel);
+}
+
+// 一键升级所有功法
+function upgradeAllTechniques() {
+    if (!player.sect.created) {
+        logAction("请先创建宗门！", "error");
+        return;
+    }
+    
+    const totalCost = calculateUpgradeAllCost();
+    if (player.sect.spiritStones < totalCost) {
+        logAction(`灵石不足！需要 ${totalCost} 灵石`, "error");
+        return;
+    }
+    
+    // 消耗灵石
+    player.sect.spiritStones -= totalCost;
+    
+    // 升级所有功法
+    Object.keys(player.techniques).forEach(techName => {
+        if (techName !== 'none') {
+            if (!player.sect.techniques[techName]) {
+                player.sect.techniques[techName] = 1;
+            } else {
+                player.sect.techniques[techName]++;
+            }
+        }
+    });
+    
+    logAction("成功一键升级所有功法！", "success");
+   updatePlayerBattleStats();
+    updateSectUI();
+}
+
+// 计算一键升级总成本
+function calculateUpgradeAllCost() {
+    let totalCost = 0;
+    Object.keys(player.techniques).forEach(techName => {
+        if (techName !== 'none') {
+            totalCost += calculateUpgradeCost(techName);
+        }
+    });
+    return totalCost;
+}
+
+// 修改宗门名称
+function changeSectName() {
+    const newName = document.getElementById('sectNameInput').value.trim();
+    
+    if (!newName) {
+        logAction("宗门名称不能为空！", "error");
+        return;
+    }
+    
+    if (newName.length > 20) {
+        logAction("宗门名称过长（最多20字符）！", "error");
+        return;
+    }
+    
+    player.sect.name = newName;
+    logAction(`宗门名称已修改为: ${newName}`, "success");
+    updateSectUI();
+  updateSectNameDisplay();
+}
+
+// 解散宗门
+function disbandSect() {
+    if (!confirm("确定要解散宗门吗？将会失去所有宗门成员和等级！")) {
+        return;
+    }
+    
+    // 返还部分资源
+    const refund = Math.floor(player.sect.spiritStones * 0.5);
+    player.spiritStones += refund;
+    
+    // 重置宗门数据
+    player.sect = {
+        created: false,
+        name: "",
+        level: 0,
+        exp: 0,
+        spiritStones: 0,
+        members: [],
+        missions: [],
+        techniques: {},
+        creationTime: 0,
+        maxMembers: 5
+    };
+    
+    logAction(`宗门已解散，返还${refund}灵石`, "info");
+    updateSectUI();
+   updateSectNameDisplay();
+}
+
+// 辅助函数：格式化时间
+function formatTimes(ms) {
+    if (ms <= 0) return "已完成";
+    
+    const hours = Math.floor(ms / 3600000);
+    const minutes = Math.floor((ms % 3600000) / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    
+    return `${hours}小时 ${minutes}分钟 ${seconds}秒`;
+}
+
+// 辅助函数：获取物品名称
+function getItemName(itemKey) {
+    const names = {
+        'superiorGem': '极品宝石',
+        'baitCount': '鱼饵',
+        'rebornDan': '洗髓丹',
+        'companionKey': '伴侣钥匙'
+    };
+    return names[itemKey] || itemKey;
+}
+
+// 每秒检查任务完成情况
+setInterval(() => {
+    if (player.sect && player.sect.created) {
+        player.sect.missions.forEach(mission => {
+            if (Date.now() - mission.startTime >= mission.duration) {
+                completeMission(mission.id);
+            }
+        });
+    }
+}, 1000);
 // 夜店系统数据结构
 const nightClubConfig = {
     staffTypes: [
@@ -16445,8 +17367,13 @@ function upgradeGem(type, level) {
                 amount = 1;
                 break;
             case 7: // 进阶神石
-                cost = 30;
+                cost = 20;
                 item = 'advanceStone';
+                amount = 1;
+                break;
+           case 8: // 宗门令牌
+                cost = 50;
+                item = 'zongmen';
                 amount = 1;
                 break;
             default:
@@ -16476,6 +17403,7 @@ function upgradeGem(type, level) {
                 case 'rootDetector': itemName = '灵根检测器'; break;
                 case 'bloodlineDetector': itemName = '血脉检测剂'; break;
                 case 'advanceStone': itemName = '进阶神石'; break;
+               case 'zongmen': itemName = '宗门令牌'; break;
             }
             
             logAction(`宝藏金币成功兑换: ${amount}${itemName}`, 'success');
@@ -16946,6 +17874,10 @@ function giveTreasureRewards(map, isBattleWin) {
         player.cultivation.exp += exp;
       
         rewardText = `战斗胜利！获得${exp}点修仙经验`;
+    if (Math.random() < 0.1) {
+            player.items.roseq = (player.items.roseq || 0) + 1;
+            rewardText += "<br>获得香囊x1！";
+        }
     if (Math.random() < 0.1) {
             player.items.primaryGemq = (player.items.primaryGemq || 0) + 1;
             rewardText += "<br>获得宝藏金币x1！";
