@@ -5584,7 +5584,6 @@ if (speedBoostBtn) {
    initNightClubSystem();
     // 计算离线探险奖励
     calculateOfflineExpeditionRewards();
-        
         if (save.exploration) {
                 Object.assign(explorationData, save.exploration);
             }
@@ -13882,7 +13881,7 @@ function updateParkingUI() {
     document.getElementById('parkingSpotCount').textContent = player.parking.parkedVehicles.length;
     document.getElementById('maxParkingSpots').textContent = player.parking.maxSpots;
     document.getElementById('parkingExp').textContent = player.parking.exp.toFixed(1);
-    document.getElementById('nextLevelExp').textContent = getNextLevelExp();
+    document.getElementById('nextLevelExp').textContent = getNextLevelExpq();
     document.getElementById('totalParkingIncome').textContent = player.parking.totalIncome.toExponential(1);
     
     // 更新车辆列表
@@ -13896,7 +13895,7 @@ function updateParkingUI() {
 }
 
 // 获取下一级所需经验
-function getNextLevelExp() {
+function getNextLevelExpq() {
     const expRequirements = [100, 200, 300, 400, 600, 800, 1000, 1300, 1700, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, 125000, 150000, 200000, 400000, 600000, 800000, 1000000, 2500000, 5000000, 10000000, 100000000];
     const currentLevel = Math.min(player.parking.level, expRequirements.length);
     return expRequirements[currentLevel - 1];
@@ -14186,7 +14185,7 @@ function decomposeSelectedVehicle() {
 
 // 升级停车位
 function upgradeParking() {
-    const requiredExp = getNextLevelExp();
+    const requiredExp = getNextLevelExpq();
     
     if (player.parking.exp < requiredExp) {
         logAction(`经验不足！需要 ${requiredExp} 经验`, "error");
@@ -15846,7 +15845,7 @@ function updateMissionList() {
                 <div>耗时: ${formatTimes(mission.duration)}</div>
                 <div>奖励: ${mission.reward.stones}灵石, ${mission.reward.exp}声望</div>
             </div>
-            <button onclick="startMission('${mission.id}')" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; width: 100%;">派遣弟子</button>
+            <button onclick="startMissionq('${mission.id}')" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; width: 100%;">派遣弟子</button>
         `;
         
         missionContainer.appendChild(missionCard);
@@ -15882,7 +15881,7 @@ function updateMissionList() {
 }
 
 // 开始任务
-function startMission(missionId) {
+function startMissionq(missionId) {
     if (!player.sect.created) {
         logAction("请先创建宗门！", "error");
         return;
@@ -15930,10 +15929,10 @@ function startMission(missionId) {
     updateSectUI();
     
     // 设置任务完成计时器
-    setTimeout(() => completeMission(missionId), mission.duration);
+    setTimeout(() => completeMissionq(missionId), mission.duration);
 }
 
-function completeMission(missionId) {
+function completeMissionq(missionId) {
     const missionIndex = player.sect.missions.findIndex(m => m.id === missionId);
     if (missionIndex === -1) return;
     
@@ -16250,7 +16249,7 @@ setInterval(() => {
     if (player.sect && player.sect.created) {
         player.sect.missions.forEach(mission => {
             if (Date.now() - mission.startTime >= mission.duration) {
-                completeMission(mission.id);
+                completeMissionq(mission.id);
             }
         });
     }
@@ -21979,5 +21978,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
+
 </body>
 </html>
