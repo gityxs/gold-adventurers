@@ -1015,6 +1015,16 @@ button:hover {
 .set-collapsed .folder-arrow {
     transform: rotate(-90deg);
 }
+ .lottery-countdown {
+            font-size: 14px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 10px 0;
+            padding: 5px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -1027,7 +1037,7 @@ button:hover {
     </button>
     
     <!-- 公告内容区域（默认隐藏） -->
-    <div id="gameLogPage2" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
+    <div id="gameLogPage5" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>游戏公告介绍</h4>
             <p>QQ群：864788026  有问题可以进群问</p>
@@ -1036,7 +1046,7 @@ button:hover {
             <p>2. 宠物系统：玩家可以通过升级宠物来提升装备属性加成。</p>
             <p>3. 离线系统：现在离线也能奥秘经验和银行和股票，彩票更新，升级装备。</p>
             <p>4. 新增股票系统，显示实时股价和持有情况，每10分钟股价随机波动±1%~10%，离线时间自动计算股价波动，所有交易使用转生币结算，实时显示价格变化趋势</p>
-            <p>5. 彩票系统：购买到心仪的数字就可以（留1000转生币每次开奖自动消耗10转生币），30分钟开奖1次。刮刮卡：直接生效，开奖结果看获取！</p>
+            <p>5. 彩票系统：30分钟开奖1次。刮刮卡：直接生效，开奖结果看获取！</p>
             <p>6. 银行系统：存钱每6分钟0.02%收益！</p>
             <p>7. 副本装备系统：副本装备可以提升第一页装备的全属性，使用洗炼石（材料宝箱或者打怪掉）可以重铸副本装备的成长属性或者分解重新获取。成长数值上限：废品0.05%，倚天剑10%，青龙枪15%，白虎斧20%，朱雀弓25%，玄武盾30%，麒麟杖35%，凤凰剑40%，饕餮刀45%，穷奇戟50%，烛龙枪60%，白泽剑70%，混沌斧80%，太初刃90%   后续加深颜色多10%  比如：☆=100%★=110% ○=200% ●=210%  ◇=300%  ◆=310%  □=400%  ■=410%  △=500%  ▲=510%</p>
             <p>8. 魂环系统：魂环可以永久提升装备属性，通过打怪掉落升级。</p>
@@ -1062,8 +1072,8 @@ button:hover {
            <p>26. 修仙系统：500转开启，开启经验获得条件是：获得一次灵根和血脉。材料都是杂货铺购买</p>
            <p>27. 宝图系统：600转开启，随机奖励或者打BOSS。</p>
            <p>28. 夜店系统：600转开启，店铺每级加点击伤害，特殊事件消耗50-200星币，提升30-60分钟金币或者经验收益，获得的星币可以兑换藏宝图，或者打世界地图怪物消耗（后续会加其他材料兑换）。</p>
-           <p>29. 玩家等级：50转开启，每级10倍属性，世界地图怪物打怪升级。</p>
-           <p>30. 世界地图：100转开启，打怪掉玩家经验，每挑战一次消耗1星币，如果打的时候闪退界面，那就是打不过这关。（后续会加材料掉落）。</p>
+           <p>29. 玩家等级：50转开启，每级10倍属性，世界地图怪物打怪升级。每100级可以飞升一次</p>
+           <p>30. 世界地图：50转开启，打怪掉玩家经验，每挑战一次消耗1星币，如果打的时候闪退界面，那就是打不过这关。（后续会加材料掉落）。</p>
           <p>31. 直播系统：500转开启，每级增加点击伤害，粉丝数增加GPS加成，流量是获得多倍经验</p>
         <p>31. 宗门系统：1000转开启，每级GPS收益，功法库提升功法秘笈加成。</p>
         </div>
@@ -1076,9 +1086,12 @@ button:hover {
     </button>
     
     <!-- 公告内容区域（默认隐藏） -->
-    <div id="gameLogPage3" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
+    <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>更新日志</h4>
+           <p>2025/10/08 : 玩家等级增加飞升，每100级可以飞升一次(飞升后等级变为1级）属性翻倍，世界地图100转修改50转开启。鱼类分解增加获得种子几率。</p>
+           <p>2025/10/07 : 修复星域探险任务进行中点开宗门导致星域不更新任务时间奖励</p>
+           <p>2025/10/04 : 修复传统彩票不显示开奖结果。另外增加奖励！传统彩票奖励不再是转生币改为星尘发票（开奖后想看结果可以随便购买下面普通2个彩票中的一个刷新开奖结果界面）</p>
            <p>2025/10/03 :修改伴侣进阶要求：对应的伴侣灵魂获得。分解伴侣可以获得对应的伴侣灵魂（宝图小概率获得天使恶魔精灵），伴侣界面增加伴侣商店。宝图购买次数增加10-50次，开启也增加次数。宝图提高品质奖励：增加宝图2合1合成。修改农田浇水，每次浇水消耗30VIP能力值，可以加速成熟3分钟。</p>
            <p>2025/10/02 :神器界面加入筛选，想看什么筛选什么，神器锻造次数增加10-100次，建议不要太多分解再点。</p>
            <p>2025/10/01 :增加星域探索材料兑换转存档的时候可以用，伴侣宝箱开启次数增加10-50次，自动购买宝箱里面增加功法秘籍价格上限自己设置价格(输入10000或者1E4这样都可以)自动购买超出会停止购买转生后会自动开启，增加农场在线自动种植和收货。</p>
@@ -1100,6 +1113,7 @@ button:hover {
  <div class="player-name">
     <span id="playerName">勇者</span> <span id="playerClassName" style="color: #00f;"></span><span id="currentTitle" style="margin-left: 10px; color: #ffd700;"></span>
     <div class="vip-container" style="text-align: center; margin: 10px 0;">
+     <span id="ascentionCountq" style="margin-left: 10px; color: #4CAF50;">0</span>
     <span id="playerLevelDisplay" style="margin-left: 10px; color: #4CAF50;">Lv.1</span>
   <div class="vip-level-display" style="font-size: 18px; font-weight: bold; background: linear-gradient(to right, #ffd700, #ffA500); -webkit-background-clip: text; color: transparent;">
     VIP等级: <span id="vipLevel">1</span>
@@ -1231,18 +1245,19 @@ button:hover {
     <div id="lotteryList" style="display: none;">
         <h3></h3>
         <div>
-            <h4>传统数字彩票</h4>
-            <p>每30分钟开奖，1-50数字中6个1亿，中5个1000万，中4个50万，中3个10000，中2个1000，中1个100（中奖奖励转生币）。记得来一注！</p>
+            <h4>传统数字彩票（购买刮刮卡刷新开奖结果）</h4>
+            <p>每30分钟开奖，1-50数字中6个100万，中5个10万，中4个1万，中3个1000，中2个100，中1个10（中奖奖励星尘发票）。记得来一注！</p>
             <button onclick="buyTraditionalLottery()">购买传统数字彩票（10转生币）</button>
             <div id="traditionalLotteryNumbers"></div>
+            <div id="traditionalLotteryCountdown" class="lottery-countdown">下次开奖: --:--:--</div>
         </div>
         <div>
-            <h4>蛇年刮刮卡</h4>
+            <h4>蛇年刮刮卡（购买后刷新开奖结果）</h4>
             <p>60%谢谢惠顾0转生币，35%鼓励奖获得10-100转生币，三等奖3.9%获得100-500，二等奖1%获得500-2000，一等奖0.1%获得2000-10000。</p>
             <button onclick="buySnakeScratchCard()">购买蛇年刮刮卡（50转生币）</button>
         </div>
         <div>
-            <h4>发财刮刮卡</h4>
+            <h4>发财刮刮卡（购买后刷新开奖结果）</h4>
             <p>60%谢谢惠顾0转生币，35%鼓励奖获得100-1000转生币，三等奖3.9%获得1000-5000，二等奖1%获得5000-20000，一等奖0.1%获得20000-100000。</p>
             <button onclick="buyFortuneScratchCard()">购买发财刮刮卡（500转生币）</button>
         </div>
@@ -1343,11 +1358,10 @@ button:hover {
     <div id="gameLogPage1" class="active">
         <div id="actionLog" class="log"></div>
     </div>
-    <div id="gameLogPage2" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;">
-        <div class="log">
-            
-        </div>
+    <div id="gameLogPage2">
+        <div class="log">  
     </div>
+</div>
     <div id="gameLogPage3">
         <div id="lotteryResults" class="log"></div>
     </div>
@@ -2745,6 +2759,9 @@ button:hover {
         <div>当前经验: <span id="currentPlayerExp">0</span>/<span id="nextLevelExpq">10000</span></div>
         <div>点击收益加成: <span id="clickBonus">0.01%</span></div>
         <div>每秒金币加成: <span id="gpsBonus">0.01</span></div>
+         <div>飞升次数: <span id="ascentionCount">0</span></div>
+        <div>飞升加成倍数: <span id="ascentionMultiplier">1</span></div>
+        <div>下次飞升要求: <span id="nextAscentionRequirement">500</span>级</div>
     </div>
     
     <div class="exp-bar" style="height: 20px; background: #333; border-radius: 10px; margin: 10px 0;">
@@ -2752,8 +2769,7 @@ button:hover {
     </div>
     
     <div style="margin: 15px 0;">
-        <button onclick="upgradePlayerLevel(1)" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-right: 10px;">升级1级</button>
-        <button onclick="upgradePlayerLevel(10)" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">升级10级</button>
+         <button onclick="ascendPlayer()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">飞升</button>
     </div>
 </div>
 
@@ -3541,7 +3557,9 @@ level: {
     exp: 0,
     nextLevelExp: 10000,
     clickBonus: 1,
-    gpsBonus: 1
+    gpsBonus: 1,
+    ascentionCount: 0, // 飞升次数
+    ascentionMultiplier: 1 // 飞升加成倍数
 },
 cultivation: {
             stage: 0, // 当前阶段索引
@@ -4199,6 +4217,7 @@ gems: {
             traditionalLotteryNumbers: [],
          traditionalLotteryPurchased: false,
           traditionalLotteryBought: false,
+         traditionalLotteryDrawTime: 0,
             lastLotteryDraw: Date.now(),
            titles: {
         unlocked: [], // 已解锁称号列表
@@ -5865,6 +5884,18 @@ function setTechniqueMaxCost() {
     player.autoBuyTechniqueMaxCost = save.autoBuyTechniqueMaxCost;
 }
         
+          if (save.level) {
+                player.level = {
+                    current: save.level.current || 1,
+                    exp: save.level.exp || 0,
+                    nextLevelExp: save.level.nextLevelExp || 10000,
+                    clickBonus: save.level.clickBonus || 0,
+                    gpsBonus: save.level.gpsBonus || 0,
+                    ascentionCount: save.level.ascentionCount || 0,
+                    ascentionMultiplier: save.level.ascentionMultiplier || 1
+                };
+            }
+
              // 确保加载通天塔数据
           if (!player.fishing) {
         player.fishing = {
@@ -5989,6 +6020,15 @@ if (speedBoostBtn) {
         if (save.exploration) {
                 Object.assign(explorationData, save.exploration);
             }
+    if (save.traditionalLotteryBought && save.traditionalLotteryDrawTime) {
+                        if (Date.now() >= save.traditionalLotteryDrawTime) {
+                            // 立即开奖
+                            checkTraditionalLotteryResult();
+                        } else {
+                            // 设置开奖时间
+                            player.traditionalLotteryDrawTime = save.traditionalLotteryDrawTime;
+                        }
+                    }
         }
     } catch (e) {
         console.warn('存档加载失败，使用默认数据:', e);
@@ -7418,14 +7458,14 @@ function updateItemDisplay() {
     `).join('');
 }
 document.getElementById('announcementToggle').addEventListener('click', function() {
-    const announcementPanel = document.getElementById('gameLogPage2');
+    const announcementPanel = document.getElementById('gameLogPage5');
     // 切换显示状态
     announcementPanel.style.display = announcementPanel.style.display === 'none' ? 'block' : 'none';
     // 切换按钮文本箭头方向
     this.textContent = announcementPanel.style.display === 'block' ? '点击关闭新手必看↑' : '点击呼出新手必看↓';
 });
 document.getElementById('announcementToggle1').addEventListener('click', function() {
-    const announcementPanel = document.getElementById('gameLogPage3');
+    const announcementPanel = document.getElementById('gameLogPage4');
     // 切换显示状态
     announcementPanel.style.display = announcementPanel.style.display === 'none' ? 'block' : 'none';
     // 切换按钮文本箭头方向
@@ -7684,7 +7724,7 @@ function sellAllStock() {
         const numbers = generateTraditionalLotteryNumbers();
         player.traditionalLotteryNumbers = numbers;
         player.traditionalLotteryBought = true; // 设置购买标记
-        
+         player.traditionalLotteryDrawTime = Date.now() + 30 * 60 * 1000;
         updateTraditionalLotteryDisplay();
         logAction(`购买了传统数字彩票，号码为：${numbers.join(', ')}`, 'info');
         
@@ -7702,6 +7742,7 @@ function resetTraditionalLottery() {
     player.traditionalLotteryNumbers = [];
     player.traditionalLotteryBought = false; // 重置购买标记
     player.traditionalLotteryPurchased = false; // 重置原有限购标记
+   player.traditionalLotteryDrawTime = 0;
     updateTraditionalLotteryDisplay();
 }
 
@@ -7725,32 +7766,33 @@ function resetTraditionalLottery() {
     let reward = 0;
     switch (matchedNumbers) {
         case 6:
-            reward = 100000000;
+            reward = 1000000;
             break;
         case 5:
-            reward = 10000000;
+            reward = 100000;
             break;
         case 4:
-            reward = 500000;
-            break;
-        case 3:
             reward = 10000;
             break;
-        case 2:
+        case 3:
             reward = 1000;
             break;
-        case 1:
+        case 2:
             reward = 100;
             break;
+        case 1:
+            reward = 10;
+            break;
       }
-    player.reincarnationCoin += reward;
+    player.items.yuzhou1 += reward;
 
      // 添加开奖结果
     player.lotteryResults.unshift({
         type: '传统数字彩票',
         numbers: winningNumbers,
         matched: matchedNumbers,
-        reward
+        reward: reward,
+       timestamp: new Date().toLocaleTimeString()
     });
 
     // 保持开奖结果不超过 20 条
@@ -7758,10 +7800,11 @@ function resetTraditionalLottery() {
         player.lotteryResults.pop(); // 移除最旧的一条开奖结果
     }
     
-    logAction(`传统数字彩票开奖结果：中奖号码为 ${winningNumbers.join(', ')}，你中了 ${matchedNumbers} 个号码，获得 ${reward} 转生币`, 'success');
+    logAction(`传统数字彩票开奖结果：中奖号码为 ${winningNumbers.join(', ')}，你中了 ${matchedNumbers} 个号码，获得 ${reward} 星尘发票`, 'success');
   // 开奖后重置购买状态
      resetTraditionalLottery();
     player.traditionalLotteryPurchased = false;
+    updateLotteryResultsDisplay();
     saveGame();
 
 }
@@ -7778,7 +7821,8 @@ function resetTraditionalLottery() {
               // 添加开奖结果
         player.lotteryResults.unshift({
             type: '蛇年刮刮卡',
-            reward
+            reward: reward,
+            timestamp: new Date().toLocaleTimeString()
         });
 
         // 保持开奖结果不超过 20 条
@@ -7812,7 +7856,8 @@ function resetTraditionalLottery() {
                  // 添加开奖结果
         player.lotteryResults.unshift({
             type: '发财刮刮卡',
-            reward
+            reward: reward,
+            timestamp: new Date().toLocaleTimeString()
         });
 
         // 保持开奖结果不超过 20 条
@@ -7837,19 +7882,41 @@ function resetTraditionalLottery() {
         }
 
         // 更新传统数字彩票显示
-      function updateTraditionalLotteryDisplay() {
-    const container = document.getElementById('traditionalLotteryNumbers');
-    if (player.traditionalLotteryBought) {
-        container.textContent = `您的号码：${player.traditionalLotteryNumbers.join(', ')} (已购买，等待开奖...)`;
-        // 禁用购买按钮
-        document.querySelector('.buy-traditional-lottery-btn').style.display = 'none';
-    } else {
-        container.textContent = "您还没有购买彩票";
-        // 启用购买按钮
-        document.querySelector('.buy-traditional-lottery-btn').style.display = 'block';
-    }
-}
+     function updateTraditionalLotteryDisplay() {
+            const container = document.getElementById('traditionalLotteryNumbers');
+            if (player.traditionalLotteryBought) {
+                container.textContent = `您的号码：${player.traditionalLotteryNumbers.join(', ')} (已购买，等待开奖...)`;
+                document.querySelector('.buy-traditional-lottery-btn').style.display = 'none';
+            } else {
+                container.textContent = "您还没有购买彩票";
+                document.querySelector('.buy-traditional-lottery-btn').style.display = 'block';
+            }
+            // 更新倒计时显示
+            updateLotteryCountdown();
+        }
+      // 更新彩票倒计时
+        function updateLotteryCountdown() {
+            const countdownElement = document.getElementById('traditionalLotteryCountdown');
+            if (!countdownElement) return;
 
+            if (player.traditionalLotteryBought && player.traditionalLotteryDrawTime > 0) {
+                const now = Date.now();
+                const timeLeft = player.traditionalLotteryDrawTime - now;
+                
+                if (timeLeft <= 0) {
+                    countdownElement.textContent = '开奖中...';
+                    // 时间到了，立即开奖
+                    checkTraditionalLotteryResult();
+                } else {
+                    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    countdownElement.textContent = `下次开奖: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            } else {
+                countdownElement.textContent = '下次开奖: --:--:--';
+            }
+        }
         // 更新开奖结果显示
         function updateLotteryResultsDisplay() {
     const container = document.getElementById('lotteryResults');
@@ -7857,7 +7924,7 @@ function resetTraditionalLottery() {
         .slice(0, 20)
         .map(result => {
             if (result.type === '传统数字彩票') {
-                return `<div>${result.type} - 中奖号码: ${result.numbers.join(', ')}，你中了 ${result.matched} 个号码，获得 ${result.reward} 转生币</div>`;
+                return `<div>${result.type} - 中奖号码: ${result.numbers.join(', ')}，你中了 ${result.matched} 个号码，获得 ${result.reward} 星尘发票</div>`;
             } else {
                 return `<div>${result.type} - 获得 ${result.reward} 转生币</div>`;
             }
@@ -8239,7 +8306,8 @@ function confirmRename() {
     document.getElementById("clickValue").textContent = display(getTotalClickValue());
     document.getElementById("vipPowerCount").textContent = player.items.vipPower || 0;
    document.getElementById("mysteryBonusDisplay").textContent = player.mystery.bonus;
-  document.getElementById('playerLevelDisplay').textContent = `Lv.${player.level.current}`;
+  document.getElementById('playerLevelDisplay').textContent = `Lv.${player.level.current}级`;
+  document.getElementById('ascentionCountq').textContent = `飞升.${player.level.ascentionCount}次`;
 
 
     // 更新材料宝箱购买成本显示
@@ -9196,6 +9264,7 @@ function formatTime(milliseconds) {
    updateFundValues(); // 添加这一行 
  checkAutoReincarnation(); // 检查自动转生
  updateCompanionDisplay();
+ updateLotteryCountdown();
  updateDisplay();
    if (player.battle.maxStage > 1050) {
         localStorage.removeItem('goldGameSave');
@@ -11898,7 +11967,7 @@ function decomposeSelectedFish() {
     // 处理每种选中的物品
     selectedItems.forEach(item => {
         // 添加种子掉落
-    if (Math.random() < 0.10) { // 10%概率获得种子
+    if (Math.random() < 0.15) { // 15%概率获得种子
         dropSeedAfterDecompose();
     }
        
@@ -13897,8 +13966,8 @@ const worldZones = [
 ];
 // 切换世界地图界面
 function toggleWorldMap() {
-    if (player.reincarnationCount < 100) {
-        alert("需要达到100转才能开启世界地图！");
+    if (player.reincarnationCount < 50) {
+        alert("需要达到50转才能开启世界地图！");
         return;
     }
     const overlay = document.getElementById('worldMapOverlay');
@@ -14883,9 +14952,10 @@ function toggleExplorationSystem() {
 // 更新探索系统界面
 function updateExplorationUI() {
     // 更新资源仓库显示
-   document.getElementById('speedLevel').textContent = explorationData.speed.level;
+    document.getElementById('speedLevel').textContent = explorationData.speed.level;
     document.getElementById('capacityLevel').textContent = explorationData.capacity.level;
     document.getElementById('durabilityLevel').textContent = explorationData.durability.level;
+    
     // 计算属性效果
     const speedEffect = 60 - (explorationData.speed.level - 1) * 5;
     const capacityEffect = 100 + (explorationData.capacity.level - 1) * 20;
@@ -14898,10 +14968,10 @@ function updateExplorationUI() {
     document.getElementById('damageRate').textContent = Math.max(1, damageReduction) + '%';
     
     // 更新资源显示
-    document.getElementById('stardustCount').textContent = player.exploration.resources.stardust || 0;
-    document.getElementById('darkMatterCount').textContent = player.exploration.resources.darkMatter || 0;
-    document.getElementById('cosmicCrystalCount').textContent = player.exploration.resources.cosmicCrystal || 0;
-    document.getElementById('artifactFragmentCount').textContent = player.exploration.resources.artifactFragment || 0;
+    document.getElementById('stardustCount').textContent = explorationData.resources.stardust || 0;
+    document.getElementById('darkMatterCount').textContent = explorationData.resources.darkMatter || 0;
+    document.getElementById('cosmicCrystalCount').textContent = explorationData.resources.cosmicCrystal || 0;
+    document.getElementById('artifactFragmentCount').textContent = explorationData.resources.artifactFragment || 0;
     
     // 更新任务按钮状态
     const missionButtons = document.querySelectorAll('.start-mission-btn');
@@ -14915,20 +14985,29 @@ function updateExplorationUI() {
         }
     });
     
-    // 更新任务时间显示（应用速度加成）
+    // 更新任务时间显示（应用速度加成）- 修复部分
     const missionCards = document.querySelectorAll('.mission-card');
     missionCards.forEach(card => {
         const difficulty = card.getAttribute('data-difficulty');
-        const baseTime = missions[difficulty].time;
+         // 添加安全检查
+        if (!missions[difficulty]) {
+            console.error("未找到任务配置:", difficulty);
+            return; // 跳过这个卡片
+        }
+   
+        
+        const mission = missions[difficulty];
+        const baseTime = mission.time;
         const actualTime = Math.max(10, baseTime - (explorationData.speed.level - 1) * 5);
         card.querySelector('.mission-time').textContent = actualTime + "分钟";
         
         // 应用耐久加成后的损坏率
-        const baseRisk = missions[difficulty].damageRisk;
+        const baseRisk = mission.damageRisk;
         const actualRisk = Math.max(1, baseRisk - (explorationData.durability.level - 1));
         card.querySelector('.damage-risk').textContent = actualRisk + "%";
     });
-     // 更新属性升级按钮的显示
+    
+    // 更新属性升级按钮的显示
     const attributes = ['speed', 'capacity', 'durability'];
     attributes.forEach(attr => {
         const btn = document.querySelector(`.upgrade-btn[data-attr="${attr}"]`);
@@ -14948,7 +15027,7 @@ function updateExplorationUI() {
         const minutes = Math.floor(remaining / 60000);
         const seconds = Math.floor((remaining % 60000) / 1000);
         
-        addLog(`任务进行中: ${missions[explorationData.activeMission].name} - 剩余: ${minutes}分${seconds}秒`);
+        addLog(`任务进行中: ${missions[explorationData.activeMission]?.name || '未知任务'} - 剩余: ${minutes}分${seconds}秒`);
         
         if (remaining <= 0) {
             completeMission();
@@ -18111,7 +18190,31 @@ function toggleLevelSystem() {
         updateDisplay();
     }
 }
-
+function ascendPlayer() {
+    // 计算下次飞升所需等级
+    const nextAscentionLevel = (player.level.ascentionCount + 1) * 100;
+    
+    // 检查是否满足飞升条件
+    if (player.level.current < nextAscentionLevel) {
+        logAction(`飞升需要等级${nextAscentionLevel}！当前等级${player.level.current}。`, "error");
+        return;
+    }
+    
+    // 执行飞升
+    player.level.ascentionCount++;
+    player.level.ascentionMultiplier *= 2; // 属性加成翻倍
+    player.level.current = 1; // 等级重置为1
+    player.level.exp = 0;
+    player.level.nextLevelExp = 10000;
+    
+    // 更新加成
+    player.level.clickBonus = 10 * player.level.ascentionMultiplier;
+    player.level.gpsBonus = 10 * player.level.ascentionMultiplier;
+    
+    logAction(`飞升成功！当前飞升次数：${player.level.ascentionCount}，加成倍数：${player.level.ascentionMultiplier}`, "success");
+    updateLevelUI();
+    updateDisplay();
+}
 // 更新等级界面
 function updateLevelUI() {
     document.getElementById('currentPlayerLevel').textContent = player.level.current;
@@ -18119,7 +18222,9 @@ function updateLevelUI() {
     document.getElementById('nextLevelExpq').textContent = player.level.nextLevelExp;
     document.getElementById('clickBonus').textContent = player.level.clickBonus.toFixed(0) + '倍';
     document.getElementById('gpsBonus').textContent =  player.level.gpsBonus.toFixed(0) + '倍';
-    
+     document.getElementById("ascentionCount").textContent = player.level.ascentionCount;
+    document.getElementById("ascentionMultiplier").textContent = player.level.ascentionMultiplier + "倍";
+    document.getElementById("nextAscentionRequirement").textContent = (player.level.ascentionCount + 1) * 100;
     const progress = (player.level.exp / player.level.nextLevelExp) * 100;
     document.getElementById('playerExpProgress').style.width = progress + '%';
 }
@@ -18131,18 +18236,26 @@ function upgradePlayerLevel(amount) {
             player.level.exp -= player.level.nextLevelExp;
             player.level.current++;
             
-       player.level.clickBonus = player.level.current * 10; // 百分比
-            player.level.gpsBonus = player.level.current * 10;
-            
             // 计算下一级所需经验
-            player.level.nextLevelExp = 10000 * player.level.current;        
+            player.level.nextLevelExp = 10000 * player.level.current;
+            
+            // 计算加成，考虑飞升倍数
+            player.level.clickBonus = player.level.current * 10 * player.level.ascentionMultiplier;
+            player.level.gpsBonus = player.level.current * 10 * player.level.ascentionMultiplier;
+            
             logAction(`玩家等级提升至 ${player.level.current}级！`, 'success');
+            
+            // 检查飞升条件
+            const nextAscentionLevel = (player.level.ascentionCount + 1) * 100;
+            if (player.level.current === nextAscentionLevel) {
+                logAction(`已达到第${player.level.ascentionCount + 1}次飞升条件，可进行飞升！`, 'info');
+            }
         } else {
             logAction("经验不足，无法升级！", "error");
             break;
         }
     }
- updateLevelUI();
+    updateLevelUI();
     updateDisplay();
 }
 
