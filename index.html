@@ -1015,7 +1015,7 @@ button:hover {
 .set-collapsed .folder-arrow {
     transform: rotate(-90deg);
 }
- .lottery-countdown {
+    .lottery-countdown {
             font-size: 14px;
             font-weight: bold;
             color: #e74c3c;
@@ -1024,6 +1024,47 @@ button:hover {
             background-color: #f9f9f9;
             border-radius: 4px;
             border: 1px solid #ddd;
+        }
+.dimension-selector {
+            margin: 15px 0;
+            padding: 10px;
+            background: #2c3e50;
+            border-radius: 8px;
+            color: white;
+        }
+        .dimension-btn {
+            padding: 8px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #34495e;
+            color: #ecf0f1;
+            transition: all 0.3s;
+        }
+        .dimension-btn.active {
+            background: #e74c3c;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        }
+        .dimension-btn:hover:not(.active) {
+            background: #4a6572;
+        }
+        .dimension-info {
+            margin-top: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+   /* 新增页脚样式 */
+        #footer {
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            z-index: 1000;
+            pointer-events: none; /* 防止干扰交互 */
         }
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -1089,6 +1130,7 @@ button:hover {
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>更新日志</h4>
+             <p>2025/10/09 : 世界地图增加难度次元，切换次元可以多倍经验，会掉落一些道具。通天塔怪物复活次数20次修改为5次</p>
            <p>2025/10/08 : 玩家等级增加飞升，每100级可以飞升一次(飞升后等级变为1级）属性翻倍，世界地图100转修改50转开启。鱼类分解增加获得种子几率。</p>
            <p>2025/10/07 : 修复星域探险任务进行中点开宗门导致星域不更新任务时间奖励</p>
            <p>2025/10/04 : 修复传统彩票不显示开奖结果。另外增加奖励！传统彩票奖励不再是转生币改为星尘发票（开奖后想看结果可以随便购买下面普通2个彩票中的一个刷新开奖结果界面）</p>
@@ -2780,7 +2822,23 @@ button:hover {
         <h2 style="color: #FFD700; margin: 0;">世界地图</h2> 
         <button onclick="toggleWorldMap()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
     </div>
-   
+    <!-- 次元难度选择器 -->
+        <div class="dimension-selector">
+            <h3>次元难度选择</h3>
+            <div>
+                <button class="dimension-btn active" onclick="changeDimension(1)">次元1</button>
+                <button class="dimension-btn" onclick="changeDimension(2)">次元2</button>
+                <button class="dimension-btn" onclick="changeDimension(3)">次元3</button>
+                <button class="dimension-btn" onclick="changeDimension(4)">次元4</button>
+                <button class="dimension-btn" onclick="changeDimension(5)">次元5</button>
+            </div>
+            <div class="dimension-info">
+                当前难度: <span id="currentDimension">次元1</span><br>
+                星币消耗: <span id="dimensionCost">1</span><br>
+                经验倍数: <span id="dimensionExpMultiplier">1</span>倍<br>
+                怪物攻击: <span id="dimensionAttackMultiplier">1</span>倍
+            </div>
+        </div>
     <div id="zoneList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
         <!-- 区域列表会动态生成 -->
     </div>
@@ -3490,6 +3548,7 @@ button:hover {
         </div>
     </div>
 </div>
+<div id="footer">版本号: v1.5.4</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -3513,6 +3572,7 @@ button:hover {
     reincarnationCount: 0,
     equipment: [],
     usedActivationCodes: [],
+    dimensionLevel: 1,
     class: null, // 当前职业: null, 'warrior', 'mage'
     classBranches: [], // 已选择的分支 [0, 2, 1] 表示第1排选第0个，第2排选第2个等
     classBonuses: { // 新增：存储职业分支选择的加成
@@ -7436,6 +7496,7 @@ function updateItemDisplay() {
     resetItemDisplay();
     resetPetDisplay();
     updateExplorationUI();
+   updateDimensionUI();
     // 恢复自动扫荡状态显示
     document.getElementById('autoSweepStatus').textContent = 
         player.battle.autoSweepEnabled ? '开' : '关';
@@ -13771,16 +13832,16 @@ const worldZones = [
         expRange: [10000, 15000],
         monsterNames: ['血魔', '狱妖', '战魂', '争魄', '杀精', '戮怪', '伐灵', '征魔'],
         modifiers: [
-            { name: '嗜血', health: 400.0, attack: 1000.0 },
-            { name: '狂战', health: 80.0, attack: 800.0 },
-            { name: '不屈', health: 10.0, attack: 500.0 },
-            { name: '血族', health: 300.0, attack: 1000.0 },
-            { name: '狂战族', health: 50.0, attack: 300.0 },
-            { name: '不屈族', health: 150.0, attack: 200.0 },
-            { name: '嗜血族', health: 600.0, attack: 1000.0 },
-            { name: '狂战血脉', health: 500.0, attack: 180.0 },
-            { name: '不屈血脉', health: 150.0, attack: 150.0 },
-            { name: '死战', health: 530.0, attack: 1500.0 }
+            { name: '嗜血', health: 400.0, attack: 10000.0 },
+            { name: '狂战', health: 80.0, attack: 8000.0 },
+            { name: '不屈', health: 10.0, attack: 5000.0 },
+            { name: '血族', health: 300.0, attack: 10000.0 },
+            { name: '狂战族', health: 50.0, attack: 3000.0 },
+            { name: '不屈族', health: 150.0, attack: 2000.0 },
+            { name: '嗜血族', health: 600.0, attack: 10000.0 },
+            { name: '狂战血脉', health: 500.0, attack: 1800.0 },
+            { name: '不屈血脉', health: 150.0, attack: 1500.0 },
+            { name: '死战', health: 530.0, attack: 15000.0 }
         ]
     },
     {
@@ -13791,16 +13852,16 @@ const worldZones = [
         expRange: [15000, 25000],
         monsterNames: ['恶魔领主', '深渊魔王', '地狱公爵', '炼狱侯爵', '邪能伯爵', '堕落子爵', '腐化男爵', '扭曲骑士'],
         modifiers: [
-            { name: '恶魔之怒', health: 100.0, attack: 350.0 },
-            { name: '深渊之力', health: 20.0, attack: 820.0 },
-            { name: '炼狱之力', health: 120.0, attack: 1800.0 },
-            { name: '恶魔之力', health: 130.0, attack: 150.0 },
-            { name: '夜魔之力', health: 30.0, attack: 120.0 },
-            { name: '地狱之力', health: 120.0, attack: 1800.0 },
-            { name: '魔神之力', health: 10.0, attack: 1500.0 },
-            { name: '深渊核心', health: 110.0, attack: 1200.0 },
-            { name: '地火核心', health: 120.0, attack: 180.0 },
-            { name: '邪能腐蚀', health: 480.0, attack: 3800.0 }
+            { name: '恶魔之怒', health: 100.0, attack: 3500.0 },
+            { name: '深渊之力', health: 20.0, attack: 8200.0 },
+            { name: '炼狱之力', health: 120.0, attack: 18000.0 },
+            { name: '恶魔之力', health: 130.0, attack: 1500.0 },
+            { name: '夜魔之力', health: 30.0, attack: 1200.0 },
+            { name: '地狱之力', health: 120.0, attack: 18000.0 },
+            { name: '魔神之力', health: 10.0, attack: 15000.0 },
+            { name: '深渊核心', health: 110.0, attack: 12000.0 },
+            { name: '地火核心', health: 120.0, attack: 1800.0 },
+            { name: '邪能腐蚀', health: 480.0, attack: 38000.0 }
         ]
     },
     {
@@ -13811,16 +13872,16 @@ const worldZones = [
         expRange: [25000, 50000],
         monsterNames: ['冰霜巨龙', '寒冰巫妖', '极地巨人', '雪域女王', '冰川领主', '冻土之王', '永冬守卫', '霜寒使者'],
         modifiers: [
-            { name: '绝对零度', health: 20.0, attack: 120.0 },
-            { name: '冰封领域', health: 100.0, attack: 700.0 },
-            { name: '霜冻新星', health: 20.0, attack: 130.0 },
-            { name: '零度之力', health: 20.0, attack: 480.0 },
-            { name: '封神领域', health: 320.0, attack: 1000.0 },
-            { name: '霜冻之力', health: 10.0, attack: 80.0 },
-            { name: '霜寒死神', health: 200.0, attack: 320.0 },
-            { name: '冰封之力', health: 30.0, attack: 220.0 },
-            { name: '灵魂深王', health: 250.0, attack: 1320.0 },
-            { name: '寒冰牢笼', health: 550.0, attack: 4500.0 }
+            { name: '绝对零度', health: 20.0, attack: 1200.0 },
+            { name: '冰封领域', health: 100.0, attack: 7000.0 },
+            { name: '霜冻新星', health: 20.0, attack: 1300.0 },
+            { name: '零度之力', health: 20.0, attack: 4800.0 },
+            { name: '封神领域', health: 320.0, attack: 10000.0 },
+            { name: '霜冻之力', health: 10.0, attack: 800.0 },
+            { name: '霜寒死神', health: 200.0, attack: 3200.0 },
+            { name: '冰封之力', health: 30.0, attack: 2200.0 },
+            { name: '灵魂深王', health: 250.0, attack: 13020.0 },
+            { name: '寒冰牢笼', health: 550.0, attack: 45000.0 }
         ]
     },
     {
@@ -13831,16 +13892,16 @@ const worldZones = [
         expRange: [50000, 100000],
         monsterNames: ['血月狼王', '赤红巨蝎', '绯色狮鹫', '猩红飞龙', '朱红泰坦', '深红梦魇', '鲜红收割者', '暗红破坏神'],
         modifiers: [
-            { name: '血月之力', health: 400.0, attack: 500.0 },
-            { name: '猩红狂暴', health: 90.0, attack: 720.0 },
-            { name: '赤红领域', health: 300.0, attack: 440.0 },
-            { name: '血月暗魔', health: 400.0, attack: 200.0 },
-            { name: '猩红之力', health: 70.0, attack: 3100.0 },
-            { name: '血族领域', health: 61.0, attack: 1400.0 },
-            { name: '血月战刃', health: 30.0, attack: 2500.0 },
-            { name: '收割者领域', health: 40.0, attack: 500.0 },
-            { name: '梦魇领域', health: 69.0, attack: 4100.0 },
-            { name: '深红诅咒', health: 390.0, attack: 6000.0 }
+            { name: '血月之力', health: 400.0, attack: 5000.0 },
+            { name: '猩红狂暴', health: 90.0, attack: 7200.0 },
+            { name: '赤红领域', health: 300.0, attack: 4400.0 },
+            { name: '血月暗魔', health: 400.0, attack: 2000.0 },
+            { name: '猩红之力', health: 70.0, attack: 31000.0 },
+            { name: '血族领域', health: 61.0, attack: 14000.0 },
+            { name: '血月战刃', health: 30.0, attack: 25000.0 },
+            { name: '收割者领域', health: 40.0, attack: 5000.0 },
+            { name: '梦魇领域', health: 69.0, attack: 41000.0 },
+            { name: '深红诅咒', health: 390.0, attack: 60000.0 }
         ]
     },
     {
@@ -13851,16 +13912,16 @@ const worldZones = [
         expRange: [100000, 500000],
         monsterNames: ['时空守护者', '裂隙观察者', '维度旅行者', '位面穿梭者', '虚空漫步者', '次元监察者', '宇宙编织者', '现实扭曲者'],
         modifiers: [
-            { name: '时间加速', health: 20.0, attack: 800.0 },
-            { name: '空间折叠', health: 280.0, attack: 700.0 },
-            { name: '维度撕裂', health: 190.0, attack: 400.0 },
-            { name: '量子隐身', health: 70.0, attack: 8100.0 },
-            { name: '时间碎片', health: 380.0, attack: 2300.0 },
-            { name: '维度错位', health: 90.0, attack: 1800.0 },
-            { name: '中子星脉冲', health: 70.0, attack: 2000.0 },
-            { name: '时间分流', health: 80.0, attack: 3000.0 },
-            { name: '超声波攻击', health: 400.0, attack: 5000.0 },
-            { name: '现实重构', health: 600.0, attack: 10000.0 }
+            { name: '时间加速', health: 20.0, attack: 8000.0 },
+            { name: '空间折叠', health: 280.0, attack: 7000.0 },
+            { name: '维度撕裂', health: 190.0, attack: 4000.0 },
+            { name: '量子隐身', health: 70.0, attack: 81000.0 },
+            { name: '时间碎片', health: 380.0, attack: 23000.0 },
+            { name: '维度错位', health: 90.0, attack: 18000.0 },
+            { name: '中子星脉冲', health: 70.0, attack: 20000.0 },
+            { name: '时间分流', health: 80.0, attack: 30000.0 },
+            { name: '超声波攻击', health: 400.0, attack: 50000.0 },
+            { name: '现实重构', health: 600.0, attack: 100000.0 }
         ]
     },
     {
@@ -13871,16 +13932,16 @@ const worldZones = [
         expRange: [500000, 1000000],
         monsterNames: ['星陨巨兽', '陨石领主', '彗星使者', '流星猎人', '行星吞噬者', '恒星毁灭者', '星系守护者', '宇宙创造者'],
         modifiers: [
-            { name: '星辰坠落', health: 150.0, attack: 580.0 },
-            { name: '黑洞吞噬', health: 20.0, attack: 2500.0 },
-            { name: '超新星爆发', health: 180.0, attack: 5300.0 },
-            { name: '星辰碰撞', health: 150.0, attack: 7010.0 },
-            { name: '流星吞噬', health: 200.0, attack: 1500.0 },
-            { name: '毁灭爆发', health: 18.0, attack: 3000.0 },
-            { name: '星辰爆炸', health: 150.0, attack: 8000.0 },
-            { name: '银河吞噬', health: 200.0, attack: 4500.0 },
-            { name: '超新爆风', health: 180.0, attack: 22000.0 },
-            { name: '宇宙大爆炸', health: 700.0, attack: 30000.0 }
+            { name: '星辰坠落', health: 150.0, attack: 5800.0 },
+            { name: '黑洞吞噬', health: 20.0, attack: 25000.0 },
+            { name: '超新星爆发', health: 180.0, attack: 53000.0 },
+            { name: '星辰碰撞', health: 150.0, attack: 70100.0 },
+            { name: '流星吞噬', health: 200.0, attack: 15000.0 },
+            { name: '毁灭爆发', health: 18.0, attack: 30000.0 },
+            { name: '星辰爆炸', health: 150.0, attack: 80000.0 },
+            { name: '银河吞噬', health: 200.0, attack: 45000.0 },
+            { name: '超新爆风', health: 180.0, attack: 220000.0 },
+            { name: '宇宙大爆炸', health: 700.0, attack: 300000.0 }
         ]
     },
     {
@@ -13891,16 +13952,16 @@ const worldZones = [
         expRange: [1000000, 5000000],
         monsterNames: ['圣殿守卫', '永恒骑士', '不朽祭司', '神圣主教', '天界大天使', '神域审判者', '至高仲裁者', '创世神使'],
         modifiers: [
-            { name: '神圣庇护', health: 50.0, attack: 1000.0 },
-            { name: '永恒之光', health: 140.0, attack: 3010.0 },
-            { name: '神之裁决', health: 310.0, attack: 15100.0 },
-            { name: '神圣打击', health: 520.0, attack: 30120.0 },
-            { name: '神圣之光', health: 240.0, attack: 6020.0 },
-            { name: '神之神剑', health: 600.0, attack: 5100.0 },
-            { name: '神圣护盾', health: 450.0, attack: 44000.0 },
-            { name: '神王护体', health: 240.0, attack: 36000.0 },
-            { name: '神尊破灭', health: 160.0, attack: 25200.0 },
-            { name: '创世之力', health: 1000.0, attack: 80000.0 }
+            { name: '神圣庇护', health: 50.0, attack: 10000.0 },
+            { name: '永恒之光', health: 140.0, attack: 30100.0 },
+            { name: '神之裁决', health: 310.0, attack: 151000.0 },
+            { name: '神圣打击', health: 520.0, attack: 301020.0 },
+            { name: '神圣之光', health: 240.0, attack: 60200.0 },
+            { name: '神之神剑', health: 600.0, attack: 51000.0 },
+            { name: '神圣护盾', health: 450.0, attack: 440000.0 },
+            { name: '神王护体', health: 240.0, attack: 360000.0 },
+            { name: '神尊破灭', health: 160.0, attack: 252000.0 },
+            { name: '创世之力', health: 1000.0, attack: 800000.0 }
         ]
     },
     {
@@ -13911,16 +13972,16 @@ const worldZones = [
         expRange: [5000000, 10000000],
         monsterNames: ['万象之主', '元素皇帝', '法则掌控者', '秩序守护神', '混沌化身', '虚空君主', '位面主宰', '多元宇宙观察者'],
         modifiers: [
-            { name: '元素风暴', health: 130.0, attack: 4200.0 },
-            { name: '法则扭曲', health: 750.0, attack: 8000.0 },
-            { name: '秩序崩坏', health: 420.0, attack: 6500.0 },
-            { name: '元素至尊', health: 300.0, attack: 9200.0 },
-            { name: '法则至尊', health: 280.0, attack: 10000.0 },
-            { name: '秩序至尊', health: 240.0, attack: 25000.0 },
-            { name: '万象至尊', health: 400.0, attack: 32000.0 },
-            { name: '混沌至尊', health: 430.0, attack: 40000.0 },
-            { name: '位面至尊', health: 320.0, attack: 75000.0 },
-            { name: '混沌初开', health: 1000.0, attack: 100000.0 }
+            { name: '元素风暴', health: 130.0, attack: 42000.0 },
+            { name: '法则扭曲', health: 750.0, attack: 80000.0 },
+            { name: '秩序崩坏', health: 420.0, attack: 65000.0 },
+            { name: '元素至尊', health: 300.0, attack: 92000.0 },
+            { name: '法则至尊', health: 280.0, attack: 100000.0 },
+            { name: '秩序至尊', health: 240.0, attack: 250000.0 },
+            { name: '万象至尊', health: 400.0, attack: 320000.0 },
+            { name: '混沌至尊', health: 430.0, attack: 400000.0 },
+            { name: '位面至尊', health: 320.0, attack: 750000.0 },
+            { name: '混沌初开', health: 1000.0, attack: 1000000.0 }
         ]
     },
     {
@@ -13931,16 +13992,16 @@ const worldZones = [
         expRange: [10000000, 50000000],
         monsterNames: ['鸿蒙巨兽', '太初古神', '元始天尊', '造化之主', '命运编织者', '因果律者', '真理守护者', '终极观察者'],
         modifiers: [
-            { name: '鸿蒙初开', health: 500.0, attack: 110000.0 },
-            { name: '太初之力', health: 700.0, attack: 240000.0 },
-            { name: '造化神功', health: 200.0, attack: 110000.0 },
-            { name: '鸿蒙尊者', health: 100.0, attack: 205000.0 },
-            { name: '太初尊者', health: 700.0, attack: 302000.0 },
-            { name: '未来尊者', health: 80.0, attack: 400100.0 },
-            { name: '命运尊者', health: 200.0, attack: 600000.0 },
-            { name: '太古尊者', health: 70.0, attack: 300000.0 },
-            { name: '九亥古神', health: 200.0, attack: 700000.0 },
-            { name: '终极真理', health: 1000.0, attack: 1000000.0 }
+            { name: '鸿蒙初开', health: 500.0, attack: 1100000.0 },
+            { name: '太初之力', health: 700.0, attack: 2400000.0 },
+            { name: '造化神功', health: 200.0, attack: 1100000.0 },
+            { name: '鸿蒙尊者', health: 100.0, attack: 2050000.0 },
+            { name: '太初尊者', health: 700.0, attack: 3020000.0 },
+            { name: '未来尊者', health: 80.0, attack: 4001000.0 },
+            { name: '命运尊者', health: 200.0, attack: 6000000.0 },
+            { name: '太古尊者', health: 70.0, attack: 3000000.0 },
+            { name: '九亥古神', health: 200.0, attack: 7000000.0 },
+            { name: '终极真理', health: 1000.0, attack: 10000000.0 }
         ]
     },
     {
@@ -13951,19 +14012,52 @@ const worldZones = [
         expRange: [50000000, 100000000],
         monsterNames: ['终焉之主', '灭世魔神', '创世之神', '永恒终结者', '无限吞噬者', '绝对虚无', '最终答案', '一切之终'],
         modifiers: [
-            { name: '终焉降临', health: 20.0, attack: 500000.0 },
-            { name: '灭世之力', health: 80.0, attack: 1200000.0 },
-            { name: '创世之力', health: 20.0, attack: 800000.0 },
-            { name: '终焉之力', health: 240.0, attack: 2700000.0 },
-            { name: '永恒之力', health: 310.0, attack: 1200000.0 },
-            { name: '无限之力', health: 120.0, attack: 600000.0 },
-            { name: '绝对之力', health: 300.0, attack: 2400000.0 },
-            { name: '灭世之力', health: 700.0, attack: 420000.0 },
-            { name: '灰烬之力', health: 550.0, attack: 2010000.0 },
-            { name: '绝对虚无', health: 1000.0, attack: 5000000.0 }
+            { name: '终焉降临', health: 20.0, attack: 5000000.0 },
+            { name: '灭世之力', health: 80.0, attack: 12000000.0 },
+            { name: '创世之力', health: 20.0, attack: 8000000.0 },
+            { name: '终焉之力', health: 240.0, attack: 27000000.0 },
+            { name: '永恒之力', health: 310.0, attack: 12000000.0 },
+            { name: '无限之力', health: 120.0, attack: 6000000.0 },
+            { name: '绝对之力', health: 300.0, attack: 24000000.0 },
+            { name: '灭世之力', health: 700.0, attack: 4200000.0 },
+            { name: '灰烬之力', health: 550.0, attack: 20100000.0 },
+            { name: '绝对虚无', health: 1000.0, attack: 50000000.0 }
         ]
     }
 ];
+const dimensionConfig = {
+            1: { cost: 1, expMultiplier: 1, attackMultiplier: 1, name: "次元1" },
+            2: { cost: 7, expMultiplier: 10, attackMultiplier: 100000, name: "次元2" },
+            3: { cost: 25, expMultiplier: 50, attackMultiplier: 10000000000, name: "次元3" },
+            4: { cost: 35, expMultiplier: 100, attackMultiplier: 1000000000000000, name: "次元4" },
+            5: { cost: 200, expMultiplier: 1000, attackMultiplier: 100000000000000000000, name: "次元5" }
+        };
+
+        // 切换次元难度
+        function changeDimension(level) {
+            player.dimensionLevel = level;
+            updateDimensionUI();
+            saveGame();
+        }
+
+        // 更新次元难度UI显示
+        function updateDimensionUI() {
+            // 更新按钮激活状态
+            document.querySelectorAll('.dimension-btn').forEach((btn, index) => {
+                if (index + 1 === player.dimensionLevel) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // 更新难度信息
+            const config = dimensionConfig[player.dimensionLevel];
+            document.getElementById('currentDimension').textContent = config.name;
+            document.getElementById('dimensionCost').textContent = config.cost;
+            document.getElementById('dimensionExpMultiplier').textContent = config.expMultiplier;
+            document.getElementById('dimensionAttackMultiplier').textContent = config.attackMultiplier.toExponential(1);
+        }
 // 切换世界地图界面
 function toggleWorldMap() {
     if (player.reincarnationCount < 50) {
@@ -14008,62 +14102,62 @@ function updateWorldMapUI() {
 }
 
 // 在指定区域开始战斗
-function startBattleInZone(zone) {
-  
-    if (player.nightClub.starCoins < 1) {
-        logAction("星币不足，无法生成怪物！", "error");
-        toggleWorldMap(); // 关闭世界地图界面
-        return;
-    }
-    
-    
-    player.nightClub.starCoins--;
-    logAction("消耗1个星币生成怪物", "info");
-    player.battle.currentZone = zone;
-    
-    // 生成怪物（复制打怪模式中的怪物属性）
-    generateMonsterForZone(zone);
-    
-    // 初始化战斗状态
-    player.battle.monsterResurrections = 0;
-    
-    // 显示战斗界面
-    document.getElementById('worldMapUI').style.display = 'none';
-    document.getElementById('worldMapOverlay').style.display = 'none';
-    
-    document.getElementById('battleUI').style.display = 'block';
-    document.getElementById('battleOverlay').style.display = 'block';
-    
-    updateBattleUI();
-}
+ function startBattleInZone(zone) {
+            const dimension = dimensionConfig[player.dimensionLevel];
+            
+            if (player.nightClub.starCoins < dimension.cost) {
+                logAction(`星币不足！需要${dimension.cost}个星币`, "error");
+                toggleWorldMap();
+                return;
+            }
+            
+            player.nightClub.starCoins -= dimension.cost;
+            logAction(`消耗${dimension.cost}个星币生成怪物（${dimension.name}）`, "info");
+            player.battle.currentZone = zone;
+            
+            // 生成怪物（考虑次元难度）
+            generateMonsterForZone(zone, dimension);
+            
+            // 初始化战斗状态
+            player.battle.monsterResurrections = 0;
+            
+            // 显示战斗界面
+            document.getElementById('worldMapUI').style.display = 'none';
+            document.getElementById('worldMapOverlay').style.display = 'none';
+            
+            document.getElementById('battleUI').style.display = 'block';
+            document.getElementById('battleOverlay').style.display = 'block';
+            
+            updateBattleUI();
+        }
 
 // 为区域生成怪物
-function generateMonsterForZone(zone) {
-    // 随机选择怪物名字
-    const name = zone.monsterNames[Math.floor(Math.random() * zone.monsterNames.length)];
-    
-    // 随机选择词条
-    const modifier = zone.modifiers[Math.floor(Math.random() * zone.modifiers.length)];
-    
-    // 计算基础属性
-    const stage = Math.floor((zone.minLevel + zone.maxLevel) / 2);
-    const healthMultiplier = Math.pow(2, stage);
-    const attackMultiplier = calculateAttackMultiplier(stage);
-    
-    // 应用词条加成
-    const health = 10000 * healthMultiplier * modifier.health;
-    const attack = attackMultiplier * modifier.attack;
-    
-    player.battle.currentMonster = {
-        name: `${name}`,
-        rank: modifier.name,
-        health: health,
-        maxHealth: health,
-        attack: attack,
-        resurrections: 0,
-        modifier: modifier
-    };
-}
+function generateMonsterForZone(zone, dimension) {
+            // 随机选择怪物名字
+            const name = zone.monsterNames[Math.floor(Math.random() * zone.monsterNames.length)];
+            
+            // 随机选择词条
+            const modifier = zone.modifiers[Math.floor(Math.random() * zone.modifiers.length)];
+            
+            // 计算基础属性
+            const stage = Math.floor((zone.minLevel + zone.maxLevel) / 2);
+            const healthMultiplier = Math.pow(2, stage);
+            const attackMultiplier = calculateAttackMultiplier(stage);
+            
+            // 应用词条加成和次元难度加成
+            const health = 10000 * healthMultiplier * modifier.health;
+            const attack = attackMultiplier * modifier.attack * dimension.attackMultiplier;
+            
+            player.battle.currentMonster = {
+                name: `${name}`,
+                rank: modifier.name,
+                health: health,
+                maxHealth: health,
+                attack: attack,
+                resurrections: 0,
+                modifier: modifier
+            };
+        }
 
 // 计算攻击乘数
 function calculateAttackMultiplier(stage) {
@@ -14179,54 +14273,105 @@ function monsterCounterAttack() {
 
 // 处理怪物被击败
 function handleMonsterDefeated() {
-    const monster = player.battle.currentMonster;
-    const zone = player.battle.currentZone;
-    
-    // 增加复活次数
-    player.battle.monsterResurrections++;
-    
-    if (player.battle.monsterResurrections < 5) {
-        // 怪物复活（属性增强）
-        monster.health = monster.maxHealth * Math.pow(2, player.battle.monsterResurrections);
-        monster.attack *= 1.5;
-        
-        addBattleLog(`${monster.name}复活了！(第${player.battle.monsterResurrections}次)`);
-     monsterCounterAttack();
-    } else {
-        // 怪物真正死亡
-        addBattleLog(`你击败了${monster.name}！`);
-        
-        // 计算经验奖励
-        const expMin = zone.expRange[0];
-        const expMax = zone.expRange[1];
-        const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
-        const finalExp = exp * player.vip.level;
-        
-        // 添加经验
-        addPlayerExp(finalExp);
-        addBattleLog(`获得${finalExp.toLocaleString()}经验！`);
-  
-        if (player.nightClub.starCoins < 1) {
-            addBattleLog("星币不足，无法生成新怪物！");
-            closeBattle();
-            return;
+            const monster = player.battle.currentMonster;
+            const zone = player.battle.currentZone;
+            const dimension = dimensionConfig[player.dimensionLevel];
+            
+            // 增加复活次数
+            player.battle.monsterResurrections++;
+            
+            if (player.battle.monsterResurrections < 5) {
+                // 怪物复活（属性增强）
+                monster.health = monster.maxHealth * Math.pow(2, player.battle.monsterResurrections);
+                monster.attack *= 1.5;
+                
+                addBattleLog(`${monster.name}复活了！(第${player.battle.monsterResurrections}次)`);
+                monsterCounterAttack();
+            } else {
+                // 怪物真正死亡
+                addBattleLog(`你击败了${monster.name}！`);
+                
+                // 计算经验奖励（应用次元难度倍数）
+                const expMin = zone.expRange[0];
+                const expMax = zone.expRange[1];
+                const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
+                const finalExp = exp * player.vip.level * dimension.expMultiplier;
+                
+                // 添加经验
+                addPlayerExp(finalExp);
+                addBattleLog(`获得${finalExp.toLocaleString()}经验！`);
+                if (Math.random() < 0.05) { // 5%掉落率
+            dropItemsByDimension();
+            }
+                if (player.nightClub.starCoins < dimension.cost) {
+                    addBattleLog("星币不足，无法生成新怪物！");
+                    closeBattle();
+                    return;
+                }
+                
+                player.nightClub.starCoins -= dimension.cost;
+                addBattleLog(`消耗${dimension.cost}个星币生成新怪物`);
+                updateItemDisplay();
+                
+                // 生成新怪物
+                generateMonsterForZone(zone, dimension);
+                player.battle.monsterResurrections = 0;
+                updatePlayerBattleStats();
+            }
+            
+            updateBattleUI();
+            updateLevelUI();
+            updateDisplay();
         }
-        
-        
-        player.nightClub.starCoins--;
-        addBattleLog("消耗1个星币生成新怪物");
-        updateItemDisplay();
-  
-        
-        // 生成新怪物
-        generateMonsterForZone(zone);
-        player.battle.monsterResurrections = 0;
-      updatePlayerBattleStats();
+function dropItemsByDimension() {
+    const dimension = player.dimensionLevel;
+    let droppedItems = [];
+    
+    switch(dimension) {
+        case 1:
+            if (Math.random() < 0.5) droppedItems.push('vipPower');
+            if (Math.random() < 0.2) droppedItems.push('banlv1');
+            break;
+        case 2:
+            if (Math.random() < 0.5) droppedItems.push('vipPower');
+            if (Math.random() < 0.2) droppedItems.push('banlv1');
+            if (Math.random() < 0.2) droppedItems.push('yuzhou1');
+            break;
+        case 3:
+            if (Math.random() < 0.5) droppedItems.push('vipPower');
+            if (Math.random() < 0.2) droppedItems.push('banlv1');
+            if (Math.random() < 0.2) droppedItems.push('yuzhou1');
+            if (Math.random() < 0.2) droppedItems.push('yuzhou2');
+            break;
+        case 4:
+            if (Math.random() < 0.5) droppedItems.push('vipPower');
+            if (Math.random() < 0.2) droppedItems.push('banlv1');
+            if (Math.random() < 0.2) droppedItems.push('yuzhou1');
+            if (Math.random() < 0.2) droppedItems.push('yuzhou2');
+            if (Math.random() < 0.2) droppedItems.push('yuzhou3');
+            break;
+        case 5:
+            if (Math.random() < 0.5) droppedItems.push('vipPower');
+            if (Math.random() < 0.2) droppedItems.push('banlv1');
+            if (Math.random() < 0.2) droppedItems.push('yuzhou1');
+            if (Math.random() < 0.2) droppedItems.push('yuzhou2');
+            if (Math.random() < 0.2) droppedItems.push('yuzhou3');
+            if (Math.random() < 0.1) droppedItems.push('yuzhou4');
+            break;
     }
     
-    updateBattleUI();
-          updateLevelUI();
-    updateDisplay();
+    // 处理掉落物品
+    if (droppedItems.length > 0) {
+        let dropMessage = "怪物掉落: ";
+        droppedItems.forEach(item => {
+            player.items[item] = (player.items[item] || 0) + 1;
+            dropMessage += `${itemEffects[item].name} `;
+        });
+        
+        addBattleLog(dropMessage);
+        logAction(dropMessage, 'success');
+        updateItemDisplay();
+    }
 }
 
 // 添加战斗日志
@@ -14315,7 +14460,7 @@ function backgroundMonsterCounterAttack() {
     if (player.battle.playerHealth <= 0) {
         stopBackgroundBattle();
         logAction("你在后台战斗中被怪物击败！", "error");
-     updatePlayerBattleStats();
+        updatePlayerBattleStats();
     }
 }
 
@@ -14323,6 +14468,7 @@ function backgroundMonsterCounterAttack() {
 function backgroundHandleMonsterDefeated() {
     const monster = player.battle.currentMonster;
     const zone = player.battle.currentZone;
+    const dimension = dimensionConfig[player.dimensionLevel]; // 获取当前次元配置
     
     // 增加复活次数
     player.battle.monsterResurrections++;
@@ -14331,31 +14477,38 @@ function backgroundHandleMonsterDefeated() {
         // 怪物复活（属性增强）
         monster.health = monster.maxHealth * Math.pow(2, player.battle.monsterResurrections);
         monster.attack *= 1.5;
-   backgroundMonsterCounterAttack();
+        
+        
+        
+        backgroundMonsterCounterAttack();
     } else {
         // 怪物真正死亡
-        // 计算经验奖励
+        // 计算经验奖励（应用次元难度倍数）
         const expMin = zone.expRange[0];
         const expMax = zone.expRange[1];
         const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
-        const finalExp = exp * player.vip.level;
+        const finalExp = exp * player.vip.level * dimension.expMultiplier;
         
         // 添加经验
         addPlayerExp(finalExp);
         
-        if (player.nightClub.starCoins < 1) {
+        // 5%概率掉落物品
+        if (Math.random() < 0.05) {
+            dropItemsByDimension();
+        }
+        
+        if (player.nightClub.starCoins < dimension.cost) {
             stopBackgroundBattle();
             logAction("星币不足，后台自动战斗已停止", "warning");
             return;
         }
         
-       
-        player.nightClub.starCoins--;
+         player.nightClub.starCoins -= dimension.cost;
         
-        // 生成新怪物
-        generateMonsterForZone(zone);
+        // 生成新怪物（应用次元难度）
+        generateMonsterForZone(zone, dimension);
         player.battle.monsterResurrections = 0;
-      updatePlayerBattleStats();
+        updatePlayerBattleStats();
     }
 }
 
@@ -22022,7 +22175,7 @@ function generateTowerMonster() {
         blockCount: blockCount,
         attackCount: attackCount,
         damageTakenMultiplier: damageTakenMultiplier,
-        resurrectionsLeft: 20 // 20次复活机会
+        resurrectionsLeft: 5 // 5次复活机会
     };
 }
 
@@ -23641,5 +23794,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
+
 </body>
 </html>
