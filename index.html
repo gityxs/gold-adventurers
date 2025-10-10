@@ -1130,6 +1130,7 @@ button:hover {
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>更新日志</h4>
+             <p>2025/10/10 : 修复卡顿（点设置 点保存游戏（多点几次）在点加载游戏，就不卡了（如果还卡就刷新页面。））</p>
              <p>2025/10/09 : 世界地图增加难度次元，切换次元可以多倍经验，会掉落一些道具。通天塔怪物复活次数20次修改为5次</p>
            <p>2025/10/08 : 玩家等级增加飞升，每100级可以飞升一次(飞升后等级变为1级）属性翻倍，世界地图100转修改50转开启。鱼类分解增加获得种子几率。</p>
            <p>2025/10/07 : 修复星域探险任务进行中点开宗门导致星域不更新任务时间奖励</p>
@@ -3548,7 +3549,7 @@ button:hover {
         </div>
     </div>
 </div>
-<div id="footer">版本号: v1.5.4</div>
+<div id="footer">版本号: v1.5.5</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -8501,6 +8502,14 @@ function confirmRename() {
     player.lastUpdate = Date.now(); // 确保保存时更新最后更新时间
     player.actionLogs = player.actionLogs.slice(0, 5);
     player.lotteryResults = player.lotteryResults.slice(0, 5);
+   
+    if (player.liveStream && player.liveStream.donationHistory) {
+        player.liveStream.donationHistory = player.liveStream.donationHistory.slice(-5);
+    }
+ 
+    if (player.liveStream && player.liveStream.viewers) {
+        player.liveStream.viewers = player.liveStream.viewers.slice(-5);
+    }
     player.mystery.lastUpdateTime = Date.now();
     player.tower.lastUpdate = Date.now();
     player.exploration = {
