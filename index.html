@@ -2309,8 +2309,8 @@ button:disabled {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.62更新日志</h4>
-          <p>2025/10/30 :增加跑商系统：1000转开启，可以获取大量星币</p>
+            <h4>1.63更新日志</h4>
+           <p>2025/10/30 :增加跑商系统：1000转开启，可以获取大量星币，隐藏游戏日志自动购买宝箱信息</p>
            <p>2025/10/27 :增加坐骑9品质提升大量属性，次元3以上掉落，分解可以获得星币。增加圣兽岛副本1200转才能进入（掉落升级坐骑材料），世界地图次元调整：降低星币消耗，VIP增加10倍经验效果。</p>
           <p>2025/10/26 : 增加黑龙潭副本1100转才能进入（掉落升级翅膀材料）。修改职业更换消耗职业转换书，职业增加：二转有分支→三转→四转（通天塔层数解锁职业专职）。（藏宝图打怪掉落或者商店兑换）。世界地图次元修改（轮回解锁次元难度），次元2以上低概率掉落翅膀，增加轮回：每飞升10次→轮回1转。降低世界地图和通天塔复活次数改为3次。打怪模式1000关修改成5000关，通天塔10W层修改50W层，藏宝图打怪掉落增加：副本令牌和职业转换书（商店也可以购买）。修改伴侣洗练：现在是全词条洗练，每锁定1个消耗加2材料。</p>
              <p>2025/10/23 : 由于数值过大导致游戏暴毙，削弱数值。</p>
@@ -3981,7 +3981,7 @@ button:disabled {
             <div id="currentEvent" style="margin-bottom: 15px;">
                 <!-- 当前事件将动态显示 -->
             </div>
-            <button onclick="triggerRandomEvent()" style="background: #9C27B0; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">触发随机事件</button>
+            <button onclick="triggerRandomEventa()" style="background: #9C27B0; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">触发随机事件</button>
         </div>
     </div>
 </div>
@@ -5193,7 +5193,7 @@ button:disabled {
 
 
 
-<div id="footer">版本号: v1.6.2</div>
+<div id="footer">版本号: v1.6.3</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -10162,7 +10162,12 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
                 .filter(Boolean).join(' ');
         }
 
-        function logAction(message, type = 'info') {
+       function logAction(message, type = 'info') {
+    // 过滤包含"自动购买"的消息
+    if (message.includes('自动购买')) {
+        return; // 直接返回，不记录这类消息
+    }
+    
     const timestamp = new Date().toLocaleTimeString();
 
     // 辅助函数：将大数值转换为科学计数法
@@ -10193,13 +10198,12 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
     logEntry.textContent = `[${timestamp}] ${message}`;
 
     const logContainer = document.getElementById('actionLog');
-    logContainer.insertBefore(logEntry, logContainer.firstChild);
+    logContainer.insertAdjacentHTML("afterbegin", logEntry);
 
     if (logContainer.children.length > 20) {
         logContainer.removeChild(logContainer.lastChild);
     }
 }
-
 
 
         // 保存游戏
@@ -19982,7 +19986,7 @@ function updateEventsTab() {
 }
 
 // 触发随机事件
-function triggerRandomEvent() {
+function triggerRandomEventa() {
     if (player.nightClub.activeEvent) {
         logAction("当前已有活跃事件！", "error");
         return;
@@ -27410,9 +27414,9 @@ function triggerNegativeEvent() {
                 Object.keys(tradingConfig.goods).forEach(good => {
                     const goodConfig = tradingConfig.goods[good];
                     if (goodConfig.shelfLife !== Infinity && player.trading.inventory[good]) {
-                        const spoilChance = 0.3; // 30%腐败概率
+                        const spoilChance = 0.1; // 10%腐败概率
                         if (Math.random() < spoilChance) {
-                            const spoilQuantity = Math.floor(player.trading.inventory[good] * 0.5); // 腐败一半
+                            const spoilQuantity = Math.floor(player.trading.inventory[good] * 0.2); // 腐败一半
                             player.trading.inventory[good] -= spoilQuantity;
                             player.trading.warehouse.used -= goodConfig.slots * spoilQuantity;
                             
@@ -32447,6 +32451,5 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
-
 </body>
 </html>
