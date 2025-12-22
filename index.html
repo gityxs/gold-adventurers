@@ -2786,8 +2786,202 @@ button:disabled {
             .landlord-lock-button:hover {
                 background: #e67e22 !important;
             }
-            
-          
+            #miningUI {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            border: 3px solid #4CAF50;
+            border-radius: 10px;
+            z-index: 1001;
+            overflow-y: auto;
+        }
+        
+        .mining-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        
+        .mining-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .mining-stat {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .mining-stamina {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .stamina-bar {
+            width: 100%;
+            height: 20px;
+            background: #555;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .stamina-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0066, #ff9a00);
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        
+        /* 新增：调整控制按钮区域布局 */
+        .mining-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* 新增：通知栏样式调整 */
+        .mining-notifications {
+            height: 200px;
+            overflow-y: auto;
+            background: #222;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .mining-notification {
+            padding: 5px;
+            margin-bottom: 5px;
+            border-left: 3px solid #4CAF50;
+            background: #2a2a2a;
+        }
+        
+        /* 新增：按钮组样式 */
+        .mining-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        /* 分页标签样式 */
+        .mining-tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #4CAF50;
+        }
+        
+        .mining-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #333;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.3s;
+        }
+        
+        .mining-tab.active {
+            background: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .mining-tab:hover:not(.active) {
+            background: #444;
+        }
+        
+        /* 宝石页面样式 */
+        .mining-gems-page {
+            display: none;
+        }
+        
+        .mining-gems-page.active {
+            display: block;
+        }
+        
+        .mining-gems {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .mining-gem {
+            background: #333;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* 新增：药水显示在宝石页面内 */
+        .mining-potions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #52b788;
+        }
+        
+        .potion-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .potion-icon {
+            font-size: 1.5em;
+        }
+        
+        .potion-count {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #52b788;
+        }
+        
+        /* 升级页面样式 */
+        .mining-upgrades-page {
+            display: none;
+        }
+        
+        .mining-upgrades-page.active {
+            display: block;
+        }
+        
+        .mining-upgrades {
+            margin-bottom: 20px;
+        }
+        
+        .mining-upgrade {
+            background: #333;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -2845,7 +3039,8 @@ button:disabled {
          <p>36. 蓬莱仙岛系统：3轮回开启，掉落大量材料，符文升级材料。</p>
         <p>37. 娱乐玩法：老虎机。</p>
        <p>38. 秘境：2000转开启，提升临时总数值，和大量神器碎片（藏宝图怪物掉落）。</p>
-       <p>39. 疯狂地主：0转开启，提升总数值，新版农田，10分钟刷新商店，离线也可以吃词条，最高16条。</p>
+       <p>39. 疯狂地主：0转开启（打怪模式第三层以上开启），提升总数值根据（总获得地主币），新版农田，10分钟刷新商店，成熟只要不收获也可以吃天气词条，离线也可以吃词条，最高16条。</p>
+       <p>40. 无尽挖矿：(升级一下稿子等级不然挖不到普通矿)1500转开启，提升大量世界地图经验，和各项属性。</p>
         </div>
     </div>
 </div>
@@ -2858,9 +3053,11 @@ button:disabled {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.68更新日志</h4>
+            <h4>1.70更新日志</h4>
+           <p>2025/12/22:增加无尽挖矿：开启条件1500转(升级一下稿子等级不然挖不到普通矿)，提升大量世界地图经验，和各项属性，对应称号。</p>
+           <p>2025/12/21:修改疯狂地主（新版农田）：开启条件，打怪模式第三层以上开启，增加疯狂地主对应称号。</p>
             <p>2025/12/20:增加疯狂地主（新版农田）：提升大量点击和每秒GPS，十分钟刷新一次。</p>
-            <p>2025/12/20:停车场加入批量分解，降低职业转生要求。加入秘境：2000转开启（秘境钥匙，藏宝图打怪掉落）。</p>
+            <p>2025/12/19:停车场加入批量分解，降低职业转生要求。加入秘境：2000转开启（秘境钥匙，藏宝图打怪掉落）。</p>
            <p>2025/11/06:修改星域获得，现在掉落是发票，增加新轮回副本，掉落符文强化材料，增加娱乐水果机：货币为星辰发票。</p>
            <p>2025/11/05:神器，翅膀，坐骑，增加锁定。</p>
            <p>2025/11/01:增加符文系统：5个属性有增加世界地图经验词条。</p>
@@ -2950,15 +3147,9 @@ button:disabled {
     <button onclick="toggleTowerUI()">通天塔</button>
      <button onclick="toggleAutoBuyShopa()">轮回BOSS副本</button>
     <button onclick="toggleWorldBossUI()" style="background: linear-gradient(to bottom, #d4af37, #a67c00); color: #000; font-weight: bold; padding: 6px 12px; font-size: 12px;">世界BOSS</button>
-     <button onclick="toggleLandlordGame()" style="background: #8e44ad; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px;">
-        疯狂地主
-    </button>
+     <button onclick="toggleLandlordGame()" style="background: #8e44ad; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px;">疯狂地主</button>
     <button onclick="toggleSlotMachine()">老虎机</button>
     <button onclick="toggleFundSystem()">基金系统</button>
-    <button onclick="toggleTradingSystem()" style="margin: 5px; padding: 8px 15px; background: linear-gradient(45deg, #FFD700, #FFA500); color: black; border: none; border-radius: 5px; cursor: pointer;">
-    跑商系统
-</button>
-<button onclick="toggleTimeSecretRealm()" style="background: linear-gradient(to bottom, #00bfff, #006994); color: #e6f7ff; border: 2px solid #00bfff; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; text-shadow: 0 0 5px #00bfff; box-shadow: 0 0 10px #00bfff; margin-left: 10px;">时光秘境</button>
     <button onclick="showTitleDialog()">称号系统</button>
     <button onclick="toggleOfficialSystem()">官职系统</button>
     <button onclick="toggleClassSystem()">职业系统</button>
@@ -2975,6 +3166,9 @@ button:disabled {
     <button onclick="toggleNightClubSystem()" style="margin-left: 10px;">夜店系统</button>
     <button onclick="toggleLiveStreamSystem()" class="tab-button">直播系统</button>
     <button onclick="toggleSectSystem()" class="system-btn">宗门系统</button>
+   <button onclick="toggleTradingSystem()" style="margin: 5px; padding: 8px 15px; background: linear-gradient(45deg, #FFD700, #FFA500); color: black; border: none; border-radius: 5px; cursor: pointer;">跑商系统</button>  
+   <button onclick="toggleMiningUI()" style="margin: 5px; padding: 8px 15px; background: linear-gradient(45deg, #FFD700, #FFA500); color: black; border: none; border-radius: 5px; cursor: pointer;">无尽挖矿</button>
+<button onclick="toggleTimeSecretRealm()" style="background: linear-gradient(to bottom, #00bfff, #006994); color: #e6f7ff; border: 2px solid #00bfff; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; text-shadow: 0 0 5px #00bfff; box-shadow: 0 0 10px #00bfff; margin-left: 10px;">时光秘境</button>     
     <button onclick="toggleSettingsUI()">设置</button>
 
 <h3>自动购买设置</h3>
@@ -6291,9 +6485,151 @@ button:disabled {
             <button onclick="closeLandlordItemModal()" style="margin-top: 20px; width: 100%; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">取消</button>
         </div>
     </div>
+   <div id="miningUI">
+        <div class="mining-header">
+            <h2>⛏️ 无尽挖矿系统</h2>
+            <button onclick="toggleMiningUI()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+        </div>
+        
+        <div class="mining-stats">
+            <div class="mining-stat">
+                <div>当前深度</div>
+                <div id="miningDepth">0 米</div>
+            </div>
+            <div class="mining-stat">
+                <div>挖掘力量</div>
+                <div id="miningPower">1</div>
+            </div>
+            <div class="mining-stat">
+                <div>体力上限</div>
+                <div id="miningMaxStamina">100</div>
+            </div>
+        </div>
+        
+        <div class="mining-stamina">
+            <div>体力值: <span id="miningStaminaText">100 / 100</span></div>
+            <div class="stamina-bar">
+                <div class="stamina-progress" id="miningStaminaBar" style="width: 100%"></div>
+            </div>
+            <div style="font-size: 0.8em; color: #ff6b6b; margin-top: 5px;">
+                ⚠️ 体力不会自动恢复，只能使用体力药水恢复
+            </div>
+        </div>
+        
+        <!-- 调整后的控制区域 -->
+        <div class="mining-controls">
+            <!-- 通知栏移动到按钮上方 -->
+            <div class="mining-notifications" id="miningNotifications">
+                <div class="mining-notification">游戏开始！点击"开始自动挖矿"开始冒险！</div>
+            </div>
+            
+            <!-- 按钮组 -->
+            <div class="mining-buttons">
+                <button id="miningToggleBtn" onclick="toggleMining()">开始自动挖矿</button>
+                <button onclick="useMiningPotion()">使用体力药水</button>
+                <button onclick="buyMiningPotion()">购买药水 (1个宝藏金币)</button>
+                <button onclick="clearMiningNotifications()">清空通知</button>
+            </div>
+        </div>
+        
+        <!-- 分页标签 -->
+        <div class="mining-tabs">
+            <div class="mining-tab active" onclick="switchMiningTab('gems')">宝石收集</div>
+            <div class="mining-tab" onclick="switchMiningTab('upgrades')">装备升级</div>
+        </div>
+        
+        <!-- 宝石页面 -->
+        <div id="miningGemsPage" class="mining-gems-page active">
+            <!-- 药水显示移动到宝石页面内 -->
+            <div class="mining-potions">
+                <div class="potion-info">
+                    <span class="potion-icon">💊</span>
+                    <div>
+                        <div>体力药水</div>
+                        <div style="font-size: 0.8em; color: #8da1b9;">恢复全部体力</div>
+                    </div>
+                </div>
+                <div class="potion-count" id="miningPotionCount">3</div>
+            </div>
+            
+            <div class="mining-gems">
+                <div class="mining-gem" style="border-left: 4px solid #ff6b6b;">
+                    <span>💎</span>
+                    <div>
+                        <div>红宝石(世界地图经验）</div>
+                        <div id="miningRuby">0</div>
+                    </div>
+                </div>
+                <div class="mining-gem" style="border-left: 4px solid #48cae4;">
+                    <span>🔷</span>
+                    <div>
+                        <div>蓝宝石（攻击力）</div>
+                        <div id="miningSapphire">0</div>
+                    </div>
+                </div>
+                <div class="mining-gem" style="border-left: 4px solid #52b788;">
+                    <span>💚</span>
+                    <div>
+                        <div>翡翠（生命）</div>
+                        <div id="miningEmerald">0</div>
+                    </div>
+                </div>
+                <div class="mining-gem" style="border-left: 4px solid #7b2cbf;">
+                    <span>🔮</span>
+                    <div>
+                        <div>紫水晶（爆伤）</div>
+                        <div id="miningAmethyst">0</div>
+                    </div>
+                </div>
+                <div class="mining-gem" style="border-left: 4px solid #caf0f8;">
+                    <span>💎</span>
+                    <div>
+                        <div>钻石（每秒GPS）</div>
+                        <div id="miningDiamond">0</div>
+                    </div>
+                </div>
+                <div class="mining-gem" style="border-left: 4px solid #ffd166;">
+                    <span>⛏️</span>
+                    <div>
+                        <div>矿石总量</div>
+                        <div id="miningOre">100</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 升级页面 -->
+        <div id="miningUpgradesPage" class="mining-upgrades-page">
+            <div class="mining-upgrades">
+                <h3>装备升级</h3>
+                <div class="mining-upgrade">
+                    <div>
+                        <div>强化镐头 (等级 <span id="miningPowerLevel">1</span>/100)</div>
+                        <div style="font-size: 0.8em;">提高挖掘深度和矿石获取</div>
+                    </div>
+                    <button onclick="upgradeMiningPower()" id="upgradeMiningPowerBtn">升级 (50)</button>
+                </div>
+                <div class="mining-upgrade">
+                    <div>
+                        <div>体力上限 (等级 <span id="miningStaminaLevel">1</span>/10)</div>
+                        <div style="font-size: 0.8em;">每级增加10点体力上限</div>
+                    </div>
+                    <button onclick="upgradeMiningStamina()" id="upgradeMiningStaminaBtn">升级 (150)</button>
+                </div>
+                <div class="mining-upgrade">
+                    <div>
+                        <div>宝石探测器 (等级 <span id="miningDetectorLevel">1</span>/10)</div>
+                        <div style="font-size: 0.8em;">每级提高0.5%宝石发现几率</div>
+                    </div>
+                    <button onclick="upgradeMiningDetector()" id="upgradeMiningDetectorBtn">升级 (200)</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
-<div id="footer">版本号: v1.6.8</div>
+
+<div id="footer">版本号: v1.7.0</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -6327,6 +6663,29 @@ button:disabled {
     soulRingMultiplier: 1,    // 魂环总加成乘数（默认1倍）
     dungeonEquipMultiplier: 1 // 副本装备总加成乘数（默认1倍）
   },
+mining: {
+            depth: 0,
+            power: 1,
+            isMining: false,
+            ore: 1500,
+            stamina: 100,
+            baseMaxStamina: 100,
+            staminaUpgradeLevel: 1,
+            potions: 3,
+            gems: {
+                ruby: 0,
+                sapphire: 0,
+                emerald: 0,
+                amethyst: 0,
+                diamond: 0
+            },
+            upgrades: {
+                power: 1,
+                detector: 1
+            },
+            notifications: [],
+            lastUpdate: Date.now()
+        },
 landlord: {
                 coins: 10000,
                 unlockedFields: 5,
@@ -9415,6 +9774,7 @@ const farmGPSEnhancements  = gpsEnhancementss[player.parking.level - 1] || gpsEn
     const gpsBonuss = player.level.gpsBonus * 1.00;   
    const gpsBonusssq = player.liveStream.totalEarnings * 0.00001;  
 const gpsBonusssqaa = player.landlord.stats.totalCoinsEarned * 0.0001;  
+ const gpsBonussbb = player.mining.gems.diamond * 1.00;  
 const gpsEnhancementsp =  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 1];
 const farmGPSEnhancementp  = gpsEnhancementsp[player.sect.level - 1] || gpsEnhancementsp[gpsEnhancementsp.length - 1];
 
@@ -9422,7 +9782,7 @@ const farmGPSEnhancementp  = gpsEnhancementsp[player.sect.level - 1] || gpsEnhan
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.gps * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.gpsMultiplier 
         * (1 + gpsBonus) 
-        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * (1 + gpsBonusssq) * farmGPSEnhancementp * (1 + gpsBonusssqaa) ;
+        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * (1 + gpsBonusssq) * farmGPSEnhancementp * (1 + gpsBonusssqaa) * (1 + gpsBonussbb) ;
 }
 
 function getTotalClickValue() {
@@ -14514,7 +14874,7 @@ let wingHealthBonus = 0;
         (1 + player.attributes.healthBonus + player.attributes.health * 0.01) *
         classBonuses.healthMultiplier * titleBonuses.healthMultiplier *
         companionBonuses.healthMultiplier * (1 + artifactBonuses.health) * (1 + bonuses.health / 100) *  (1 + techBonuses.health) *  (1 + wingHealthBonus)  *  (1 + mountHealthBonus) *
-        (1 + runeBonuses.health) // 应用伴侣生命加成
+        (1 + runeBonuses.health) * (1 + (player.mining.gems.emerald*0.05)) // 应用伴侣生命加成
     );
 
     // 3. 计算玩家攻击（应用伴侣攻击加成）
@@ -14523,7 +14883,7 @@ let wingHealthBonus = 0;
         (1 + player.attributes.attackBonus + player.attributes.attack * 0.01) *
         classBonuses.attackMultiplier * titleBonuses.attackMultiplier *
         officialBonus * companionBonuses.attackMultiplier * (1 + artifactBonuses.attack) * (1 + bonuses.attack / 100) *  (1 + techBonuses.attack)  *  (1 + mountAttackBonus) *
-        (1 + runeBonuses.attack) // 应用伴侣攻击加成
+        (1 + runeBonuses.attack) * (1 + (player.mining.gems.sapphire*0.05))// 应用伴侣攻击加成
     );
 
     // 4. 计算暴击率（应用伴侣暴击率加成）
@@ -14541,7 +14901,7 @@ let wingHealthBonus = 0;
         player.attributes.critDamage * 0.0025) *
         classBonuses.critMultiplier * titleBonuses.critMultiplier *
         companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100) *  (1 + techBonuses.critDamage)  *  (1 + mountCritDamageBonus) *
-        (1 + runeBonuses.critDamage); // 应用伴侣爆伤加成
+        (1 + runeBonuses.critDamage)* (1 + (player.mining.gems.amethyst*0.05)) ; // 应用伴侣爆伤加成
 
     // 6. 计算连击次数（应用伴侣连击加成）
     player.battle.playerMultiAttack = Math.max(1,
@@ -17789,7 +18149,7 @@ function handleMonsterDefeated() {
                 const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
                const runeBonuses = calculateRuneBonuses();
                const worldExpBonus = 1 + runeBonuses.worldExp;
-                const finalExp = exp * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus;
+                const finalExp =  (exp+(player.mining.gems.ruby*10)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus;
                 
                 // 添加经验
                 addPlayerExp(finalExp);
@@ -24815,8 +25175,23 @@ const titleConfig = {
     { name: "车坛至尊", condition: (p) => p.parking.level > 14, bonus: { attackMultiplier: 1.1 } },
     { name: "巅峰车皇", condition: (p) => p.parking.level > 24, bonus: { attackMultiplier: 1.2 } },
     { name: "寰宇车神", condition: (p) => p.parking.level > 34, bonus: { attackMultiplier: 1.2 } },
-    { name: "创世车帝", condition: (p) => p.parking.level > 39, bonus: { attackMultiplier: 1.2 } }
-], 
+    { name: "创世车帝", condition: (p) => p.parking.level > 39, bonus: { attackMultiplier: 1.2 } },
+    { name: "万元户", condition: (p) => p.landlord.stats.totalCoinsEarned > 10000, bonus: { healthMultiplier: 1.1 } },
+    { name: "十万富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 100000, bonus: { healthMultiplier: 1.1 } },
+    { name: "百万富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 1000000, bonus: { healthMultiplier: 1.1 } },
+    { name: "千万富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 10000000, bonus: { healthMultiplier: 1.2 } },
+    { name: "亿万富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 100000000, bonus: { healthMultiplier: 1.2 } },
+    { name: "十亿富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 1000000000, bonus: { healthMultiplier: 1.2 } },
+    { name: "百亿富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 10000000000, bonus: { healthMultiplier: 1.2 } },
+    { name: "千亿富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 100000000000, bonus: { healthMultiplier: 1.2 } },
+    { name: "高富帅", condition: (p) => p.landlord.stats.totalCoinsEarned > 1000000000000, bonus: { healthMultiplier: 1.2 } },
+    { name: "萌新矿工", condition: (p) => p.mining.depth > 1000, bonus: { attackMultiplier: 1.1 } },
+    { name: "勤奋矿工", condition: (p) => p.mining.depth > 10000, bonus: { attackMultiplier: 1.1 } },
+    { name: "黄金矿工", condition: (p) => p.mining.depth > 100000, bonus: { attackMultiplier: 1.1 } },
+    { name: "钻石矿工", condition: (p) => p.mining.depth > 1000000, bonus: { attackMultiplier: 1.2 } },
+    { name: "星辰矿工", condition: (p) => p.mining.depth > 10000000, bonus: { attackMultiplier: 1.2 } },
+    { name: "创世矿工神", condition: (p) => p.mining.depth > 100000000, bonus: { attackMultiplier: 1.2 } }
+   ], 
      towerBranch: [
     { name: "关破厉鬼", condition: (p) => p.tower.maxFloor > 10, bonus: { healthMultiplier: 1.1 } },
     { name: "阶碎无常", condition: (p) => p.tower.maxFloor > 500, bonus: { healthMultiplier: 1.1 } },
@@ -24828,13 +25203,13 @@ const titleConfig = {
     { name: "关前冥王", condition: (p) => p.tower.maxFloor > 50000, bonus: { healthMultiplier: 1.1 } },
     { name: "踏塔狂魔", condition: (p) => p.tower.maxFloor > 75000, bonus: { healthMultiplier: 1.1 } },
     { name: "混世魔王", condition: (p) => p.tower.maxFloor > 100000, bonus: { healthMultiplier: 1.1 } },
-    { name: "屠戮之主", condition: (p) => p.tower.maxFloor > 150000, bonus: { healthMultiplier: 1.1 } },
-    { name: "杀戮之神", condition: (p) => p.tower.maxFloor > 200000, bonus: { healthMultiplier: 1.1 } },
-    { name: "十殿阎罗", condition: (p) => p.tower.maxFloor > 250000, bonus: { healthMultiplier: 1.1 } },
-    { name: "弑神修罗", condition: (p) => p.tower.maxFloor > 300000, bonus: { healthMultiplier: 1.1 } },
-    { name: "九幽魔尊", condition: (p) => p.tower.maxFloor > 350000, bonus: { healthMultiplier: 1.1 } },
-    { name: "永夜君主", condition: (p) => p.tower.maxFloor > 400000, bonus: { healthMultiplier: 1.1 } },
-    { name: "深渊主宰", condition: (p) => p.tower.maxFloor > 450000, bonus: { healthMultiplier: 1.1 } }
+    { name: "屠戮之主", condition: (p) => p.tower.maxFloor > 150000, bonus: { healthMultiplier: 1.2 } },
+    { name: "杀戮之神", condition: (p) => p.tower.maxFloor > 200000, bonus: { healthMultiplier: 1.2 } },
+    { name: "十殿阎罗", condition: (p) => p.tower.maxFloor > 250000, bonus: { healthMultiplier: 1.2 } },
+    { name: "弑神修罗", condition: (p) => p.tower.maxFloor > 300000, bonus: { healthMultiplier: 1.2 } },
+    { name: "九幽魔尊", condition: (p) => p.tower.maxFloor > 350000, bonus: { healthMultiplier: 1.2 } },
+    { name: "永夜君主", condition: (p) => p.tower.maxFloor > 400000, bonus: { healthMultiplier: 1.2 } },
+    { name: "深渊主宰", condition: (p) => p.tower.maxFloor > 450000, bonus: { healthMultiplier: 1.2 } }
 ],
     // 关卡分支
     stageBranch: [
@@ -37273,6 +37648,10 @@ function buyTsrShopItem(itemKey) {
 
         // 疯狂地主游戏控制函数
         function toggleLandlordGame() {
+        if (player.battle.maxStage < 2) {
+        alert("需要打怪模式达到第3层才能开启疯狂地主！");
+        return;
+    }
             const ui = document.getElementById('landlordUI');
             if (ui.style.display === 'block') {
                 closeLandlordGame();
@@ -39032,6 +39411,377 @@ function buyTsrShopItem(itemKey) {
         };
 
         console.log("疯狂地主游戏已成功加载！");
+   // 无尽挖矿配置
+        const miningGemsConfig = [
+            { name: '红宝石', rarity: 0.4, minDepth: 0, color: '#ff6b6b' },
+            { name: '蓝宝石', rarity: 0.3, minDepth: 10000, color: '#48cae4' },
+            { name: '翡翠', rarity: 0.2, minDepth: 100000, color: '#52b788' },
+            { name: '紫水晶', rarity: 0.08, minDepth: 1000000, color: '#7b2cbf' },
+            { name: '钻石', rarity: 0.02, minDepth: 10000000, color: '#caf0f8' }
+        ];
+
+         // 切换分页函数
+        function switchMiningTab(tabName) {
+            // 更新标签样式
+            document.querySelectorAll('.mining-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.mining-tab[onclick="switchMiningTab('${tabName}')"]`).classList.add('active');
+            
+            // 更新页面显示
+            document.querySelectorAll('.mining-gems-page, .mining-upgrades-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(`mining${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Page`).classList.add('active');
+        }
+
+        function toggleMiningUI() {
+       if (player.reincarnationCount < 1500) {
+        alert("需要达到1500转才能开启无尽挖矿！");
+        return;
+    }
+            const ui = document.getElementById('miningUI');
+            if (ui.style.display === 'block') {
+                ui.style.display = 'none';
+            } else {
+                ui.style.display = 'block';
+                updateMiningUI();
+                calculateOfflineMining();
+            }
+        }
+
+        function getMiningMaxStamina() {
+            return player.mining.baseMaxStamina + ((player.mining.staminaUpgradeLevel - 1) * 10);
+        }
+
+        function updateMiningUI() {
+            const maxStamina = getMiningMaxStamina();
+            const staminaPercent = (player.mining.stamina / maxStamina) * 100;
+            
+            // 更新基础信息
+            document.getElementById('miningDepth').textContent = player.mining.depth.toLocaleString() + ' 米';
+            document.getElementById('miningPower').textContent = player.mining.power;
+            document.getElementById('miningMaxStamina').textContent = maxStamina;
+            
+            // 更新体力条
+            document.getElementById('miningStaminaBar').style.width = staminaPercent + '%';
+            document.getElementById('miningStaminaText').textContent = 
+                Math.floor(player.mining.stamina) + ' / ' + maxStamina;
+            
+            // 更新宝石数量
+            document.getElementById('miningRuby').textContent = player.mining.gems.ruby;
+            document.getElementById('miningSapphire').textContent = player.mining.gems.sapphire;
+            document.getElementById('miningEmerald').textContent = player.mining.gems.emerald;
+            document.getElementById('miningAmethyst').textContent = player.mining.gems.amethyst;
+            document.getElementById('miningDiamond').textContent = player.mining.gems.diamond;
+            document.getElementById('miningOre').textContent = player.mining.ore;
+            
+            // 更新药水数量
+            document.getElementById('miningPotionCount').textContent = player.mining.potions;
+            
+            // 更新升级信息
+            document.getElementById('miningPowerLevel').textContent = player.mining.upgrades.power;
+            document.getElementById('miningStaminaLevel').textContent = player.mining.staminaUpgradeLevel;
+            document.getElementById('miningDetectorLevel').textContent = player.mining.upgrades.detector;
+            
+            // 更新按钮状态
+            document.getElementById('upgradeMiningPowerBtn').textContent = `升级 (${1000 * player.mining.upgrades.power})`;
+            document.getElementById('upgradeMiningStaminaBtn').textContent = `升级 (${10000 * player.mining.staminaUpgradeLevel})`;
+            document.getElementById('upgradeMiningDetectorBtn').textContent = `升级 (${50000 * player.mining.upgrades.detector})`;
+            
+            document.getElementById('upgradeMiningPowerBtn').disabled = player.mining.upgrades.power >= 100;
+            document.getElementById('upgradeMiningStaminaBtn').disabled = player.mining.staminaUpgradeLevel >= 10;
+            document.getElementById('upgradeMiningDetectorBtn').disabled = player.mining.upgrades.detector >= 10;
+            
+            // 更新挖矿按钮
+            const miningBtn = document.getElementById('miningToggleBtn');
+            miningBtn.textContent = player.mining.isMining ? '停止自动挖矿' : '开始自动挖矿';
+            miningBtn.style.background = player.mining.isMining ? 
+                'linear-gradient(135deg, #ff4757 0%, #ff3742 100%)' : 
+                'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+            
+            // 更新通知显示
+            updateMiningNotifications();
+        }
+        
+
+        function addMiningNotification(message, type = 'info') {
+            const now = new Date();
+            const timestamp = now.toLocaleTimeString();
+            
+            player.mining.notifications.unshift({
+                message: message,
+                type: type,
+                timestamp: timestamp
+            });
+            
+            // 限制通知数量
+            if (player.mining.notifications.length > 20) {
+                player.mining.notifications.pop();
+            }
+            
+            updateMiningNotifications();
+        }
+
+        function updateMiningNotifications() {
+            const container = document.getElementById('miningNotifications');
+            container.innerHTML = '';
+            
+            player.mining.notifications.forEach(notif => {
+                const div = document.createElement('div');
+                div.className = 'mining-notification';
+                div.style.borderLeftColor = notif.type === 'gem' ? '#4CAF50' : 
+                                          notif.type === 'warning' ? '#ff6b6b' : '#4CAF50';
+                div.innerHTML = `[${notif.timestamp}] ${notif.message}`;
+                container.appendChild(div);
+            });
+        }
+
+        function clearMiningNotifications() {
+            player.mining.notifications = [];
+            updateMiningNotifications();
+        }
+
+        function toggleMining() {
+            player.mining.isMining = !player.mining.isMining;
+            
+            if (player.mining.isMining) {
+                addMiningNotification('开始自动挖矿！');
+                // 确保挖矿循环运行
+                if (!window.miningInterval) {
+                    window.miningInterval = setInterval(mine, 1000);
+                }
+            } else {
+                addMiningNotification('停止自动挖矿！');
+            }
+            
+            updateMiningUI();
+            saveGame();
+        }
+
+        function mine() {
+            if (!player.mining.isMining) return;
+            
+            // 检查体力
+            if (player.mining.stamina < 1) {
+                player.mining.isMining = false;
+                addMiningNotification('体力不足，自动挖矿停止！请使用体力药水恢复体力。', 'warning');
+                updateMiningUI();
+                return;
+            }
+            
+            // 消耗体力
+            player.mining.stamina -= 1;
+            
+            // 增加深度
+            const depthGain = player.mining.power;
+            player.mining.depth += depthGain;
+            
+            // 获得矿石
+            const oreGain = Math.floor(player.mining.power * (0.2 + Math.random() * 0.5));
+            player.mining.ore += oreGain;
+            
+            // 宝石发现逻辑
+            const gemChance = 0.02 + (player.mining.upgrades.detector * 0.005);
+            if (Math.random() < gemChance) {
+                const gemRoll = Math.random();
+                let gemFound = false;
+                
+                for (let i = miningGemsConfig.length - 1; i >= 0; i--) {
+                    if (player.mining.depth >= miningGemsConfig[i].minDepth && 
+                        gemRoll < miningGemsConfig[i].rarity) {
+                        
+                        const gemName = miningGemsConfig[i].name;
+                        player.mining.gems[gemName.toLowerCase().replace(' ', '')]++;
+                        addMiningNotification(`发现 ${gemName}！`, 'gem');
+                        gemFound = true;
+                        break;
+                    }
+                }
+                
+                // 如果没有找到高级宝石，给一个红宝石
+                if (!gemFound) {
+                    player.mining.gems.ruby++;
+                    addMiningNotification('发现 红宝石！', 'gem');
+                }
+            }
+            
+            // 每挖掘100次自动保存
+            if (player.mining.depth % 100 === 0) {
+                saveGame();
+            }
+            
+            updateMiningUI();
+        }
+
+        function useMiningPotion() {
+            if (player.mining.potions > 0 && player.mining.stamina < getMiningMaxStamina()) {
+                player.mining.potions -= 1;
+                player.mining.stamina = getMiningMaxStamina();
+                addMiningNotification('使用体力药水，恢复全部体力！');
+                updateMiningUI();
+                saveGame();
+            }
+        }
+
+        function buyMiningPotion() {
+            const cost = 1;
+            if (player.items.primaryGemq >= cost) {
+                player.items.primaryGemq -= cost;
+                player.mining.potions += 1;
+                addMiningNotification(`花费${cost}宝藏金币购买1个体力药水`);
+                updateMiningUI();
+                saveGame();
+            } else {
+                addMiningNotification('宝藏金币不足，无法购买药水', 'warning');
+            }
+        }
+
+        function upgradeMiningPower() {
+            if (player.mining.upgrades.power >= 100) {
+                addMiningNotification('镐头已达到最大等级(100级)！', 'warning');
+                return;
+            }
+            
+            const cost = 1000 * player.mining.upgrades.power;
+            if (player.mining.ore >= cost) {
+                player.mining.ore -= cost;
+                player.mining.power += 1;
+                player.mining.upgrades.power += 1;
+                addMiningNotification(`升级镐头成功！当前等级: ${player.mining.upgrades.power}`);
+                updateMiningUI();
+                saveGame();
+            } else {
+                addMiningNotification(`矿石不足，需要${cost}矿石`, 'warning');
+            }
+        }
+
+        function upgradeMiningStamina() {
+            if (player.mining.staminaUpgradeLevel >= 10) {
+                addMiningNotification('体力上限已达到最大等级(10级)！', 'warning');
+                return;
+            }
+            
+            const cost = 10000 * player.mining.staminaUpgradeLevel;
+            if (player.mining.ore >= cost) {
+                player.mining.ore -= cost;
+                
+                // 保存当前体力比例
+                const oldMaxStamina = getMiningMaxStamina();
+                const staminaRatio = player.mining.stamina / oldMaxStamina;
+                
+                // 升级
+                player.mining.staminaUpgradeLevel += 1;
+                const newMaxStamina = getMiningMaxStamina();
+                
+                // 按比例恢复体力
+                player.mining.stamina = Math.floor(newMaxStamina * staminaRatio);
+                
+                addMiningNotification(`升级体力上限成功！当前等级: ${player.mining.staminaUpgradeLevel}`);
+                updateMiningUI();
+                saveGame();
+            } else {
+                addMiningNotification(`矿石不足，需要${cost}矿石`, 'warning');
+            }
+        }
+
+        function upgradeMiningDetector() {
+            if (player.mining.upgrades.detector >= 10) {
+                addMiningNotification('宝石探测器已达到最大等级(10级)！', 'warning');
+                return;
+            }
+            
+            const cost = 50000 * player.mining.upgrades.detector;
+            if (player.mining.ore >= cost) {
+                player.mining.ore -= cost;
+                player.mining.upgrades.detector += 1;
+                addMiningNotification(`升级宝石探测器成功！当前等级: ${player.mining.upgrades.detector}`);
+                updateMiningUI();
+                saveGame();
+            } else {
+                addMiningNotification(`矿石不足，需要${cost}矿石`, 'warning');
+            }
+        }
+
+     function calculateOfflineMining() {
+            const now = Date.now();
+            const elapsed = Math.min(now - player.mining.lastUpdate, 86400000); // 最多24小时
+            
+            if (elapsed > 1000 && player.mining.isMining) {
+                const seconds = Math.floor(elapsed / 1000);
+                const maxStamina = getMiningMaxStamina();
+                
+                // 计算离线期间可以挖掘的次数
+                const possibleMines = Math.min(seconds, player.mining.stamina);
+                
+                if (possibleMines > 0) {
+                    // 模拟离线挖掘
+                    for (let i = 0; i < possibleMines; i++) {
+                        // 消耗体力
+                        player.mining.stamina -= 1;
+                        
+                        // 增加深度
+                        player.mining.depth += player.mining.power;
+                        
+                        // 获得矿石
+                        const oreGain = Math.floor(player.mining.power * (0.2 + Math.random() * 0.5));
+                        player.mining.ore += oreGain;
+                        
+                        // 使用与在线相同的宝石发现逻辑
+                        const gemChance = 0.02 + (player.mining.upgrades.detector * 0.005);
+                        if (Math.random() < gemChance) {
+                            const gemRoll = Math.random();
+                            let gemFound = false;
+                            
+                            for (let i = miningGemsConfig.length - 1; i >= 0; i--) {
+                                if (player.mining.depth >= miningGemsConfig[i].minDepth && 
+                                    gemRoll < miningGemsConfig[i].rarity) {
+                                    
+                                    const gemName = miningGemsConfig[i].name.toLowerCase().replace(' ', '');
+                                    player.mining.gems[gemName]++;
+                                    addMiningNotification(`离线发现 ${miningGemsConfig[i].name}！`, 'gem');
+                                    gemFound = true;
+                                    break;
+                                }
+                            }
+                            
+                            // 如果没有找到高级宝石，给一个红宝石
+                            if (!gemFound) {
+                                player.mining.gems.ruby++;
+                                addMiningNotification('离线发现 红宝石！', 'gem');
+                            }
+                        }
+                    }
+                    
+                    addMiningNotification(`离线期间挖掘了 ${possibleMines} 次，获得深度和资源！`);
+                }
+            }
+            
+            player.mining.lastUpdate = now;
+            updateMiningUI();
+        }
+
+        // 初始化无尽挖矿系统
+       function initMiningSystem() {
+            if (!window.miningInterval) {
+                window.miningInterval = setInterval(() => {
+                    if (player.mining.isMining) {
+                        mine();
+                    }
+                }, 1000);
+            }
+            
+            window.addEventListener('beforeunload', () => {
+                if (window.miningInterval) {
+                    clearInterval(window.miningInterval);
+                }
+            });
+        }
+
+
+        setTimeout(initMiningSystem, 1000);
+
+
 
  // 世界BOSS系统数据
         const worldBossData = {
