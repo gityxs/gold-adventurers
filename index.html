@@ -2999,7 +2999,8 @@ button:disabled {
             <h4>游戏公告介绍</h4>
             <p>QQ群：864788026  有问题可以进群问</p>
             <p>1. 转生系统：玩家可以通过转生重置游戏进度，并获得转生币，用于提升转生属性（转生要求必须普通装备10000+转生次数*20）。</p>
-            <p>   转生币等级兑换比例：普通10000=1  稀有5000=1 史诗1000=1 传说300=1 远古200=1 神圣125=1 奥术100=1 天空33=1 地狱20=1 星界12.5=1  原初10=1 超凡3=1 量子2=1 究极1=1  混沌1=3 永恒1=5 虚无1=10 创世1=20 神域1=30 终焉1=40 星辰1=50 起源1=60 时光1=70 造物1=80 银河1=90 天界1=100 星云1=200 星河1=300 纪元1=400 鸿蒙1=500 星穹1=600 亘古1=700 万象1=800 太虚1=900 九垓1=1000  穿梭1=2000  恒古1=3000 虚空1=4000 蔚来1=5000 神罚1=6000  时空1=7000  未来1=8000  从前1=9000   星澜1=10000</p>
+            <p> 转生币等级兑换比例：普通10000=1  稀有5000=1 史诗1000=1 传说300=1 远古200=1 神圣125=1 奥术100=1 天空33=1 地狱20=1 星界12.5=1  原初10=1 超凡3=1 量子2=1 究极1=1  混沌1=3 永恒1=5 虚无1=10 创世1=20 神域1=30 终焉1=40 星辰1=50 起源1=60 时光1=70 造物1=80 银河1=90 天界1=100 星云1=200 星河1=300 纪元1=400 鸿蒙1=500 星穹1=600 亘古1=700 万象1=800 太虚1=900 九垓1=1000  穿梭1=2000  恒古1=3000 虚空1=4000 蔚来1=5000 神罚1=6000  时空1=7000  未来1=8000  从前1=9000   星澜1=10000</p>
+            <p>货币兑换比例：1e5 → 1e8 → 1e8 → 1e8 → 1e9 → 1e12 → 1e12 → 1e12 → 1e15 → 1e15 → 1e15 → 1e20 → 1e20 → 1e20 </p>
             <p>2. 宠物系统：玩家可以通过升级宠物来提升装备属性加成。</p>
             <p>3. 离线系统：现在离线也能奥秘经验和银行和股票，彩票更新，升级装备。</p>
             <p>4. 新增股票系统，显示实时股价和持有情况，每10分钟股价随机波动±1%~10%，离线时间自动计算股价波动，所有交易使用转生币结算，实时显示价格变化趋势</p>
@@ -3053,7 +3054,8 @@ button:disabled {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.70更新日志</h4>
+            <h4>1.71更新日志</h4>
+           <p>2025/12/24:修复无尽挖宝石发现没获得宝石BUG,修复红宝石没生效世界经验加成BUG,修复直播人数越来越少，优化存档内存老玩家点一下保存在点一下加载会流畅很多，降低货币兑换。</p>
            <p>2025/12/22:增加无尽挖矿：开启条件1500转(升级一下稿子等级不然挖不到普通矿)，提升大量世界地图经验，和各项属性，对应称号。</p>
            <p>2025/12/21:修改疯狂地主（新版农田）：开启条件，打怪模式第三层以上开启，增加疯狂地主对应称号。</p>
             <p>2025/12/20:增加疯狂地主（新版农田）：提升大量点击和每秒GPS，十分钟刷新一次。</p>
@@ -6629,7 +6631,7 @@ button:disabled {
 
 
 
-<div id="footer">版本号: v1.7.0</div>
+<div id="footer">版本号: v1.7.1</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -9824,15 +9826,15 @@ const farmClickMultiplierssa = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 3
         { from: 'titanium', to: 'starstone', rate: 1e8 },
         { from: 'starstone', to: 'cosmicstone', rate: 1e8 },
         { from: 'cosmicstone', to: 'superstone', rate: 1e9 },
-        { from: 'superstone', to: 'otherworldstone', rate: 1e15 },
-        { from: 'otherworldstone', to: 'xingjiestone', rate: 1e20 },
-        { from: 'xingjiestone', to: 'hundunstone', rate: 1e25 },
-        { from: 'hundunstone', to: 'lingtone', rate: 1e25 },
-        { from: 'lingtone', to: 'huangtone', rate: 1e25 },
-        { from: 'huangtone', to: 'mingtone', rate: 1e25 },
-        { from: 'mingtone', to: 'xutong', rate: 1e25 },
-        { from: 'xutong', to: 'shitone', rate: 1e25 },
-        { from: 'shitone', to: 'weitone', rate: 1e25 }        
+        { from: 'superstone', to: 'otherworldstone', rate: 1e12 },
+        { from: 'otherworldstone', to: 'xingjiestone', rate: 1e12 },
+        { from: 'xingjiestone', to: 'hundunstone', rate: 1e12 },
+        { from: 'hundunstone', to: 'lingtone', rate: 1e15 },
+        { from: 'lingtone', to: 'huangtone', rate: 1e15 },
+        { from: 'huangtone', to: 'mingtone', rate: 1e15 },
+        { from: 'mingtone', to: 'xutong', rate: 1e20 },
+        { from: 'xutong', to: 'shitone', rate: 1e20 },
+        { from: 'shitone', to: 'weitone', rate: 1e20 }        
     ];
 
     conversions.forEach(({ from, to, rate }) => {
@@ -12010,6 +12012,7 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
         player.liveStream.viewers = player.liveStream.viewers.slice(-5);
     }
     player.mystery.lastUpdateTime = Date.now();
+   cleanupArtifactAdvanceLevels();
     player.tower.lastUpdate = Date.now();
     player.exploration = {
         speed: explorationData.speed,
@@ -17075,7 +17078,7 @@ function updateViewers() {
     if (!player.liveStream.isLive) return;
     
     // 随机有观众离开
-    if (player.liveStream.viewers.length > 0 && Math.random() < 0.4) {
+    if (player.liveStream.viewers.length > 0 && Math.random() < 0.3) {
         const leaveIndex = Math.floor(Math.random() * player.liveStream.viewers.length);
         const leaveViewer = player.liveStream.viewers[leaveIndex];
         player.liveStream.viewers.splice(leaveIndex, 1);
@@ -17084,7 +17087,7 @@ function updateViewers() {
     }
     
     // 随机有新观众加入
-    if (player.liveStream.viewers.length < liveStreamSystem.maxViewers && Math.random() < 0.6) {
+    if (player.liveStream.viewers.length < liveStreamSystem.maxViewers && Math.random() < 0.7) {
         addViewers(1);
         const newViewer = player.liveStream.viewers[player.liveStream.viewers.length - 1];
         addDanmakuMessageq("系统", `${newViewer.name} 进入了直播间`, "system");
@@ -18149,7 +18152,7 @@ function handleMonsterDefeated() {
                 const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
                const runeBonuses = calculateRuneBonuses();
                const worldExpBonus = 1 + runeBonuses.worldExp;
-                const finalExp =  (exp+(player.mining.gems.ruby*10)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus;
+                const finalExp =  (exp+(1+player.mining.gems.ruby)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus;
                 
                 // 添加经验
                 addPlayerExp(finalExp);
@@ -18362,7 +18365,7 @@ function backgroundHandleMonsterDefeated() {
         const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
          const runeBonuses = calculateRuneBonuses();
         const worldExpBonus = 1 + runeBonuses.worldExp;
-        const finalExp = exp * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus;
+        const finalExp = (exp+(1+player.mining.gems.ruby)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus;
         
         // 添加经验
         addPlayerExp(finalExp);
@@ -19854,7 +19857,40 @@ function toggleArtifactSystem() {
     // 更新套装效果
     updateSetBonuses();
 }
-
+function cleanupArtifactAdvanceLevels() {
+    if (!player.artifacts || !player.artifacts.advanceLevels) return;
+    
+    // 获取所有有效的神器ID（仓库中的和装备中的）
+    const validArtifactIds = new Set();
+    
+    // 添加仓库中的神器ID
+    player.artifacts.inventory.forEach(artifact => {
+        validArtifactIds.add(artifact.id);
+    });
+    
+    // 添加装备中的神器ID
+    Object.values(player.artifacts.equipped).forEach(artifact => {
+        if (artifact) {
+            validArtifactIds.add(artifact.id);
+        }
+    });
+    
+    // 清理无效的进阶等级数据
+    const oldCount = Object.keys(player.artifacts.advanceLevels).length;
+    
+    Object.keys(player.artifacts.advanceLevels).forEach(artifactId => {
+        if (!validArtifactIds.has(artifactId)) {
+            delete player.artifacts.advanceLevels[artifactId];
+        }
+    });
+    
+    const newCount = Object.keys(player.artifacts.advanceLevels).length;
+    const removedCount = oldCount - newCount;
+    
+    if (removedCount > 0) {
+        console.log(`清理了 ${removedCount} 个无效的进阶等级记录`);
+    }
+}
 // 更新装备部位显示
 function updateArtifactSlots() {
     const slotsContainer = document.getElementById('artifactSlots');
@@ -39413,12 +39449,12 @@ function buyTsrShopItem(itemKey) {
         console.log("疯狂地主游戏已成功加载！");
    // 无尽挖矿配置
         const miningGemsConfig = [
-            { name: '红宝石', rarity: 0.4, minDepth: 0, color: '#ff6b6b' },
-            { name: '蓝宝石', rarity: 0.3, minDepth: 10000, color: '#48cae4' },
-            { name: '翡翠', rarity: 0.2, minDepth: 100000, color: '#52b788' },
-            { name: '紫水晶', rarity: 0.08, minDepth: 1000000, color: '#7b2cbf' },
-            { name: '钻石', rarity: 0.02, minDepth: 10000000, color: '#caf0f8' }
-        ];
+        { name: '红宝石', key: 'ruby', rarity: 0.4, minDepth: 0, color: '#ff6b6b' },
+        { name: '蓝宝石', key: 'sapphire', rarity: 0.3, minDepth: 10000, color: '#48cae4' },
+        { name: '翡翠', key: 'emerald', rarity: 0.2, minDepth: 100000, color: '#52b788' },
+        { name: '紫水晶', key: 'amethyst', rarity: 0.08, minDepth: 1000000, color: '#7b2cbf' },
+        { name: '钻石', key: 'diamond', rarity: 0.02, minDepth: 10000000, color: '#caf0f8' }
+    ];
 
          // 切换分页函数
         function switchMiningTab(tabName) {
@@ -39454,55 +39490,63 @@ function buyTsrShopItem(itemKey) {
             return player.mining.baseMaxStamina + ((player.mining.staminaUpgradeLevel - 1) * 10);
         }
 
-        function updateMiningUI() {
-            const maxStamina = getMiningMaxStamina();
-            const staminaPercent = (player.mining.stamina / maxStamina) * 100;
-            
-            // 更新基础信息
-            document.getElementById('miningDepth').textContent = player.mining.depth.toLocaleString() + ' 米';
-            document.getElementById('miningPower').textContent = player.mining.power;
-            document.getElementById('miningMaxStamina').textContent = maxStamina;
-            
-            // 更新体力条
-            document.getElementById('miningStaminaBar').style.width = staminaPercent + '%';
-            document.getElementById('miningStaminaText').textContent = 
-                Math.floor(player.mining.stamina) + ' / ' + maxStamina;
-            
-            // 更新宝石数量
-            document.getElementById('miningRuby').textContent = player.mining.gems.ruby;
-            document.getElementById('miningSapphire').textContent = player.mining.gems.sapphire;
-            document.getElementById('miningEmerald').textContent = player.mining.gems.emerald;
-            document.getElementById('miningAmethyst').textContent = player.mining.gems.amethyst;
-            document.getElementById('miningDiamond').textContent = player.mining.gems.diamond;
-            document.getElementById('miningOre').textContent = player.mining.ore;
-            
-            // 更新药水数量
-            document.getElementById('miningPotionCount').textContent = player.mining.potions;
-            
-            // 更新升级信息
-            document.getElementById('miningPowerLevel').textContent = player.mining.upgrades.power;
-            document.getElementById('miningStaminaLevel').textContent = player.mining.staminaUpgradeLevel;
-            document.getElementById('miningDetectorLevel').textContent = player.mining.upgrades.detector;
-            
-            // 更新按钮状态
-            document.getElementById('upgradeMiningPowerBtn').textContent = `升级 (${1000 * player.mining.upgrades.power})`;
-            document.getElementById('upgradeMiningStaminaBtn').textContent = `升级 (${10000 * player.mining.staminaUpgradeLevel})`;
-            document.getElementById('upgradeMiningDetectorBtn').textContent = `升级 (${50000 * player.mining.upgrades.detector})`;
-            
-            document.getElementById('upgradeMiningPowerBtn').disabled = player.mining.upgrades.power >= 100;
-            document.getElementById('upgradeMiningStaminaBtn').disabled = player.mining.staminaUpgradeLevel >= 10;
-            document.getElementById('upgradeMiningDetectorBtn').disabled = player.mining.upgrades.detector >= 10;
-            
-            // 更新挖矿按钮
-            const miningBtn = document.getElementById('miningToggleBtn');
-            miningBtn.textContent = player.mining.isMining ? '停止自动挖矿' : '开始自动挖矿';
-            miningBtn.style.background = player.mining.isMining ? 
-                'linear-gradient(135deg, #ff4757 0%, #ff3742 100%)' : 
-                'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
-            
-            // 更新通知显示
-            updateMiningNotifications();
+         function updateMiningUI() {
+        const maxStamina = getMiningMaxStamina();
+        const staminaPercent = (player.mining.stamina / maxStamina) * 100;
+        
+        // 更新基础信息
+        document.getElementById('miningDepth').textContent = player.mining.depth.toLocaleString() + ' 米';
+        document.getElementById('miningPower').textContent = player.mining.power;
+        document.getElementById('miningMaxStamina').textContent = maxStamina;
+        
+        // 更新体力条
+        document.getElementById('miningStaminaBar').style.width = staminaPercent + '%';
+        document.getElementById('miningStaminaText').textContent = 
+            Math.floor(player.mining.stamina) + ' / ' + maxStamina;
+        
+        // 确保所有宝石属性都存在
+        for (let i = 0; i < miningGemsConfig.length; i++) {
+            const gem = miningGemsConfig[i];
+            if (player.mining.gems[gem.key] === undefined) {
+                player.mining.gems[gem.key] = 0;
+            }
         }
+        
+        // 更新宝石数量显示
+        document.getElementById('miningRuby').textContent = player.mining.gems.ruby || 0;
+        document.getElementById('miningSapphire').textContent = player.mining.gems.sapphire || 0;
+        document.getElementById('miningEmerald').textContent = player.mining.gems.emerald || 0;
+        document.getElementById('miningAmethyst').textContent = player.mining.gems.amethyst || 0;
+        document.getElementById('miningDiamond').textContent = player.mining.gems.diamond || 0;
+        document.getElementById('miningOre').textContent = player.mining.ore;
+        
+        // 更新药水数量
+        document.getElementById('miningPotionCount').textContent = player.mining.potions;
+        
+        // 更新升级信息
+        document.getElementById('miningPowerLevel').textContent = player.mining.upgrades.power;
+        document.getElementById('miningStaminaLevel').textContent = player.mining.staminaUpgradeLevel;
+        document.getElementById('miningDetectorLevel').textContent = player.mining.upgrades.detector;
+        
+        // 更新按钮状态
+        document.getElementById('upgradeMiningPowerBtn').textContent = `升级 (${1000 * player.mining.upgrades.power})`;
+        document.getElementById('upgradeMiningStaminaBtn').textContent = `升级 (${10000 * player.mining.staminaUpgradeLevel})`;
+        document.getElementById('upgradeMiningDetectorBtn').textContent = `升级 (${50000 * player.mining.upgrades.detector})`;
+        
+        document.getElementById('upgradeMiningPowerBtn').disabled = player.mining.upgrades.power >= 100;
+        document.getElementById('upgradeMiningStaminaBtn').disabled = player.mining.staminaUpgradeLevel >= 10;
+        document.getElementById('upgradeMiningDetectorBtn').disabled = player.mining.upgrades.detector >= 10;
+        
+        // 更新挖矿按钮
+        const miningBtn = document.getElementById('miningToggleBtn');
+        miningBtn.textContent = player.mining.isMining ? '停止自动挖矿' : '开始自动挖矿';
+        miningBtn.style.background = player.mining.isMining ? 
+            'linear-gradient(135deg, #ff4757 0%, #ff3742 100%)' : 
+            'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+        
+        // 更新通知显示
+        updateMiningNotifications();
+    }
         
 
         function addMiningNotification(message, type = 'info') {
@@ -39557,62 +39601,132 @@ function buyTsrShopItem(itemKey) {
             
             updateMiningUI();
             saveGame();
-        }
-
-        function mine() {
-            if (!player.mining.isMining) return;
+        }function findGem(depth, detectorLevel, isOffline = false) {
+        const gemChance = 0.02 + (detectorLevel * 0.005);
+        console.log(`宝石发现概率: ${(gemChance * 100).toFixed(2)}%, 当前深度: ${depth}`);
+        
+        // 先检查是否发现宝石
+        if (Math.random() < gemChance) {
+            const gemRoll = Math.random();
+            console.log(`宝石判定随机数: ${gemRoll.toFixed(4)}`);
             
-            // 检查体力
-            if (player.mining.stamina < 1) {
-                player.mining.isMining = false;
-                addMiningNotification('体力不足，自动挖矿停止！请使用体力药水恢复体力。', 'warning');
-                updateMiningUI();
-                return;
+            // 记录挖掘前的宝石数量
+            const gemsBefore = {...player.mining.gems};
+            console.log('挖掘前宝石数量:', gemsBefore);
+            
+            // 检查翡翠属性是否存在
+            if (player.mining.gems.emerald === undefined) {
+                console.warn('⚠️ 翡翠属性不存在，正在初始化...');
+                player.mining.gems.emerald = 0;
             }
             
-            // 消耗体力
-            player.mining.stamina -= 1;
+            // 收集符合条件的宝石
+            const availableGems = [];
+            let totalRarity = 0;
             
-            // 增加深度
-            const depthGain = player.mining.power;
-            player.mining.depth += depthGain;
+            for (let i = 0; i < miningGemsConfig.length; i++) {
+                const gem = miningGemsConfig[i];
+                if (depth >= gem.minDepth) {
+                    availableGems.push(gem);
+                    totalRarity += gem.rarity;
+                    console.log(`✅ 符合条件: ${gem.name}, 要求深度: ${gem.minDepth}, 当前深度: ${depth}`);
+                } else {
+                    console.log(`❌ 不符合条件: ${gem.name}, 要求深度: ${gem.minDepth}, 当前深度: ${depth}`);
+                }
+            }
             
-            // 获得矿石
-            const oreGain = Math.floor(player.mining.power * (0.2 + Math.random() * 0.5));
-            player.mining.ore += oreGain;
+            console.log(`符合条件的宝石: ${availableGems.length}种, 总概率: ${totalRarity}`);
             
-            // 宝石发现逻辑
-            const gemChance = 0.02 + (player.mining.upgrades.detector * 0.005);
-            if (Math.random() < gemChance) {
-                const gemRoll = Math.random();
-                let gemFound = false;
+            if (availableGems.length === 0) {
+                console.log('没有符合条件的宝石，给予红宝石');
+                selectedGem = miningGemsConfig[0]; // 红宝石
+            } else {
+                // 使用累积概率选择宝石
+                let cumulative = 0;
+                let selectedGem = null;
                 
-                for (let i = miningGemsConfig.length - 1; i >= 0; i--) {
-                    if (player.mining.depth >= miningGemsConfig[i].minDepth && 
-                        gemRoll < miningGemsConfig[i].rarity) {
-                        
-                        const gemName = miningGemsConfig[i].name;
-                        player.mining.gems[gemName.toLowerCase().replace(' ', '')]++;
-                        addMiningNotification(`发现 ${gemName}！`, 'gem');
-                        gemFound = true;
+                for (let i = 0; i < availableGems.length; i++) {
+                    const gem = availableGems[i];
+                    cumulative += gem.rarity / totalRarity; // 标准化概率
+                    if (gemRoll <= cumulative) {
+                        selectedGem = gem;
                         break;
                     }
                 }
                 
-                // 如果没有找到高级宝石，给一个红宝石
-                if (!gemFound) {
-                    player.mining.gems.ruby++;
-                    addMiningNotification('发现 红宝石！', 'gem');
+                // 如果循环结束还没有选择宝石（由于浮点精度问题），选择最后一个
+                if (!selectedGem) {
+                    selectedGem = availableGems[availableGems.length - 1];
+                }
+                
+                if (selectedGem) {
+                    console.log(`🎯 选中宝石: ${selectedGem.name}, 键名: ${selectedGem.key}`);
+                    
+                    // 确保宝石属性存在
+                    if (player.mining.gems[selectedGem.key] === undefined) {
+                        console.warn(`⚠️ 宝石属性 ${selectedGem.key} 不存在，正在初始化...`);
+                        player.mining.gems[selectedGem.key] = 0;
+                    }
+                    
+                    // 增加宝石数量
+                    player.mining.gems[selectedGem.key] += 1;
+                    
+                    // 发送通知
+                    const prefix = isOffline ? '离线' : '';
+                    addMiningNotification(`${prefix}发现 ${selectedGem.name}！`, 'gem');
+                    
+                    // 验证宝石数量确实增加了
+                    const gemsAfter = {...player.mining.gems};
+                    console.log('挖掘后宝石数量:', gemsAfter);
+                    
+                    if (gemsAfter[selectedGem.key] === gemsBefore[selectedGem.key] + 1) {
+                        console.log(`✅ 成功获得宝石: ${selectedGem.name}, 数量: ${gemsAfter[selectedGem.key]}`);
+                    } else {
+                        console.error(`❌ 宝石数量未增加! 之前: ${gemsBefore[selectedGem.key]}, 之后: ${gemsAfter[selectedGem.key]}`);
+                    }
+                    
+                    return true;
                 }
             }
-            
-            // 每挖掘100次自动保存
-            if (player.mining.depth % 100 === 0) {
-                saveGame();
-            }
-            
-            updateMiningUI();
         }
+        
+        console.log('本次挖掘未发现宝石');
+        return false;
+    }
+
+
+       function mine() {
+        if (!player.mining.isMining) return;
+        
+        // 检查体力
+        if (player.mining.stamina < 1) {
+            player.mining.isMining = false;
+            addMiningNotification('体力不足，自动挖矿停止！请使用体力药水恢复体力。', 'warning');
+            updateMiningUI();
+            return;
+        }
+        
+        // 消耗体力
+        player.mining.stamina -= 1;
+        
+        // 增加深度
+        const depthGain = player.mining.power;
+        player.mining.depth += depthGain;
+        
+        // 获得矿石
+        const oreGain = Math.floor(player.mining.power * (0.2 + Math.random() * 0.5));
+        player.mining.ore += oreGain;
+        
+        // 宝石发现逻辑
+        const gemFound = findGem(player.mining.depth, player.mining.upgrades.detector, false);
+        
+        // 每挖掘100次自动保存
+        if (player.mining.depth % 100 === 0) {
+            saveGame();
+        }
+        
+        updateMiningUI();
+    }
 
         function useMiningPotion() {
             if (player.mining.potions > 0 && player.mining.stamina < getMiningMaxStamina()) {
@@ -39704,62 +39818,51 @@ function buyTsrShopItem(itemKey) {
         }
 
      function calculateOfflineMining() {
-            const now = Date.now();
-            const elapsed = Math.min(now - player.mining.lastUpdate, 86400000); // 最多24小时
+        const now = Date.now();
+        const elapsed = Math.min(now - player.mining.lastUpdate, 86400000); // 最多24小时
+        
+        if (elapsed > 1000 && player.mining.isMining) {
+            const seconds = Math.floor(elapsed / 1000);
+            const maxStamina = getMiningMaxStamina();
             
-            if (elapsed > 1000 && player.mining.isMining) {
-                const seconds = Math.floor(elapsed / 1000);
-                const maxStamina = getMiningMaxStamina();
+            // 计算离线期间可以挖掘的次数
+            const possibleMines = Math.min(seconds, player.mining.stamina);
+            
+            if (possibleMines > 0) {
+                let gemsFound = 0;
                 
-                // 计算离线期间可以挖掘的次数
-                const possibleMines = Math.min(seconds, player.mining.stamina);
+                console.log(`开始离线挖矿: ${possibleMines}次, 当前深度: ${player.mining.depth}`);
+                
+                // 模拟离线挖掘
+                for (let i = 0; i < possibleMines; i++) {
+                    // 消耗体力
+                    player.mining.stamina -= 1;
+                    
+                    // 增加深度
+                    player.mining.depth += player.mining.power;
+                    
+                    // 获得矿石
+                    const oreGain = Math.floor(player.mining.power * (0.2 + Math.random() * 0.5));
+                    player.mining.ore += oreGain;
+                    
+                    // 宝石发现逻辑
+                    if (findGem(player.mining.depth, player.mining.upgrades.detector, true)) {
+                        gemsFound++;
+                    }
+                }
+                
+                console.log(`离线挖矿完成: 发现${gemsFound}个宝石`);
                 
                 if (possibleMines > 0) {
-                    // 模拟离线挖掘
-                    for (let i = 0; i < possibleMines; i++) {
-                        // 消耗体力
-                        player.mining.stamina -= 1;
-                        
-                        // 增加深度
-                        player.mining.depth += player.mining.power;
-                        
-                        // 获得矿石
-                        const oreGain = Math.floor(player.mining.power * (0.2 + Math.random() * 0.5));
-                        player.mining.ore += oreGain;
-                        
-                        // 使用与在线相同的宝石发现逻辑
-                        const gemChance = 0.02 + (player.mining.upgrades.detector * 0.005);
-                        if (Math.random() < gemChance) {
-                            const gemRoll = Math.random();
-                            let gemFound = false;
-                            
-                            for (let i = miningGemsConfig.length - 1; i >= 0; i--) {
-                                if (player.mining.depth >= miningGemsConfig[i].minDepth && 
-                                    gemRoll < miningGemsConfig[i].rarity) {
-                                    
-                                    const gemName = miningGemsConfig[i].name.toLowerCase().replace(' ', '');
-                                    player.mining.gems[gemName]++;
-                                    addMiningNotification(`离线发现 ${miningGemsConfig[i].name}！`, 'gem');
-                                    gemFound = true;
-                                    break;
-                                }
-                            }
-                            
-                            // 如果没有找到高级宝石，给一个红宝石
-                            if (!gemFound) {
-                                player.mining.gems.ruby++;
-                                addMiningNotification('离线发现 红宝石！', 'gem');
-                            }
-                        }
-                    }
-                    
-                    addMiningNotification(`离线期间挖掘了 ${possibleMines} 次，获得深度和资源！`);
+                    addMiningNotification(`离线期间挖掘了 ${possibleMines} 次，发现 ${gemsFound} 个宝石！`);
                 }
             }
-            
-            player.mining.lastUpdate = now;
-            updateMiningUI();
         }
+        
+        player.mining.lastUpdate = now;
+        updateMiningUI();
+    }
+
 
         // 初始化无尽挖矿系统
        function initMiningSystem() {
@@ -39780,6 +39883,42 @@ function buyTsrShopItem(itemKey) {
 
 
         setTimeout(initMiningSystem, 1000);
+function initMiningData() {
+        if (!player.mining) {
+            player.mining = {
+                depth: 0,
+                power: 1,
+                isMining: false,
+                ore: 100,
+                stamina: 100,
+                baseMaxStamina: 100,
+                staminaUpgradeLevel: 1,
+                potions: 3,
+                gems: {
+                    ruby: 0,
+                    sapphire: 0,
+                    emerald: 0,
+                    amethyst: 0,
+                    diamond: 0
+                },
+                upgrades: {
+                    power: 1,
+                    detector: 1
+                },
+                notifications: [],
+                lastUpdate: Date.now()
+            };
+        }
+        
+        // 确保所有宝石属性都存在
+        for (let i = 0; i < miningGemsConfig.length; i++) {
+            const gem = miningGemsConfig[i];
+            if (player.mining.gems[gem.key] === undefined) {
+                console.log(`初始化宝石属性: ${gem.key}`);
+                player.mining.gems[gem.key] = 0;
+            }
+        }
+    }
 
 
 
