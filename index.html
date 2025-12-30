@@ -2982,6 +2982,48 @@ button:disabled {
             justify-content: space-between;
             align-items: center;
         }
+     /* 房屋系统样式 */
+        #houseSystemOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+        }
+        
+        #houseSystemUI {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            border: 3px solid #8B4513;
+            border-radius: 10px;
+            z-index: 1001;
+            width: 850px;
+            max-height: 800px;
+            overflow-y: auto;
+        }
+        
+        .house-card {
+            background: #333;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px 0;
+            border: 2px solid;
+        }
+        
+        .house-common { border-color: #1E90FF; }
+        .house-rare { border-color: #32CD32; }
+        .house-epic { border-color: #FFD700; }
+        .house-legendary { border-color: #9370DB; }
+        .house-mythic { border-color: #FF4500; }
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -2997,13 +3039,13 @@ button:disabled {
     <div id="gameLogPage5" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>游戏公告介绍</h4>
-            <p>QQ群：864788026  有问题可以进群问</p>
+            <p>QQ群：864788026  有问题可以进群问（存档异常联系群管理修复）</p>
             <p>1. 转生系统：玩家可以通过转生重置游戏进度，并获得转生币，用于提升转生属性（转生要求必须普通装备10000+转生次数*20）。</p>
             <p> 转生币等级兑换比例：普通10000=1  稀有5000=1 史诗1000=1 传说300=1 远古200=1 神圣125=1 奥术100=1 天空33=1 地狱20=1 星界12.5=1  原初10=1 超凡3=1 量子2=1 究极1=1  混沌1=3 永恒1=5 虚无1=10 创世1=20 神域1=30 终焉1=40 星辰1=50 起源1=60 时光1=70 造物1=80 银河1=90 天界1=100 星云1=200 星河1=300 纪元1=400 鸿蒙1=500 星穹1=600 亘古1=700 万象1=800 太虚1=900 九垓1=1000  穿梭1=2000  恒古1=3000 虚空1=4000 蔚来1=5000 神罚1=6000  时空1=7000  未来1=8000  从前1=9000   星澜1=10000</p>
             <p>货币兑换比例：1e5 → 1e8 → 1e8 → 1e8 → 1e9 → 1e12 → 1e12 → 1e12 → 1e15 → 1e15 → 1e15 → 1e20 → 1e20 → 1e20 </p>
             <p>2. 宠物系统：玩家可以通过升级宠物来提升装备属性加成。</p>
             <p>3. 离线系统：现在离线也能奥秘经验和银行和股票，彩票更新，升级装备。</p>
-            <p>4. 新增股票系统，显示实时股价和持有情况，每10分钟股价随机波动±1%~10%，离线时间自动计算股价波动，所有交易使用转生币结算，实时显示价格变化趋势</p>
+            <p>4. 股票系统，显示实时股价和持有情况，每10分钟股价随机波动±1%~10%，离线时间自动计算股价波动，所有交易使用转生币结算，实时显示价格变化趋势</p>
             <p>5. 彩票系统：30分钟开奖1次。刮刮卡：直接生效，开奖结果看获取！</p>
             <p>6. 银行系统：存钱每6分钟0.02%收益！</p>
             <p>7. 副本装备系统：副本装备可以提升第一页装备的全属性，使用洗炼石（材料宝箱或者打怪掉）可以重铸副本装备的成长属性或者分解重新获取。成长数值上限：废品0.05%，倚天剑10%，青龙枪15%，白虎斧20%，朱雀弓25%，玄武盾30%，麒麟杖35%，凤凰剑40%，饕餮刀45%，穷奇戟50%，烛龙枪60%，白泽剑70%，混沌斧80%，太初刃90%   后续加深颜色多10%  比如：☆=100%★=110% ○=200% ●=210%  ◇=300%  ◆=310%  □=400%  ■=410%  △=500%  ▲=510%</p>
@@ -3012,16 +3054,16 @@ button:disabled {
             <p>10. 升级属性：第一次加载要转生一次，在点洗点就正常了（总数和实际不一样点一下洗点）。</p>
             <p>11. 功法秘籍：后期比较强，加成属性直接算到玩家属性乘于里面（如果突然没效果了开一个秘法宝箱就好了，正常不会有问题）</p>
             <p>11. 世界BOSS系统：50转开启，才能打比较难，有连击后期简单。</p>
-            <p>12. VIP系统：每一级提升大属性，材料宝箱和打怪模式掉落。</p>
-            <p>13. 职业系统：20转开启，有法师和战士不同搭配属性，对于关卡解锁属性，选择获得属性。</p>
+            <p>12. VIP系统：每一级提升大属性，材料宝箱和打怪模式，各种系统掉落。</p>
+            <p>13. 职业系统：20转开启，有法师和战士不同搭配属性，对于关卡解锁属性，选择获得属性，通天塔达到层数2转3转。</p>
             <p>14. 称号系统：10转开启，解锁每一个都可以永久获得属性，自由搭配选择称号(不影响属性效果）。</p>
             <p>14. 官职系统：10转开启，增加总和攻击，一共65级。</p>
-            <p>15. 伴侣系统：30转开启，大幅度增加属性。天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒，进阶玩法：每进阶+1倍率加1倍，未锁定状态才能进阶，点进阶自动消耗道具里面的同品质伴侣灵魂，想保留的伴侣记得锁定，史诗以上才能合成洗练！洗练每次洗减5评分！！（伴侣钥匙和玫瑰花和洗髓丹：打怪或者材料宝箱掉落）。</p>
+            <p>15. 伴侣系统：30转开启，大幅度增加属性。天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒，进阶玩法：每进阶+1倍率加1倍，未锁定状态才能进阶，点进阶自动消耗道具里面的同品质伴侣灵魂，想保留的伴侣记得锁定，史诗以上才能合成洗练！！！（伴侣钥匙和玫瑰花和洗髓丹：打怪或者材料宝箱各种系统掉落）。</p>
             <p>16. 通天塔：100转开启，只要通过每一层加1点玩家属性，每一层加0.01倍GPS,还有对应称号。</p>
             <p>17. 存档问题：换设备后存档导入一开始进去VIP和伴侣是空的，你直接退出在重新进就恢复了或者刷新页面（点了导出按钮，会自动复制，你黏贴就可以了）</p>
             <p>18. 奥秘系统：100转开启，每阶段只生效第一个效果。</p>
             <p>19. 基金系统：投入的越多波动的幅度越大10-50%，1分钟刷新一次 ，10分钟不能实时卖出，如果跌到总价值20%以下 就全部没收清零。</p>
-            <p>20. 钓鱼系统：20转开启，分解鱼类可以获得VIP能力值，玫瑰花，洗髓丹，洗练石，农场种子。鱼饵掉率（打怪模式扫荡）（自动钓鱼开启没用，点一下开始钓鱼，自动分解是分解钓到的所有东西）</p>
+            <p>20. 钓鱼系统：20转开启，分解鱼类可以获得VIP能力值，玫瑰花，洗髓丹，洗练石，农场种子。鱼饵掉率（打怪模式扫荡，各种系统兑换）（自动钓鱼开启没用，点一下开始钓鱼，自动分解是分解钓到的所有东西）</p>
              <p>21. 农场系统：50转开启，种子靠鱼类分解，可以获得VIP能力值（水滴等于VIP能力值），每级都有每秒GPS和点击加成</p>
             <p>22. 停车场系统：200转开启，靠种子收取时候有几率获得车（进群领取兑换码送 "法拉利" ），每级都有每秒GPS和点击加成</p>
             <p>23. 神器锻造系统：500转开启，探索获取材料，6个品质，集齐套装加格外属性。</p>
@@ -3032,7 +3074,7 @@ button:disabled {
            <p>28. 夜店系统：600转开启，店铺每级加点击伤害，特殊事件消耗50-200星币，提升30-60分钟金币或者经验收益，获得的星币可以兑换藏宝图，或者打世界地图怪物消耗（后续会加其他材料兑换）。</p>
            <p>29. 玩家等级：50转开启，每级1倍属性飞升轮回有加成，世界地图怪物打怪升级。每100级可以飞升一次，10次飞升1转轮回，翅膀：打怪次元2以上掉落，坐骑：打怪次元3以上掉落，符文：打怪次元4以上掉落</p>
            <p>30. 世界地图：50转开启，打怪掉玩家经验，每挑战一次消耗星币，如果打的时候闪退界面，那就是打不过这关。（掉落材料，翅膀，符文）。</p>
-          <p>31. 直播系统：500转开启，每级增加点击伤害，粉丝数增加GPS加成，流量是获得多倍经验</p>
+          <p>31. 直播系统：500转开启，每级增加点击伤害，粉丝数增加GPS加成，流量是获得多倍经验（获取大量玫瑰花）</p>
         <p>32. 宗门系统：1000转开启，每级GPS收益，功法库提升功法秘笈加成。</p>
           <p>33. 黑龙潭副本：1轮回开启，掉落大量材料，翅膀升级材料。</p>
         <p>34. 圣兽岛副本：2轮回开启，掉落大量材料，坐骑升级材料。</p>
@@ -3040,8 +3082,10 @@ button:disabled {
          <p>36. 蓬莱仙岛系统：3轮回开启，掉落大量材料，符文升级材料。</p>
         <p>37. 娱乐玩法：老虎机。</p>
        <p>38. 秘境：2000转开启，提升临时总数值，和大量神器碎片（藏宝图怪物掉落）。</p>
-       <p>39. 疯狂地主：0转开启（打怪模式第三层以上开启），提升总数值根据（总获得地主币），新版农田，10分钟刷新商店，成熟只要不收获也可以吃天气词条，离线也可以吃词条，最高16条。</p>
+       <p>39. 疯狂地主：0转开启（打怪模式第三层以上开启），提升总数值根据（总获得地主币），新版农田，10分钟刷新商店，成熟只要不收获也可以吃天气词条，离线也可以吃词条，最高26条。</p>
        <p>40. 无尽挖矿：(升级一下稿子等级不然挖不到普通矿)1500转开启，提升大量世界地图经验，和各项属性。</p>
+       <p>41. 新版股票:（离线后如果打不开点一下疯狂地主再打开）</p>
+      <p>42. 房子系统:200转开启，新版股票资金购买，每秒GPS加成 ，收益点击加成（群里兑换码可以领取别墅）</p>
         </div>
     </div>
 </div>
@@ -3054,7 +3098,9 @@ button:disabled {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.71更新日志</h4>
+            <h4>1.73更新日志</h4>
+           <p>2025/12/29: 更新疯狂地主系统，加强停车场加成，增加房子系统200转开启，股票资金购买（群里兑换码可以领取别墅）</p>
+           <p>2025/12/28:修复疯狂地主一键收获BUG，修复严重BUG离线系统异常没生效问题，直播系统过几秒人数只有6人正常不影响送礼（保存机制原因不会暂用内存），加入新版股票，随机波动涨跌，对应称号。 </p>
            <p>2025/12/24:修复无尽挖宝石发现没获得宝石BUG,修复红宝石没生效世界经验加成BUG,修复直播人数越来越少，优化存档内存老玩家点一下保存在点一下加载会流畅很多，降低货币兑换。</p>
            <p>2025/12/22:增加无尽挖矿：开启条件1500转(升级一下稿子等级不然挖不到普通矿)，提升大量世界地图经验，和各项属性，对应称号。</p>
            <p>2025/12/21:修改疯狂地主（新版农田）：开启条件，打怪模式第三层以上开启，增加疯狂地主对应称号。</p>
@@ -3150,6 +3196,8 @@ button:disabled {
      <button onclick="toggleAutoBuyShopa()">轮回BOSS副本</button>
     <button onclick="toggleWorldBossUI()" style="background: linear-gradient(to bottom, #d4af37, #a67c00); color: #000; font-weight: bold; padding: 6px 12px; font-size: 12px;">世界BOSS</button>
      <button onclick="toggleLandlordGame()" style="background: #8e44ad; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px;">疯狂地主</button>
+     <button onclick="toggleInvestmentGame()" style="background: linear-gradient(45deg, #4CAF50, #2196F3); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+    <i class="fas fa-chart-line"></i> 模拟投资</button>
     <button onclick="toggleSlotMachine()">老虎机</button>
     <button onclick="toggleFundSystem()">基金系统</button>
     <button onclick="showTitleDialog()">称号系统</button>
@@ -3160,6 +3208,7 @@ button:disabled {
     <button onclick="toggleFishingSystem()" style="margin-left: 10px;">钓鱼系统</button>
     <button onclick="toggleFarmSystem()" style="margin-left: 10px;">农场系统</button>
     <button onclick="toggleParkingSystem()">停车位系统</button>
+    <button onclick="toggleHouseSystem()">房屋系统</button>
     <button onclick="toggleExplorationSystem()" style="margin-left: 10px;">星域探索</button>
     <button onclick="toggleArtifactSystem()" style="margin-left: 10px;">神器锻造系统</button>
     <button onclick="toggleCultivationSystem()" style="margin-left: 10px;">修仙系统</button>
@@ -6453,9 +6502,9 @@ button:disabled {
                     
                     <div class="landlord-stat-card">
                         <h3>进度</h3>
-                        <div>已解锁地块: <span id="landlordUnlockedFields">5</span>/30</div>
+                        <div>已解锁地块: <span id="landlordUnlockedFields">5</span>/50</div>
                         <div>种子仓库容量: <span id="landlordSeedStorageCount">0</span>/∞</div>
-                        <div>果实仓库容量: <span id="landlordFruitStorageCount">0</span>/100</div>
+                        <div>果实仓库容量: <span id="landlordFruitStorageCount">0</span>/200</div>
                         <div>道具使用次数: <span id="landlordItemUsageCount">0</span>/∞</div>
                     </div>
                 </div>
@@ -6628,10 +6677,102 @@ button:disabled {
             </div>
         </div>
     </div>
-
-
-
-<div id="footer">版本号: v1.7.1</div>
+<!-- 模拟投资交易游戏界面 -->
+<div id="investmentGameUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 1200px; height: 90vh; background: #f5f7fa; border: 3px solid #3b82f6; border-radius: 15px; z-index: 1002; overflow: hidden;">
+    <div style="position: absolute; top: 10px; right: 10px;">
+        <button onclick="closeInvestmentGame()" style="background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 16px;">
+            <i class="fas fa-times"></i> 关闭
+        </button>
+    </div>
+    
+    <div id="investmentGameContent" style="height: 100%; overflow-y: auto; padding: 20px;">
+        <!-- 模拟投资交易游戏的内容将通过JavaScript动态生成 -->
+    </div>
+</div>
+ <!-- 房屋系统界面 -->
+    <div id="houseSystemOverlay"></div>
+    <div id="houseSystemUI">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #8B4513; padding-bottom: 10px;">
+            <h2 style="color: #8B4513; margin: 0;">房屋系统</h2>
+            <button onclick="closeHouseSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-size: 14px;">关闭</button>
+        </div>
+        
+        <!-- 房屋信息 -->
+        <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+                    <strong>房屋等级:</strong> <span id="houseLevel">1</span>
+                    <strong>经验:</strong> <span id="houseExp">0</span>/<span id="houseExpNext">100</span>
+                </div>
+                <button onclick="upgradeHouseSystem()" 
+                style="background: #8B4513; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+            升级房屋系统
+        </button>
+                <div>
+                    <strong>房屋数量:</strong> <span id="houseCount">0</span>/<span id="maxHouses">5</span>
+                </div>
+                <div>
+                    <strong>房子总收益:</strong> <span id="totalHouseIncome">0</span> 资金
+                </div>
+                <div>
+                    <strong>当前资产:</strong> <span id="totalHouseIncoma">0</span> 资金
+                </div>
+            </div>
+        
+       
+         <!-- 房屋购买区域 -->
+        <div style="margin-bottom: 20px;">
+            <h3>购买房屋</h3>
+            <div id="houseStore" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+                <!-- 房屋购买选项将动态生成 -->
+            </div>
+        </div>
+        </div>
+               
+        <!-- 我的房屋 -->
+        <div style="margin-bottom: 20px;">
+            <h3>我的房屋</h3>
+            <div id="houseList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; max-height: 300px; overflow-y: auto; padding: 10px; background: #333; border-radius: 5px;">
+                <!-- 房屋卡片会动态生成在这里 -->
+            </div>
+        </div>
+        
+        <!-- 房屋操作 -->
+        <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+            <h3>房屋操作</h3>
+            <div id="houseSlotsContainer" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 10px 0; max-height: 400px; overflow-y: auto;">
+                <!-- 房屋槽位会动态生成在这里 -->
+            </div>
+            <div>
+                <button onclick="rentAllHouses()" style="background: #2196F3; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; margin-right: 10px;">一键出租</button>
+                <button onclick="collectAllHouseIncome()" style="background: #FFC107; color: black; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">收取所有收益</button>
+            </div>
+        </div>
+        
+        <!-- 房屋分解 -->
+        <div style="background: #333; padding: 15px; border-radius: 8px;">
+            <h3>房屋分解</h3>
+            <p>选择房屋进行分解，获得转生币</p>
+            
+            <!-- 批量选择选项 -->
+            <div style="margin-bottom: 10px;">
+                <strong>批量选择:</strong>
+                <button onclick="selectHousesByRarity(5)" style="margin: 2px; padding: 3px 6px; font-size: 12px;">5稀有度以下</button>
+                <button onclick="selectHousesByRarity(10)" style="margin: 2px; padding: 3px 6px; font-size: 12px;">10稀有度以下</button>
+                <button onclick="selectHousesByRarity(15)" style="margin: 2px; padding: 3px 6px; font-size: 12px;">15稀有度以下</button>
+                <button onclick="selectAllHouses()" style="margin: 2px; padding: 3px 6px; font-size: 12px;">全选</button>
+                <button onclick="deselectAllHouses()" style="margin: 2px; padding: 3px 6px; font-size: 12px;">全不选</button>
+            </div>
+            
+            <div id="decomposeHouseContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto;">
+                <!-- 分解界面会动态生成在这里 -->
+            </div>
+            <button onclick="decomposeSelectedHouse()" style="margin-top: 10px; background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">分解选中房屋</button>
+        </div>
+    </div>
+ </div>
+ </div>
+<div id="footer">版本号: v1.7.3</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -6665,7 +6806,88 @@ button:disabled {
     soulRingMultiplier: 1,    // 魂环总加成乘数（默认1倍）
     dungeonEquipMultiplier: 1 // 副本装备总加成乘数（默认1倍）
   },
-mining: {
+  houses: {
+                    level: 1,
+                    exp: 0,
+                    maxHouses: 5,
+                    ownedHouses: [],
+                    rentedHouses: [],
+                    lastUpdate: Date.now(),
+                    totalIncome: 0
+                },
+ investmentGame: {
+            stocks: [
+                {code: "zj0001", name: "鱼鱼基金", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0002", name: "闫闫基金", price: 10.00, change: 0, holdings: 0, costPrice: 0},           
+                {code: "zj0003", name: "茶茶金股", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0004", name: "麒麟企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0005", name: "云南白药", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0006", name: "黑三逢源", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0007", name: "乐途企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0008", name: "PDD企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0009", name: "空白控股", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0010", name: "慢手企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0011", name: "斗音公司", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0012", name: "阿里妈妈", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0013", name: "淘宝宝", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0014", name: "千达有限", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0015", name: "通元房产", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0016", name: "预言鱼塘", price: 10.00, change: 0, holdings: 0, costPrice: 0},            
+                {code: "zj0017", name: "新股长虹", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0018", name: "萩萩萩萩音乐", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0019", name: "盛通快递", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0020", name: "十鼎洗浴", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0021", name: "九鼎红楼", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0022", name: "星巴克", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0023", name: "大吴疆土", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0024", name: "九转仙股", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0025", name: "乌龟科技", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0026", name: "阿斯塔特", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0027", name: "万里药业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0028", name: "万里证券", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0029", name: "顶峰相见", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0030", name: "顺封快递", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0031", name: "晋商银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0032", name: "爆涨房产", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0033", name: "书法银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0034", name: "阳城银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},            
+                {code: "zj0035", name: "程羽银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0036", name: "中铁银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0037", name: "工商银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0038", name: "明港基金", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0039", name: "东坑企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0040", name: "黑龙银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0041", name: "韵达银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0042", name: "巴士企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0043", name: "京东公司", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0044", name: "科技企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0045", name: "羊同药业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0046", name: "风雪药业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0047", name: "霸王别姬", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0048", name: "一点点奶茶", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0049", name: "古茗奶茶", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0050", name: "蜜雪冰城", price: 10.00, change: 0, holdings: 0, costPrice: 0}
+            ],
+            userData: {
+                availableFunds: 1000.00,
+                totalAssets: 1000.00,
+                holdingPercent: 0.00,
+                todayProfit: 0.00,
+                tradeCount: 16,
+                initialFunds: 1000.00,
+                lastUpdateTime: Date.now()
+            },
+            currentStockIndex: 0,
+            tradeData: {
+                quantity: 0,
+                type: "buy",
+                feeRate: 0.0048
+            },
+            chartHistoryCache: {},
+            priceUpdateTimer: null,
+            chartUpdateTimer: null
+        },
+    mining: {
             depth: 0,
             power: 1,
             isMining: false,
@@ -6691,7 +6913,7 @@ mining: {
 landlord: {
                 coins: 10000,
                 unlockedFields: 5,
-                fields: Array(30).fill(null),
+                fields: Array(50).fill(null),
                 seedStorage: {},
                 fruitStorage: [],
                 itemStorage: {},
@@ -9171,6 +9393,31 @@ function confirmActivationCode() {
             rewardMsg = `获得一辆法拉利${randomModel}汽车`;
             success = true;
             break;
+      case "WOYAOBYFANG":
+            // 兑换别墅
+            const villaType = houseTypes.find(h => h.id === 5); // 别墅的id为5
+            if (!villaType) {
+                logAction("无效的房屋类型", "error");
+                return false;
+            }
+            
+            // 创建别墅实例
+            const newHouse = {
+                id: 'house_' + Date.now(),
+                type: villaType.id,
+                name: villaType.name,
+                rarity: villaType.rarity,
+                baseIncome: villaType.income,
+                rentTime: 0,
+                isRented: false
+            };
+            
+            // 添加到拥有的房屋列表
+            player.houses.ownedHouses.push(newHouse);            
+         rewardMsg ="成功兑换激活码  获得别墅！";     
+          success = true;
+            break;
+       
         case "YUER":
             player.items.baitCount = (player.items.baitCount || 0) + 20;
             rewardMsg = "获得20个鱼饵";
@@ -9382,7 +9629,8 @@ function setTechniqueMaxCost() {
         if (save.autoBuyTechniqueMaxCost !== undefined) {
     player.autoBuyTechniqueMaxCost = save.autoBuyTechniqueMaxCost;
 }
-        
+  
+
  if (!player.wings) {
         player.wings = {
             inventory: [],
@@ -9405,12 +9653,6 @@ function setTechniqueMaxCost() {
                     ascentionMultipliera: save.level.ascentionMultipliera || 1                 
                 };
             }
- if (save.runes) {
-                player.runes = save.runes;
-                updatePlayerBattleStats(); // 立即应用符文加成
-            }
-
-
 
              // 确保加载通天塔数据
           if (!player.fishing) {
@@ -9427,9 +9669,7 @@ function setTechniqueMaxCost() {
         };
     }
          
-            if (save.tower) {
-                player.tower = save.tower;
-            }
+           
            updateTowerUI();
           calculateOfflineMysteryExp();
             // 重置并重新计算收藏物效果
@@ -9494,9 +9734,9 @@ if (speedBoostBtn) {
 // 计算离线分钟数
         const offlineMinutes = Math.floor(offlineSeconds / 60);
         
-        // 每分钟为每件装备增加500级
+        // 每分钟为每件装备增加1000级
         player.equipment.forEach(eq => {
-            eq.level += offlineMinutes * 500;
+            eq.level += offlineMinutes * 1000;
         });
                 // 模拟离线期间的自动购买
                 simulateOfflineAutoBuy(offlineSeconds);
@@ -9535,9 +9775,32 @@ if (speedBoostBtn) {
    initNightClubSystem();
     // 计算离线探险奖励
     calculateOfflineExpeditionRewards();
+   initHouseSystemOnLoad();
         if (save.exploration) {
                 Object.assign(explorationData, save.exploration);
             }
+       if (save.tower) {
+                player.tower = save.tower;
+            }
+        // 加载投资游戏数据
+            if (save.investmentGame) {
+                player.investmentGame = save.investmentGame;
+            }
+            
+            // 初始化投资游戏
+            initInvestmentGameOnLoad();
+            loadInvestmentGameData();       
+ // 初始化投资游戏数据
+            if (!player.investmentGame) {
+                initInvestmentGame();
+            } else {
+                // 模拟离线期间的价格变化
+                simulateOfflinePriceChanges();
+            }
+          if (save.runes) {
+                player.runes = save.runes;
+                           }
+          
     if (save.traditionalLotteryBought && save.traditionalLotteryDrawTime) {
                         if (Date.now() >= save.traditionalLotteryDrawTime) {
                             // 立即开奖
@@ -9678,7 +9941,15 @@ function handleVipPowerGain() {
             lightningHand: 0,
             divineHand: 0
         },
-     
+     houses: oldSave.houses || {
+                    level: 1,
+                    exp: 0,
+                    maxHouses: 5,
+                    ownedHouses: [],
+                    rentedHouses: [],
+                    lastUpdate: Date.now(),
+                    totalIncome: 0
+                },
         pets: oldSave.pets || {
             thunderKirin: { level: 0, cost: 1, multiplier: 0.10 },
             chaosTaotie: { level: 0, cost: 1, multiplier: 0.30 },
@@ -9773,6 +10044,10 @@ const farmGPSEnhancement  = gpsEnhancements[player.farm.level - 1] || gpsEnhance
 
 const gpsEnhancementss =  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 1];
 const farmGPSEnhancements  = gpsEnhancementss[player.parking.level - 1] || gpsEnhancementss[gpsEnhancementss.length - 1];
+
+const gpsEnhancemenzss =  [1, 3, 6, 8, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 350, 400, 1];
+const farmGPSEnhancemezts  = gpsEnhancemenzss[player.houses.level - 1] || gpsEnhancemenzss[gpsEnhancemenzss.length - 1];
+
     const gpsBonuss = player.level.gpsBonus * 1.00;   
    const gpsBonusssq = player.liveStream.totalEarnings * 0.00001;  
 const gpsBonusssqaa = player.landlord.stats.totalCoinsEarned * 0.0001;  
@@ -9784,7 +10059,7 @@ const farmGPSEnhancementp  = gpsEnhancementsp[player.sect.level - 1] || gpsEnhan
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.gps * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.gpsMultiplier 
         * (1 + gpsBonus) 
-        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * (1 + gpsBonusssq) * farmGPSEnhancementp * (1 + gpsBonusssqaa) * (1 + gpsBonussbb) ;
+        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * (1 + gpsBonusssq) * farmGPSEnhancementp * (1 + gpsBonusssqaa) * (1 + gpsBonussbb)*farmGPSEnhancemezts ;
 }
 
 function getTotalClickValue() {
@@ -9802,7 +10077,8 @@ const farmClickMultiplierss = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35
     const farmClickBonuss = farmClickMultiplierss[player.parking.level - 1] || farmClickMultiplierss[farmClickMultiplierss.length - 1];
 const farmClickMultipliersss = [1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 1];
     const farmClickBonusss = farmClickMultipliersss[player.nightClub.level - 1] || farmClickMultipliersss[farmClickMultipliersss.length - 1];     
-           
+     const gpsBonuvvs = player.houses.totalIncome *  0.0001;
+    const gpsBonubbs = player.parking.totalIncome *  0.0001;
     const gpsBonusss = player.level.clickBonus * 1.00; 
 
 const farmClickMultiplierssa = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 1];
@@ -9813,7 +10089,7 @@ const farmClickMultiplierssa = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 3
         * player.clickMultiplier 
         * petMultiplier 
         * (1 + dungeonBonus)  // 应用副本装备总加成（含职业乘数）
-        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus * farmClickBonusss * gpsBonusss * farmClickBonussa* (1 + farmClickBonussw); 
+        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus * farmClickBonusss * gpsBonusss * farmClickBonussa* (1 + farmClickBonussw) * (1+gpsBonuvvs) * (1+gpsBonubbs); 
 }
 
 
@@ -12000,19 +12276,22 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
 
         // 保存游戏
         function saveGame() {
-    player.lastUpdate = Date.now(); // 确保保存时更新最后更新时间
+    player.lastUpdate = Date.now(); // 确保保存时更新最后更新时间   
     player.actionLogs = player.actionLogs.slice(0, 5);
     player.lotteryResults = player.lotteryResults.slice(0, 5);
    
     if (player.liveStream && player.liveStream.donationHistory) {
         player.liveStream.donationHistory = player.liveStream.donationHistory.slice(-5);
     }
- 
+     if (player.investmentGame && player.investmentGame.userData) {
+        player.investmentGame.userData.lastUpdateTime = Date.now();
+    }
     if (player.liveStream && player.liveStream.viewers) {
         player.liveStream.viewers = player.liveStream.viewers.slice(-5);
     }
     player.mystery.lastUpdateTime = Date.now();
-   cleanupArtifactAdvanceLevels();
+   cleanupArtifactAdvanceLevels(); 
+    saveInvestmentGameData();
     player.tower.lastUpdate = Date.now();
     player.exploration = {
         speed: explorationData.speed,
@@ -25212,15 +25491,20 @@ const titleConfig = {
     { name: "巅峰车皇", condition: (p) => p.parking.level > 24, bonus: { attackMultiplier: 1.2 } },
     { name: "寰宇车神", condition: (p) => p.parking.level > 34, bonus: { attackMultiplier: 1.2 } },
     { name: "创世车帝", condition: (p) => p.parking.level > 39, bonus: { attackMultiplier: 1.2 } },
-    { name: "万元户", condition: (p) => p.landlord.stats.totalCoinsEarned > 10000, bonus: { healthMultiplier: 1.1 } },
-    { name: "十万富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 100000, bonus: { healthMultiplier: 1.1 } },
-    { name: "百万富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 1000000, bonus: { healthMultiplier: 1.1 } },
-    { name: "千万富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 10000000, bonus: { healthMultiplier: 1.2 } },
-    { name: "亿万富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 100000000, bonus: { healthMultiplier: 1.2 } },
+    { name: "百万元户", condition: (p) => p.landlord.stats.totalCoinsEarned > 1000000, bonus: { healthMultiplier: 1.1 } },
+    { name: "千万富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 10000000, bonus: { healthMultiplier: 1.1 } },
+    { name: "亿富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 100000000, bonus: { healthMultiplier: 1.1 } },
     { name: "十亿富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 1000000000, bonus: { healthMultiplier: 1.2 } },
     { name: "百亿富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 10000000000, bonus: { healthMultiplier: 1.2 } },
     { name: "千亿富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 100000000000, bonus: { healthMultiplier: 1.2 } },
-    { name: "高富帅", condition: (p) => p.landlord.stats.totalCoinsEarned > 1000000000000, bonus: { healthMultiplier: 1.2 } },
+    { name: "万亿富翁", condition: (p) => p.landlord.stats.totalCoinsEarned > 1000000000000, bonus: { healthMultiplier: 1.2 } },
+    { name: "高富帅", condition: (p) => p.landlord.stats.totalCoinsEarned > 10000000000000, bonus: { healthMultiplier: 1.2 } },
+    { name: "股侠", condition: (p) => p.investmentGame.userData.availableFunds > 100000, bonus: { healthMultiplier: 1.1 } },
+    { name: "股霸", condition: (p) => p.investmentGame.userData.availableFunds > 10000000, bonus: { healthMultiplier: 1.1 } },
+    { name: "股王", condition: (p) => p.investmentGame.userData.availableFunds > 1000000000, bonus: { healthMultiplier: 1.1 } },
+    { name: "股圣", condition: (p) => p.investmentGame.userData.availableFunds > 100000000000, bonus: { healthMultiplier: 1.2 } },
+    { name: "股神", condition: (p) => p.investmentGame.userData.availableFunds > 10000000000000, bonus: { healthMultiplier: 1.2 } },
+    { name: "股仙", condition: (p) => p.investmentGame.userData.availableFunds > 1000000000000000, bonus: { healthMultiplier: 1.2 } },
     { name: "萌新矿工", condition: (p) => p.mining.depth > 1000, bonus: { attackMultiplier: 1.1 } },
     { name: "勤奋矿工", condition: (p) => p.mining.depth > 10000, bonus: { attackMultiplier: 1.1 } },
     { name: "黄金矿工", condition: (p) => p.mining.depth > 100000, bonus: { attackMultiplier: 1.1 } },
@@ -28072,11 +28356,11 @@ function initTradingData() {
             },
             employees: [],
             tradeHistory: [],
-            lastTradeTime: Date.now(),
+             lastTradeTime: player.lastUpdate || Date.now(),
             tradeVolumeToday: 0,
             tradeCountToday: 0,
             cityPrices: {},
-            lastPriceUpdate: Date.now(),
+           lastPriceUpdate: player.lastUpdate || Date.now(), 
             isTraveling: false,
             travelStartTime: 0,
             travelEndTime: 0,
@@ -32480,11 +32764,7 @@ function tradingSystemLoop() {
         }
     }
     
-    // 每日重置（午夜）
-    const now = new Date();
-    if (now.getHours() === 0 && now.getMinutes() === 0) {
-        resetDailyTrading();
-    }
+    
 }
 
 function startAutoTradeSystem() {
@@ -32574,16 +32854,24 @@ window.addEventListener('beforeunload', function() {
 
 // 修改页面可见性变化处理
 document.addEventListener('visibilitychange', function() {
-    try {
-        if (document.hidden) {
-            // 页面隐藏时，切换到后台模式
-            enterBackgroundMode();
-        } else {
-            // 页面可见时，切换到前台模式
-            exitBackgroundMode();
+    const game = player.investmentGame;
+    if (!game) return;
+    
+    if (document.hidden) {
+        // 页面隐藏时停止定时器
+        if (game.priceUpdateTimer) {
+            clearInterval(game.priceUpdateTimer);
+            game.priceUpdateTimer = null;
         }
-    } catch (error) {
-        console.error("页面可见性变化处理错误:", error);
+        if (game.chartUpdateTimer) {
+            clearInterval(game.chartUpdateTimer);
+            game.chartUpdateTimer = null;
+        }
+    } else {
+        // 页面显示时重新开始定时器
+        if (document.getElementById('investmentGameUI').style.display === 'block') {
+            startPriceSimulation();
+        }
     }
 });
 function enterBackgroundMode() {
@@ -37571,16 +37859,45 @@ function buyTsrShopItem(itemKey) {
   // 种子属性
         const seedProperties = {
             "土豆": { price: 0, minWeight: 0.1, maxWeight: 10, color: "#8B4513" },
+            "金桔": { price: 1000, minWeight: 0.1, maxWeight: 3, color: "#8B4513" },
             "牵牛花": { price: 3000, minWeight: 0.1, maxWeight: 5, color: "#9B59B6" },
+            "无花果": { price: 5000, minWeight: 0.1, maxWeight: 5, color: "#9B59B6" },
             "黄瓜": { price: 9000, minWeight: 0.1, maxWeight: 6, color: "#27AE60" },
             "西瓜": { price: 30000, minWeight: 0.1, maxWeight: 7, color: "#2ECC71" },
+            "猕猴桃": { price: 60000, minWeight: 0.1, maxWeight: 8, color: "#2ECC71" },
+            "百合花": { price: 80000, minWeight: 0.1, maxWeight: 10, color: "#2ECC71" },
+            "枣树": { price: 100000, minWeight: 0.1, maxWeight: 15, color: "#2ECC71" },
+            "蓝莓": { price: 120000, minWeight: 0.1, maxWeight: 8, color: "#2ECC71" },
             "苹果": { price: 150000, minWeight: 0.1, maxWeight: 8, color: "#E74C3C" },
+            "丝瓜": { price: 200000, minWeight: 0.1, maxWeight: 9, color: "#E74C3C" },
             "香蕉": { price: 300000, minWeight: 0.1, maxWeight: 10, color: "#F1C40F" },
+            "哈密瓜": { price: 400000, minWeight: 0.1, maxWeight: 11, color: "#F1C40F" },
+            "冰淇淋豆": { price: 500000, minWeight: 0.1, maxWeight: 12, color: "#F1C40F" },
             "南瓜": { price: 600000, minWeight: 0.1, maxWeight: 12, color: "#D35400" },
+            "红茶": { price: 700000, minWeight: 0.1, maxWeight: 12, color: "#D35400" },
+            "橙子": { price: 800000, minWeight: 0.1, maxWeight: 13, color: "#D35400" },
+            "玫瑰花": { price: 900000, minWeight: 0.1, maxWeight: 13, color: "#D35400" },
+            "茄子": { price: 1000000, minWeight: 0.1, maxWeight: 14, color: "#D35400" },
             "草莓": { price: 1200000, minWeight: 0.1, maxWeight: 15, color: "#E74C3C" },
+            "芒果": { price: 1500000, minWeight: 0.1, maxWeight: 16, color: "#E74C3C" },
+            "樱桃": { price: 2100000, minWeight: 0.1, maxWeight: 18, color: "#E74C3C" }, 
+            "柚子": { price: 2400000, minWeight: 0.1, maxWeight: 19, color: "#E74C3C" }, 
             "向日葵": { price: 3000000, minWeight: 0.1, maxWeight: 20, color: "#F1C40F" },
+            "松树": { price: 4000000, minWeight: 0.1, maxWeight: 22, color: "#F1C40F" },
+            "茶树": { price: 5000000, minWeight: 0.1, maxWeight: 24, color: "#F1C40F" },
             "大王菊": { price: 6000000, minWeight: 0.1, maxWeight: 25, color: "#9B59B6" },
-            "惊奇菇": { price: 25000000, minWeight: 0.1, maxWeight: 50, color: "#8E44AD" }
+            "红袍梅": { price: 7000000, minWeight: 0.1, maxWeight: 26, color: "#9B59B6" },
+            "火龙果": { price: 8000000, minWeight: 0.1, maxWeight: 22, color: "#9B59B6" },
+            "柳树": { price: 9000000, minWeight: 0.1, maxWeight: 35, color: "#9B59B6" },
+            "闫闫果": { price: 10000000, minWeight: 0.1, maxWeight: 29, color: "#9B59B6" },
+            "菠萝": { price: 12000000, minWeight: 0.1, maxWeight: 31, color: "#9B59B6" },
+            "葡萄": { price: 15000000, minWeight: 0.1, maxWeight: 30, color: "#8E44AD" },  
+            "蟠桃": { price: 20000000, minWeight: 0.1, maxWeight: 30, color: "#8E44AD" },                       
+            "惊奇菇": { price: 25000000, minWeight: 0.1, maxWeight: 50, color: "#8E44AD" },
+            "红毛丹": { price: 30000000, minWeight: 0.1, maxWeight: 55, color: "#8E44AD" },
+            "泡泡果": { price: 40000000, minWeight: 0.1, maxWeight: 50, color: "#8E44AD" },
+            "人参树": { price: 50000000, minWeight: 0.1, maxWeight: 80, color: "#8E44AD" },
+            "神秘果": { price: 100000000, minWeight: 0.1, maxWeight: 100, color: "#8E44AD" }
         };
 
         // 种子刷新概率
@@ -37588,14 +37905,43 @@ function buyTsrShopItem(itemKey) {
             "土豆": 100,
             "牵牛花": 100,
             "黄瓜": 100,
+            "金桔": 100,
+            "无花果": 100,
             "西瓜": 20,
             "苹果": 20,
             "香蕉": 20,
+            "丝瓜": 20,
+            "哈密瓜": 20,
+            "猕猴桃": 20,
+            "百合花": 20,
+            "蓝莓": 20,
+            "冰淇淋豆": 10,
+            "枣树": 10,
+            "茄子": 10,
             "南瓜": 10,
-            "草莓": 10,
-            "向日葵": 1,
+            "橙子": 10,
+            "红茶": 10,
+            "玫瑰花": 5,
+            "草莓": 5,
+            "樱桃": 5,
+            "芒果": 5,
+            "柚子": 3,
+            "向日葵": 3,            
+            "松树": 3,
+            "茶树": 3,
             "大王菊": 1,
-            "惊奇菇": 0.1
+            "柳树": 1,
+            "红袍梅": 1,
+            "火龙果": 1,
+            "菠萝": 1,            
+            "闫闫果": 1,
+            "葡萄": 1,
+            "蟠桃": 0.1,
+            "惊奇菇": 0.1,
+            "红毛丹": 0.1,
+            "泡泡果": 0.1,
+            "人参树": 0.1,
+           "神秘果": 0.01
         };
 
         // 道具属性
@@ -37623,23 +37969,77 @@ function buyTsrShopItem(itemKey) {
                 color: "#f1c40f",
                 refreshProbability: 1,
                 description: "直接获得一个没有获得的天气突变"
-            }
+            },
+         "流星棒": { 
+        price: 200000, 
+        color: "#ff6b6b",
+        refreshProbability: 3,
+        description: "已有天气词条时，如果词条中无亮晶晶词条，则直接获得亮晶晶词条"
+    },
+    "火盆": { 
+        price: 20000, 
+        color: "#ff6b35",
+        refreshProbability: 5,
+        description: "已有天气词条时，如果词条中无灼热词条，则直接获得灼热词条"
+    },
+    "吹风机": { 
+        price: 200000, 
+        color: "#4d96ff",
+        refreshProbability: 3,
+        description: "已有天气词条时，如果词条中无龙卷风词条，则直接获得龙卷风词条"
+    },
+    "避雷针": { 
+        price: 200000, 
+        color: "#ffd93d",
+        refreshProbability: 2,
+        description: "已有天气词条时，如果词条中无落雷词条，则直接获得落雷词条"
+    },
+    "雪球机": { 
+        price: 20000, 
+        color: "#6bc5ff",
+        refreshProbability: 5,
+        description: "已有天气词条时，如果词条中无覆雪词条，则直接获得覆雪词条"
+    },
+    "催化器": { 
+        price: 50000, 
+        color: "#6bcf7f",
+        refreshProbability: 5,
+        description: "已有天气词条时，如果词条中无生机词条，则直接获得生机词条"
+    },
+    "臭气弹": { 
+        price: 50000, 
+        color: "#8b5a2b",
+        refreshProbability: 5,
+        description: "已有天气词条时，如果词条中无臭气词条，则直接获得臭气词条"
+    },
+    "生化弹": { 
+        price: 50000, 
+        color: "#6b8b3d",
+        refreshProbability: 5,
+        description: "已有天气词条时，如果词条中无腐烂词条，则直接获得腐烂词条"
+    },
+    "雾霾制造器": { 
+        price: 50000, 
+        color: "#a9a9a9",
+        refreshProbability: 5,
+        description: "已有天气词条时，如果词条中无迷雾词条，则直接获得迷雾词条"
+    }
         };
 // 突变倍率
         const mutationMultipliers = {
             // 灰色词条
-            "潮湿": 1, "颤栗": 1, "生机": 1, "覆雪": 1,
-            "迷雾": 1, "灼热": 1, "沙尘": 1, "结霜": 1,
+            "潮湿": 1, "颤栗": 1, "生机": 1, "覆雪": 1,"腐烂": 1,
+            "迷雾": 1, "灼热": 1, "沙尘": 1, "结霜": 1,"臭气": 1,
             // 绿色词条
             "银": 3, "落雷": 3, "冰冻": 3, "陶化": 3,
             // 蓝色词条
-            "金": 10, "荧光": 10, "彩虹": 10,
+            "金": 10, "荧光": 10, "彩虹": 10,"龙卷风": 10,
             // 紫色词条
-            "星环": 15, "瓷化": 15, "亮晶晶": 15,
+            "星环": 15, "瓷化": 15, "亮晶晶": 15, "台风": 15,
             // 金色词条
-            "水晶": 20, "红月": 20,
+            "水晶": 20, "红月": 20, "陨石": 20,
             // 彩色词条
-            "流光": 25, "霓虹": 25
+            "流光": 25, "霓虹": 25, "渡劫": 25
         };
 
         // 特殊突变
@@ -37647,40 +38047,76 @@ function buyTsrShopItem(itemKey) {
             "土豆": "薯片",
             "黄瓜": "黄瓜蛇",
             "西瓜": "方形",
+            "金桔": "桔王",
+            "无花果": "芜湖",
             "苹果": "糖葫芦",
+            "枣树": "大枣王",
             "香蕉": "橡胶猴",
+            "丝瓜": "丝雨",
+            "茄子": "巨无霸",
+            "红茶": "冰红茶",
             "草莓": "连体",
+            "哈密瓜": "哈批",
+            "樱桃": "双胞胎",
+            "猕猴桃": "齐天大圣",
+            "冰淇淋豆": "冰淇淋",
             "向日葵": "海绵宝宝",
-            "大王菊": "超人菊",
+            "大王菊": "超人菊", 
+            "红袍梅": "红袍尊者",
+            "玫瑰花": "爱心",
+            "柚子": "柚水",
+            "蓝莓": "蓝颜知己",
+            "百合花": "友情",
             "惊奇菇": "奥特曼",
+            "葡萄": "菩提祖师",
+            "松树": "三只松鼠",
+            "茶树": "茶茶萝莉",
+            "蟠桃": "仙桃",
+           "红毛丹": "仙丹",
+           "闫闫果": "小闫闫",
+           "人参树": "人参果",
+           "菠萝": "菠萝吹雪",
+            "泡泡果": "泡神",
+             "柳树": "柳神",
+           "火龙果": "火龙真身",
+           "神秘果": "未来之心",
             "南瓜": "万圣节"
         };
 
         // 天气列表
         const weatherList = [
-            "潮湿", "颤栗", "生机", "覆雪", "迷雾",
-            "灼热", "沙尘", "结霜", "落雷", "荧光",
-            "彩虹", "星环", "亮晶晶", "霓虹", "红月"
+            "潮湿", "颤栗", "生机", "覆雪", "迷雾","冰冻", "陶化", "瓷化","臭气",
+            "灼热", "沙尘", "结霜", "落雷", "荧光","龙卷风","台风","腐烂",
+            "彩虹", "星环", "亮晶晶", "霓虹", "红月", "渡劫", "陨石"
         ];
 
         // 天气突变颜色映射
         const weatherMutationColors = {
-            "潮湿": "light-blue",      // 浅蓝色
-            "颤栗": "light-purple",    // 浅紫色
-            "生机": "light-green",     // 浅绿色
-            "覆雪": "cyan",           // 青色
+            "潮湿": "grey",      // 灰色
+            "腐烂": "grey", 
+            "臭气": "grey", 
+            "颤栗": "grey",    // 灰色
+            "生机": "grey",     // 灰色
+            "覆雪": "grey",           // 灰色
             "迷雾": "grey",           // 灰色
-            "灼热": "orange",         // 橙色
-            "沙尘": "yellow",         // 黄色
-            "结霜": "light-blue",     // 浅蓝色
+            "灼热": "grey",         // 灰色
+            "沙尘": "grey",         // 灰色
+            "结霜": "grey",     // 灰色
             "落雷": "green",          // 绿色
+            "冰冻": "green", 
+            "陶化": "green", 
             "荧光": "blue",           // 蓝色
+            "龙卷风": "blue",  
             "彩虹": "rainbow",        // 彩虹色
             "星环": "purple",         // 紫色
-            "亮晶晶": "purple",       // 紫色
+            "瓷化": "purple",  
+            "亮晶晶": "purple",
+            "台风": "purple",  
             "霓虹": "rainbow",        // 彩虹色
+            "渡劫": "rainbow",
+            "陨石": "gold", 
             "红月": "gold"           // 金色
-        };
+                    };
 
         // 疯狂地主游戏控制函数
         function toggleLandlordGame() {
@@ -38071,6 +38507,131 @@ function buyTsrShopItem(itemKey) {
                         effectMessage = "已拥有所有天气突变！";
                     }
                     break;
+            case "流星棒":
+            if (plant.weatherMutations.length > 0) {
+                if (!plant.weatherMutations.includes("亮晶晶")) {
+                    plant.weatherMutations.push("亮晶晶");
+                    player.landlord.stats.weatherMutations++;
+                    effectMessage = "获得了亮晶晶词条！";
+                } else {
+                    effectMessage = "已有亮晶晶词条！";
+                }
+            } else {
+                effectMessage = "没有天气词条，无法使用！";
+            }
+            break;
+            
+        case "火盆":
+            if (plant.weatherMutations.length > 0) {
+                if (!plant.weatherMutations.includes("灼热")) {
+                    plant.weatherMutations.push("灼热");
+                    player.landlord.stats.weatherMutations++;
+                    effectMessage = "获得了灼热词条！";
+                } else {
+                    effectMessage = "已有灼热词条！";
+                }
+            } else {
+                effectMessage = "没有天气词条，无法使用！";
+            }
+            break;
+            
+        case "吹风机":
+            if (plant.weatherMutations.length > 0) {
+                if (!plant.weatherMutations.includes("龙卷风")) {
+                    plant.weatherMutations.push("龙卷风");
+                    player.landlord.stats.weatherMutations++;
+                    effectMessage = "获得了龙卷风词条！";
+                } else {
+                    effectMessage = "已有龙卷风词条！";
+                }
+            } else {
+                effectMessage = "没有天气词条，无法使用！";
+            }
+            break;
+            
+        case "避雷针":
+            if (plant.weatherMutations.length > 0) {
+                if (!plant.weatherMutations.includes("落雷")) {
+                    plant.weatherMutations.push("落雷");
+                    player.landlord.stats.weatherMutations++;
+                    effectMessage = "获得了落雷词条！";
+                } else {
+                    effectMessage = "已有落雷词条！";
+                }
+            } else {
+                effectMessage = "没有天气词条，无法使用！";
+            }
+            break;
+            
+        case "雪球机":
+            if (plant.weatherMutations.length > 0) {
+                if (!plant.weatherMutations.includes("覆雪")) {
+                    plant.weatherMutations.push("覆雪");
+                    player.landlord.stats.weatherMutations++;
+                    effectMessage = "获得了覆雪词条！";
+                } else {
+                    effectMessage = "已有覆雪词条！";
+                }
+            } else {
+                effectMessage = "没有天气词条，无法使用！";
+            }
+            break;
+            
+        case "催化器":
+            if (plant.weatherMutations.length > 0) {
+                if (!plant.weatherMutations.includes("生机")) {
+                    plant.weatherMutations.push("生机");
+                    player.landlord.stats.weatherMutations++;
+                    effectMessage = "获得了生机词条！";
+                } else {
+                    effectMessage = "已有生机词条！";
+                }
+            } else {
+                effectMessage = "没有天气词条，无法使用！";
+            }
+            break;
+            
+        case "臭气弹":
+            if (plant.weatherMutations.length > 0) {
+                if (!plant.weatherMutations.includes("臭气")) {
+                    plant.weatherMutations.push("臭气");
+                    player.landlord.stats.weatherMutations++;
+                    effectMessage = "获得了臭气词条！";
+                } else {
+                    effectMessage = "已有臭气词条！";
+                }
+            } else {
+                effectMessage = "没有天气词条，无法使用！";
+            }
+            break;
+            
+        case "生化弹":
+            if (plant.weatherMutations.length > 0) {
+                if (!plant.weatherMutations.includes("腐烂")) {
+                    plant.weatherMutations.push("腐烂");
+                    player.landlord.stats.weatherMutations++;
+                    effectMessage = "获得了腐烂词条！";
+                } else {
+                    effectMessage = "已有腐烂词条！";
+                }
+            } else {
+                effectMessage = "没有天气词条，无法使用！";
+            }
+            break;
+            
+        case "雾霾制造器":
+            if (plant.weatherMutations.length > 0) {
+                if (!plant.weatherMutations.includes("迷雾")) {
+                    plant.weatherMutations.push("迷雾");
+                    player.landlord.stats.weatherMutations++;
+                    effectMessage = "获得了迷雾词条！";
+                } else {
+                    effectMessage = "已有迷雾词条！";
+                }
+            } else {
+                effectMessage = "没有天气词条，无法使用！";
+            }
+            break;
             }
             
             return effectMessage;
@@ -38185,7 +38746,7 @@ function buyTsrShopItem(itemKey) {
             };
             
             // 检查仓库容量
-            if (player.landlord.fruitStorage.length >= 100) {
+            if (player.landlord.fruitStorage.length >= 200) {
                 showLandlordNotification("果实仓库已满！", "error");
                 return;
             }
@@ -38347,8 +38908,16 @@ function buyTsrShopItem(itemKey) {
                 unlockCost = 50000000; // 解锁16-20块地
             } else if (currentFields === 20) {
                 unlockCost = 500000000; // 解锁21-25块地
-            } else if (currentFields === 25) {
+             } else if (currentFields === 25) {
                 unlockCost = 5000000000; // 解锁26-30块地
+             } else if (currentFields === 30) {
+                unlockCost = 50000000000; // 解锁31-35块地
+             } else if (currentFields === 35) {
+                unlockCost = 5000000000000; // 解锁36-40块地
+            } else if (currentFields === 40) {
+                unlockCost = 500000000000000; // 解锁41-45块地
+            } else if (currentFields === 45) {
+                unlockCost = 50000000000000000; // 解锁46-50块地
             } else {
                 showLandlordNotification("已解锁所有地块！", "info");
                 return;
@@ -38618,6 +39187,14 @@ function buyTsrShopItem(itemKey) {
                 unlockCost = 500000000;
             } else if (player.landlord.unlockedFields === 25) {
                 unlockCost = 5000000000;
+            }else if (player.landlord.unlockedFields === 30) {
+                unlockCost = 50000000000;
+            }else if (player.landlord.unlockedFields === 35) {
+                unlockCost = 5000000000000;
+            }else if (player.landlord.unlockedFields === 40) {
+                unlockCost = 500000000000000;
+            }else if (player.landlord.unlockedFields === 45) {
+                unlockCost = 50000000000000000;
             }
             
             if (unlockCost > 0) {
@@ -39149,7 +39726,7 @@ function buyTsrShopItem(itemKey) {
                 player.landlord = {
                     coins: 0,
                     unlockedFields: 5,
-                    fields: Array(30).fill(null),
+                    fields: Array(50).fill(null),
                     seedStorage: {},
                     fruitStorage: [],
                     itemStorage: {},
@@ -39313,7 +39890,7 @@ function buyTsrShopItem(itemKey) {
                         isLocked: false  // 新收获的果实默认不锁定
                     };
                     
-                    if (player.landlord.fruitStorage.length < 20) {
+                    if (player.landlord.fruitStorage.length < 200) {
                         player.landlord.fruitStorage.push(fruit);
                         
                         // 重新生成植物
@@ -39919,8 +40496,2535 @@ function initMiningData() {
             }
         }
     }
+function initInvestmentGame() {
+    if (!player.investmentGame) {
+        player.investmentGame = {
+            // 股票数据
+            stocks: [
+                {code: "zj0001", name: "鱼鱼基金", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0002", name: "闫闫基金", price: 10.00, change: 0, holdings: 0, costPrice: 0},           
+                {code: "zj0003", name: "茶茶金股", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0004", name: "麒麟企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0005", name: "云南白药", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0006", name: "黑三逢源", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0007", name: "乐途企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0008", name: "PDD企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0009", name: "空白控股", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0010", name: "慢手企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0011", name: "斗音公司", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0012", name: "阿里妈妈", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0013", name: "淘宝宝", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0014", name: "千达有限", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0015", name: "通元房产", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0016", name: "预言鱼塘", price: 10.00, change: 0, holdings: 0, costPrice: 0},            
+                {code: "zj0017", name: "新股长虹", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0018", name: "萩萩萩萩音乐", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0019", name: "盛通快递", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0020", name: "十鼎洗浴", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0021", name: "九鼎红楼", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0022", name: "星巴克", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0023", name: "大吴疆土", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0024", name: "九转仙股", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0025", name: "乌龟科技", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0026", name: "阿斯塔特", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0027", name: "万里药业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0028", name: "万里证券", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0029", name: "顶峰相见", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0030", name: "顺封快递", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0031", name: "晋商银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0032", name: "爆涨房产", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0033", name: "书法银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0034", name: "阳城银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},            
+                {code: "zj0035", name: "程羽银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0036", name: "中铁银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0037", name: "工商银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0038", name: "明港基金", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0039", name: "东坑企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0040", name: "黑龙银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0041", name: "韵达银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0042", name: "巴士企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0043", name: "京东公司", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0044", name: "科技企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0045", name: "羊同药业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0046", name: "风雪药业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0047", name: "霸王别姬", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0048", name: "一点点奶茶", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0049", name: "古茗奶茶", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0050", name: "蜜雪冰城", price: 10.00, change: 0, holdings: 0, costPrice: 0}
+            ],
+            // 用户数据
+            userData: {
+                availableFunds: 1000.00,
+                totalAssets: 1000.00,
+                holdingPercent: 0.00,
+                todayProfit: 0.00,
+                tradeCount: 16,
+                initialFunds: 1000.00,
+                lastUpdateTime: Date.now()
+            },
+            // 当前选中的股票
+            currentStockIndex: 0,
+            // 交易数据
+            tradeData: {
+                quantity: 0,
+                type: "buy",
+                feeRate: 0.0048
+            },
+            // 图表缓存
+            chartHistoryCache: {},
+            // 定时器
+            priceUpdateTimer: null,
+            chartUpdateTimer: null
+        };
+    }
+}
 
+// 切换模拟投资游戏界面
+function toggleInvestmentGame() {
+    if (player.battle.maxStage < 2) {
+        alert("需要打怪模式达到第3层才能开启疯狂地主！");
+        return;
+    }
+    const ui = document.getElementById('investmentGameUI');
+    if (ui.style.display === 'none') {
+        // 初始化游戏数据
+        initInvestmentGame();
+        // 模拟离线期间的价格变化
+        simulateOfflinePriceChanges();
+        // 生成游戏界面
+        renderInvestmentGame();
+        // 开始价格模拟
+        startPriceSimulation();
+        ui.style.display = 'block';
+    } else {
+        closeInvestmentGame();
+    }
+}
+function simulateOfflinePriceChanges() {
+    if (!player.investmentGame || !player.investmentGame.userData) {
+        return;
+    }
+    
+    const game = player.investmentGame;
+    const now = Date.now();
+    const lastUpdate = game.userData.lastUpdateTime || now;
+    const timeDiff = now - lastUpdate;
+    const minutesDiff = Math.floor(timeDiff / (1000 * 60));
+    
+    if (minutesDiff > 0) {
+        console.log(`模拟离线 ${minutesDiff} 分钟的价格变化`);
+        
+        // 为每个股票生成独特的随机性参数
+        game.stocks.forEach((stock, index) => {
+            if (!stock.randomParams) {
+                // 生成该股票的特征参数
+                stock.randomParams = {
+                    // 基础波动率 (0.5% - 3%)
+                    baseVolatility: 0.005 + Math.random() * 0.025,
+                    // 趋势强度 (-0.1% 到 0.1% 每分钟)
+                    trendStrength: (Math.random() - 0.5) * 0.002,
+                    // 随机事件概率 (0.1% 每分钟)
+                    eventProbability: 0.001,
+                    // 均值回归强度
+                    meanReversion: 0.2 + Math.random() * 0.3,
+                    // 噪声因子
+                    noiseLevel: Math.random() * 0.8 + 0.2,
+                    // 上次的大波动方向
+                    lastBigMove: 0
+                };
+            }
+        });
+        
+        // 每分钟模拟一次
+        for (let i = 0; i < minutesDiff; i++) {
+            // 每分钟可能会有市场整体事件
+            const marketEventRoll = Math.random();
+            let marketEffect = 0;
+            
+            if (marketEventRoll < 0.0005) { // 0.05% 概率有重大市场事件
+                marketEffect = (Math.random() - 0.5) * 0.1; // ±10%
+                console.log(`第 ${i} 分钟: 发生重大市场事件，影响: ${(marketEffect * 100).toFixed(2)}%`);
+            } else if (marketEventRoll < 0.005) { // 0.5% 概率有小事件
+                marketEffect = (Math.random() - 0.5) * 0.03; // ±3%
+            }
+            
+            game.stocks.forEach((stock, index) => {
+                const params = stock.randomParams;
+                const basePrice = stock.basePrice || 10;
+                
+                // 1. 趋势成分
+                const trendChange = params.trendStrength;
+                
+                // 2. 随机波动 (使用不同的随机数源增加随机性)
+                const rand1 = Math.random();
+                const rand2 = Math.random();
+                const rand3 = Math.sin(i * 0.1 + index) * 0.5 + 0.5; // 周期性噪声
+                
+                // 使用多种随机数组合
+                const combinedRand = (rand1 + rand2 + rand3) / 3;
+                
+                // 随机波动幅度 (正态分布近似)
+                let volatility = params.baseVolatility;
+                
+                // 3. 随机事件
+                if (Math.random() < params.eventProbability) {
+                    const eventType = Math.random();
+                    if (eventType < 0.3) { // 30% 利好消息
+                        volatility *= 3;
+                        console.log(`股票 ${stock.code} 有利好消息`);
+                    } else if (eventType < 0.6) { // 30% 利空消息
+                        volatility *= 3;
+                        trendChange -= 0.01; // 临时趋势下降
+                    }
+                    // 40% 无特殊事件
+                }
+                
+                // 4. 均值回归 (价格偏离太远时会回归)
+                const deviationFromMean = (stock.price - basePrice) / basePrice;
+                const reversionForce = -deviationFromMean * params.meanReversion * 0.01;
+                
+                // 5. 计算价格变化
+                let priceChange = 0;
+                
+                // 使用不同的价格变化模型增加随机性
+                const modelChoice = i % 5; // 每5分钟换一种模型
+                
+                switch (modelChoice) {
+                    case 0: // 简单随机游走
+                        priceChange = (combinedRand - 0.5) * 2 * volatility;
+                        break;
+                    case 1: // 有动量的随机游走
+                        const momentum = stock.lastChange || 0;
+                        priceChange = (combinedRand - 0.5) * 2 * volatility + momentum * 0.3;
+                        break;
+                    case 2: // 跳跃扩散
+                        if (Math.random() < 0.01) { // 1% 概率跳跃
+                            priceChange = (Math.random() - 0.5) * volatility * 5;
+                        } else {
+                            priceChange = (combinedRand - 0.5) * 2 * volatility;
+                        }
+                        break;
+                    case 3: // 均值回归模型
+                        priceChange = (combinedRand - 0.5) * 2 * volatility + reversionForce;
+                        break;
+                    default: // GARCH-like 波动聚类
+                        const volatilityMultiplier = 0.5 + Math.abs(stock.lastChange || 0) * 10;
+                        priceChange = (combinedRand - 0.5) * 2 * volatility * volatilityMultiplier;
+                }
+                
+                // 添加趋势
+                priceChange += trendChange;
+                
+                // 添加市场整体影响
+                priceChange += marketEffect;
+                
+                // 添加微小噪声
+                const microNoise = (Math.random() - 0.5) * volatility * 0.1;
+                priceChange += microNoise;
+                
+                // 记录上一次变化用于动量计算
+                stock.lastChange = priceChange;
+                
+                // 应用变化
+                const oldPrice = stock.price;
+                stock.price *= (1 + priceChange);
+                
+                // 确保价格合理性
+                if (stock.price < 1) stock.price = 1 + Math.random() * 2; // 最低1元
+                if (stock.price > 100) stock.price = 100 - Math.random() * 10; // 最高100元
+                
+                // 防止价格停滞
+                if (Math.abs(stock.price - oldPrice) < 0.001) {
+                    stock.price += (Math.random() - 0.5) * 0.01;
+                }
+            });
+            
+            // 偶尔让股票间产生相关性
+            if (i % 10 === 0) { // 每10分钟一次
+                const correlationEffect = (Math.random() - 0.5) * 0.02;
+                const sector = Math.floor(Math.random() * 3); // 随机选择一个"板块"
+                
+                game.stocks.forEach((stock, index) => {
+                    if (index % 3 === sector) { // 同板块股票一起波动
+                        stock.price *= (1 + correlationEffect);
+                    }
+                });
+            }
+        }
+        
+        // 更新涨跌幅
+        game.stocks.forEach(stock => {
+            const basePrice = stock.basePrice || 10;
+            stock.change = ((stock.price - basePrice) / basePrice * 100);
+        });
+        
+        // 更新最后更新时间
+        game.userData.lastUpdateTime = now;
+        
+        // 更新总资产
+        updateInvestmentTotalAssets();
+        
+        // 记录一些统计信息
+        const avgChange = game.stocks.reduce((sum, s) => sum + s.change, 0) / game.stocks.length;
+        const maxChange = Math.max(...game.stocks.map(s => s.change));
+        const minChange = Math.min(...game.stocks.map(s => s.change));
+        
+        logAction(`离线${minutesDiff}分钟: 平均涨跌幅${avgChange.toFixed(2)}%, 最大${maxChange.toFixed(2)}%, 最小${minChange.toFixed(2)}%`, 'info');
+    }
+}
+function closeInvestmentGame() {
+    const ui = document.getElementById('investmentGameUI');
+    ui.style.display = 'none';
+    
+    // 清理定时器
+    const game = player.investmentGame;
+    if (game.priceUpdateTimer) {
+        clearInterval(game.priceUpdateTimer);
+        game.priceUpdateTimer = null;
+    }
+    if (game.chartUpdateTimer) {
+        clearInterval(game.chartUpdateTimer);
+        game.chartUpdateTimer = null;
+    }
+    
+    // 保存游戏数据
+    saveGame();
+}
 
+// 渲染模拟投资游戏界面
+function renderInvestmentGame() {
+    const content = document.getElementById('investmentGameContent');
+    const game = player.investmentGame;
+    
+    content.innerHTML = `
+        <style>
+            .investment-game * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            }
+            
+            .investment-game {
+                background-color: #f5f7fa;
+                color: #333;
+                line-height: 1.6;
+                padding: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            .investment-game .header {
+                text-align: center;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #e0e6ef;
+                position: relative;
+            }
+            
+            .investment-game h1 {
+                color: #2c3e50;
+                font-size: 2.2rem;
+                margin-bottom: 8px;
+            }
+            
+            .investment-game .subtitle {
+                color: #7f8c8d;
+                font-size: 1rem;
+            }
+            
+            .investment-game .tabs {
+                display: flex;
+                background: white;
+                border-radius: 12px 12px 0 0;
+                overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                margin-bottom: 0;
+            }
+            
+            .investment-game .tab {
+                flex: 1;
+                padding: 18px 5px;
+                text-align: center;
+                cursor: pointer;
+                background: #f8f9fa;
+                border-bottom: 3px solid transparent;
+                transition: all 0.3s ease;
+                font-weight: 600;
+                color: #6c757d;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+            }
+            
+            .investment-game .tab i {
+                font-size: 1.2rem;
+            }
+            
+            .investment-game .tab.active {
+                background: white;
+                color: #4361ee;
+                border-bottom: 3px solid #4361ee;
+            }
+            
+            .investment-game .tab-content {
+                display: none;
+                background: white;
+                padding: 25px;
+                border-radius: 0 0 12px 12px;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+                min-height: 550px;
+            }
+            
+            .investment-game .tab-content.active {
+                display: block;
+            }
+            
+            .investment-game .stock-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid #eaeaea;
+            }
+            
+            .investment-game .stock-name {
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: #2c3e50;
+            }
+            
+            .investment-game .stock-price {
+                font-size: 2.5rem;
+                font-weight: 800;
+                color: #10b981;
+            }
+            
+            .investment-game .stock-price.down {
+                color: #ef4444;
+            }
+            
+            .investment-game .holdings-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                margin-bottom: 25px;
+                background: #f8fafc;
+                padding: 20px;
+                border-radius: 10px;
+            }
+            
+            .investment-game .info-item {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px 0;
+                border-bottom: 1px dashed #e2e8f0;
+            }
+            
+            .investment-game .info-item:last-child {
+                border-bottom: none;
+            }
+            
+            .investment-game .info-label {
+                color: #64748b;
+                font-weight: 500;
+            }
+            
+            .investment-game .info-value {
+                font-weight: 600;
+                color: #334155;
+            }
+            
+            .investment-game .transaction-section {
+                margin-top: 30px;
+            }
+            
+            .investment-game .transaction-title {
+                font-size: 1.3rem;
+                margin-bottom: 20px;
+                color: #2c3e50;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #e0e6ef;
+            }
+            
+            .investment-game .transaction-form {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+            }
+            
+            .investment-game .form-group {
+                margin-bottom: 20px;
+            }
+            
+            .investment-game .form-label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #475569;
+            }
+            
+            .investment-game .input-group {
+                display: flex;
+                border: 1px solid #cbd5e1;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            
+            .investment-game .input-group input {
+                flex: 1;
+                border: none;
+                padding: 12px 15px;
+                font-size: 1rem;
+                outline: none;
+            }
+            
+            .investment-game .input-group .unit {
+                background: #f1f5f9;
+                padding: 12px 15px;
+                color: #475569;
+                font-weight: 500;
+            }
+            
+            .investment-game .quantity-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 10px;
+            }
+            
+            .investment-game .qty-btn {
+                flex: 1;
+                min-width: calc(20% - 8px);
+                padding: 10px 5px;
+                background: #f1f5f9;
+                border: 1px solid #cbd5e1;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 500;
+                transition: all 0.2s;
+                text-align: center;
+            }
+            
+            .investment-game .qty-btn:hover {
+                background: #e2e8f0;
+            }
+            
+            .investment-game .qty-btn.highlight {
+                background: #3b82f6;
+                color: white;
+                border-color: #3b82f6;
+            }
+            
+            .investment-game .transaction-type {
+                display: flex;
+                gap: 15px;
+                margin-top: 10px;
+            }
+            
+            .investment-game .type-option {
+                flex: 1;
+                text-align: center;
+                padding: 12px;
+                border: 2px solid #e2e8f0;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.2s;
+            }
+            
+            .investment-game .type-option.active {
+                border-color: #3b82f6;
+                background: #eff6ff;
+                color: #3b82f6;
+            }
+            
+            .investment-game .type-buy.active {
+                border-color: #10b981;
+                background: #d1fae5;
+                color: #10b981;
+            }
+            
+            .investment-game .type-sell.active {
+                border-color: #ef4444;
+                background: #fee2e2;
+                color: #ef4444;
+            }
+            
+            .investment-game .fee-info {
+                background: #fef3c7;
+                padding: 12px 15px;
+                border-radius: 8px;
+                margin: 20px 0;
+                color: #92400e;
+                font-size: 0.95rem;
+            }
+            
+            .investment-game .chart-container {
+                margin-top: 30px;
+                border-top: 1px solid #eaeaea;
+                padding-top: 25px;
+            }
+            
+            .investment-game .chart-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            
+            .investment-game .chart-title {
+                font-size: 1.3rem;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+            
+            .investment-game .time-filters {
+                display: flex;
+                gap: 10px;
+            }
+            
+            .investment-game .time-filter {
+                padding: 8px 15px;
+                background: #f1f5f9;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            
+            .investment-game .time-filter.active {
+                background: #3b82f6;
+                color: white;
+            }
+            
+            .investment-game .chart-placeholder {
+                height: 250px;
+                background: #f8fafc;
+                border-radius: 10px;
+                position: relative;
+                overflow: hidden;
+                border: 1px solid #e2e8f0;
+            }
+            
+            .investment-game .submit-section {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 25px;
+                padding-top: 20px;
+                border-top: 1px solid #eaeaea;
+            }
+            
+            .investment-game .trade-count {
+                color: #6b7280;
+                font-size: 0.95rem;
+            }
+            
+            .investment-game .trade-count span {
+                color: #3b82f6;
+                font-weight: 600;
+            }
+            
+            .investment-game .btn-submit {
+                padding: 14px 40px;
+                background: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 1.1rem;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+            
+            .investment-game .btn-submit:hover {
+                background: #2563eb;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+            }
+            
+            .investment-game .assets-header {
+                background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+                color: white;
+                padding: 25px;
+                border-radius: 12px;
+                margin-bottom: 25px;
+            }
+            
+            .investment-game .assets-stats {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+            }
+            
+            .investment-game .stat-item {
+                background: rgba(255, 255, 255, 0.1);
+                padding: 20px;
+                border-radius: 10px;
+                backdrop-filter: blur(10px);
+            }
+            
+            .investment-game .stat-label {
+                font-size: 0.9rem;
+                opacity: 0.9;
+                margin-bottom: 8px;
+            }
+            
+            .investment-game .stat-value {
+                font-size: 1.8rem;
+                font-weight: 700;
+            }
+            
+            .investment-game .holdings-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            
+            .investment-game .holdings-table th {
+                background: #f8fafc;
+                padding: 18px 15px;
+                text-align: left;
+                color: #475569;
+                font-weight: 600;
+                border-bottom: 2px solid #e2e8f0;
+            }
+            
+            .investment-game .holdings-table td {
+                padding: 18px 15px;
+                border-bottom: 1px solid #f1f5f9;
+            }
+            
+            .investment-game .holdings-table tr:hover {
+                background: #f8fafc;
+            }
+            
+            .investment-game .stock-code {
+                font-weight: 600;
+                color: #334155;
+            }
+            
+            .investment-game .profit-up {
+                color: #10b981;
+                font-weight: 600;
+            }
+            
+            .investment-game .profit-up:after {
+                content: " ↑";
+            }
+            
+            .investment-game .profit-down {
+                color: #ef4444;
+                font-weight: 600;
+            }
+            
+            .investment-game .profit-down:after {
+                content: " ↓";
+            }
+            
+            .investment-game .holding-percent {
+                color: #3b82f6;
+                font-weight: 600;
+            }
+            
+            .investment-game .stocks-table-container {
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                border: 1px solid #e2e8f0;
+            }
+            
+            .investment-game .stocks-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            
+            .investment-game .stocks-table th {
+                background: #f1f5f9;
+                padding: 18px 15px;
+                text-align: left;
+                color: #475569;
+                font-weight: 600;
+            }
+            
+            .investment-game .stocks-table td {
+                padding: 18px 15px;
+                border-bottom: 1px solid #f1f5f9;
+            }
+            
+            .investment-game .stocks-table tr:last-child td {
+                border-bottom: none;
+            }
+            
+            .investment-game .stock-item {
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            
+            .investment-game .stock-item:hover {
+                background: #f8fafc;
+            }
+            
+            .investment-game .stock-item.selected {
+                background: #eff6ff;
+            }
+            
+            .investment-game .footer-nav {
+                display: flex;
+                justify-content: center;
+                gap: 30px;
+                margin-top: 40px;
+                padding-top: 20px;
+                border-top: 1px solid #eaeaea;
+            }
+            
+            .investment-game .nav-btn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                color: #6b7280;
+                text-decoration: none;
+                transition: all 0.3s;
+                padding: 10px 20px;
+                border-radius: 10px;
+            }
+            
+            .investment-game .nav-btn i {
+                font-size: 1.5rem;
+                margin-bottom: 8px;
+            }
+            
+            .investment-game .nav-btn.active {
+                color: #3b82f6;
+                background: #eff6ff;
+            }
+         .investment-game .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                display: none;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            }
+            
+            .investment-game .notification.success {
+                background: #10b981;
+            }
+            
+            .investment-game .notification.error {
+                background: #ef4444;
+            }
+            
+            .investment-game .notification.info {
+                background: #3b82f6;
+            }
+            
+            @keyframes slideIn {
+                from {transform: translateX(100%); opacity: 0;}
+                to {transform: translateX(0); opacity: 1;}
+            }
+            
+            .investment-game .no-holding {
+                text-align: center;
+                padding: 40px 20px;
+                color: #6b7280;
+            }
+            
+            .investment-game .no-holding i {
+                font-size: 3rem;
+                margin-bottom: 15px;
+                color: #cbd5e1;
+            }
+            
+            @media (max-width: 768px) {
+                .investment-game .transaction-form {
+                    grid-template-columns: 1fr;
+                }
+                
+                .investment-game .holdings-info {
+                    grid-template-columns: 1fr;
+                }
+                
+                .investment-game .assets-stats {
+                    grid-template-columns: 1fr;
+                }
+                
+                .investment-game .quantity-buttons {
+                    justify-content: center;
+                }
+                
+                .investment-game .qty-btn {
+                    min-width: calc(33% - 8px);
+                }
+            }
+        </style>
+        
+        <div class="investment-game">
+            <div class="header">
+                <h1>模拟投资交易游戏</h1>
+                <p class="subtitle">虚拟交易 | 离线模拟 | 刺激体验</p>
+            </div>
+            
+            <!-- 标签页导航 -->
+            <div class="tabs">
+                <div class="tab active" data-tab="trade">
+                    <i class="fas fa-chart-line"></i>
+                    <span>股票交易</span>
+                </div>
+                <div class="tab" data-tab="assets">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>资产详情</span>
+                </div>
+                <div class="tab" data-tab="stocks">
+                    <i class="fas fa-list"></i>
+                    <span>股票列表</span>
+                </div>
+            </div>
+            
+            <!-- 股票交易界面 -->
+            <div id="trade" class="tab-content active">
+                <div class="stock-header">
+                    <div>
+                        <div class="stock-name" id="current-stock-name">${game.stocks[game.currentStockIndex].name}</div>
+                        <div class="stock-update" id="update-time">股价上次更新时间：${new Date().toLocaleString()}</div>
+                    </div>
+                    <div class="stock-price" id="current-price">${game.stocks[game.currentStockIndex].price.toFixed(3)}</div>
+                </div>
+                
+                <div class="holdings-info">
+                    <div>
+                        <div class="info-item">
+                            <span class="info-label">当前持有数量：</span>
+                            <span class="info-value" id="hold-amount">${game.stocks[game.currentStockIndex].holdings.toLocaleString()}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">成本价格：</span>
+                            <span class="info-value" id="cost-price">${game.stocks[game.currentStockIndex].costPrice > 0 ? game.stocks[game.currentStockIndex].costPrice.toFixed(3) : "0.000"}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="info-item">
+                            <span class="info-label">持仓市值：</span>
+                            <span class="info-value" id="hold-value">${(game.stocks[game.currentStockIndex].holdings * game.stocks[game.currentStockIndex].price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">持仓盈亏：</span>
+                            <span class="info-value" id="hold-profit">${calculateStockProfit(game.stocks[game.currentStockIndex])}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="transaction-section">
+                    <h3 class="transaction-title">股票交易</h3>
+                    
+                    <div class="transaction-form">
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">交易数量：</label>
+                                <div class="input-group">
+                                    <input type="number" id="trade-quantity" value="0" min="0">
+                                    <div class="unit">股</div>
+                                </div>
+                                
+                                <div class="quantity-buttons">
+                                    <div class="qty-btn" data-action="0">清零</div>
+                                    <div class="qty-btn" data-action="1">+1</div>
+                                    <div class="qty-btn" data-action="10">+10</div>
+                                    <div class="qty-btn" data-action="100">+100</div>
+                                    <div class="qty-btn" data-action="max">最大</div>
+                                    <div class="qty-btn" data-action="quarter">1/4仓</div>
+                                    <div class="qty-btn" data-action="half">半仓</div>
+                                    <div class="qty-btn" data-action="third">1/3仓</div>
+                                    <div class="qty-btn" data-action="-1">-1</div>
+                                    <div class="qty-btn" data-action="-10">-10</div>
+                                    <div class="qty-btn" data-action="-100">-100</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">交易类型：</label>
+                                <div class="transaction-type">
+                                    <div class="type-option type-buy active" data-type="buy">买入</div>
+                                    <div class="type-option type-sell" data-type="sell">卖出</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">交易金额：</label>
+                                <div class="input-group">
+                                    <input type="text" id="trade-amount" value="0.00" readonly>
+                                    <div class="unit">元</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">交易手续费：</label>
+                                <div class="input-group">
+                                    <input type="text" id="trade-fee" value="0.00" readonly>
+                                    <div class="unit">元</div>
+                                </div>
+                            </div>
+                            
+                            <div class="fee-info">
+                                交易手续费为交易资金的0.48%!本次将扣除——
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">最大可交易数量：</label>
+                                <div class="input-group">
+                                    <input type="text" id="max-quantity" value="0" readonly>
+                                    <div class="unit">股</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">走势图</div>
+                            <div class="time-filters">
+                                <div class="time-filter active" data-points="500">点击刷新走势图</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-placeholder" id="price-chart">
+                            <!-- 图表将通过JS动态生成 -->
+                        </div>
+                    </div>
+                    
+                    <div class="submit-section">
+                        <div class="trade-count">可用交易次数：<span id="trade-count">${game.userData.tradeCount}</span> 
+                            <a href="#" id="add-trade-count" style="color: #3b82f6; text-decoration: none;">点我增加</a>
+                        </div>
+                        <button class="btn-submit" id="submit-trade">提交交易</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 资产详情界面 -->
+            <div id="assets" class="tab-content">
+                <div class="assets-header">
+                    <h2 style="margin-bottom: 20px;">资产详情</h2>
+                    <div class="assets-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">可用资金</div>
+                            <div class="stat-value" id="available-funds">${game.userData.availableFunds.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">总资产</div>
+                            <div class="stat-value" id="total-assets">${game.userData.totalAssets.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">总持仓价值</div>
+                            <div class="stat-value" id="total-hold-value">${calculateTotalHoldingsValue().toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">总持仓占比</div>
+                            <div class="stat-value" id="total-holding-percent">${game.userData.holdingPercent.toFixed(2)}%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">总盈亏比例</div>
+                            <div class="stat-value" id="today-profit">${game.userData.todayProfit >= 0 ? '+' : ''}${game.userData.todayProfit.toFixed(2)}%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">持仓详情</h3>
+                
+                <table class="holdings-table" id="holdings-table">
+                    <thead>
+                        <tr>
+                            <th>股票代码</th>
+                            <th>股票名称</th>
+                            <th>持股数量</th>
+                            <th>当前价格</th>
+                            <th>成本价格</th>
+                            <th>总价格</th>
+                            <th>盈亏比例</th>
+                            <th>持仓占比</th>
+                        </tr>
+                    </thead>
+                    <tbody id="holdings-body">
+                        ${generateHoldingsTable()}
+                    </tbody>
+                </table>
+                
+                <div id="no-holdings" class="no-holding" style="${hasHoldings() ? 'display: none;' : ''}">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>暂无持仓</h3>
+                    <p>您还没有持有任何股票，快去交易页面买入股票吧！</p>
+                </div>
+            </div>
+            
+            <!-- 股票列表界面 -->
+            <div id="stocks" class="tab-content">
+                <h2 style="font-size: 1.8rem; margin-bottom: 25px; color: #2c3e50; text-align: center;">股票列表</h2>
+                
+                <div class="stocks-table-container">
+                    <table class="stocks-table">
+                        <thead>
+                            <tr>
+                                <th>股票代码</th>
+                                <th>股票名称</th>
+                                <th>当前价格</th>
+                                <th>涨跌幅</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stocks-list">
+                            ${generateStocksList()}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="footer-nav">
+                    <a href="#" class="nav-btn" data-nav="trade">
+                        <i class="fas fa-chart-line"></i>
+                        <span>股票交易</span>
+                    </a>
+                    <a href="#" class="nav-btn" data-nav="assets">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>资产详情</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 交易成功提示 -->
+            <div class="notification" id="investment-notification"></div>
+        </div>
+    `;
+    
+    // 初始化事件监听
+    initInvestmentEventListeners();
+    // 初始化价格图表
+    initInvestmentChart();
+    // 更新交易信息
+    updateInvestmentTradeInfo();
+}
+
+// 计算单只股票的盈亏
+function calculateStockProfit(stock) {
+    if (stock.costPrice <= 0 || stock.holdings <= 0) {
+        return "0.00 (0.00%)";
+    }
+    
+    const profit = (stock.price - stock.costPrice) * stock.holdings;
+    const profitPercent = ((stock.price - stock.costPrice) / stock.costPrice * 100);
+    
+    return `${profit >= 0 ? '+' : ''}${profit.toFixed(2)} (${profit >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%)`;
+}
+
+// 计算总持仓价值
+function calculateTotalHoldingsValue() {
+    const game = player.investmentGame;
+    return game.stocks.reduce((sum, stock) => {
+        return sum + (stock.holdings * stock.price);
+    }, 0);
+}
+
+// 生成持仓表格
+function generateHoldingsTable() {
+    const game = player.investmentGame;
+    const holdings = game.stocks.filter(stock => stock.holdings > 0);
+    
+    if (holdings.length === 0) {
+        return '';
+    }
+    
+    return holdings.map(stock => {
+        const holdValue = stock.holdings * stock.price;
+        const profitPercent = stock.costPrice > 0 ? 
+            ((stock.price - stock.costPrice) / stock.costPrice * 100) : 0;
+        const holdingPercent = (holdValue / game.userData.totalAssets * 100);
+        
+        return `
+            <tr>
+                <td class="stock-code">${stock.code}</td>
+                <td>${stock.name}</td>
+                <td>${stock.holdings.toLocaleString()}</td>
+                <td>${stock.price.toFixed(3)}</td>
+                <td>${stock.costPrice > 0 ? stock.costPrice.toFixed(3) : "0.000"}</td>
+                <td>${holdValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                <td class="${profitPercent >= 0 ? 'profit-up' : 'profit-down'}">${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%</td>
+                <td class="holding-percent">${holdingPercent.toFixed(2)}%</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// 检查是否有持仓
+function hasHoldings() {
+    const game = player.investmentGame;
+    return game.stocks.some(stock => stock.holdings > 0);
+}
+
+// 生成股票列表
+function generateStocksList() {
+    const game = player.investmentGame;
+    return game.stocks.map(stock => {
+        return `
+            <tr class="stock-item" data-code="${stock.code}">
+                <td class="stock-code">${stock.code}</td>
+                <td>${stock.name}</td>
+                <td>${stock.price.toFixed(3)}</td>
+                <td class="${stock.change >= 0 ? 'profit-up' : 'profit-down'}">${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}%</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// 初始化投资游戏事件监听
+function initInvestmentEventListeners() {
+    const game = player.investmentGame;
+    
+    // 标签页切换
+    document.querySelectorAll('.investment-game .tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            
+            // 更新活跃标签
+            document.querySelectorAll('.investment-game .tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // 更新活跃内容
+            document.querySelectorAll('.investment-game .tab-content').forEach(content => {
+                content.classList.remove('active');
+                if (content.id === tabId) {
+                    content.classList.add('active');
+                }
+            });
+            
+            // 更新底部导航
+            document.querySelectorAll('.investment-game .nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-nav') === tabId) {
+                    btn.classList.add('active');
+                }
+            });
+        });
+    });
+    
+    // 底部导航点击
+    document.querySelectorAll('.investment-game .nav-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const tabId = this.getAttribute('data-nav');
+            const targetTab = document.querySelector(`.investment-game .tab[data-tab="${tabId}"]`);
+            if (targetTab) {
+                targetTab.click();
+            }
+        });
+    });
+    
+    // 股票列表项点击
+    document.querySelectorAll('.investment-game .stock-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const stockCode = this.getAttribute('data-code');
+            const stockIndex = game.stocks.findIndex(s => s.code === stockCode);
+            if (stockIndex >= 0) {
+                game.currentStockIndex = stockIndex;
+                // 切换到交易标签页
+                document.querySelector('.investment-game .tab[data-tab="trade"]').click();
+                // 更新显示
+                updateInvestmentStockDisplay();
+                updateInvestmentTradeInfo();
+                updateInvestmentHoldingsInfo();
+                updateInvestmentChart();
+                showInvestmentNotification(`已切换到股票: ${game.stocks[stockIndex].name}`, 'info');
+            }
+        });
+    });
+    
+    // 交易数量按钮
+    document.querySelectorAll('.investment-game .qty-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const action = this.getAttribute('data-action');
+            updateInvestmentTradeQuantity(action);
+        });
+    });
+    
+    // 交易类型切换
+    document.querySelectorAll('.investment-game .type-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.investment-game .type-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            this.classList.add('active');
+            game.tradeData.type = this.getAttribute('data-type');
+            updateInvestmentTradeInfo();
+        });
+    });
+    
+    // 交易数量输入
+    const quantityInput = document.getElementById('trade-quantity');
+    quantityInput.addEventListener('input', updateInvestmentTradeInfo);
+    quantityInput.addEventListener('change', updateInvestmentTradeInfo);
+    
+    // 增加交易次数按钮
+    document.getElementById('add-trade-count').addEventListener('click', function(e) {
+        e.preventDefault();
+        game.userData.tradeCount += 5;
+        document.getElementById('trade-count').textContent = game.userData.tradeCount;
+        showInvestmentNotification('交易次数已增加5次！', 'success');
+        saveGame();
+    });
+    
+    // 提交交易按钮
+    document.getElementById('submit-trade').addEventListener('click', submitInvestmentTrade);
+    
+    // 时间过滤器
+    document.querySelectorAll('.investment-game .time-filter').forEach(filter => {
+        filter.addEventListener('click', function() {
+            document.querySelectorAll('.investment-game .time-filter').forEach(f => {
+                f.classList.remove('active');
+            });
+            this.classList.add('active');
+            updateInvestmentChartFromCache(500);
+        });
+    });
+}
+
+// 更新股票显示
+function updateInvestmentStockDisplay() {
+    const game = player.investmentGame;
+    const currentStock = game.stocks[game.currentStockIndex];
+    
+    document.getElementById('current-stock-name').textContent = currentStock.name;
+    document.getElementById('current-price').textContent = currentStock.price.toFixed(3);
+    
+    // 根据涨跌设置颜色
+    const priceElement = document.getElementById('current-price');
+    if (currentStock.change >= 0) {
+        priceElement.className = 'stock-price';
+    } else {
+        priceElement.className = 'stock-price down';
+    }
+    
+    // 更新时间显示
+    document.getElementById('update-time').textContent = `股价上次更新时间：${new Date().toLocaleString()}`;
+}
+
+// 更新交易数量
+function updateInvestmentTradeQuantity(action) {
+    const quantityInput = document.getElementById('trade-quantity');
+    let quantity = parseInt(quantityInput.value) || 0;
+    const maxQuantity = calculateInvestmentMaxQuantity();
+    
+    switch(action) {
+        case '0':
+            quantity = 0;
+            break;
+        case 'max':
+            quantity = maxQuantity;
+            break;
+        case 'quarter':
+            quantity = Math.floor(maxQuantity / 4);
+            break;
+        case 'half':
+            quantity = Math.floor(maxQuantity / 2);
+            break;
+        case 'third':
+            quantity = Math.floor(maxQuantity / 3);
+            break;
+        default:
+            quantity += parseInt(action);
+            if (quantity < 0) quantity = 0;
+            if (quantity > maxQuantity) quantity = maxQuantity;
+            break;
+    }
+    
+    quantityInput.value = quantity;
+    updateInvestmentTradeInfo();
+}
+
+// 计算最大可交易数量
+function calculateInvestmentMaxQuantity() {
+    const game = player.investmentGame;
+    const currentStock = game.stocks[game.currentStockIndex];
+    
+    if (game.tradeData.type === 'buy') {
+        // 根据可用资金计算最大可买入数量
+        const maxByFunds = Math.floor(game.userData.availableFunds / (currentStock.price * (1 + game.tradeData.feeRate)));
+        return Math.min(maxByFunds, 1000000000000000); // 限制最大1000万亿股
+    } else {
+        // 卖出时最多可卖出持有数量
+        return currentStock.holdings;
+    }
+}
+
+// 更新交易信息
+function updateInvestmentTradeInfo() {
+    const game = player.investmentGame;
+    const currentStock = game.stocks[game.currentStockIndex];
+    const quantityInput = document.getElementById('trade-quantity');
+    const amountInput = document.getElementById('trade-amount');
+    const feeInput = document.getElementById('trade-fee');
+    const maxQuantityInput = document.getElementById('max-quantity');
+    
+    // 更新交易数量
+    let quantity = parseInt(quantityInput.value) || 0;
+    const maxQuantity = calculateInvestmentMaxQuantity();
+    
+    if (quantity > maxQuantity) {
+        quantity = maxQuantity;
+        quantityInput.value = quantity;
+    }
+    
+    // 计算交易金额和手续费
+    const amount = quantity * currentStock.price;
+    const fee = amount * game.tradeData.feeRate;
+    
+    // 更新显示
+    amountInput.value = amount.toFixed(2);
+    feeInput.value = fee.toFixed(2);
+    maxQuantityInput.value = maxQuantity.toLocaleString();
+    
+    // 更新持仓信息
+    updateInvestmentHoldingsInfo();
+}
+
+// 更新持仓信息
+function updateInvestmentHoldingsInfo() {
+    const game = player.investmentGame;
+    const currentStock = game.stocks[game.currentStockIndex];
+    const holdValue = currentStock.holdings * currentStock.price;
+    const profit = (currentStock.price - currentStock.costPrice) * currentStock.holdings;
+    const profitPercent = currentStock.costPrice > 0 ? 
+        ((currentStock.price - currentStock.costPrice) / currentStock.costPrice * 100) : 0;
+    
+    document.getElementById('hold-amount').textContent = currentStock.holdings.toLocaleString();
+    document.getElementById('cost-price').textContent = currentStock.costPrice > 0 ? 
+        currentStock.costPrice.toFixed(3) : "0.000";
+    document.getElementById('hold-value').textContent = holdValue.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    
+    const profitText = currentStock.costPrice > 0 ? 
+        `${profit >= 0 ? '+' : ''}${profit.toFixed(2)} (${profit >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%)` : 
+        "0.00 (0.00%)";
+    
+    const profitElement = document.getElementById('hold-profit');
+    profitElement.textContent = profitText;
+    
+    if (profit > 0) {
+        profitElement.className = 'info-value profit-up';
+    } else if (profit < 0) {
+        profitElement.className = 'info-value profit-down';
+    } else {
+        profitElement.className = 'info-value';
+    }
+}
+
+// 初始化价格图表
+function initInvestmentChart() {
+    updateInvestmentChartFromCache(500);
+}
+
+// 从缓存更新图表
+function updateInvestmentChartFromCache(points) {
+    const game = player.investmentGame;
+    const currentStock = game.stocks[game.currentStockIndex];
+    const chartContainer = document.getElementById('price-chart');
+    
+    // 生成图表数据
+    const data = generateInvestmentChartData(currentStock.code, points);
+    
+    // 创建SVG图表
+    chartContainer.innerHTML = `
+        <svg width="100%" height="100%" viewBox="0 0 800 300" preserveAspectRatio="none">
+            ${generateInvestmentChartSVG(data, currentStock)}
+        </svg>
+    `;
+}
+
+// 生成图表数据
+function generateInvestmentChartData(stockCode, points) {
+    const game = player.investmentGame;
+    const cacheKey = `${stockCode}_${points}`;
+    const stock = game.stocks.find(s => s.code === stockCode);
+    
+    if (!stock) return [];
+    
+    // 检查缓存
+    if (game.chartHistoryCache[cacheKey]) {
+        return game.chartHistoryCache[cacheKey];
+    }
+    
+    // 生成模拟数据
+    const data = [];
+    let currentPrice = stock.price * (0.9 + Math.random() * 0.2); // 随机起始价格
+    
+    for (let i = 0; i < points; i++) {
+        // 模拟价格波动
+        const change = (Math.random() - 0.5) * 0.02 * currentPrice;
+        currentPrice += change;
+        
+        // 确保价格合理
+        currentPrice = Math.max(5, Math.min(30, currentPrice));
+        
+        data.push(currentPrice);
+    }
+    
+    // 确保最后一个点是当前价格
+    data[points - 1] = stock.price;
+    
+    // 缓存数据
+    game.chartHistoryCache[cacheKey] = data;
+    return data;
+}
+
+// 生成SVG图表
+function generateInvestmentChartSVG(data, stock) {
+    if (data.length === 0) return '';
+    
+    const width = 800;
+    const height = 300;
+    const minPrice = Math.min(...data);
+    const maxPrice = Math.max(...data);
+    const range = maxPrice - minPrice || 1;
+    
+    // 生成路径
+    let pathData = '';
+    data.forEach((price, index) => {
+        const x = (index / (data.length - 1)) * width;
+        const y = height - ((price - minPrice) / range) * height;
+        
+        if (index === 0) {
+            pathData += `M ${x} ${y} `;
+        } else {
+            pathData += `L ${x} ${y} `;
+        }
+    });
+    
+    return `
+        <!-- 网格线 -->
+        <defs>
+            <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+                <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)"/>
+        
+        <!-- 价格路径 -->
+        <path d="${pathData}" fill="none" stroke="${stock.change >= 0 ? '#10b981' : '#ef4444'}" 
+              stroke-width="2" stroke-linejoin="round"/>
+        
+        <!-- 当前价格点 -->
+        <circle cx="${width}" cy="${height - ((data[data.length-1] - minPrice) / range) * height}" 
+                r="4" fill="${stock.change >= 0 ? '#10b981' : '#ef4444'}" stroke="white" stroke-width="2"/>
+        
+        <!-- 价格标签 -->
+        <text x="10" y="20" font-family="Arial" font-size="12" fill="#6b7280">${maxPrice.toFixed(2)}</text>
+        <text x="10" y="${height - 10}" font-family="Arial" font-size="12" fill="#6b7280">${minPrice.toFixed(2)}</text>
+        <text x="${width - 60}" y="20" font-family="Arial" font-size="12" fill="#3b82f6">当前: ${stock.price.toFixed(3)}</text>
+    `;
+}
+
+// 提交交易
+function submitInvestmentTrade() {
+    const game = player.investmentGame;
+    const currentStock = game.stocks[game.currentStockIndex];
+    
+    if (game.userData.tradeCount <= 0) {
+        showInvestmentNotification('交易次数不足！', 'error');
+        return;
+    }
+    
+    const quantityInput = document.getElementById('trade-quantity');
+    const quantity = parseInt(quantityInput.value) || 0;
+    
+    if (quantity <= 0) {
+        showInvestmentNotification('请输入有效的交易数量', 'error');
+        return;
+    }
+    
+    const amount = quantity * currentStock.price;
+    const fee = amount * game.tradeData.feeRate;
+    const totalCost = amount + fee;
+    
+    if (game.tradeData.type === 'buy') {
+        if (totalCost > game.userData.availableFunds) {
+            showInvestmentNotification('可用资金不足，无法完成买入', 'error');
+            return;
+        }
+        
+        // 执行买入
+        game.userData.availableFunds -= totalCost;
+        
+        // 更新持仓
+        const newTotalShares = currentStock.holdings + quantity;
+        const newCostPrice = currentStock.holdings > 0 ? 
+            (currentStock.holdings * currentStock.costPrice + amount) / newTotalShares : 
+            currentStock.price;
+        
+        currentStock.holdings = newTotalShares;
+        currentStock.costPrice = newCostPrice;
+        game.userData.tradeCount--;
+        
+        showInvestmentNotification(`成功买入 ${quantity.toLocaleString()} 股${currentStock.name}，花费 ¥${totalCost.toFixed(2)}`, 'success');
+    } else {
+        if (quantity > currentStock.holdings) {
+            showInvestmentNotification('持有数量不足，无法卖出', 'error');
+            return;
+        }
+        
+        // 执行卖出
+        const sellAmount = amount - fee;
+        game.userData.availableFunds += sellAmount;
+        currentStock.holdings -= quantity;
+        game.userData.tradeCount--;
+        
+        // 如果清仓，重置成本价
+        if (currentStock.holdings === 0) {
+            currentStock.costPrice = 0;
+        }
+        
+        showInvestmentNotification(`成功卖出 ${quantity.toLocaleString()} 股${currentStock.name}，获得 ¥${sellAmount.toFixed(2)}`, 'success');
+    }
+    
+    // 更新总资产
+    updateInvestmentTotalAssets();
+    
+    // 更新界面
+    document.getElementById('trade-count').textContent = game.userData.tradeCount;
+    document.getElementById('available-funds').textContent = game.userData.availableFunds.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    
+    // 重置交易数量
+    quantityInput.value = 0;
+    
+    // 更新所有信息
+    updateInvestmentTradeInfo();
+    updateInvestmentHoldingsInfo();
+    updateInvestmentAssetsDisplay();
+    
+    // 保存游戏
+    saveGame();
+}
+
+// 更新总资产
+function updateInvestmentTotalAssets() {
+    const game = player.investmentGame;
+    const totalHoldingsValue = game.stocks.reduce((sum, stock) => {
+        return sum + (stock.holdings * stock.price);
+    }, 0);
+    
+    game.userData.totalAssets = game.userData.availableFunds + totalHoldingsValue;
+    game.userData.holdingPercent = (totalHoldingsValue / game.userData.totalAssets * 100);
+    game.userData.todayProfit = ((game.userData.totalAssets - game.userData.initialFunds) / game.userData.initialFunds * 100);
+}
+
+// 更新资产显示
+function updateInvestmentAssetsDisplay() {
+    const game = player.investmentGame;
+    
+    document.getElementById('total-assets').textContent = game.userData.totalAssets.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    
+    document.getElementById('total-hold-value').textContent = calculateTotalHoldingsValue().toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    
+    document.getElementById('total-holding-percent').textContent = game.userData.holdingPercent.toFixed(2) + '%';
+    document.getElementById('today-profit').textContent = `${game.userData.todayProfit >= 0 ? '+' : ''}${game.userData.todayProfit.toFixed(2)}%`;
+    
+    // 更新持仓表格
+    document.getElementById('holdings-body').innerHTML = generateHoldingsTable();
+    
+    // 显示/隐藏无持仓提示
+    document.getElementById('no-holdings').style.display = hasHoldings() ? 'none' : 'block';
+}
+
+// 显示投资游戏通知
+function showInvestmentNotification(message, type) {
+    const notification = document.getElementById('investment-notification');
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    notification.style.display = 'block';
+    
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 3000);
+}
+
+// 开始价格模拟
+function startPriceSimulation() {
+    const game = player.investmentGame;
+    
+    // 初始化随机参数（与离线模拟一致）
+    if (!game.stocks[0]?.randomParams) {
+        game.stocks.forEach((stock, index) => {
+            if (!stock.randomParams) {
+                stock.randomParams = {
+                    baseVolatility: 0.005 + Math.random() * 0.025,
+                    trendStrength: (Math.random() - 0.5) * 0.002,
+                    eventProbability: 0.001,
+                    meanReversion: 0.2 + Math.random() * 0.3,
+                    noiseLevel: Math.random() * 0.8 + 0.2,
+                    lastChange: 0,
+                    priceHistory: []
+                };
+            }
+            if (!stock.basePrice) {
+                stock.basePrice = stock.price || 10;
+            }
+        });
+    }
+    
+    // 清除之前的定时器
+    if (game.priceUpdateTimer) {
+        clearInterval(game.priceUpdateTimer);
+    }
+    if (game.chartUpdateTimer) {
+        clearInterval(game.chartUpdateTimer);
+    }
+    
+    let lastMarketEventTime = 0;
+    let currentMarketMood = 0; // 市场情绪，-1到1
+    
+    // 每分钟更新一次价格
+    game.priceUpdateTimer = setInterval(() => {
+        const updateTime = Date.now();
+        const minutesSinceStart = Math.floor((updateTime - (game.startTime || updateTime)) / 60000);
+        
+        // 每5分钟可能更新市场情绪
+        if (minutesSinceStart % 5 === 0) {
+            if (Math.random() < 0.3) { // 30%概率情绪变化
+                currentMarketMood += (Math.random() - 0.5) * 0.4;
+                currentMarketMood = Math.max(-1, Math.min(1, currentMarketMood));
+            }
+        }
+        
+        // 检查市场事件
+        let marketEffect = 0;
+        const timeSinceLastEvent = updateTime - lastMarketEventTime;
+        
+        if (timeSinceLastEvent > 5 * 60 * 1000) { // 至少5分钟没有事件
+            const eventRoll = Math.random();
+            if (eventRoll < 0.0005) { // 0.05% 概率重大事件
+                marketEffect = (Math.random() - 0.5) * 0.08; // ±8%
+                lastMarketEventTime = updateTime;
+                logAction(`市场发生重大事件！影响: ${(marketEffect * 100).toFixed(2)}%`, 'market');
+            } else if (eventRoll < 0.005) { // 0.5% 概率普通事件
+                marketEffect = (Math.random() - 0.5) * 0.02; // ±2%
+                lastMarketEventTime = updateTime;
+            }
+        }
+        
+        // 为所有股票更新价格
+        game.stocks.forEach((stock, index) => {
+            const params = stock.randomParams;
+            const basePrice = stock.basePrice;
+            
+            // 1. 基础趋势
+            const trendChange = params.trendStrength;
+            
+            // 2. 生成随机因子
+            const timeBasedRand = Math.sin(updateTime * 0.0001 + index) * 0.5 + 0.5;
+            const pureRand = Math.random();
+            const normalRand = (Math.random() + Math.random() + Math.random() - 1.5) * 2; // 近似正态分布
+            
+            // 3. 波动率（随时间变化）
+            let currentVolatility = params.baseVolatility;
+            
+            // 波动率随时间小幅变化
+            currentVolatility *= (0.9 + Math.sin(updateTime * 0.00005) * 0.2);
+            
+            // 4. 随机事件
+            if (Math.random() < params.eventProbability) {
+                const eventMagnitude = 1 + Math.random() * 3; // 1-4倍波动
+                currentVolatility *= eventMagnitude;
+            }
+            
+            // 5. 均值回归
+            const deviationFromMean = (stock.price - basePrice) / basePrice;
+            const reversionForce = -deviationFromMean * params.meanReversion * 0.005;
+            
+            // 6. 动量效应
+            const momentumEffect = params.lastChange * 0.2;
+            
+            // 7. 计算价格变化
+            const modelIndex = minutesSinceStart % 6;
+            let priceChange = 0;
+            
+            switch (modelIndex) {
+                case 0: // 正态随机
+                    priceChange = normalRand * currentVolatility;
+                    break;
+                case 1: // 带动量
+                    priceChange = normalRand * currentVolatility + momentumEffect;
+                    break;
+                case 2: // 均值回归加强
+                    priceChange = normalRand * currentVolatility * 0.7 + reversionForce;
+                    break;
+                case 3: // 高波动
+                    priceChange = normalRand * currentVolatility * 1.5;
+                    break;
+                case 4: // 低波动
+                    priceChange = normalRand * currentVolatility * 0.5;
+                    break;
+                default: // 混合模型
+                    priceChange = (normalRand + timeBasedRand - 0.5) * currentVolatility;
+            }
+            
+            // 添加趋势和市场情绪
+            priceChange += trendChange;
+            priceChange += currentMarketMood * 0.002; // 市场情绪影响
+            
+            // 添加市场事件影响
+            if (marketEffect !== 0) {
+                const stockSensitivity = 0.5 + Math.random() * 0.5; // 不同股票对事件敏感度不同
+                priceChange += marketEffect * stockSensitivity;
+            }
+            
+            // 板块效应
+            if (index % 3 === minutesSinceStart % 3) {
+                priceChange += (Math.random() - 0.5) * 0.003; // 同板块有微小相关性
+            }
+            
+            // 记录历史变化
+            params.lastChange = priceChange;
+            params.priceHistory.push(stock.price);
+            if (params.priceHistory.length > 100) {
+                params.priceHistory.shift();
+            }
+            
+            // 应用价格变化
+            const oldPrice = stock.price;
+            stock.price *= (1 + priceChange);
+            
+            // 确保价格合理性
+            if (stock.price < 1) {
+                stock.price = 1 + Math.random() * 2;
+            } else if (stock.price > 100) {
+                stock.price = 100 - Math.random() * 10;
+            }
+            
+            // 防止价格停滞
+            if (Math.abs(stock.price - oldPrice) < 0.001) {
+                const microChange = (Math.random() - 0.5) * 0.01;
+                stock.price *= (1 + microChange);
+            }
+            
+            // 更新涨跌幅
+            stock.change = ((stock.price - basePrice) / basePrice * 100);
+            
+            // 记录最高/最低价
+            if (!stock.highestPrice || stock.price > stock.highestPrice) {
+                stock.highestPrice = stock.price;
+            }
+            if (!stock.lowestPrice || stock.price < stock.lowestPrice) {
+                stock.lowestPrice = stock.price;
+            }
+        });
+        
+        // 更新最后更新时间
+        game.userData.lastUpdateTime = updateTime;
+        
+        // 如果游戏界面打开，更新显示
+        if (document.getElementById('investmentGameUI')?.style.display === 'block') {
+            updateInvestmentStockDisplay();
+            updateInvestmentTradeInfo();
+            updateInvestmentHoldingsInfo();
+            updateInvestmentAssetsDisplay();
+            
+            // 更新时间显示
+            const timeElement = document.getElementById('update-time');
+            if (timeElement) {
+                timeElement.textContent = `股价更新时间：${new Date().toLocaleTimeString()}`;
+            }
+            
+            // 可选：显示市场情绪
+            if (document.getElementById('market-mood')) {
+                const moodText = currentMarketMood > 0.3 ? '📈 看涨' : 
+                                currentMarketMood < -0.3 ? '📉 看跌' : '➡️ 震荡';
+                document.getElementById('market-mood').textContent = `市场情绪: ${moodText}`;
+            }
+        }
+        
+        // 每5分钟记录一次日志
+        if (minutesSinceStart % 5 === 0) {
+            const avgChange = game.stocks.reduce((sum, s) => sum + s.change, 0) / game.stocks.length;
+            console.log(`实时模拟: 平均涨跌幅 ${avgChange.toFixed(2)}%, 市场情绪: ${currentMarketMood.toFixed(2)}`);
+        }
+        
+    }, 60000); // 每分钟更新一次
+    
+    // 图表更新频率更快（每10秒）
+    game.chartUpdateTimer = setInterval(() => {
+        if (document.getElementById('investmentGameUI')?.style.display === 'block') {
+            updateInvestmentStockDisplay();
+        }
+    }, 10000);
+    
+    logAction('股票价格实时模拟已启动', 'system');
+}
+// 初始化投资游戏
+function initInvestmentGame() {
+    if (!player.investmentGame) {
+        player.investmentGame = {
+            stocks: [
+                {code: "zj0001", name: "鱼鱼基金", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0002", name: "闫闫基金", price: 10.00, change: 0, holdings: 0, costPrice: 0},           
+                {code: "zj0003", name: "茶茶金股", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0004", name: "麒麟企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0005", name: "云南白药", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0006", name: "黑三逢源", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0007", name: "乐途企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0008", name: "PDD企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0009", name: "空白控股", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0010", name: "慢手企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0011", name: "斗音公司", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0012", name: "阿里妈妈", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0013", name: "淘宝宝", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0014", name: "千达有限", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0015", name: "通元房产", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0016", name: "预言鱼塘", price: 10.00, change: 0, holdings: 0, costPrice: 0},            
+                {code: "zj0017", name: "新股长虹", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0018", name: "萩萩萩萩音乐", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0019", name: "盛通快递", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0020", name: "十鼎洗浴", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0021", name: "九鼎红楼", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0022", name: "星巴克", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0023", name: "大吴疆土", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0024", name: "九转仙股", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0025", name: "乌龟科技", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0026", name: "阿斯塔特", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0027", name: "万里药业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0028", name: "万里证券", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0029", name: "顶峰相见", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0030", name: "顺封快递", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0031", name: "晋商银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0032", name: "爆涨房产", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0033", name: "书法银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0034", name: "阳城银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},            
+                {code: "zj0035", name: "程羽银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0036", name: "中铁银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0037", name: "工商银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0038", name: "明港基金", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0039", name: "东坑企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0040", name: "黑龙银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0041", name: "韵达银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0042", name: "巴士企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0043", name: "京东公司", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0044", name: "科技企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0045", name: "羊同药业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0046", name: "风雪药业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0047", name: "霸王别姬", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0048", name: "一点点奶茶", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0049", name: "古茗奶茶", price: 10.00, change: 0, holdings: 0, costPrice: 0},
+                {code: "zj0050", name: "蜜雪冰城", price: 10.00, change: 0, holdings: 0, costPrice: 0}
+            ],
+            userData: {
+                availableFunds: 1000.00,
+                totalAssets: 1000.00,
+                holdingPercent: 0.00,
+                todayProfit: 0.00,
+                tradeCount: 16,
+                initialFunds: 1000.00,
+                lastUpdateTime: Date.now()
+            },
+            currentStockIndex: 0,
+            tradeData: {
+                quantity: 0,
+                type: "buy",
+                feeRate: 0.0048
+            },
+            chartHistoryCache: {},
+            priceUpdateTimer: null,
+            chartUpdateTimer: null
+        };
+    }
+}
+
+// 在游戏加载时初始化投资游戏数据
+function initInvestmentGameOnLoad() {
+    if (!player.investmentGame) {
+        initInvestmentGame();
+    }
+}
+
+// 在页面加载时调用
+window.addEventListener('load', function() {
+    // 确保在游戏加载后初始化投资游戏
+    if (player) {
+        initInvestmentGameOnLoad();
+    }
+});
+
+// 在游戏保存时包含投资游戏数据
+function saveInvestmentGameData() {
+    // 投资游戏数据已经包含在player对象中
+    // 保存时会自动保存
+}
+
+// 在游戏加载时恢复投资游戏数据
+function loadInvestmentGameData() {
+    if (player.investmentGame) {
+        // 恢复定时器
+        if (document.getElementById('investmentGameUI').style.display === 'block') {
+            startPriceSimulation();
+        }
+    }
+}
+  // 房屋配置
+        const houseTypes = [
+            { id: 1, name: "茅草屋", rarity: 1, baseCost: 10000, income: 10, description: "简陋的茅草屋，提供基本住所" },
+            { id: 2, name: "木屋", rarity: 2, baseCost: 50000, income: 50, description: "简单的木屋，比茅草屋舒适" },
+            { id: 3, name: "石屋", rarity: 3, baseCost: 100000, income: 100, description: "坚固的石屋，能抵御风雨" },
+            { id: 4, name: "砖房", rarity: 4, baseCost: 500000, income: 500, description: "砖砌房屋，更加耐用" },
+            { id: 5, name: "别墅", rarity: 5, baseCost: 1000000, income: 1000, description: "豪华别墅，舒适宜居" },
+            { id: 6, name: "庄园", rarity: 6, baseCost: 5000000, income: 5000, description: "广阔庄园，带有花园" },
+            { id: 7, name: "城堡", rarity: 7, baseCost: 10000000, income: 10000, description: "宏伟城堡，彰显地位" },
+            { id: 8, name: "宫殿", rarity: 8, baseCost: 50000000, income: 50000, description: "皇家宫殿，极尽奢华" },
+            { id: 9, name: "天空之城", rarity: 9, baseCost: 100000000, income: 100000, description: "悬浮在空中的神奇城市" },
+            { id: 10, name: "海底宫殿", rarity: 10, baseCost: 500000000, income: 500000, description: "深海中的神秘宫殿" },
+            { id: 11, name: "星际堡垒", rarity: 11, baseCost: 1000000000, income: 1000000, description: "跨越星际的军事堡垒" },
+            { id: 12, name: "时间之屋", rarity: 12, baseCost: 5000000000, income: 5000000, description: "能操控时间的奇异房屋" },
+            { id: 13, name: "维度别墅", rarity: 13, baseCost: 10000000000, income: 10000000, description: "存在于多个维度的别墅" },
+            { id: 14, name: "创世神殿", rarity: 14, baseCost: 50000000000, income: 50000000, description: "创世神居住的神圣殿堂" },
+            { id: 15, name: "永恒居所", rarity: 15, baseCost: 100000000000, income: 100000000, description: "超越时间与空间的永恒住所" }
+        ];
+
+        // 初始化房屋系统数据
+        function initHouseData() {
+            if (!player.houses) {
+                player.houses = {
+                    level: 1,
+                    exp: 0,
+                    maxHouses: 5,
+                    ownedHouses: [],
+                    rentedHouses: [],
+                    lastUpdate: Date.now(),
+                    totalIncome: 0
+                };
+            }
+        }
+
+        // 切换房屋系统界面
+        function toggleHouseSystem() {
+            if (player.reincarnationCount < 200) {
+                alert("需要达到200转才能开启房屋系统！");
+                return;
+            }
+            
+            const ui = document.getElementById('houseSystemUI');
+            const overlay = document.getElementById('houseSystemOverlay');
+            
+            if (ui.style.display === 'block') {
+                ui.style.display = 'none';
+                overlay.style.display = 'none';
+            } else {
+                initHouseData();
+                ui.style.display = 'block';
+                overlay.style.display = 'block';
+                updateHouseUI();
+            }
+        }
+
+        function closeHouseSystem() {
+            document.getElementById('houseSystemUI').style.display = 'none';
+            document.getElementById('houseSystemOverlay').style.display = 'none';
+        }
+
+        // 更新房屋界面
+        function updateHouseUI() {
+            // 更新基本信息
+            document.getElementById('houseLevel').textContent = player.houses.level;
+            document.getElementById('houseCount').textContent = player.houses.rentedHouses.length;
+            document.getElementById('maxHouses').textContent = player.houses.maxHouses;
+            document.getElementById('houseExp').textContent = player.houses.exp.toFixed(1);
+            document.getElementById('houseExpNext').textContent = getNextHouseLevelExp();
+            document.getElementById('totalHouseIncome').textContent = player.houses.totalIncome.toExponential(1);
+            document.getElementById('totalHouseIncoma').textContent = player.investmentGame.userData.availableFunds.toFixed(0);
+            // 更新房屋商店
+            updateHouseStore();
+            
+            // 更新房屋列表
+            updateHouseList();
+            
+            // 更新房屋槽位显示
+            updateHouseSlots();
+            
+            // 更新分解界面
+            updateDecomposeHouseUI();
+        }
+
+        // 获取下一级所需经验
+        function getNextHouseLevelExp() {
+            const expRequirements = [100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000, 50000000, 100000000, 500000000, 1000000000, 5000000000, 10000000000, 50000000000, 100000000000, 1000000000000000000];
+            const currentLevel = Math.min(player.houses.level, expRequirements.length);
+            return expRequirements[currentLevel - 1] || expRequirements[expRequirements.length - 1];
+        }
+
+        // 更新房屋商店
+        function updateHouseStore() {
+            const container = document.getElementById('houseStore');
+            container.innerHTML = '';
+            
+            houseTypes.forEach(houseType => {
+                const houseCard = document.createElement('div');
+                houseCard.className = `house-card house-${getHouseRarityClass(houseType.rarity)}`;
+                
+                houseCard.innerHTML = `
+                    <div style="font-weight: bold;">${houseType.name}</div>
+                    <div style="font-size: 0.8em; margin: 5px 0;">${houseType.description}</div>
+                    <div style="font-size: 0.8em;">稀有度: ${houseType.rarity}</div>
+                    <div style="font-size: 0.8em; color: #FFD700;">收益: ${houseType.income}/小时</div>
+                    <div style="font-size: 0.8em; color: #32CD32;">价格: ${houseType.baseCost.toLocaleString()} 资金</div>
+                    <button onclick="buyHouse(${houseType.id})" style="margin-top: 10px; background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; width: 100%;">购买</button>
+                `;
+                
+                container.appendChild(houseCard);
+            });
+        }
+
+        // 根据稀有度获取CSS类名
+        function getHouseRarityClass(rarity) {
+            if (rarity <= 3) return 'common';
+            if (rarity <= 6) return 'rare';
+            if (rarity <= 9) return 'epic';
+            if (rarity <= 12) return 'legendary';
+            return 'mythic';
+        }
+
+        // 购买房屋
+        function buyHouse(houseId) {
+            const houseType = houseTypes.find(h => h.id === houseId);
+            
+            if (!houseType) {
+                logAction("无效的房屋类型", "error");
+                return;
+            }
+            
+            if (player.investmentGame.userData.availableFunds < houseType.baseCost) {
+                logAction(`资金不足！需要 ${houseType.baseCost.toLocaleString()} 资金`, "error");
+                return;
+            }
+            
+            // 扣除转生币
+            player.investmentGame.userData.availableFunds -= houseType.baseCost;
+            
+            // 创建房屋实例
+            const newHouse = {
+                id: 'house_' + Date.now(),
+                type: houseType.id,
+                name: houseType.name,
+                rarity: houseType.rarity,
+                baseIncome: houseType.income,
+                rentTime: 0,
+                isRented: false
+            };
+            
+            // 添加到拥有的房屋列表
+            player.houses.ownedHouses.push(newHouse);
+            
+            logAction(`成功购买了 ${houseType.name}！`, "success");
+            updateHouseUI();
+            updateDisplay();
+            saveGame();
+        }
+
+        // 更新房屋列表
+        function updateHouseList() {
+            const container = document.getElementById('houseList');
+            container.innerHTML = '';
+            
+            if (player.houses.ownedHouses.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">尚未购买任何房屋</div>';
+                return;
+            }
+            
+            player.houses.ownedHouses.forEach((house, index) => {
+                const houseCard = document.createElement('div');
+                houseCard.className = `house-card house-${getHouseRarityClass(house.rarity)}`;
+                houseCard.style.cursor = 'pointer';
+                houseCard.dataset.index = index;
+                
+                houseCard.innerHTML = `
+                    <div style="font-weight: bold;">${house.name}</div>
+                    <div style="font-size: 0.8em; margin: 5px 0;">稀有度: ${house.rarity}</div>
+                    <div style="font-size: 0.8em; color: #FFD700;">收益: ${house.baseIncome}/小时</div>
+                    <div style="font-size: 0.8em; color: ${house.isRented ? '#4CAF50' : '#f44336'};">${house.isRented ? '已出租' : '未出租'}</div>
+                `;
+                
+                // 点击房屋进行出租操作
+                houseCard.onclick = function() {
+                    rentHouse(index);
+                };
+                
+                container.appendChild(houseCard);
+            });
+        }
+
+        // 出租房屋
+        function rentHouse(houseIndex) {
+            // 检查是否有空闲房屋槽位
+            if (player.houses.rentedHouses.length >= player.houses.maxHouses) {
+                logAction("没有空闲房屋槽位了！", "error");
+                return;
+            }
+            
+            const house = player.houses.ownedHouses[houseIndex];
+            
+            // 将房屋移动到出租列表
+            player.houses.rentedHouses.push({
+                ...house,
+                rentTime: Date.now(),
+                isRented: true
+            });
+            
+            // 从拥有列表中移除
+            player.houses.ownedHouses.splice(houseIndex, 1);
+            
+            logAction(`已将 ${house.name} 出租`, "success");
+            updateHouseUI();
+            saveGame();
+        }
+
+        // 更新房屋槽位显示
+        function updateHouseSlots() {
+            const container = document.getElementById('houseSlotsContainer');
+            container.innerHTML = '';
+            
+            // 创建房屋槽位卡片
+            for (let i = 0; i < player.houses.maxHouses; i++) {
+                const slotCard = document.createElement('div');
+                slotCard.className = 'house-slot';
+                slotCard.style.border = '1px solid #ddd';
+                slotCard.style.padding = '10px';
+                slotCard.style.borderRadius = '5px';
+                slotCard.style.textAlign = 'center';
+                
+                if (i < player.houses.rentedHouses.length) {
+                    const house = player.houses.rentedHouses[i];
+                    slotCard.innerHTML = `
+                        <div style="font-weight: bold;">${house.name}</div>
+                        <div>收益: ${calculateHouseIncome(house)} 资金</div>
+                        <div>经验: ${calculateHouseIncome(house) / 1000} 经验值</div>
+                        <button onclick="stopRentingHouse(${i})" style="margin-top: 10px; background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">停止出租</button>
+                    `;
+                } else {
+                    slotCard.innerHTML = '<div>空闲房屋槽位</div>';
+                }
+                
+                container.appendChild(slotCard);
+            }
+        }
+
+        // 计算房屋收益
+        function calculateHouseIncome(house) {
+            // 收益 = 房屋基础收益 * 出租时间(小时)
+            const hoursRented = (Date.now() - house.rentTime) / (1000 * 60 * 60);
+            return Math.floor(house.baseIncome * hoursRented);
+        }
+
+        // 停止出租房屋
+        function stopRentingHouse(slotIndex) {
+            if (slotIndex >= player.houses.rentedHouses.length) return;
+            
+            // 获取房屋信息
+            const house = player.houses.rentedHouses[slotIndex];
+            
+            // 将房屋移回拥有列表
+            player.houses.ownedHouses.push({
+                ...house,
+                isRented: false
+            });
+            
+            // 从出租列表移除
+            player.houses.rentedHouses.splice(slotIndex, 1);
+            
+            // 计算并收取收益
+            const income = calculateHouseIncome(house);
+            player.investmentGame.userData.availableFunds += income;
+            player.houses.totalIncome += income;
+            player.houses.exp += income / 1000;
+            
+            logAction(`停止出租: ${house.name}, 获得收益 ${income} 资金`, 'success');
+            updateHouseUI();
+            updateDisplay();
+            saveGame();
+        }
+
+        // 一键出租
+        function rentAllHouses() {
+            // 计算可出租数量
+            const availableSlots = player.houses.maxHouses - player.houses.rentedHouses.length;
+            const housesToRent = Math.min(availableSlots, player.houses.ownedHouses.length);
+            
+            if (housesToRent === 0) {
+                logAction("没有可出租的房屋或没有空闲槽位", "info");
+                return;
+            }
+            
+            // 出租操作
+            for (let i = 0; i < housesToRent; i++) {
+                const house = player.houses.ownedHouses[0];
+                player.houses.rentedHouses.push({
+                    ...house,
+                    rentTime: Date.now(),
+                    isRented: true
+                });
+                player.houses.ownedHouses.shift();
+            }
+            
+            logAction(`已自动出租 ${housesToRent} 间房屋`, "success");
+            updateHouseUI();
+            saveGame();
+        }
+
+        // 收取所有房屋收益
+        function collectAllHouseIncome() {
+            let totalIncome = 0;
+            
+            player.houses.rentedHouses.forEach(house => {
+                const income = calculateHouseIncome(house);
+                totalIncome += income;
+                
+                // 添加房屋经验
+                player.houses.exp += income / 1000;
+                
+                // 重置出租时间
+                house.rentTime = Date.now();
+            });
+            
+            // 添加收益
+            player.investmentGame.userData.availableFunds += totalIncome;
+            player.houses.totalIncome += totalIncome;
+            
+            logAction(`收取了所有房屋收益: ${totalIncome} 资金`, "success");
+            updateHouseUI();
+            updateDisplay();
+            saveGame();
+        }
+
+        // 房屋分解功能
+        function updateDecomposeHouseUI() {
+            const container = document.getElementById('decomposeHouseContainer');
+            container.innerHTML = '';
+            
+            if (player.houses.ownedHouses.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">没有可分解的房屋</div>';
+                return;
+            }
+            
+            // 添加拥有的房屋
+            player.houses.ownedHouses.forEach((house, index) => {
+                const houseDiv = document.createElement('div');
+                houseDiv.className = `decompose-house-item house-${getHouseRarityClass(house.rarity)}`;
+                houseDiv.style.display = 'flex';
+                houseDiv.style.alignItems = 'center';
+                houseDiv.style.justifyContent = 'space-between';
+                houseDiv.style.marginBottom = '10px';
+                houseDiv.style.padding = '10px';
+                houseDiv.style.background = '#444';
+                houseDiv.style.borderRadius = '5px';
+                
+                const decomposeValue = house.rarity * 5000;
+                
+                houseDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; flex: 1;">
+                        <input type="checkbox" id="houseCheckbox${index}" 
+                               style="margin-right: 10px; width: 16px; height: 16px;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; font-size: 14px;">
+                                ${house.name}
+                            </div>
+                            <div style="font-size: 12px; color: #ccc;">
+                                稀有度: ${house.rarity}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 12px; color: #FFD700;">
+                            价值: ${decomposeValue.toLocaleString()}
+                        </div>
+                        <div style="font-size: 10px; color: #888;">
+                            资金
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(houseDiv);
+            });
+        }
+
+        // 按稀有度批量选择房屋
+        function selectHousesByRarity(maxRarity) {
+            player.houses.ownedHouses.forEach((house, index) => {
+                const checkbox = document.getElementById(`houseCheckbox${index}`);
+                if (checkbox) {
+                    checkbox.checked = house.rarity <= maxRarity;
+                }
+            });
+            logAction(`已选择稀有度${maxRarity}及以下的房屋`, "info");
+        }
+
+        // 全选房屋
+        function selectAllHouses() {
+            player.houses.ownedHouses.forEach((house, index) => {
+                const checkbox = document.getElementById(`houseCheckbox${index}`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+            logAction("已选择所有房屋", "info");
+        }
+
+        // 取消全选
+        function deselectAllHouses() {
+            player.houses.ownedHouses.forEach((house, index) => {
+                const checkbox = document.getElementById(`houseCheckbox${index}`);
+                if (checkbox) {
+                    checkbox.checked = false;
+                }
+            });
+            logAction("已取消选择所有房屋", "info");
+        }
+
+        // 分解选中房屋
+        function decomposeSelectedHouse() {
+            const housesToDecompose = [];
+            
+            // 收集选中的房屋
+            player.houses.ownedHouses.forEach((house, index) => {
+                const checkbox = document.getElementById(`houseCheckbox${index}`);
+                if (checkbox && checkbox.checked) {
+                    housesToDecompose.push({
+                        index,
+                        house
+                    });
+                }
+            });
+            
+            if (housesToDecompose.length === 0) {
+                logAction("请选择要分解的房屋", "error");
+                return;
+            }
+            
+            // 计算总收益和显示信息
+            let totalValue = 0;
+            let houseList = "";
+            
+            housesToDecompose.forEach(item => {
+                totalValue += item.house.rarity * 5000;
+                houseList += `\n${item.house.name} (稀有度${item.house.rarity})`;
+            });
+            
+            // 显示确认对话框
+            showCustomConfirm(`确定要分解以下 ${housesToDecompose.length} 间房屋吗？${houseList}\n\n总计可获得: ${totalValue.toLocaleString()} 资金`,
+                (confirmed) => {
+                    if (confirmed) {
+                        // 从高索引到低索引删除，避免索引变化问题
+                        housesToDecompose.sort((a, b) => b.index - a.index);
+                        housesToDecompose.forEach(item => {
+                            player.houses.ownedHouses.splice(item.index, 1);
+                        });
+                        
+                        // 添加收益
+                        player.investmentGame.userData.availableFunds += totalValue;
+                        
+                        logAction(`分解了 ${housesToDecompose.length} 间房屋，获得 ${totalValue.toLocaleString()} 资金`, "success");
+                        updateHouseUI();
+                        updateDisplay();
+                        saveGame();
+                    }
+                }
+            );
+        }
+
+        // 升级房屋系统
+        function upgradeHouseSystem() {
+            const requiredExp = getNextHouseLevelExp();
+            
+            if (player.houses.exp < requiredExp) {
+                logAction(`经验不足！需要 ${requiredExp} 经验`, "error");
+                return;
+            }
+            
+            // 扣除经验
+            player.houses.exp -= requiredExp;
+            
+            // 升级
+            player.houses.level++;
+            player.houses.maxHouses++;
+            
+            logAction(`房屋系统升级到 ${player.houses.level} 级！最大房屋槽位增加到 ${player.houses.maxHouses}`, "success");
+            updateHouseUI();
+            saveGame();
+        }
+
+        // 计算离线房屋收益
+        function calculateOfflineHouseIncome() {
+            if (!player.houses || !player.houses.rentedHouses) return;
+            
+            const now = Date.now();
+            const elapsed = now - player.houses.lastUpdate;
+            
+            player.houses.rentedHouses.forEach(house => {
+                const income = house.baseIncome * (elapsed / (1000 * 60 * 60)); // 每小时收益
+                player.houses.totalIncome += income;
+                player.houses.exp += income / 1000;
+            });
+            
+            player.houses.lastUpdate = now;
+        }
+
+        // 在游戏加载时初始化房屋数据
+        function initHouseSystemOnLoad() {
+            if (!player.houses) {
+                player.houses = {
+                    level: 1,
+                    exp: 0,
+                    maxHouses: 5,
+                    ownedHouses: [],
+                    rentedHouses: [],
+                    lastUpdate: Date.now(),
+                    totalIncome: 0
+                };
+            } else {
+                // 计算离线收益
+                calculateOfflineHouseIncome();
+            }
+        }
+ function addHouseSystemToGameLoop() {
+            // 在现有的游戏循环中添加房屋收益计算
+            setInterval(() => {
+                if (player.houses && player.houses.rentedHouses.length > 0) {
+                    // 每秒计算一次收益（实际收益按小时计算，这里只是累加）
+                    const incomePerSecond = player.houses.rentedHouses.reduce((sum, house) => 
+                        sum + house.baseIncome / 3600, 0
+                    );
+                    
+                    player.reincarnationCoin += incomePerSecond;
+                    player.houses.totalIncome += incomePerSecond;
+                    player.houses.exp += incomePerSecond / 1000;
+                    
+                    // 每10秒更新一次UI（避免过于频繁的更新）
+                    if (Math.floor(Date.now() / 1000) % 10 === 0) {
+                        updateHouseUI();
+                    }
+                }
+            }, 1000);
+        }
 
  // 世界BOSS系统数据
         const worldBossData = {
