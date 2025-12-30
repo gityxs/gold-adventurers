@@ -9417,7 +9417,46 @@ function confirmActivationCode() {
          rewardMsg ="成功兑换激活码  获得别墅！";     
           success = true;
             break;
-       
+        case "SHENQI":
+            player.items.yuzhou4 = (player.items.yuzhou4 || 0) + 200;
+            rewardMsg = "获得200个神器碎片发票";
+            success = true;
+            break;       
+       case "YUZHOU":
+            player.items.yuzhou3 = (player.items.yuzhou3 || 0) + 200;
+            rewardMsg = "获得200个宇宙晶体发票";
+            success = true;
+            break;    
+       case "ANBAO":
+            player.items.yuzhou2 = (player.items.yuzhou2 || 0) + 1000;
+            rewardMsg = "获得1000个暗物质发票";
+            success = true;
+            break; 
+       case "MIMI":
+            player.items.fuben1 = (player.items.fuben1 || 0) + 10;
+            rewardMsg = "获得10个副本令牌";
+            success = true;
+            break; 
+       case "FUBEN":
+            player.items.fuben2 = (player.items.fuben2 || 0) + 10;
+            rewardMsg = "获得10个秘境钥匙";
+            success = true;
+            break; 
+       case "YUANDAN":
+            player.items.baitCount = (player.items.baitCount || 0) + 200;
+            rewardMsg = "获得200个鱼饵";
+            success = true;
+            break; 
+       case "YUANDAN1":
+            player.items.vipPower = (player.items.vipPower || 0) + 500;
+            rewardMsg = "500个VIP能力值";
+            success = true;
+            break; 
+       case "YUANDAN2":
+            player.items.companionKey = (player.items.companionKey || 0) + 100;
+            rewardMsg = "获得100个伴侣钥匙";
+            success = true;
+            break; 
         case "YUER":
             player.items.baitCount = (player.items.baitCount || 0) + 20;
             rewardMsg = "获得20个鱼饵";
