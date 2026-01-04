@@ -3024,6 +3024,28 @@ button:disabled {
         .house-epic { border-color: #FFD700; }
         .house-legendary { border-color: #9370DB; }
         .house-mythic { border-color: #FF4500; }
+  /* 添加工作选择对话框的样式 */
+.job-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+.job-option {
+    transition: all 0.3s ease;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    #jobSelectionDialog {
+        width: 95vw !important;
+        padding: 15px !important;
+    }
+    
+    .job-option {
+        padding: 10px !important;
+    }
+}
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -3086,7 +3108,7 @@ button:disabled {
        <p>40. 无尽挖矿：(升级一下稿子等级不然挖不到普通矿)1500转开启，提升大量世界地图经验，和各项属性。</p>
        <p>41. 新版股票:（打怪模式第三层以上开启）（离线后如果打不开点一下疯狂地主再打开）</p>
       <p>42. 房子系统:200转开启，新版股票资金购买，每秒GPS加成 ，收益点击加成（群里兑换码可以领取别墅）</p>
-     <p>43. 结婚系统:(资金总额达到50W开启)，各种加成</p>
+     <p>43. 结婚系统:(资金总额达到5W开启)，可以生孩子。各种加成</p>
         </div>
     </div>
 </div>
@@ -3099,8 +3121,9 @@ button:disabled {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.75更新日志</h4>
-           <p>2026/01/03:  增加结婚系统资金50W开启，无尽挖矿增加玩法：挖矿有几率出宝物，出售可以卖资金。</p>
+            <h4>1.76更新日志</h4>
+           <p>2026/01/04:  更新结婚系统玩法，生孩子（恩爱25级开启）有加成，孩子长大也可以工作</p>
+           <p>2026/01/03:  增加结婚系统资金5W开启，无尽挖矿增加玩法：挖矿有几率出宝物，出售可以卖资金。</p>
            <p>2025/12/31: 修复新版股票在线无法正常刷新数据。 更新疯狂地主玩法。</p>
            <p>2025/12/29: 更新疯狂地主系统，加强停车场加成，增加房子系统200转开启，股票资金购买（群里兑换码可以领取别墅）</p>
            <p>2025/12/28:修复疯狂地主一键收获BUG，修复严重BUG离线系统异常没生效问题，直播系统过几秒人数只有6人正常不影响送礼（保存机制原因不会暂用内存），加入新版股票，随机波动涨跌，对应称号。 </p>
@@ -6818,6 +6841,7 @@ button:disabled {
             <button onclick="giveGiftToSpouse()" style="background: #FF69B4; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;">赠送礼物 (消耗 1314 元)</button>
             <button onclick="spendTimeWithSpouse()" style="background: #FF69B4; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;">共度时光 (消耗 99999 元)</button>
             <button onclick="spendAimeWithSpouse()" style="background: #FF69B4; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;">全国旅行 (消耗 5201314 元)</button>
+            <button onclick="toggleChildSystem()" style="background: #FF69B4; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;">生小孩</button>
             <button onclick="divorce()" style="background: #f44336; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;">离婚</button>
             <button onclick="renameSpouse()" style="background: #2196F3; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;">重命名伴侣</button>
         </div>
@@ -6886,7 +6910,72 @@ button:disabled {
     </div>
 </div>
 </div>
-<div id="footer">版本号: v1.7.5</div>
+<!-- 生小孩系统界面 -->
+<div id="childSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="childSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #FF69B4; border-radius: 10px; z-index: 1001; width: 900px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #FF69B4; padding-bottom: 10px;">
+        <h2 style="color: #FF69B4; margin: 0;">生小孩系统</h2>
+        <button onclick="closeChildSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-size: 14px;">关闭</button>
+    </div>
+    
+    <!-- 家庭状态 -->
+    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3>家庭状态</h3>
+        <div id="familyStatus" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+            <!-- 家庭信息会动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 怀孕状态 -->
+    <div id="pregnancySection" style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px; display: none;">
+        <h3>怀孕状态</h3>
+        <div id="pregnancyInfo"></div>
+    </div>
+    
+    <!-- 生育功能 -->
+    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3>生育功能</h3>
+        <div id="conceptionSection">
+            <div style="margin-bottom: 10px;">
+                <label for="childNameInput">孩子名字:</label>
+                <input type="text" id="childNameInput" placeholder="输入孩子名字" style="padding: 5px; width: 200px; margin-left: 10px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="childGenderSelect">孩子性别:</label>
+                <select id="childGenderSelect" style="padding: 5px; margin-left: 10px;">
+                    <option value="boy">男孩</option>
+                    <option value="girl">女孩</option>
+                </select>
+            </div>
+            <button onclick="conceiveChild()" id="conceiveBtn" style="background: #FF69B4; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">怀孕 (消耗 5200 转生币)</button>
+        </div>
+    </div>
+    
+    <!-- 孩子列表 -->
+    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3>我的孩子</h3>
+        <div id="childrenList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 300px; overflow-y: auto; padding: 10px;">
+            <!-- 孩子卡片会动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 孩子培养 -->
+    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+        <h3>孩子培养</h3>
+        <div id="childTrainingSection" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <!-- 培养选项会动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 孩子加成 -->
+    <div style="background: #333; padding: 15px; border-radius: 8px;">
+        <h3>孩子加成</h3>
+        <div id="childBonuses"></div>
+    </div>
+</div>
+    </div>
+</div>
+<div id="footer">版本号: v1.7.6</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -6927,6 +7016,20 @@ button:disabled {
             foundCount: Array(10).fill(0), // 每个宝物找到的数量
             soldCount: Array(10).fill(0) // 每个宝物出售的数量
         }, 
+children: {
+            isPregnant: false,
+            pregnancyStart: 0,
+            pregnancyProgress: 0,
+            children: [],
+            totalChildren: 0,
+            trainingHistory: [],
+            childBonuses: {
+                gpsMultiplier: 1.0,
+                clickMultiplier: 1.0,
+                critRateBonus: 0,
+                goldMultiplier: 1.0
+            }
+        },
   marriage: {
             isMarried: false,
             spouseName: "",
@@ -10238,13 +10341,13 @@ const gpsBonusssqaa = player.landlord.stats.totalCoinsEarned * 0.0001;
  const gpsBonussbb = player.mining.gems.diamond * 1.00;  
 const gpsEnhancementsp =  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 1];
 const farmGPSEnhancementp  = gpsEnhancementsp[player.sect.level - 1] || gpsEnhancementsp[gpsEnhancementsp.length - 1];
- const marriageBonus = player.marriage && player.marriage.isMarried ? 
-        player.marriage.marriageBonuses.gpsMultiplier : 1;
+ const marriageBonus = player.marriage && player.marriage.isMarried ?  player.marriage.marriageBonuses.gpsMultiplier : 1;
+        const childBonus = player.children ? player.children.childBonuses.gpsMultiplier : 1;
 
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.gps * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.gpsMultiplier 
         * (1 + gpsBonus) 
-        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * (1 + gpsBonusssq) * farmGPSEnhancementp * (1 + gpsBonusssqaa) * (1 + gpsBonussbb)*farmGPSEnhancemezts * marriageBonus ;
+        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * (1 + gpsBonusssq) * farmGPSEnhancementp * (1 + gpsBonusssqaa) * (1 + gpsBonussbb)*farmGPSEnhancemezts * marriageBonus * childBonus ;
 }
 
 function getTotalClickValue() {
@@ -10269,13 +10372,13 @@ const farmClickMultipliersss = [1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 1
 const farmClickMultiplierssa = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 1];
     const farmClickBonussa = farmClickMultiplierssa[player.liveStream.level - 1] || farmClickMultiplierssa[farmClickMultiplierssa.length - 1];
        const farmClickBonussw = player.landlord.stats.totalCoinsEarned * 0.0001;      
-     const marriageBonus = player.marriage && player.marriage.isMarried ? 
-        player.marriage.marriageBonuses.clickMultiplier : 1;
+     const marriageBonus = player.marriage && player.marriage.isMarried ?  player.marriage.marriageBonuses.clickMultiplier : 1;
+   const childBonus = player.children ? player.children.childBonuses.clickMultiplier : 1;
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.click * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.clickMultiplier 
         * petMultiplier 
         * (1 + dungeonBonus)  // 应用副本装备总加成（含职业乘数）
-        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus * farmClickBonusss * gpsBonusss * farmClickBonussa* (1 + farmClickBonussw) * (1+gpsBonuvvs) * (1+gpsBonubbs) * marriageBonus; 
+        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus * farmClickBonusss * gpsBonusss * farmClickBonussa* (1 + farmClickBonussw) * (1+gpsBonuvvs) * (1+gpsBonubbs) * marriageBonus * childBonus; 
 }
 
 
@@ -12503,6 +12606,8 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
    calculateTotalGPS();
   initMarriageSystem();
  initTreasureData();
+ initChildData();
+addChildSystemToGameLoop();
       if (player.investmentGame) {
         // 先模拟离线变化
         simulateOfflinePriceChanges();
@@ -15353,7 +15458,7 @@ let wingHealthBonus = 0;
         (1 + player.attributes.healthBonus + player.attributes.health * 0.01) *
         classBonuses.healthMultiplier * titleBonuses.healthMultiplier *
         companionBonuses.healthMultiplier * (1 + artifactBonuses.health) * (1 + bonuses.health / 100) *  (1 + techBonuses.health) *  (1 + wingHealthBonus)  *  (1 + mountHealthBonus) *
-        (1 + runeBonuses.health) * (1 + (player.mining.gems.emerald*0.05))  * (1+player.marriage.marriageBonuses.critRateBonus)// 应用伴侣生命加成
+        (1 + runeBonuses.health) * (1 + (player.mining.gems.emerald*0.05))  * (1+player.marriage.marriageBonuses.critRateBonus)  * (1+player.children.childBonuses.critRateBonus)// 应用伴侣生命加成
     );
 
     // 3. 计算玩家攻击（应用伴侣攻击加成）
@@ -15362,7 +15467,7 @@ let wingHealthBonus = 0;
         (1 + player.attributes.attackBonus + player.attributes.attack * 0.01) *
         classBonuses.attackMultiplier * titleBonuses.attackMultiplier *
         officialBonus * companionBonuses.attackMultiplier * (1 + artifactBonuses.attack) * (1 + bonuses.attack / 100) *  (1 + techBonuses.attack)  *  (1 + mountAttackBonus) *
-        (1 + runeBonuses.attack) * (1 + (player.mining.gems.sapphire*0.05))// 应用伴侣攻击加成
+        (1 + runeBonuses.attack) * (1 + (player.mining.gems.sapphire*0.05)) * (1+player.children.childBonuses.goldMultiplier)// 应用伴侣攻击加成
     );
 
     // 4. 计算暴击率（应用伴侣暴击率加成）
@@ -40087,8 +40192,6 @@ window.addEventListener('load', function() {
     setTimeout(function() {
         initLotterySystem();
         console.log('抽奖系统已初始化');
-        // 调试用
-        debugLotterySystem();
     }, 1000);
 });
 function renderSynthesisInterface(container) {
@@ -44247,7 +44350,7 @@ function loadInvestmentGameData() {
                         sum + house.baseIncome / 3600, 0
                     );
                     
-                    player.reincarnationCoin += incomePerSecond;
+                    player.investmentGame.userData.availableFunds += incomePerSecond;
                     player.houses.totalIncome += incomePerSecond;
                     player.houses.exp += incomePerSecond / 1000;
                     
@@ -44282,8 +44385,8 @@ function initMarriageData() {
 
 // 切换结婚系统界面
 function toggleMarriageSystem() {
-    if (player.investmentGame.userData.totalAssets < 500000) {
-        alert("需要资金总额达到50W才能开启结婚系统！");
+    if (player.investmentGame.userData.totalAssets < 50000) {
+        alert("需要资金总额达到5W才能开启结婚系统！");
         return;
     }
     
@@ -45175,6 +45278,2271 @@ function formatNumber(num) {
     if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
     return num.toString();
 }
+const childConfig = {
+    // 怀孕配置
+    pregnancy: {
+        duration: 24 * 60 * 60 * 1000, // 怀孕时间：24小时
+        cost: 52013.14, // 怀孕消耗
+        maxChildren: 10 // 最大孩子数量
+    },
+    
+    // 孩子成长阶段
+    growthStages: [
+        { name: "婴儿", age: 0, duration: 1 * 24 * 60 * 60 * 1000 }, // 婴儿期：1天
+        { name: "幼儿", age: 1, duration: 2 * 24 * 60 * 60 * 1000 }, // 幼儿期：2天
+        { name: "儿童", age: 2, duration: 3 * 24 * 60 * 60 * 1000 }, // 儿童期：3年
+        { name: "少年", age: 3, duration: 7 * 24 * 60 * 60 * 1000 }, // 少年期：7年
+        { name: "青年", age: 4, duration: Infinity } // 青年期：永久
+    ],
+    
+    // 培养类型
+   trainingTypes: [
+        { id: "education", name: "教育", cost: 13145, effect: "intelligence", description: "提高孩子的智力属性" },
+        { id: "sports", name: "体育", cost: 52100, effect: "physique", description: "提高孩子的体质属性" },
+        { id: "arts", name: "艺术", cost: 131400, effect: "charm", description: "提高孩子的魅力属性" },
+        { id: "business", name: "商业", cost: 52100, effect: "business", description: "提高孩子的商业能力" }
+    ],
+    
+    // 孩子属性加成
+    attributeBonuses: {
+        intelligence: { gps: 1, description: "每点智力增加100% GPS" },
+        physique: { click: 1, description: "每点体质增加100% 点击" },
+        charm: { critRate: 1, description: "每点魅力增加100% 生命" },
+        business: { gold: 1, description: "每点商业增加100% 攻击" }
+    }
+};
+
+// 初始化孩子系统数据
+function initChildData() {
+    if (!player.children) {
+        player.children = {
+            isPregnant: false,
+            pregnancyStart: 0,
+            pregnancyProgress: 0,
+            children: [],
+            totalChildren: 0,
+            trainingHistory: [],
+            childBonuses: {
+                gpsMultiplier: 1.0,
+                clickMultiplier: 1.0,
+                critRateBonus: 1.0,
+                goldMultiplier: 1.0
+            }
+        };
+    }
+}
+
+// 切换孩子系统界面
+function toggleChildSystem() {
+    if (!player.marriage || !player.marriage.isMarried) {
+        alert("需要先结婚才能生小孩！");
+        return;
+    }
+    if (player.marriage.loveLevel < 25) {
+        alert("需要结婚恩爱等级25级！");
+        return;
+    }
+    
+    const ui = document.getElementById('childSystemUI');
+    const overlay = document.getElementById('childSystemOverlay');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        initChildData();
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateChildSystemUI();
+    }
+}
+
+function closeChildSystem() {
+    document.getElementById('childSystemUI').style.display = 'none';
+    document.getElementById('childSystemOverlay').style.display = 'none';
+}
+
+// 更新孩子系统UI
+function updateChildSystemUI() {
+    updateFamilyStatus();
+    updatePregnancyStatus();
+    updateChildrenList(); // 这个现在包含成长倒计时
+    updateTrainingSection();
+   updateChildWorkSystem(); // 新增：更新工作系统
+    updateChildInteractionSystem(); // 新增：更新互动系统
+    updateChildBonuses();
+    updateConceptionButton();
+    addWorkAndInteractionSections();
+    // 确保成长概览区域存在
+    if (!document.getElementById('growthOverview')) {
+        const familyStatus = document.getElementById('familyStatus');
+        const growthOverview = document.createElement('div');
+        growthOverview.id = 'growthOverview';
+        growthOverview.style.cssText = 'grid-column: 1 / -1; background: #444; padding: 10px; border-radius: 5px; margin-top: 10px;';
+        familyStatus.appendChild(growthOverview);
+    }
+    updateGrowthOverview();
+}
+function addWorkAndInteractionSections() {
+    const ui = document.getElementById('childSystemUI');
+    
+    // 检查是否已存在工作和互动区域
+    if (!document.getElementById('childWorkSystem')) {
+        const workSection = document.createElement('div');
+        workSection.id = 'childWorkSystem';
+        workSection.style.cssText = 'margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;';
+        ui.appendChild(workSection);
+    }
+    
+    if (!document.getElementById('childInteractionSystem')) {
+        const interactionSection = document.createElement('div');
+        interactionSection.id = 'childInteractionSystem';
+        interactionSection.style.cssText = 'background: #333; padding: 15px; border-radius: 8px;';
+        ui.appendChild(interactionSection);
+    }
+    
+    // 更新内容
+    updateChildWorkSystem();
+    updateChildInteractionSystem();
+}
+
+function startGrowthCountdownTimer() {
+    setInterval(() => {
+        if (document.getElementById('childSystemUI').style.display === 'block') {
+            updateChildrenList(); // 每分钟更新一次倒计时
+            updateGrowthOverview();
+        }
+    }, 60000); // 每分钟更新一次
+}
+
+
+function showTrainingStrategy() {
+    const strategies = [
+        { id: 'balanced', name: '均衡发展', description: '所有属性平均发展' },
+        { id: 'intelligence', name: '智力优先', description: '优先发展智力属性' },
+        { id: 'physique', name: '体质优先', description: '优先发展体质属性' },
+        { id: 'charm', name: '魅力优先', description: '优先发展魅力属性' },
+        { id: 'business', name: '商业优先', description: '优先发展商业属性' }
+    ];
+    
+    let message = '选择培养策略：\n\n';
+    strategies.forEach(strategy => {
+        message += `${strategy.name}: ${strategy.description}\n`;
+    });
+    
+    showCustomPrompt(message, (selected) => {
+        if (selected) {
+            const strategy = strategies.find(s => selected.includes(s.name));
+            if (strategy) {
+                player.children.trainingStrategy = strategy.id;
+                logAction(`已设置为${strategy.name}策略`, "success");
+            }
+        }
+    });
+}
+function trainWithStrategy(childIndex) {
+    const strategy = player.children.trainingStrategy || 'balanced';
+    let trainingType;
+    
+    switch(strategy) {
+        case 'intelligence':
+            trainingType = 'education';
+            break;
+        case 'physique':
+            trainingType = 'sports';
+            break;
+        case 'charm':
+            trainingType = 'arts';
+            break;
+        case 'business':
+            trainingType = 'business';
+            break;
+        default: // balanced
+            // 均衡发展：选择最弱的属性
+            const child = player.children.children[childIndex];
+            const attributes = child.attributes;
+            const weakestAttribute = Object.keys(attributes).reduce((weakest, attr) => {
+                return attributes[attr] < attributes[weakest] ? attr : weakest;
+            });
+            
+            trainingType = childConfig.trainingTypes.find(t => t.effect === weakestAttribute)?.id || 'education';
+            break;
+    }
+    
+    trainChild(childIndex, trainingType);
+}
+
+// 更新家庭状态
+function updateFamilyStatus() {
+    const container = document.getElementById('familyStatus');
+    const children = player.children.children || [];
+    const pregnant = player.children.isPregnant;
+    
+    // 计算可培养的孩子数量
+    const now = Date.now();
+    const availableChildren = children.filter(child => {
+        const lastTraining = child.lastTraining || 0;
+        return (now - lastTraining) >= 60 * 60 * 1000;
+    }).length;
+    
+    container.innerHTML = `
+        <div>配偶: ${player.marriage.spouseName}</div>
+        <div>孩子数量: ${children.length}/${childConfig.pregnancy.maxChildren}</div>
+        <div>怀孕状态: ${pregnant ? '是' : '否'}</div>
+        <div>可培养: <span style="color: ${availableChildren > 0 ? '#4CAF50' : '#FF6B6B'}">${availableChildren}/${children.length}</span></div>
+        <div>家庭幸福度: ${calculateFamilyHappiness()}%</div>
+    `;
+    
+ 
+}
+function initChildSystem() {
+    initChildData();
+    startChildCooldownTimer();
+    startPregnancySafetyCheck();
+    startGrowthCountdownTimer(); // 添加成长倒计时计时器
+}
+// 更新怀孕状态
+function updatePregnancyStatus() {
+    const pregnancySection = document.getElementById('pregnancySection');
+    const pregnancyInfo = document.getElementById('pregnancyInfo');
+    
+    if (player.children.isPregnant) {
+        pregnancySection.style.display = 'block';
+        
+        const progress = calculatePregnancyProgress();
+        const remainingTime = Math.max(0, childConfig.pregnancy.duration - (Date.now() - player.children.pregnancyStart));
+        const hoursRemaining = Math.ceil(remainingTime / (60 * 60 * 1000));
+        const minutesRemaining = Math.ceil(remainingTime / (60 * 1000));
+        
+        // 检查是否应该分娩
+        if (progress >= 100) {
+            pregnancyInfo.innerHTML = `
+                <div style="color: #4CAF50; font-weight: bold;">怀孕完成！准备分娩</div>
+                <div style="color: #ccc;">孩子即将出生...</div>
+                <button onclick="giveBirth()" style="margin-top: 10px; background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; width: 100%;">
+                    🎉 立即分娩 🎉
+                </button>
+                <div style="margin-top: 10px; font-size: 12px; color: #888;">
+                    如果分娩没有自动触发，请点击上方按钮
+                </div>
+            `;
+            
+            // 自动触发分娩（延迟1秒确保UI更新）
+            setTimeout(() => {
+                if (player.children.isPregnant) {
+                    console.log('自动触发分娩...');
+                    giveBirth();
+                }
+            }, 1000);
+            
+        } else {
+            pregnancyInfo.innerHTML = `
+                <div>怀孕进度: ${progress.toFixed(1)}%</div>
+                <div>剩余时间: ${hoursRemaining} 小时 ${minutesRemaining % 60} 分钟</div>
+                <div>预计出生: ${new Date(player.children.pregnancyStart + childConfig.pregnancy.duration).toLocaleString()}</div>
+                <div style="margin-top: 10px;">
+                    <div style="background: #555; border-radius: 5px; height: 20px; margin: 5px 0; position: relative;">
+                        <div style="background: linear-gradient(90deg, #FF69B4, #FF1493); height: 100%; border-radius: 5px; width: ${progress}%; transition: width 0.3s;"></div>
+                        <div style="position: absolute; top: 0; left: 0; right: 0; text-align: center; color: white; font-size: 12px; line-height: 20px;">
+                            ${progress.toFixed(1)}%
+                        </div>
+                    </div>
+                </div>
+                <button onclick="giveBirthNow()" style="margin-top: 10px; background: #FF9800; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
+                    95.1%以上立即分娩 (消耗 88888 元)
+                </button>
+            `;
+        }
+    } else {
+        pregnancySection.style.display = 'none';
+    }
+}
+
+
+// 计算怀孕进度
+function calculatePregnancyProgress() {
+    if (!player.children.isPregnant || !player.children.pregnancyStart) {
+        return 0;
+    }
+    
+    const elapsed = Date.now() - player.children.pregnancyStart;
+    const progress = Math.min(100, (elapsed / childConfig.pregnancy.duration) * 100);
+    
+    console.log('怀孕进度计算:', {
+        startTime: new Date(player.children.pregnancyStart).toLocaleString(),
+        currentTime: new Date().toLocaleString(),
+        elapsed: Math.round(elapsed / 1000 / 60) + '分钟',
+        totalDuration: Math.round(childConfig.pregnancy.duration / 1000 / 60) + '分钟',
+        progress: progress.toFixed(1) + '%'
+    });
+    
+    return progress;
+}
+
+// 怀孕功能
+function conceiveChild() {
+    if (!player.marriage.isMarried) {
+        logAction("需要先结婚才能怀孕", "error");
+        return;
+    }
+    
+    if (player.children.isPregnant) {
+        logAction("已经怀孕了，请等待分娩", "error");
+        return;
+    }
+    
+    if (player.children.children.length >= childConfig.pregnancy.maxChildren) {
+        logAction(`最多只能有 ${childConfig.pregnancy.maxChildren} 个孩子`, "error");
+        return;
+    }
+    
+    const childName = document.getElementById('childNameInput').value.trim();
+    const childGender = document.getElementById('childGenderSelect').value;
+    
+    if (!childName) {
+        logAction("请输入孩子名字", "error");
+        return;
+    }
+    
+    if (childName.length > 10) {
+        logAction("孩子名字不能超过10个字符", "error");
+        return;
+    }
+    
+    if (player.investmentGame.userData.availableFunds < childConfig.pregnancy.cost) {
+        logAction(`资金不足！需要 ${childConfig.pregnancy.cost} 元`, "error");
+        return;
+    }
+    
+    // 扣除转生币
+    player.investmentGame.userData.availableFunds -= childConfig.pregnancy.cost;
+    
+    // 开始怀孕
+    player.children.isPregnant = true;
+    player.children.pregnancyStart = Date.now();
+    player.children.pregnancyProgress = 0;
+    player.children.expectedChild = {
+        name: childName,
+        gender: childGender
+    };
+    
+    const expectedBirthTime = new Date(Date.now() + childConfig.pregnancy.duration);
+    logAction(`恭喜！您怀孕了！孩子预计在 ${expectedBirthTime.toLocaleString()} 出生`, "success");
+    
+    updateChildSystemUI();
+    updateDisplay();
+    saveGame();
+    
+    // 启动怀孕计时器
+    startPregnancyTimer();
+}
+
+// 开始怀孕计时器
+function startPregnancyTimer() {
+    if (player.children.pregnancyTimer) {
+        clearInterval(player.children.pregnancyTimer);
+    }
+    
+    player.children.pregnancyTimer = setInterval(() => {
+        if (player.children.isPregnant) {
+            const progress = calculatePregnancyProgress();
+            player.children.pregnancyProgress = progress;
+            
+            console.log('怀孕计时器检查，进度:', progress.toFixed(1) + '%');
+            
+            // 更新UI
+            updatePregnancyStatus();
+            
+            // 当进度达到100%时触发分娩
+            if (progress >= 100) {
+                console.log('怀孕完成，触发分娩...');
+                giveBirth();
+            }
+        } else {
+            // 怀孕结束，清除计时器
+            clearInterval(player.children.pregnancyTimer);
+            player.children.pregnancyTimer = null;
+        }
+    }, 30000); // 每30秒检查一次（更频繁的检查）
+}
+
+// 分娩
+function giveBirth() {
+    try {
+        console.log('开始分娩检查...');
+        console.log('怀孕状态:', player.children.isPregnant);
+        console.log('预期孩子:', player.children.expectedChild);
+        
+        if (!player.children.isPregnant) {
+            logAction("当前没有怀孕", "error");
+            return;
+        }
+        
+        if (!player.children.expectedChild) {
+            logAction("怀孕数据异常，无法分娩", "error");
+            // 重置怀孕状态
+            player.children.isPregnant = false;
+            player.children.pregnancyStart = 0;
+            player.children.pregnancyProgress = 0;
+            updateChildSystemUI();
+            saveGame();
+            return;
+        }
+        
+        const progress = calculatePregnancyProgress();
+        console.log('当前怀孕进度:', progress + '%');
+        
+        // 即使进度未满100%也允许分娩（容错处理）
+        if (progress < 95) {
+            logAction(`怀孕进度不足 (${progress.toFixed(1)}%)，还不能分娩`, "error");
+            return;
+        }
+        
+        console.log('创建新孩子...');
+        const child = createNewChild(
+            player.children.expectedChild.name,
+            player.children.expectedChild.gender
+        );
+        
+        // 添加到孩子列表
+        player.children.children.push(child);
+        player.children.totalChildren = (player.children.totalChildren || 0) + 1;
+        
+        // 重置怀孕状态
+        player.children.isPregnant = false;
+        player.children.pregnancyStart = 0;
+        player.children.pregnancyProgress = 0;
+        delete player.children.expectedChild;
+        
+        // 清除计时器
+        if (player.children.pregnancyTimer) {
+            clearInterval(player.children.pregnancyTimer);
+            player.children.pregnancyTimer = null;
+        }
+        
+        const genderText = child.gender === 'boy' ? '男孩' : '女孩';
+        logAction(`🎉 恭喜！您生下了一个${genderText}：${child.name}！`, "success");
+        
+ 
+        
+        
+        updateChildSystemUI();
+        updateDisplay();
+        saveGame();
+        
+        console.log('分娩完成，当前孩子数量:', player.children.children.length);
+        
+    } catch (error) {
+        console.error('分娩过程中发生错误:', error);
+        logAction("分娩过程中出现错误，已重置怀孕状态", "error");
+        
+        // 错误恢复：重置怀孕状态
+        player.children.isPregnant = false;
+        player.children.pregnancyStart = 0;
+        player.children.pregnancyProgress = 0;
+        delete player.children.expectedChild;
+        
+        updateChildSystemUI();
+        saveGame();
+    }
+}
+
+
+// 立即分娩
+function giveBirthNow() {
+    if (!player.children.isPregnant) {
+        logAction("当前没有怀孕", "error");
+        return;
+    }
+    
+    if (player.investmentGame.userData.availableFunds < 88888) {
+        logAction("资金不足！需要88888元", "error");
+        return;
+    }
+    
+    showCustomConfirm("确定要立即分娩吗？消耗88888元", (confirmed) => {
+        if (confirmed) {
+            player.investmentGame.userData.availableFunds -= 88888;
+            giveBirth();
+        }
+    });
+}
+
+// 更新孩子列表
+function updateChildrenList() {
+    const container = document.getElementById('childrenList');
+    const children = player.children.children || [];
+    
+    if (children.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #888; padding: 20px;">还没有孩子</div>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    children.forEach((child, index) => {
+        // 确保属性正确初始化
+        const safeChild = ensureChildAttributes(child);
+        const currentStage = childConfig.growthStages[safeChild.growthStage];
+        const nextStage = childConfig.growthStages[safeChild.growthStage + 1];
+         const isAdult = safeChild.isAdult || safeChild.growthStage >= childConfig.growthStages.length - 1;
+        
+        // 更新成年状态（确保一致性）
+        if (isAdult && !safeChild.isAdult) {
+            safeChild.isAdult = true;
+        }
+        // 计算成长倒计时
+        const growthInfo = calculateGrowthCountdown(safeChild);
+        
+        const childCard = document.createElement('div');
+        childCard.className = 'child-card';
+        childCard.style.background = '#444';
+        childCard.style.border = '2px solid #FF69B4';
+        childCard.style.borderRadius = '5px';
+        childCard.style.padding = '10px';
+        childCard.style.textAlign = 'center';
+        childCard.style.position = 'relative';
+         const adultBadge = isAdult ? '<div style="position: absolute; top: 5px; right: 5px; background: #4CAF50; color: white; padding: 2px 5px; border-radius: 3px; font-size: 8px;">成年</div>' : '';
+        // 计算培养冷却时间
+        const now = Date.now();
+        const lastTraining = safeChild.lastTraining || 0;
+        const cooldown = 60 * 60 * 1000;
+        const remainingTime = Math.max(0, cooldown - (now - lastTraining));
+        const isOnCooldown = remainingTime > 0;
+        const minutesRemaining = Math.ceil(remainingTime / (60 * 1000));
+        
+        childCard.innerHTML = `
+            <div style="font-weight: bold; color: #FF69B4; font-size: 14px;">${safeChild.name}</div>
+            <div style="font-size: 12px; color: #ccc;">${safeChild.gender === 'boy' ? '👦 男孩' : '👧 女孩'}</div>
+            ${isAdult ? '<div style="font-size: 10px; color: #4CAF50;">✓ 可以工作</div>' : ''}
+            <div style="font-size: 11px; color: #87CEEB;">${currentStage.name}</div>
+            
+            <!-- 成长阶段信息 -->
+            <div style="margin: 5px 0; padding: 3px; background: rgba(0,0,0,0.3); border-radius: 3px;">
+                ${growthInfo.countdownHtml}
+            </div>
+            
+            <!-- 属性显示 -->
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; font-size: 10px; margin: 5px 0;">
+                <div style="color: #32CD32;">智力: ${safeChild.attributes.intelligence}</div>
+                <div style="color: #FFA500;">体质: ${safeChild.attributes.physique}</div>
+                <div style="color: #FF69B4;">魅力: ${safeChild.attributes.charm}</div>
+                <div style="color: #FFD700;">商业: ${safeChild.attributes.business}</div>
+            </div>
+            
+            <!-- 培养冷却状态 -->
+            <div style="font-size: 9px; color: ${isOnCooldown ? '#FF6B6B' : '#4CAF50'}; background: rgba(0,0,0,0.7); padding: 2px 5px; border-radius: 3px; margin-top: 3px;">
+                ${isOnCooldown ? `培养冷却: ${minutesRemaining}分钟` : '可培养'}
+            </div>
+            
+            <!-- 单独培养按钮 -->
+            <div style="margin-top: 5px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px;">
+                <button onclick="trainChild(${index}, 'education')" 
+                        style="background: ${isOnCooldown ? '#888' : '#2196F3'}; color: white; border: none; padding: 2px 4px; border-radius: 2px; cursor: ${isOnCooldown ? 'not-allowed' : 'pointer'}; font-size: 8px;"
+                        ${isOnCooldown ? 'disabled' : ''} title="教育培养">
+                    教育
+                </button>
+                <button onclick="trainChild(${index}, 'sports')" 
+                        style="background: ${isOnCooldown ? '#888' : '#4CAF50'}; color: white; border: none; padding: 2px 4px; border-radius: 2px; cursor: ${isOnCooldown ? 'not-allowed' : 'pointer'}; font-size: 8px;"
+                        ${isOnCooldown ? 'disabled' : ''} title="体育培养">
+                    体育
+                </button>
+                <button onclick="trainChild(${index}, 'arts')" 
+                        style="background: ${isOnCooldown ? '#888' : '#9C27B0'}; color: white; border: none; padding: 2px 4px; border-radius: 2px; cursor: ${isOnCooldown ? 'not-allowed' : 'pointer'}; font-size: 8px;"
+                        ${isOnCooldown ? 'disabled' : ''} title="艺术培养">
+                    艺术
+                </button>
+                <button onclick="trainChild(${index}, 'business')" 
+                        style="background: ${isOnCooldown ? '#888' : '#FF9800'}; color: white; border: none; padding: 2px 4px; border-radius: 2px; cursor: ${isOnCooldown ? 'not-allowed' : 'pointer'}; font-size: 8px;"
+                        ${isOnCooldown ? 'disabled' : ''} title="商业培养">
+                    商业
+                </button>
+            </div>
+              
+            <div style="font-size: 8px; color: #888; margin-top: 2px;">总培养: ${safeChild.totalTraining || 0}次</div>
+        `;
+        
+        container.appendChild(childCard);
+    });
+}
+
+function calculateGrowthCountdown(child) {
+    const currentStage = childConfig.growthStages[child.growthStage];
+    const nextStage = childConfig.growthStages[child.growthStage + 1];
+    
+    // 如果是最后阶段
+    if (!nextStage) {
+        return {
+            countdownHtml: `
+                <div style="color: #FFD700; font-size: 9px;">🏆 已达成最高阶段</div>
+                <div style="color: #888; font-size: 8px;">${currentStage.name}</div>
+            `,
+            canGrow: false,
+            timeRemaining: 0
+        };
+    }
+    
+    // 计算当前阶段已过时间
+    const birthDate = child.birthDate || Date.now();
+    const now = Date.now();
+    const timeInCurrentStage = now - birthDate - childConfig.growthStages.slice(0, child.growthStage).reduce((sum, stage) => sum + stage.duration, 0);
+    const timeRequired = currentStage.duration;
+    const timeRemaining = Math.max(0, timeRequired - timeInCurrentStage);
+    
+    // 计算属性需求
+    const totalAttributes = Object.values(child.attributes).reduce((a, b) => a + b, 0);
+    const attributesRequired = (child.growthStage + 1) * 10; // 每阶段需要10点属性
+    const attributesNeeded = Math.max(0, attributesRequired - totalAttributes);
+    
+    // 计算成长进度
+    const timeProgress = Math.min(100, (timeInCurrentStage / timeRequired) * 100);
+    const attributeProgress = Math.min(100, (totalAttributes / attributesRequired) * 100);
+    const overallProgress = Math.min(timeProgress, attributeProgress);
+    
+    // 格式化时间
+    const hoursRemaining = Math.floor(timeRemaining / (60 * 60 * 1000));
+    const minutesRemaining = Math.floor((timeRemaining % (60 * 60 * 1000)) / (60 * 1000));
+    
+    const canGrow = timeRemaining <= 0 && attributesNeeded <= 0;
+    
+    let countdownHtml = '';
+    
+    if (canGrow) {
+        countdownHtml = `
+            <div style="color: #4CAF50; font-size: 9px;">✨ 可成长到 ${nextStage.name}</div>
+            <div style="color: #888; font-size: 8px;">点击培养即可升级</div>
+        `;
+    } else {
+        // 显示时间倒计时
+        if (timeRemaining > 0) {
+            countdownHtml += `
+                <div style="color: #87CEEB; font-size: 8px;">⏰ ${hoursRemaining}小时${minutesRemaining}分钟</div>
+            `;
+        }
+        
+        // 显示属性需求
+        if (attributesNeeded > 0) {
+            countdownHtml += `
+                <div style="color: #FFA500; font-size: 8px;">📊 还需${attributesNeeded}点属性</div>
+            `;
+        }
+        
+        // 显示进度条
+        countdownHtml += `
+            <div style="margin-top: 3px;">
+                <div style="background: #555; border-radius: 3px; height: 6px; position: relative;">
+                    <div style="background: linear-gradient(90deg, #FF69B4, #FF1493); height: 100%; border-radius: 3px; width: ${overallProgress}%;"></div>
+                </div>
+                <div style="font-size: 7px; color: #ccc;">成长进度: ${overallProgress.toFixed(1)}%</div>
+            </div>
+        `;
+    }
+    
+    return {
+        countdownHtml: countdownHtml,
+        canGrow: canGrow,
+        timeRemaining: timeRemaining,
+        attributesNeeded: attributesNeeded,
+        nextStage: nextStage.name
+    };
+}
+
+// 更新培养区域
+function updateTrainingSection() {
+    const container = document.getElementById('childTrainingSection');
+    container.innerHTML = '';
+    
+    // 添加冷却时间概览
+    const children = player.children.children || [];
+    const now = Date.now();
+    const availableCount = children.filter(child => {
+        const lastTraining = child.lastTraining || 0;
+        return (now - lastTraining) >= 60 * 60 * 1000;
+    }).length;
+    
+    const cooldownOverview = document.createElement('div');
+    cooldownOverview.style.cssText = 'grid-column: 1 / -1; background: #555; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px;';
+    cooldownOverview.innerHTML = `
+        <div style="font-size: 12px; color: #ccc;">
+            可培养孩子: <span style="color: ${availableCount > 0 ? '#4CAF50' : '#FF6B6B'}">${availableCount}/${children.length}</span>
+        </div>
+        <div style="font-size: 10px; color: #888;">
+            ${availableCount === 0 ? '所有孩子都在冷却中' : '可点击孩子卡片上的按钮进行单独培养'}
+        </div>
+    `;
+    container.appendChild(cooldownOverview);
+    
+    // 添加批量培养选项
+    const batchTrainingTitle = document.createElement('div');
+    batchTrainingTitle.style.cssText = 'grid-column: 1 / -1; text-align: center; font-weight: bold; color: #FF69B4; margin: 10px 0;';
+    batchTrainingTitle.textContent = '批量培养 (所有可培养的孩子)';
+    container.appendChild(batchTrainingTitle);
+    
+    // 添加培养选项
+    childConfig.trainingTypes.forEach(training => {
+        const trainingCard = document.createElement('div');
+        trainingCard.style.background = '#555';
+        trainingCard.style.padding = '10px';
+        trainingCard.style.borderRadius = '5px';
+        trainingCard.style.textAlign = 'center';
+        
+        trainingCard.innerHTML = `
+            <div style="font-weight: bold; color: ${getTrainingColor(training.id)};">${training.name}</div>
+            <div style="font-size: 12px; color: #ccc; margin: 5px 0;">${training.description}</div>
+            <div style="font-size: 11px; color: #FFD700;">消耗: ${training.cost} 元/孩子</div>
+            <div style="font-size: 10px; color: #87CEEB;">效果: ${getAttributeDisplayName(training.effect)}+1</div>
+            <button onclick="trainAllChildren('${training.id}')" 
+                    style="margin-top: 5px; background: ${availableCount > 0 ? getTrainingColor(training.id) : '#888'}; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: ${availableCount > 0 ? 'pointer' : 'not-allowed'}; width: 100%;"
+                    ${availableCount === 0 ? 'disabled' : ''}>
+                全体${training.name} (${availableCount}个)
+            </button>
+        `;
+        
+        container.appendChild(trainingCard);
+    });
+    
+    // 添加智能培养选项
+    const smartTrainingCard = document.createElement('div');
+    smartTrainingCard.style.cssText = 'grid-column: 1 / -1; background: #555; padding: 10px; border-radius: 5px; text-align: center; margin-top: 10px;';
+    smartTrainingCard.innerHTML = `
+        <div style="font-weight: bold; color: #FF69B4;">智能培养</div>
+        <div style="font-size: 12px; color: #ccc; margin: 5px 0;">根据每个孩子的特点进行最优培养</div>
+        <button onclick="smartTrainAllChildren()" 
+                style="margin-top: 5px; background: ${availableCount > 0 ? '#FF69B4' : '#888'}; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: ${availableCount > 0 ? 'pointer' : 'not-allowed'}; width: 100%;"
+                ${availableCount === 0 ? 'disabled' : ''}>
+            智能培养 (${availableCount}个)
+        </button>
+    `;
+    container.appendChild(smartTrainingCard);
+ 
+
+}
+function getCurrentStrategyName() {
+    const strategies = {
+        'balanced': '均衡发展',
+        'intelligence': '智力优先',
+        'physique': '体质优先',
+        'charm': '魅力优先',
+        'business': '商业优先'
+    };
+    return strategies[player.children.trainingStrategy || 'balanced'];
+}
+function getTrainingColor(trainingType) {
+    const colors = {
+        'education': '#2196F3',    // 蓝色
+        'sports': '#4CAF50',       // 绿色
+        'arts': '#9C27B0',         // 紫色
+        'business': '#FF9800'      // 橙色
+    };
+    return colors[trainingType] || '#666';
+}
+function smartTrainAllChildren() {
+    const children = player.children.children || [];
+    if (children.length === 0) {
+        logAction("没有孩子可以培养", "error");
+        return;
+    }
+    
+    const now = Date.now();
+    const availableChildren = children.filter(child => {
+        const lastTraining = child.lastTraining || 0;
+        return (now - lastTraining) >= 60 * 60 * 1000;
+    });
+    
+    if (availableChildren.length === 0) {
+        logAction("所有孩子都在培养冷却中", "error");
+        return;
+    }
+    
+    let totalCost = 0;
+    const trainingPlan = [];
+    
+    // 为每个孩子选择最优的培养方式
+    availableChildren.forEach(child => {
+        // 找出孩子最弱的属性
+        const attributes = child.attributes;
+        const weakestAttribute = Object.keys(attributes).reduce((weakest, attr) => {
+            return attributes[attr] < attributes[weakest] ? attr : weakest;
+        });
+        
+        // 找到对应的培养方式
+        const bestTraining = childConfig.trainingTypes.find(t => t.effect === weakestAttribute);
+        if (bestTraining) {
+            totalCost += bestTraining.cost;
+            trainingPlan.push({
+                childName: child.name,
+                training: bestTraining,
+                attribute: weakestAttribute,
+                currentValue: attributes[weakestAttribute]
+            });
+        }
+    });
+    
+    if (totalCost === 0) {
+        logAction("无法制定培养计划", "error");
+        return;
+    }
+    
+    if (player.investmentGame.userData.availableFunds < totalCost) {
+        logAction(`资金不足！智能培养需要 ${totalCost} 元`, "error");
+        return;
+    }
+    
+    // 显示培养计划
+    const planText = trainingPlan.map(plan => 
+        `${plan.childName}: ${plan.training.name} (${getAttributeDisplayName(plan.attribute)} ${plan.currentValue}→${plan.currentValue + 1})`
+    ).join('\n');
+    
+    showCustomConfirm(`智能培养计划：\n\n${planText}\n\n总计消耗: ${totalCost} 元`, (confirmed) => {
+        if (confirmed) {
+            let trainedCount = 0;
+            let totalAttributeIncrease = 0;
+            
+            trainingPlan.forEach(plan => {
+                const child = children.find(c => c.name === plan.childName);
+                if (child) {
+                    const oldValue = child.attributes[plan.attribute];
+                    child.attributes[plan.attribute] += 1;
+                    child.lastTraining = now;
+                    child.totalTraining = (child.totalTraining || 0) + 1;
+                    trainedCount++;
+                    totalAttributeIncrease += 1;
+                    
+                    // 检查成长
+                    const childIndex = children.indexOf(child);
+                    if (childIndex !== -1) {
+                        checkChildGrowth(childIndex);
+                    }
+                }
+            });
+            
+            if (trainedCount > 0) {
+                player.investmentGame.userData.availableFunds -= totalCost;
+                logAction(`智能培养了 ${trainedCount} 个孩子，总共增加了 ${totalAttributeIncrease} 点属性`, "success");
+                
+                updateChildSystemUI();
+                updateDisplay();
+                saveGame();
+            }
+        }
+    });
+}
+function quickTrainAll() {
+    const children = player.children.children || [];
+    if (children.length === 0) {
+        logAction("没有孩子可以培养", "error");
+        return;
+    }
+    
+    const now = Date.now();
+    const availableChildren = children.filter(child => {
+        const lastTraining = child.lastTraining || 0;
+        return (now - lastTraining) >= 60 * 60 * 1000;
+    });
+    
+    if (availableChildren.length === 0) {
+        logAction("所有孩子都在培养冷却中", "error");
+        return;
+    }
+    
+    // 使用最便宜的教育培养
+    const training = childConfig.trainingTypes[0]; // 教育培养
+    const totalCost = training.cost * availableChildren.length;
+    
+    if (player.investmentGame.userData.availableFunds < totalCost) {
+        logAction(`资金不足！需要 ${totalCost} 元`, "error");
+        return;
+    }
+    
+    showCustomConfirm(`确定要对 ${availableChildren.length} 个孩子进行快速教育培养吗？\n消耗 ${totalCost} 元`, (confirmed) => {
+        if (confirmed) {
+            let trainedCount = 0;
+            
+            availableChildren.forEach(child => {
+                child.attributes.intelligence += 1;
+                child.lastTraining = now;
+                child.totalTraining = (child.totalTraining || 0) + 1;
+                trainedCount++;
+                
+                // 检查成长
+                const childIndex = children.indexOf(child);
+                if (childIndex !== -1) {
+                    checkChildGrowth(childIndex);
+                }
+            });
+            
+            if (trainedCount > 0) {
+                player.investmentGame.userData.availableFunds -= totalCost;
+                logAction(`快速培养了 ${trainedCount} 个孩子，智力+${trainedCount}`, "success");
+                
+                updateChildSystemUI();
+                updateDisplay();
+                saveGame();
+            }
+        }
+    });
+}
+// 培养孩子
+function trainChild(childIndex, trainingType = null) {
+    try {
+        console.log('开始培养孩子:', childIndex, '培养类型:', trainingType);
+        
+        const children = player.children.children;
+        if (childIndex >= children.length) {
+            logAction("无效的孩子索引", "error");
+            return;
+        }
+        
+        const child = children[childIndex];
+        console.log('目标孩子:', child);
+        
+        // 检查培养冷却
+        const now = Date.now();
+        const lastTraining = child.lastTraining || 0;
+        const cooldown = 60 * 60 * 1000; // 1小时冷却
+        const remainingTime = cooldown - (now - lastTraining);
+        
+        if (remainingTime > 0) {
+            const minutesRemaining = Math.ceil(remainingTime / (60 * 1000));
+            logAction(`${child.name} 培养冷却中，还需等待 ${minutesRemaining} 分钟`, "error");
+            return;
+        }
+        
+        // 如果没有指定培养类型，弹出选择框
+        if (!trainingType) {
+            showTrainingSelection(childIndex);
+            return;
+        }
+        
+        const training = childConfig.trainingTypes.find(t => t.id === trainingType);
+        if (!training) {
+            logAction("无效的培养类型", "error");
+            return;
+        }
+        
+        console.log('选择的培养:', training);
+        
+        if (player.investmentGame.userData.availableFunds < training.cost) {
+            logAction(`资金不足！需要 ${training.cost} 元`, "error");
+            return;
+        }
+        
+        // 保存旧的属性值用于比较
+        const oldAttributeValue = child.attributes[training.effect];
+        console.log('培养前属性值:', training.effect, '=', oldAttributeValue);
+        
+        
+        player.investmentGame.userData.availableFunds -= training.cost;
+        console.log('扣除资金:', training.cost, '剩余:', player.investmentGame.userData.availableFunds);
+        
+        // 确保属性对象存在
+        if (!child.attributes) {
+            child.attributes = {
+                intelligence: 1,
+                physique: 1,
+                charm: 1,
+                business: 1
+            };
+        }
+        
+        // 增加属性 - 确保使用正确的属性名
+        const effectMapping = {
+            'education': 'intelligence',
+            'sports': 'physique',
+            'arts': 'charm',
+            'business': 'business'
+        };
+        
+        const actualEffect = effectMapping[trainingType] || training.effect;
+        console.log('实际影响的属性:', actualEffect);
+        
+        if (child.attributes[actualEffect] === undefined) {
+            child.attributes[actualEffect] = 1; // 初始化属性
+        }
+        
+        // 增加属性值
+        child.attributes[actualEffect] += 1;
+        const newAttributeValue = child.attributes[actualEffect];
+        console.log('培养后属性值:', actualEffect, '=', newAttributeValue);
+        
+        // 更新其他数据
+        child.lastTraining = now;
+        child.totalTraining = (child.totalTraining || 0) + 1;
+        
+        // 记录培养历史
+        if (!player.children.trainingHistory) {
+            player.children.trainingHistory = [];
+        }
+        player.children.trainingHistory.push({
+            childName: child.name,
+            trainingType: training.name,
+            attribute: actualEffect,
+            oldValue: oldAttributeValue,
+            newValue: newAttributeValue,
+            timestamp: now
+        });
+        
+        logAction(`对 ${child.name} 进行了${training.name}培养，${getAttributeDisplayName(actualEffect)}+1 (${oldAttributeValue} → ${newAttributeValue})`, "success");
+        
+        // 检查成长阶段
+        checkChildGrowth(childIndex);
+        
+        // 强制更新UI
+        updateChildSystemUI();
+        updateDisplay();
+        saveGame();
+        
+        console.log('培养完成，当前孩子属性:', child.attributes);
+        
+    } catch (error) {
+        console.error('培养孩子时发生错误:', error);
+        logAction("培养过程中出现错误", "error");
+    }
+}
+
+
+// 全体培养
+function trainAllChildren(trainingType) {
+    try {
+        console.log('开始全体培养，类型:', trainingType);
+        
+        const children = player.children.children;
+        if (children.length === 0) {
+            logAction("没有孩子可以培养", "error");
+            return;
+        }
+        
+        const training = childConfig.trainingTypes.find(t => t.id === trainingType);
+        if (!training) {
+            logAction("无效的培养类型", "error");
+            return;
+        }
+        
+        // 检查哪些孩子可以培养
+        const now = Date.now();
+        const availableChildren = children.filter((child, index) => {
+            const lastTraining = child.lastTraining || 0;
+            const canTrain = (now - lastTraining) >= 60 * 60 * 1000;
+            console.log(`孩子 ${child.name} 可培养:`, canTrain);
+            return canTrain;
+        });
+        
+        if (availableChildren.length === 0) {
+            const cooldownInfo = children.map(child => {
+                const lastTraining = child.lastTraining || 0;
+                const remainingTime = Math.max(0, 60 * 60 * 1000 - (now - lastTraining));
+                const minutesRemaining = Math.ceil(remainingTime / (60 * 1000));
+                return `${child.name}: ${minutesRemaining}分钟`;
+            }).join(', ');
+            
+            logAction(`所有孩子都在培养冷却中: ${cooldownInfo}`, "error");
+            return;
+        }
+        
+        const totalCost = training.cost * availableChildren.length;
+        if (player.investmentGame.userData.availableFunds < totalCost) {
+            logAction(`资金不足！需要 ${totalCost} 元`, "error");
+            return;
+        }
+        
+        showCustomConfirm(`确定要对 ${availableChildren.length} 个可培养的孩子进行${training.name}培养吗？\n消耗 ${totalCost} 元\n\n效果: ${getAttributeDisplayName(training.effect)}+1/孩子`, (confirmed) => {
+            if (confirmed) {
+                let trainedCount = 0;
+                let totalAttributeIncrease = 0;
+                
+                availableChildren.forEach((child) => {
+                    const childIndex = children.findIndex(c => c.id === child.id);
+                    if (childIndex !== -1) {
+                        // 保存旧值
+                        const oldValue = child.attributes[training.effect] || 1;
+                        
+                        // 增加属性
+                        if (!child.attributes[training.effect]) {
+                            child.attributes[training.effect] = 1;
+                        }
+                        child.attributes[training.effect] += 1;
+                        const newValue = child.attributes[training.effect];
+                        
+                        child.lastTraining = now;
+                        child.totalTraining = (child.totalTraining || 0) + 1;
+                        trainedCount++;
+                        totalAttributeIncrease += (newValue - oldValue);
+                        
+                        console.log(`孩子 ${child.name} ${training.effect}: ${oldValue} → ${newValue}`);
+                        
+                        // 检查成长
+                        checkChildGrowth(childIndex);
+                    }
+                });
+                
+                if (trainedCount > 0) {
+                    player.investmentGame.userData.availableFunds -= totalCost;
+                    
+                    logAction(`对 ${trainedCount} 个孩子进行了${training.name}培养，${getAttributeDisplayName(training.effect)} 总共增加了 ${totalAttributeIncrease} 点`, "success");
+                    
+                    updateChildSystemUI();
+                    updateDisplay();
+                    saveGame();
+                }
+            }
+        });
+        
+    } catch (error) {
+        console.error('全体培养时发生错误:', error);
+        logAction("全体培养过程中出现错误", "error");
+    }
+}
+function getAttributeDisplayName(attribute) {
+    const displayNames = {
+        'intelligence': '智力',
+        'physique': '体质',
+        'charm': '魅力',
+        'business': '商业'
+    };
+    return displayNames[attribute] || attribute;
+}
+
+function ensureChildAttributes(child) {
+    if (!child.attributes) {
+        child.attributes = {
+            intelligence: 1,
+            physique: 1,
+            charm: 1,
+            business: 1
+        };
+    }
+    
+    // 确保所有属性都存在
+    const defaultAttributes = ['intelligence', 'physique', 'charm', 'business'];
+    defaultAttributes.forEach(attr => {
+        if (child.attributes[attr] === undefined || child.attributes[attr] === null) {
+            child.attributes[attr] = 1;
+        }
+    });
+    
+    return child;
+}
+function createNewChild(name, gender) {
+    const child = {
+        id: 'child_' + Date.now(),
+        name: name,
+        gender: gender,
+        birthDate: Date.now(),
+        age: 0,
+        growthStage: 0,
+        isAdult: false, // 明确标记为非成年
+        attributes: {
+            intelligence: 1,
+            physique: 1,
+            charm: 1,
+            business: 1
+        },
+        lastTraining: 0,
+        totalTraining: 0,
+        lastInteraction: 0,
+        totalInteractions: 0,
+        intimacy: 0,
+        currentJob: null,
+        workStartTime: 0
+    };
+    
+    return ensureChildAttributes(child);
+}
+
+// 检查孩子成长
+function checkChildGrowth(childIndex) {
+    const child = player.children.children[childIndex];
+    if (!child || child.isAdult) return;
+    
+    const growthInfo = calculateGrowthCountdown(child);
+    
+    // 如果满足成长条件，自动成长
+    if (growthInfo.canGrow) {
+        growChildToNextStage(childIndex);
+    }
+}
+function growChildToNextStage(childIndex) {
+    const child = player.children.children[childIndex];
+    if (!child) return;
+    
+    const currentStage = childConfig.growthStages[child.growthStage];
+    const nextStage = childConfig.growthStages[child.growthStage + 1];
+    
+    if (!nextStage) {
+        // 到达最后阶段，标记为成年
+        child.isAdult = true;
+        child.growthStage = childConfig.growthStages.length - 1; // 确保索引正确
+        logAction(`🎉 ${child.name} 已经长大成人了！现在可以工作了！`, "success");
+    } else {
+        // 成长到下一阶段
+        const oldStage = currentStage.name;
+        child.growthStage++;
+        const newStage = nextStage.name;
+        
+        // 成长奖励
+        const growthBonus = calculateGrowthBonus(child);
+        applyGrowthBonus(child, growthBonus);
+        
+        logAction(`🎉 ${child.name} 从 ${oldStage} 成长到了 ${newStage}！`, "success");
+        
+        // 检查是否到达成年阶段
+        if (child.growthStage >= childConfig.growthStages.length - 1) {
+            child.isAdult = true;
+            logAction(`🎉 ${child.name} 已经长大成人了！现在可以工作了！`, "success");
+        }
+    }
+    
+    updateChildSystemUI();
+    saveGame();
+    
+    // 递归检查是否可以继续成长
+    setTimeout(() => checkChildGrowth(childIndex), 100);
+}
+
+
+function calculateGrowthBonus(child) {
+    const stageMultiplier = child.growthStage * 0.1; // 每阶段增加10%奖励
+    
+    return {
+        intelligence: Math.floor(1 + stageMultiplier),
+        physique: Math.floor(1 + stageMultiplier),
+        charm: Math.floor(1 + stageMultiplier),
+        business: Math.floor(1 + stageMultiplier)
+    };
+}
+// 应用成长奖励
+function applyGrowthBonus(child, bonus) {
+    Object.keys(bonus).forEach(attribute => {
+        child.attributes[attribute] += bonus[attribute];
+    });
+}
+function updateGrowthOverview() {
+    const container = document.getElementById('growthOverview');
+    if (!container) return;
+    
+    const children = player.children.children || [];
+    if (children.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: #888; padding: 10px;">还没有孩子</div>';
+        return;
+    }
+    
+    // 统计成长信息
+    let totalTimeRemaining = 0;
+    let totalAttributesNeeded = 0;
+    let canGrowCount = 0;
+    let growingChildren = 0;
+    
+    children.forEach(child => {
+        const growthInfo = calculateGrowthCountdown(child);
+        if (growthInfo.canGrow) {
+            canGrowCount++;
+        }
+        if (growthInfo.timeRemaining > 0 || growthInfo.attributesNeeded > 0) {
+            growingChildren++;
+        }
+        totalTimeRemaining += growthInfo.timeRemaining;
+        totalAttributesNeeded += growthInfo.attributesNeeded;
+    });
+    
+    const avgHoursRemaining = Math.floor(totalTimeRemaining / children.length / (60 * 60 * 1000));
+    const avgMinutesRemaining = Math.floor((totalTimeRemaining / children.length % (60 * 60 * 1000)) / (60 * 1000));
+    
+    container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; font-size: 11px;">
+            <div style="color: #4CAF50;">可成长: ${canGrowCount}个</div>
+            <div style="color: #87CEEB;">成长中: ${growingChildren}个</div>
+            <div style="color: #FFA500;">平均时间: ${avgHoursRemaining}h${avgMinutesRemaining}m</div>
+        </div>
+    `;
+}
+// 更新孩子加成
+function updateChildBonuses() {
+    const container = document.getElementById('childBonuses');
+    const bonuses = calculateChildBonuses();
+    
+    container.innerHTML = `
+        <div>GPS加成: +${((bonuses.gpsMultiplier - 1) * 100).toFixed(1)}%</div>
+        <div>点击加成: +${((bonuses.clickMultiplier - 1) * 100).toFixed(1)}%</div>
+        <div>生命值: +${(bonuses.critRateBonus * 100).toFixed(2)}%</div>
+        <div>攻击值: +${(bonuses.goldMultiplier * 100).toFixed(2)}%</div>
+        <div style="margin-top: 10px; font-size: 12px; color: #ccc;">
+            加成来自所有孩子的属性总和
+        </div>
+    `;
+    
+    // 更新玩家数据中的加成
+    player.children.childBonuses = bonuses;
+}
+function triggerChildEvents() {
+    if (!player.children || !player.children.children.length) return;
+    
+    const events = [
+        {
+            name: "孩子生日",
+            condition: () => {
+                const today = new Date();
+                return player.children.children.some(child => {
+                    const birthDate = new Date(child.birthDate);
+                    return birthDate.getDate() === today.getDate() && 
+                           birthDate.getMonth() === today.getMonth();
+                });
+            },
+            effect: () => {
+                const birthdayChildren = player.children.children.filter(child => {
+                    const birthDate = new Date(child.birthDate);
+                    const today = new Date();
+                    return birthDate.getDate() === today.getDate() && 
+                           birthDate.getMonth() === today.getMonth();
+                });
+                
+                birthdayChildren.forEach(child => {
+                    // 生日奖励
+                    Object.keys(child.attributes).forEach(attr => {
+                        child.attributes[attr]++;
+                    });
+                    logAction(`${child.name} 过生日，所有属性+1！`, "success");
+                });
+            }
+        },
+        {
+            name: "家庭聚会",
+            condition: () => Math.random() < 0.01, // 1%几率触发
+            effect: () => {
+                const happinessBonus = 10;
+                logAction("举办了家庭聚会，家庭幸福度大幅提升！", "success");
+                // 这里可以添加具体的幸福度提升逻辑
+            }
+        }
+    ];
+    
+    events.forEach(event => {
+        if (event.condition()) {
+            event.effect();
+        }
+    });
+}
+
+// 孩子互动功能
+function interactWithChild(childIndex) {
+    const child = player.children.children[childIndex];
+    if (!child) return;
+    
+    const now = Date.now();
+    const lastInteraction = child.lastInteraction || 0;
+    const interactionCooldown = 3 * 60 * 60 * 1000; // 3小时冷却
+    
+    if (now - lastInteraction < interactionCooldown) {
+        const remainingTime = interactionCooldown - (now - lastInteraction);
+        const hoursRemaining = Math.floor(remainingTime / (60 * 60 * 1000));
+        const minutesRemaining = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+        logAction(`${child.name} 互动冷却中，还需等待 ${hoursRemaining}小时${minutesRemaining}分钟`, "error");
+        return;
+    }
+    
+    if (player.investmentGame.userData.availableFunds < 5000) {
+        logAction("资金不足！需要 5000 元", "error");
+        return;
+    }
+    
+    // 扣除金币
+    player.investmentGame.userData.availableFunds -= 5000;
+    
+    // 互动效果
+    const interactions = [
+        { name: "玩耍", effect: "physique", message: "和孩子一起玩耍" },
+        { name: "讲故事", effect: "intelligence", message: "给孩子讲故事" },
+        { name: "外出", effect: "charm", message: "带孩子外出游玩" },
+        { name: "购物", effect: "business", message: "教孩子购物" }
+    ];
+    
+    const interaction = interactions[Math.floor(Math.random() * interactions.length)];
+    
+    // 增加属性
+    child.attributes[interaction.effect] = (child.attributes[interaction.effect] || 0) + 1;
+    
+    // 增加亲密度
+    child.intimacy = (child.intimacy || 0) + 1;
+    child.totalInteractions = (child.totalInteractions || 0) + 1;
+    child.lastInteraction = now;
+    
+    // 小几率获得额外奖励
+    let bonusMessage = "";
+    if (Math.random() < 0.1) { // 10%几率获得额外奖励
+        const bonusAttribute = Object.keys(child.attributes)[Math.floor(Math.random() * Object.keys(child.attributes).length)];
+        child.attributes[bonusAttribute] += 1;
+        bonusMessage = `，并且额外增加了${getAttributeDisplayName(bonusAttribute)}`;
+    }
+    
+    logAction(`${interaction.message}，${child.name} 的${getAttributeDisplayName(interaction.effect)}+1${bonusMessage}，亲密度+1`, "success");
+    
+    updateChildSystemUI();
+    updateDisplay();
+    saveGame();
+}
+function interactWithAllChildren() {
+    const children = player.children.children || [];
+    const now = Date.now();
+    const interactionCooldown = 3 * 60 * 60 * 1000;
+    
+    const availableChildren = children.filter(child => {
+        const lastInteraction = child.lastInteraction || 0;
+        return now - lastInteraction >= interactionCooldown;
+    });
+    
+    if (availableChildren.length === 0) {
+        logAction("所有孩子都在互动冷却中", "error");
+        return;
+    }
+    
+    const totalCost = 5000 * availableChildren.length;
+    if (player.investmentGame.userData.availableFunds < totalCost) {
+        logAction(`资金不足！需要 ${totalCost} 元`, "error");
+        return;
+    }
+    
+    showCustomConfirm(`确定要与 ${availableChildren.length} 个孩子互动吗？\n消耗 ${totalCost} 元`, (confirmed) => {
+        if (confirmed) {
+            let interactedCount = 0;
+            let totalAttributes = 0;
+            
+            availableChildren.forEach(child => {
+                const interactions = [
+                    { effect: "physique" }, { effect: "intelligence" }, 
+                    { effect: "charm" }, { effect: "business" }
+                ];
+                const interaction = interactions[Math.floor(Math.random() * interactions.length)];
+                
+                child.attributes[interaction.effect] += 1;
+                child.intimacy = (child.intimacy || 0) + 1;
+                child.totalInteractions = (child.totalInteractions || 0) + 1;
+                child.lastInteraction = now;
+                
+                interactedCount++;
+                totalAttributes++;
+            });
+            
+            if (interactedCount > 0) {
+                player.investmentGame.userData.availableFunds -= totalCost;
+                logAction(`与 ${interactedCount} 个孩子互动，总共增加了 ${totalAttributes} 点属性`, "success");
+                
+                updateChildSystemUI();
+                updateDisplay();
+                saveGame();
+            }
+        }
+    });
+}
+
+// 辅助函数：获取孩子年龄
+function getChildAge(child) {
+    const birthDate = child.birthDate || Date.now();
+    const ageInYears = Math.floor((Date.now() - birthDate) / (1 * 24 * 60 * 60 * 1000));
+    return Math.max(0, ageInYears);
+}
+
+function updateChildWorkSystem() {
+    const container = document.getElementById('childWorkSystem');
+    if (!container) return;
+    
+    const children = player.children.children || [];
+    const adultChildren = children.filter(child => {
+        // 多重条件检测成年状态
+        const isAdultByAge = child.isAdult === true;
+        const isAdultByStage = child.growthStage >= childConfig.growthStages.length - 1;
+        return isAdultByAge || isAdultByStage;
+    });
+    
+    console.log('工作系统检查:', {
+        totalChildren: children.length,
+        adultChildren: adultChildren.length,
+        adultChildrenList: adultChildren.map(c => ({ name: c.name, isAdult: c.isAdult, growthStage: c.growthStage }))
+    });
+    
+    if (adultChildren.length === 0) {
+        container.innerHTML = `
+            <h3>孩子工作系统</h3>
+            <div style="text-align: center; color: #888; padding: 20px; background: #444; border-radius: 5px;">
+                <div>还没有成年孩子可以工作</div>
+                <div style="font-size: 12px; margin-top: 10px;">
+                    孩子需要成长到青年阶段才能工作
+                </div>
+                <div style="font-size: 11px; color: #FFA500; margin-top: 5px;">
+                    当前成长阶段: ${getGrowthStageInfo(children)}
+                </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = `
+        <h3>孩子工作系统</h3>
+        <div style="margin-bottom: 10px; font-size: 12px; color: #ccc;">
+            成年孩子可以工作赚取金币 (${adultChildren.length}/${children.length} 个成年)
+        </div>
+        <div id="workChildrenList" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
+            <!-- 工作孩子列表会动态生成 -->
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="collectAllChildWorkIncome()" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; flex: 1;">收取所有工作收入</button>
+            <button onclick="autoAssignAllJobs()" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; flex: 1;">自动分配工作</button>
+        </div>
+    `;
+    
+    updateWorkChildrenList();
+}
+// 获取成长阶段信息
+function getGrowthStageInfo(children) {
+    if (children.length === 0) return "没有孩子";
+    
+    const stageCounts = {};
+    children.forEach(child => {
+        const stage = childConfig.growthStages[child.growthStage]?.name || '未知';
+        stageCounts[stage] = (stageCounts[stage] || 0) + 1;
+    });
+    
+    return Object.entries(stageCounts).map(([stage, count]) => `${stage}×${count}`).join(', ');
+}
+// 更新工作孩子列表
+function updateWorkChildrenList() {
+    const container = document.getElementById('workChildrenList');
+    if (!container) return;
+    
+    const children = player.children.children || [];
+    const adultChildren = children.filter(child => child.isAdult || child.growthStage >= childConfig.growthStages.length - 1);
+    
+    container.innerHTML = '';
+    
+    if (adultChildren.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #888; padding: 20px;">没有成年孩子</div>';
+        return;
+    }
+    
+    adultChildren.forEach((child, index) => {
+        const actualIndex = children.findIndex(c => c.id === child.id);
+        if (actualIndex === -1) return;
+        
+        const workCard = document.createElement('div');
+        workCard.style.background = '#555';
+        workCard.style.padding = '10px';
+        workCard.style.borderRadius = '5px';
+        workCard.style.border = '1px solid #666';
+        workCard.style.position = 'relative';
+        
+        const workInfo = getChildWorkInfo(child);
+        const growthStage = childConfig.growthStages[child.growthStage];
+        
+        // 当前工作指示器
+        const currentJobIndicator = workInfo.currentJob ? `
+            <div style="position: absolute; top: 5px; right: 5px; background: #4CAF50; color: white; padding: 2px 5px; border-radius: 3px; font-size: 8px;">
+                ${workInfo.currentJob}
+            </div>
+        ` : '';
+        
+        workCard.innerHTML = currentJobIndicator + `
+            <div style="font-weight: bold; color: #FF69B4;">${child.name}</div>
+            <div style="font-size: 12px; color: #ccc;">${child.gender === 'boy' ? '👦' : '👧'} ${growthStage?.name || '成年'}</div>
+            
+            <div style="margin: 8px 0;">
+                ${workInfo.currentJob ? `
+                    <div style="font-size: 11px; color: #4CAF50;">职业: ${workInfo.currentJob}</div>
+                    <div style="font-size: 10px; color: #FFD700;">时薪: ${formatNumber(workInfo.hourlyIncome)} 元</div>
+                    <div style="font-size: 10px; color: #87CEEB;">已工作: ${workInfo.hoursWorked.toFixed(1)} 小时</div>
+                    <div style="font-size: 10px; color: #32CD32;">待收: ${formatNumber(workInfo.pendingIncome)} 元</div>
+                ` : `
+                    <div style="font-size: 11px; color: #FF6B6B;">待业中</div>
+                    <div style="font-size: 10px; color: #ccc;">点击开始工作</div>
+                `}
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 10px;">
+                <div style="color: #2196F3;">智力: ${child.attributes.intelligence}</div>
+                <div style="color: #4CAF50;">体质: ${child.attributes.physique}</div>
+                <div style="color: #9C27B0;">魅力: ${child.attributes.charm}</div>
+                <div style="color: #FF9800;">商业: ${child.attributes.business}</div>
+            </div>
+            
+            <div style="margin-top: 8px; display: flex; gap: 3px;">
+                ${!workInfo.currentJob ? `
+                    <button onclick="startChildWork(${actualIndex})" style="background: #4CAF50; color: white; border: none; padding: 3px 6px; border-radius: 3px; cursor: pointer; font-size: 9px; flex: 1;">开始工作</button>
+                ` : `
+                    <button onclick="stopChildWork(${actualIndex})" style="background: #FF9800; color: white; border: none; padding: 3px 6px; border-radius: 3px; cursor: pointer; font-size: 9px; flex: 1;">停止工作</button>
+                    <button onclick="collectChildWorkIncome(${actualIndex})" style="background: #2196F3; color: white; border: none; padding: 3px 6px; border-radius: 3px; cursor: pointer; font-size: 9px; flex: 1;">收取</button>
+                `}
+                <button onclick="showJobSelection(${actualIndex})" style="background: #9C27B0; color: white; border: none; padding: 3px 6px; border-radius: 3px; cursor: pointer; font-size: 9px; flex: 1;">换工作</button>
+            </div>
+        `;
+        
+        container.appendChild(workCard);
+    });
+}
+
+
+function getChildWorkInfo(child) {
+    const now = Date.now();
+    const jobs = {
+        "学者": { attribute: "intelligence", baseIncome: 12000 },
+        "运动员": { attribute: "physique", baseIncome: 8400 },
+        "艺人": { attribute: "charm", baseIncome: 4600 },
+        "商人": { attribute: "business", baseIncome: 9500 }
+    };
+    
+    if (!child.currentJob) {
+        return { currentJob: null, hourlyIncome: 0, hoursWorked: 0, pendingIncome: 0 };
+    }
+    
+    const job = jobs[child.currentJob];
+    if (!job) {
+        return { currentJob: null, hourlyIncome: 0, hoursWorked: 0, pendingIncome: 0 };
+    }
+    
+    const workStartTime = child.workStartTime || now;
+    const hoursWorked = (now - workStartTime) / (60 * 60 * 1000);
+    const hourlyIncome = job.baseIncome * (child.attributes[job.attribute] || 1);
+    const pendingIncome = Math.floor(hoursWorked * hourlyIncome);
+    
+    return {
+        currentJob: child.currentJob,
+        hourlyIncome: hourlyIncome,
+        hoursWorked: hoursWorked,
+        pendingIncome: pendingIncome
+    };
+}
+
+// 孩子工作系统（成年孩子）
+function startChildWork(childIndex) {
+    const child = player.children.children[childIndex];
+    if (!child) {
+        logAction("无效的孩子索引", "error");
+        return;
+    }
+    
+    // 检查是否成年
+    if (!child.isAdult && child.growthStage < childConfig.growthStages.length - 1) {
+        const currentStage = childConfig.growthStages[child.growthStage]?.name || '未知';
+        logAction(`${child.name} 还是${currentStage}，需要成长到青年阶段才能工作`, "error");
+        return;
+    }
+    
+    if (child.currentJob) {
+        logAction(`${child.name} 已经在工作了`, "error");
+        return;
+    }
+    
+    // 自动选择最适合的工作
+    const bestJob = getBestJobForChild(child);
+    child.currentJob = bestJob.name;
+    child.workStartTime = Date.now();
+    
+    logAction(`${child.name} 开始从事${bestJob.name}工作，时薪 ${formatNumber(bestJob.hourlyIncome)} 元`, "success");
+    updateChildSystemUI();
+    saveGame();
+}
+function collectChildWorkIncome(childIndex) {
+    const child = player.children.children[childIndex];
+    if (!child || !child.currentJob) {
+        logAction("该孩子没有在工作", "error");
+        return;
+    }
+    
+    const workInfo = getChildWorkInfo(child);
+    if (workInfo.pendingIncome > 0) {
+        player.investmentGame.userData.availableFunds += workInfo.pendingIncome;
+        child.workStartTime = Date.now(); // 重置工作时间
+        
+        logAction(`收取 ${child.name} 的工作收入: ${formatNumber(workInfo.pendingIncome)} 元`, "success");
+        updateDisplay();
+        updateChildSystemUI();
+        saveGame();
+    } else {
+        logAction(`${child.name} 还没有收入可以收取`, "info");
+    }
+}
+function autoAssignAllJobs() {
+    const children = player.children.children || [];
+    const adultChildren = children.filter(child => child.isAdult && !child.currentJob);
+    
+    if (adultChildren.length === 0) {
+        logAction("没有需要分配工作的孩子", "info");
+        return;
+    }
+    
+    let assignedCount = 0;
+    adultChildren.forEach(child => {
+        const bestJob = getBestJobForChild(child);
+        child.currentJob = bestJob.name;
+        child.workStartTime = Date.now();
+        assignedCount++;
+    });
+    
+    if (assignedCount > 0) {
+        logAction(`为 ${assignedCount} 个孩子自动分配了工作`, "success");
+        updateChildSystemUI();
+        saveGame();
+    }
+}
+function getBestJobForChild(child) {
+    const jobs = [
+        { name: "学者", attribute: "intelligence", baseIncome: 12000 },
+        { name: "运动员", attribute: "physique", baseIncome: 8400 },
+        { name: "艺人", attribute: "charm", baseIncome: 5600 },
+        { name: "商人", attribute: "business", baseIncome: 9500 }
+    ];
+    
+    // 计算每个工作的时薪
+    const jobOptions = jobs.map(job => {
+        const hourlyIncome = job.baseIncome * (child.attributes[job.attribute] || 1);
+        return { ...job, hourlyIncome: hourlyIncome };
+    });
+    
+    // 选择时薪最高的工作
+    return jobOptions.reduce((best, job) => job.hourlyIncome > best.hourlyIncome ? job : best);
+}
+function showJobSelection(childIndex) {
+    const child = player.children.children[childIndex];
+    if (!child || !child.isAdult) {
+        logAction("只有成年孩子才能工作", "error");
+        return;
+    }
+    
+    const jobs = [
+        { 
+            id: "scholar", 
+            name: "学者", 
+            attribute: "intelligence", 
+            baseIncome: 12000, 
+            description: "适合智力高的孩子", 
+            color: "#2196F3",
+            icon: "📚"
+        },
+        { 
+            id: "athlete", 
+            name: "运动员", 
+            attribute: "physique", 
+            baseIncome: 8400, 
+            description: "适合体质高的孩子", 
+            color: "#4CAF50",
+            icon: "🏃"
+        },
+        { 
+            id: "artist", 
+            name: "艺人", 
+            attribute: "charm", 
+            baseIncome: 5600, 
+            description: "适合魅力高的孩子", 
+            color: "#9C27B0",
+            icon: "🎭"
+        },
+        { 
+            id: "businessman", 
+            name: "商人", 
+            attribute: "business", 
+            baseIncome: 9500, 
+            description: "适合商业能力高的孩子", 
+            color: "#FF9800",
+            icon: "💼"
+        }
+    ];
+    
+    // 计算每个工作的时薪
+    const jobOptions = jobs.map(job => {
+        const hourlyIncome = job.baseIncome * (child.attributes[job.attribute] || 1);
+        const currentAttribute = child.attributes[job.attribute] || 1;
+        const suitability = calculateJobSuitability(child, job);
+        
+        return {
+            ...job,
+            hourlyIncome: hourlyIncome,
+            currentAttribute: currentAttribute,
+            suitability: suitability,
+            isCurrent: child.currentJob === job.name
+        };
+    });
+    
+    // 按适合度排序
+    jobOptions.sort((a, b) => b.suitability - a.suitability);
+    
+    // 创建选择对话框
+    const dialog = document.createElement('div');
+    dialog.id = 'jobSelectionDialog';
+    dialog.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #2a2a2a;
+        border: 3px solid #FF69B4;
+        border-radius: 10px;
+        padding: 20px;
+        z-index: 1002;
+        width: 500px;
+        max-width: 90vw;
+        max-height: 80vh;
+        overflow-y: auto;
+        color: white;
+    `;
+    
+    dialog.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #FF69B4; padding-bottom: 10px;">
+            <h3 style="color: #FF69B4; margin: 0;">为 ${child.name} 选择职业</h3>
+            <button onclick="closeJobSelection()" style="background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">关闭</button>
+        </div>
+        
+        <div style="margin-bottom: 15px; background: #333; padding: 10px; border-radius: 5px;">
+            <div style="font-size: 12px; color: #ccc;">当前属性:</div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 5px;">
+                <div style="color: #2196F3;">智力: ${child.attributes.intelligence}</div>
+                <div style="color: #4CAF50;">体质: ${child.attributes.physique}</div>
+                <div style="color: #9C27B0;">魅力: ${child.attributes.charm}</div>
+                <div style="color: #FF9800;">商业: ${child.attributes.business}</div>
+            </div>
+        </div>
+        
+        <div id="jobOptionsContainer" style="display: grid; gap: 10px;">
+            <!-- 工作选项会动态生成 -->
+        </div>
+        
+        <div style="margin-top: 15px; text-align: center; font-size: 12px; color: #888;">
+            点击职业卡片进行选择
+        </div>
+    `;
+    
+    // 添加遮罩层
+    const overlay = document.createElement('div');
+    overlay.id = 'jobSelectionOverlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 1001;
+    `;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(dialog);
+    
+    // 生成工作选项
+    const container = document.getElementById('jobOptionsContainer');
+    container.innerHTML = '';
+    
+    jobOptions.forEach((job, index) => {
+        const jobCard = document.createElement('div');
+        jobCard.className = 'job-option';
+        jobCard.style.cssText = `
+            background: ${job.isCurrent ? '#1a1a1a' : '#333'};
+            border: 2px solid ${job.color};
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        `;
+        
+        if (job.isCurrent) {
+            jobCard.innerHTML += `
+                <div style="position: absolute; top: 5px; right: 5px; background: ${job.color}; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px;">
+                    当前职业
+                </div>
+            `;
+        }
+        
+        jobCard.innerHTML += `
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <div style="font-size: 24px; margin-right: 10px;">${job.icon}</div>
+                <div>
+                    <div style="font-weight: bold; color: ${job.color}; font-size: 16px;">${job.name}</div>
+                    <div style="font-size: 12px; color: #ccc;">适合度: ${job.suitability}%</div>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 10px;">
+                <div style="font-size: 12px; color: #ccc;">${job.description}</div>
+                <div style="font-size: 11px; color: #FFD700;">时薪: ${formatNumber(job.hourlyIncome)} 金币</div>
+                <div style="font-size: 11px; color: ${job.color};">需要: ${getAttributeDisplayName(job.attribute)} ${job.currentAttribute}</div>
+            </div>
+            
+            <div style="background: #444; border-radius: 3px; height: 6px; margin: 5px 0;">
+                <div style="background: ${job.color}; height: 100%; border-radius: 3px; width: ${job.suitability}%;"></div>
+            </div>
+            <div style="font-size: 10px; color: #ccc; text-align: center;">适合度</div>
+            
+            ${job.isCurrent ? `
+                <div style="margin-top: 10px; text-align: center;">
+                    <div style="color: #4CAF50; font-size: 11px;">✓ 当前职业</div>
+                </div>
+            ` : `
+                <button onclick="selectJob(${childIndex}, '${job.id}')" 
+                        style="margin-top: 10px; background: ${job.color}; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 12px;">
+                    选择此职业
+                </button>
+            `}
+        `;
+        
+        // 添加悬停效果
+        jobCard.onmouseenter = function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+        };
+        jobCard.onmouseleave = function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
+        };
+        
+        container.appendChild(jobCard);
+    });
+}
+function calculateJobSuitability(child, job) {
+    const attributeValue = child.attributes[job.attribute] || 1;
+    const maxAttribute = Math.max(1, ...Object.values(child.attributes));
+    
+    // 基础适合度基于属性值
+    let suitability = (attributeValue / maxAttribute) * 100;
+    
+    // 如果这是当前工作，增加适合度
+    if (child.currentJob === job.name) {
+        suitability += 20;
+    }
+    
+    // 确保在0-100范围内
+    return Math.min(100, Math.max(0, Math.round(suitability)));
+}
+function selectJob(childIndex, jobId) {
+    const child = player.children.children[childIndex];
+    if (!child) return;
+    
+    const jobs = {
+        "scholar": { name: "学者", attribute: "intelligence", baseIncome: 12000 },
+        "athlete": { name: "运动员", attribute: "physique", baseIncome: 8400 },
+        "artist": { name: "艺人", attribute: "charm", baseIncome: 5600 },
+        "businessman": { name: "商人", attribute: "business", baseIncome: 9500 }
+    };
+    
+    const selectedJob = jobs[jobId];
+    if (!selectedJob) return;
+    
+    // 先收取当前工作收入（如果有）
+    if (child.currentJob) {
+        collectChildWorkIncome(childIndex);
+    }
+    
+    child.currentJob = selectedJob.name;
+    child.workStartTime = Date.now();
+    
+    logAction(`${child.name} 现在从事${selectedJob.name}工作`, "success");
+    
+    // 关闭对话框
+    closeJobSelection();
+    
+    updateChildSystemUI();
+    saveGame();
+}
+function closeJobSelection() {
+    const dialog = document.getElementById('jobSelectionDialog');
+    const overlay = document.getElementById('jobSelectionOverlay');
+    
+    if (dialog) dialog.remove();
+    if (overlay) overlay.remove();
+}
+
+function updateChildInteractionSystem() {
+    const container = document.getElementById('childInteractionSystem');
+    if (!container) return;
+    
+    const children = player.children.children || [];
+    if (children.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">还没有孩子可以互动</div>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <h3>亲子互动</h3>
+        <div style="margin-bottom: 10px; font-size: 12px; color: #ccc;">
+            与孩子互动可以增加亲密度和属性
+        </div>
+        <div id="interactionChildrenList" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
+            <!-- 互动孩子列表会动态生成 -->
+        </div>
+        <button onclick="interactWithAllChildren()" style="background: #FF69B4; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; width: 100%;">与所有孩子互动</button>
+    `;
+    
+    updateInteractionChildrenList();
+}
+function updateInteractionChildrenList() {
+    const container = document.getElementById('interactionChildrenList');
+    if (!container) return;
+    
+    const children = player.children.children || [];
+    
+    container.innerHTML = '';
+    
+    children.forEach((child, index) => {
+        const interactionCard = document.createElement('div');
+        interactionCard.style.background = '#555';
+        interactionCard.style.padding = '10px';
+        interactionCard.style.borderRadius = '5px';
+        interactionCard.style.border = '1px solid #666';
+        
+        // 计算互动冷却
+        const now = Date.now();
+        const lastInteraction = child.lastInteraction || 0;
+        const interactionCooldown = 3 * 60 * 60 * 1000; // 2小时冷却
+        const remainingTime = Math.max(0, interactionCooldown - (now - lastInteraction));
+        const canInteract = remainingTime <= 0;
+        const hoursRemaining = Math.floor(remainingTime / (60 * 60 * 1000));
+        const minutesRemaining = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+        
+        interactionCard.innerHTML = `
+            <div style="font-weight: bold; color: #FF69B4;">${child.name}</div>
+            <div style="font-size: 12px; color: #ccc;">${child.gender === 'boy' ? '👦' : '👧'} ${getChildAge(child)}岁</div>
+            
+            <div style="margin: 8px 0; font-size: 11px;">
+                <div style="color: ${canInteract ? '#4CAF50' : '#FF6B6B'};">
+                    ${canInteract ? '可互动' : `冷却中: ${hoursRemaining}时${minutesRemaining}分`}
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; font-size: 10px;">
+                <div style="color: #32CD32;">亲密度: ${child.intimacy || 0}</div>
+                <div style="color: #FFD700;">互动: ${child.totalInteractions || 0}次</div>
+            </div>
+            
+            <button onclick="interactWithChild(${index})" 
+                    style="margin-top: 8px; background: ${canInteract ? '#FF69B4' : '#888'}; color: white; border: none; padding: 5px; border-radius: 3px; cursor: ${canInteract ? 'pointer' : 'not-allowed'}; font-size: 10px; width: 100%;"
+                    ${canInteract ? '' : 'disabled'}>
+                ${canInteract ? '互动 (消耗 5000 元)' : '冷却中'}
+            </button>
+        `;
+        
+        container.appendChild(interactionCard);
+    });
+}
+
+function collectAllChildWorkIncome() {
+    const children = player.children.children || [];
+    let totalIncome = 0;
+    let collectedCount = 0;
+    
+    children.forEach((child, index) => {
+        if (child.isAdult && child.currentJob) {
+            const workInfo = getChildWorkInfo(child);
+            if (workInfo.pendingIncome > 0) {
+                player.investmentGame.userData.availableFunds += workInfo.pendingIncome;
+                totalIncome += workInfo.pendingIncome;
+                child.workStartTime = Date.now();
+                collectedCount++;
+            }
+        }
+    });
+    
+    if (totalIncome > 0) {
+        logAction(`收取了 ${collectedCount} 个孩子的工作收入，总计: ${formatNumber(totalIncome)} 元`, "success");
+        updateDisplay();
+        updateChildSystemUI();
+        saveGame();
+    } else {
+        logAction("没有工作收入可以收取", "info");
+    }
+}
+
+// 收取孩子工作收入
+function collectChildWorkIncome() {
+    let totalIncome = 0;
+    player.children.children.forEach(child => {
+        if (child.isAdult && child.currentJob) {
+            const workTime = Date.now() - child.workStartTime;
+            const hoursWorked = workTime / (60 * 60 * 1000);
+            const job = getJobByAttribute(child.currentJob);
+            const income = Math.floor(job.income * hoursWorked);
+            
+            if (income > 0) {
+                player.investmentGame.userData.availableFunds += income;
+                totalIncome += income;
+                child.workStartTime = Date.now();
+            }
+        }
+    });
+    
+    if (totalIncome > 0) {
+        logAction(`收取孩子工作收入：${formatNumber(totalIncome)} 元`, "success");
+        updateDisplay();
+        saveGame();
+    }
+}
+
+function getJobByAttribute(jobName) {
+    const jobs = {
+        "学者": { attribute: "intelligence", income: 12000 },
+        "运动员": { attribute: "physique", income: 8400 },
+        "艺人": { attribute: "charm", income: 5600 },
+        "商人": { attribute: "business", income: 9500 }
+    };
+    return jobs[jobName];
+}
+
+// 孩子婚姻系统（扩展功能）
+function arrangeMarriage(childIndex) {
+    const child = player.children.children[childIndex];
+    if (!child || !child.isAdult) {
+        logAction("只有成年孩子才能结婚", "error");
+        return;
+    }
+    
+    const marriageCost = 2000000; // 200万转生币
+    if (player.investmentGame.userData.availableFunds < marriageCost) {
+        logAction(`资金不足！需要 ${marriageCost} 元`, "error");
+        return;
+    }
+    
+    showCustomConfirm(`确定要为 ${child.name} 安排婚姻吗？消耗 ${marriageCost} 元`, (confirmed) => {
+        if (confirmed) {
+            player.investmentGame.userData.availableFunds -= marriageCost;
+            child.isMarried = true;
+            child.marriageDate = Date.now();
+            
+            // 生成配偶
+            const spouseGender = child.gender === 'boy' ? 'girl' : 'boy';
+            const spouseNames = {
+                boy: ['小明', '小强', '小刚', '小勇', '小伟'],
+                girl: ['小红', '小芳', '小丽', '小美', '小静']
+            };
+            child.spouse = {
+                name: spouseNames[spouseGender][Math.floor(Math.random() * spouseNames[spouseGender].length)],
+                gender: spouseGender
+            };
+            
+            logAction(`为 ${child.name} 安排了婚姻，配偶：${child.spouse.name}`, "success");
+            updateChildSystemUI();
+            saveGame();
+        }
+    });
+}
+// 计算孩子加成
+function calculateChildBonuses() {
+    const children = player.children.children || [];
+    let totalIntelligence = 0;
+    let totalPhysique = 0;
+    let totalCharm = 0;
+    let totalBusiness = 0;
+    
+    children.forEach(child => {
+        totalIntelligence += child.attributes.intelligence;
+        totalPhysique += child.attributes.physique;
+        totalCharm += child.attributes.charm;
+        totalBusiness += child.attributes.business;
+    });
+    
+    return {
+        gpsMultiplier: 1 + (totalIntelligence * childConfig.attributeBonuses.intelligence.gps),
+        clickMultiplier: 1 + (totalPhysique * childConfig.attributeBonuses.physique.click),
+        critRateBonus: 1 + (totalCharm * childConfig.attributeBonuses.charm.critRate),
+        goldMultiplier: 1 + (totalBusiness * childConfig.attributeBonuses.business.gold)
+    };
+}
+
+// 计算家庭幸福度
+function calculateFamilyHappiness() {
+    const children = player.children.children || [];
+    let happiness = 50; // 基础幸福度
+    
+    // 每个孩子+10点
+    happiness += children.length * 10;
+    
+    // 根据孩子属性增加幸福度
+    children.forEach(child => {
+        happiness += (child.attributes.charm * 2);
+        if (child.isAdult) happiness += 20;
+    });
+    
+    return Math.min(100, happiness);
+}
+
+// 更新怀孕按钮状态
+function updateConceptionButton() {
+    const button = document.getElementById('conceiveBtn');
+    if (player.children.isPregnant) {
+        button.disabled = true;
+        button.textContent = '已怀孕';
+        button.style.background = '#888';
+    } else {
+        button.disabled = false;
+        button.textContent = `怀孕 (消耗 ${childConfig.pregnancy.cost} 元)`;
+        button.style.background = '#FF69B4';
+    }
+}
+function showTrainingSelection(childIndex) {
+    const child = player.children.children[childIndex];
+    if (!child) return;
+    
+    const now = Date.now();
+    const lastTraining = child.lastTraining || 0;
+    const cooldown = 60 * 60 * 1000;
+    const remainingTime = Math.max(0, cooldown - (now - lastTraining));
+    const minutesRemaining = Math.ceil(remainingTime / (60 * 1000));
+    
+    let message = `选择对 ${child.name} 的培养方式：\n\n`;
+    
+    if (remainingTime > 0) {
+        message += `⚠️ 培养冷却中: ${minutesRemaining}分钟后可再次培养\n\n`;
+    }
+    
+    message += childConfig.trainingTypes.map(training => 
+        `${training.name} (${training.cost}元) - ${training.description}`
+    ).join('\n');
+    
+    showCustomPrompt(message, (selected) => {
+        if (selected) {
+            const trainingIndex = childConfig.trainingTypes.findIndex(t => 
+                selected.includes(t.name)
+            );
+            if (trainingIndex !== -1) {
+                trainChild(childIndex, childConfig.trainingTypes[trainingIndex].id);
+            }
+        }
+    });
+}
+function startChildCooldownTimer() {
+    setInterval(() => {
+        if (document.getElementById('childSystemUI').style.display === 'block') {
+            updateChildrenList(); // 每分钟更新一次冷却时间显示
+        }
+    }, 60000); // 每分钟更新一次
+}
+
+// 在游戏主循环中添加孩子系统检查
+function addChildSystemToGameLoop() {
+    setInterval(() => {
+        if (player.children) {
+            // 检查怀孕状态
+            if (player.children.isPregnant) {
+                const progress = calculatePregnancyProgress();
+                if (progress >= 100) {
+                    giveBirth();
+                }
+            }
+            
+            // 检查孩子成长
+            if (player.children.children) {
+                player.children.children.forEach((child, index) => {
+                    checkChildGrowth(index);
+                });
+            }
+            
+            // 每5分钟更新一次UI
+            if (Math.floor(Date.now() / 1000) % 300 === 0) {
+                updateChildSystemUI();
+            }
+            
+           
+        }
+    }, 60000); // 每分钟检查一次
+}
+document.addEventListener('DOMContentLoaded', function() {
+    // 确保孩子系统正确初始化
+    initChildData();
+     initChildSystem();
+    // 启动孩子系统主循环
+    addChildSystemToGameLoop();
+});
  // 世界BOSS系统数据
         const worldBossData = {
             summonCount: 1,
@@ -45965,6 +48333,5 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
-
 </body>
 </html>
