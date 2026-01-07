@@ -3046,6 +3046,229 @@ button:disabled {
         padding: 10px !important;
     }
 }
+.equipment-slots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.equipment-slot {
+    background: #333;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    border: 2px solid #555;
+    min-height: 120px;
+}
+
+.equipment-slot .slot-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #8a2be2;
+}
+
+.equipment-display {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.equipment-display:hover {
+    background: #444;
+}
+
+.equipment-stats {
+    font-size: 0.9em;
+    color: #ccc;
+    margin-top: 5px;
+}
+
+.equipment-inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    overflow-y: auto;
+}
+
+.equipment-item {
+    background: #333;
+    padding: 10px;
+    border-radius: 5px;
+    border-left: 4px solid #8a2be2;
+}
+
+.equipment-item.locked {
+    border-left: 4px solid #FFD700;
+    background: #3a3a3a;
+}
+
+.equipment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.equipment-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.equipment-actions button {
+    padding: 3px 8px;
+    font-size: 0.8em;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    background: #555;
+    color: white;
+}
+
+.equipment-actions button:hover:not(:disabled) {
+    background: #666;
+}
+
+.equipment-actions button:disabled {
+    background: #333;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.equipment-info {
+    font-size: 0.9em;
+    color: #aaa;
+    margin-bottom: 5px;
+}
+
+.set-bonuses {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.set-info {
+    background: #333;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.set-bonus.active {
+    color: #4CAF50;
+}
+
+.set-bonus.inactive {
+    color: #666;
+}
+
+.stats-summary {
+    background: linear-gradient(45deg, #8a2be2, #4b0082);
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.stats-summary h4 {
+    margin-top: 0;
+    color: #FFD700;
+}
+
+.stats-summary div {
+    margin: 5px 0;
+    font-size: 1.1em;
+}
+.equipment-item.selected {
+    border: 2px solid #f44336 !important;
+    background: #3a2a2a !important;
+}
+
+.selection-checkbox {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.selection-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.equipment-item {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.equipment-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* 批量操作面板样式 */
+.batch-controls {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; }
+    100% { opacity: 0.8; }
+}
+.drop-time {
+    color: #aaa;
+    font-size: 0.85em;
+    margin-top: 3px;
+    font-style: italic;
+}
+.time-info {
+    background: #2a2a2a;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    border-left: 3px solid #4CAF50;
+}
+
+.time-info.expired {
+    border-left-color: #f44336;
+}
+
+/* 导入历史样式 */
+.import-history-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.import-history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin: 5px 0;
+    background: #333;
+    border-radius: 5px;
+    border-left: 3px solid #FF9800;
+}
+
+.import-info {
+    flex: 1;
+}
+
+.import-time {
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+/* 文本框样式 */
+.equipment-code {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+}
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -3061,7 +3284,7 @@ button:disabled {
     <div id="gameLogPage5" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
             <h4>游戏公告介绍</h4>
-            <p>QQ群：864788026  有问题可以进群问（存档异常联系群管理修复）</p>
+            <p>QQ群：1群：864788026， 2群：902481027 有问题可以进群问（存档异常联系群管理修复）</p>
             <p>1. 转生系统：玩家可以通过转生重置游戏进度，并获得转生币，用于提升转生属性（转生要求必须普通装备10000+转生次数*20）。</p>
             <p> 转生币等级兑换比例：普通10000=1  稀有5000=1 史诗1000=1 传说300=1 远古200=1 神圣125=1 奥术100=1 天空33=1 地狱20=1 星界12.5=1  原初10=1 超凡3=1 量子2=1 究极1=1  混沌1=3 永恒1=5 虚无1=10 创世1=20 神域1=30 终焉1=40 星辰1=50 起源1=60 时光1=70 造物1=80 银河1=90 天界1=100 星云1=200 星河1=300 纪元1=400 鸿蒙1=500 星穹1=600 亘古1=700 万象1=800 太虚1=900 九垓1=1000  穿梭1=2000  恒古1=3000 虚空1=4000 蔚来1=5000 神罚1=6000  时空1=7000  未来1=8000  从前1=9000   星澜1=10000</p>
             <p>货币兑换比例：1e5 → 1e8 → 1e8 → 1e8 → 1e9 → 1e12 → 1e12 → 1e12 → 1e15 → 1e15 → 1e15 → 1e20 → 1e20 → 1e20 </p>
@@ -3094,7 +3317,7 @@ button:disabled {
            <p>26. 修仙系统：500转开启，开启经验获得条件是：获得一次灵根和血脉。材料都是杂货铺购买</p>
            <p>27. 宝图系统：600转开启，随机奖励或者打BOSS。</p>
            <p>28. 夜店系统：600转开启，店铺每级加点击伤害，特殊事件消耗50-200星币，提升30-60分钟金币或者经验收益，获得的星币可以兑换藏宝图，或者打世界地图怪物消耗（后续会加其他材料兑换）。</p>
-           <p>29. 玩家等级：50转开启，每级1倍属性飞升轮回有加成，世界地图怪物打怪升级。每100级可以飞升一次，10次飞升1转轮回，翅膀：打怪次元2以上掉落，坐骑：打怪次元3以上掉落，符文：打怪次元4以上掉落</p>
+           <p>29. 玩家等级：50转开启，每级1倍属性飞升轮回有加成，世界地图怪物打怪升级。每100级可以飞升一次，10次飞升1转轮回，翅膀：打怪次元2以上掉落，坐骑：打怪次元3以上掉落，符文：打怪次元4以上掉落，增加轮回装备：次元2以上掉落（掉落极低，掉落的装备可以分享给别人）</p>
            <p>30. 世界地图：50转开启，打怪掉玩家经验，每挑战一次消耗星币，如果打的时候闪退界面，那就是打不过这关。（掉落材料，翅膀，符文）。</p>
           <p>31. 直播系统：500转开启，每级增加点击伤害，粉丝数增加GPS加成，流量是获得多倍经验（获取大量玫瑰花）</p>
         <p>32. 宗门系统：1000转开启，每级GPS收益，功法库提升功法秘笈加成。</p>
@@ -3121,7 +3344,9 @@ button:disabled {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.76更新日志</h4>
+            <h4>1.77更新日志</h4>
+            <h4>1群：864788026， 2群：902481027 有问题可以进群问（存档异常联系群管理修复）</h4>
+           <p>2026/01/07:  修复BUG导致游戏暴毙。更新玩家系统，增加轮回装备（次元2以上掉落极低，掉落的装备可以分享给别人）</p>
            <p>2026/01/04:  更新结婚系统玩法，生孩子（恩爱25级开启）有加成，孩子长大也可以工作</p>
            <p>2026/01/03:  增加结婚系统资金5W开启，无尽挖矿增加玩法：挖矿有几率出宝物，出售可以卖资金。</p>
            <p>2025/12/31: 修复新版股票在线无法正常刷新数据。 更新疯狂地主玩法。</p>
@@ -4867,6 +5092,7 @@ button:disabled {
     <div style="margin: 15px 0;">
          <button onclick="ascendPlayer()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">飞升</button>
        <button onclick="ascendPlayera()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">轮回</button>
+         <button onclick="toggleReincarnationEquipmentUI()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">轮回装备</button> 
       <button onclick="toggleWingSystem()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">翅膀</button>
       <button onclick="toggleMountSystem()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">坐骑</button>
      <button onclick="toggleRuneSystem()"  style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">符文</button>
@@ -6975,7 +7201,148 @@ button:disabled {
 </div>
     </div>
 </div>
-<div id="footer">版本号: v1.7.6</div>
+<!-- 轮回装备系统界面 -->
+<div id="reincarnationEquipmentOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="reincarnationEquipmentUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #8a2be2; border-radius: 10px; z-index: 1001; width: 900px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #8a2be2; margin: 0;">轮回装备系统</h2>
+        <button onclick="toggleReincarnationEquipmentUI()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+    
+    <!-- 装备属性总览 -->
+    <div id="equipmentStatsSummary" style="margin-bottom: 20px; padding: 15px; background: #333; border-radius: 5px;"></div>
+    
+    <!-- 已装备的装备 -->
+    <div style="margin-bottom: 20px;">
+        <h3>已装备</h3>
+        <div id="equippedEquipmentContainer"></div>
+    </div>
+    
+    <!-- 套装效果 -->
+    <div style="margin-bottom: 20px;">
+        <h3>套装效果</h3>
+        <div id="setBonusesContainer"></div>
+    </div>
+    
+    <!-- 装备仓库 -->
+    <div style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="margin: 0;">装备仓库</h3><div>
+            <button id="batchDiscardBtn" onclick="toggleBatchDiscardMode()" 
+                    style="background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">
+                批量丢弃
+            </button>
+           <button onclick="showImportHistory()"  style="background: #FF9800; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">
+                    导入历史
+                </button>
+            <button onclick="showImportDialog()" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">导入装备</button>
+        </div>
+        </div>
+        <!-- 筛选条件 -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+            <div>
+                <label>T等级: </label>
+                <select id="inventoryFilterTier" onchange="updateReincarnationEquipmentUI()">
+                    <option value="all">全部</option>
+                    <option value="1">T1</option>
+                    <option value="2">T2</option>
+                    <option value="3">T3</option>
+                    <option value="4">T4</option>
+                    <option value="5">T5</option>
+                    <option value="6">T6</option>
+                    <option value="7">T7</option>
+                    <option value="8">T8</option>
+                    <option value="9">T9</option>
+                    <option value="10">T10</option>
+                </select>
+            </div>
+            <div>
+                <label>品质: </label>
+                <select id="inventoryFilterRarity" onchange="updateReincarnationEquipmentUI()">
+                    <option value="all">全部</option>
+                    <option value="common">普通</option>
+                    <option value="uncommon">优秀</option>
+                    <option value="rare">精良</option>
+                    <option value="epic">史诗</option>
+                    <option value="legendary">传说</option>
+                    <option value="mythic">神话</option>
+                    <option value="supreme">至尊</option>
+                    <option value="ancient">远古</option>
+                    <option value="primordial">上古</option>
+                    <option value="eternal">荒古</option>
+                </select>
+            </div>
+            <div>
+                <label>部位: </label>
+                <select id="inventoryFilterSlot" onchange="updateReincarnationEquipmentUI()">
+                    <option value="all">全部</option>
+                    <option value="helmet">头盔</option>
+                    <option value="chest">衣服</option>
+                    <option value="pants">裤子</option>
+                    <option value="shoes">鞋子</option>
+                    <option value="necklace">项链</option>
+                    <option value="weapon">武器</option>
+                </select>
+            </div>
+            <div>
+                <label>套装: </label>
+                <select id="inventoryFilterSet" onchange="updateReincarnationEquipmentUI()">
+                    <option value="all">全部</option>
+                    <option value="hasSet">有套装</option>
+                    <option value="noSet">无套装</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="equipmentInventoryContainer" style="max-height: 300px; overflow-y: auto;"></div>
+    </div>
+</div>
+
+<!-- 导出对话框 -->
+<!-- 导出对话框 -->
+<div id="exportOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1010;"></div>
+<div id="exportDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #4CAF50; border-radius: 10px; z-index: 1011; width: 500px;">
+    <h3>导出装备</h3>
+    <p>复制以下代码分享给其他玩家（10分钟内有效）：</p>
+    
+    <div id="exportTimeInfo"></div>
+    
+    <textarea id="exportEquipmentData" style="width: 100%; height: 100px; background: #333; color: white; border: 1px solid #555; padding: 10px; margin: 10px 0; font-family: monospace;"></textarea>
+    
+    <div style="display: flex; gap: 10px;">
+        <button id="copyExportBtn" onclick="copyExportCode()" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;">复制代码</button>
+        <button onclick="hideExportDialog()" style="background: #f44336; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+</div>
+
+<!-- 导入对话框 -->
+<div id="importOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1010;"></div>
+<div id="importDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #2196F3; border-radius: 10px; z-index: 1011; width: 500px;">
+    <h3>导入装备</h3>
+    <p>粘贴装备代码（10分钟内有效）：</p>
+    
+    <textarea id="importEquipmentData" oninput="validateImportCode()" style="width: 100%; height: 100px; background: #333; color: white; border: 1px solid #555; padding: 10px; margin: 10px 0; font-family: monospace;"></textarea>
+    
+    <div id="importTimeInfo"></div>
+    
+    <div style="display: flex; gap: 10px;">
+        <button onclick="importEquipment()" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;">导入装备</button>
+        <button onclick="hideImportDialog()" style="background: #f44336; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;">取消</button>
+    </div>
+</div>
+
+<!-- 导入历史对话框 -->
+<div id="importHistoryOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1010;"></div>
+<div id="importHistoryDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #FF9800; border-radius: 10px; z-index: 1011; width: 500px; max-height: 400px; overflow-y: auto;">
+    <h3>导入历史</h3>
+    <div id="importHistoryList"></div>
+    <div style="margin-top: 15px; text-align: center;">
+        <button onclick="hideImportHistory()" style="background: #f44336; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+</div>
+</div>
+</div>
+<div id="footer">版本号: v1.7.7</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -7009,6 +7376,18 @@ button:disabled {
     soulRingMultiplier: 1,    // 魂环总加成乘数（默认1倍）
     dungeonEquipMultiplier: 1 // 副本装备总加成乘数（默认1倍）
   },
+reincarnationEquipment: {
+            equipped: {
+                helmet: null,
+                chest: null,
+                pants: null,
+                shoes: null,
+                necklace: null,
+                weapon: null
+            },
+            inventory: [],
+            lockedItems: [] // 锁定的装备ID列表
+        },
  treasures: {
             inventory: [], // 拥有的宝物列表
             totalFound: 0, // 总共找到的宝物数量
@@ -12579,6 +12958,9 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
     if (player.liveStream && player.liveStream.viewers) {
         player.liveStream.viewers = player.liveStream.viewers.slice(-5);
     }
+    if (player.reincarnationEquipment) {
+        player.reincarnationEquipment.inventory = player.reincarnationEquipment.inventory.filter(eq => eq);
+    }
     player.mystery.lastUpdateTime = Date.now();
    cleanupArtifactAdvanceLevels(); 
     saveInvestmentGameData();
@@ -12601,6 +12983,7 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
         // 加载游戏
         function loadGame() {
     loadSave();
+  initReincarnationEquipmentSystem();
    updateSectNameDisplay();
     updateDisplay();
    calculateTotalGPS();
@@ -15451,14 +15834,14 @@ let wingHealthBonus = 0;
     player.classBonuses = classBonuses;
     const bonuses = calculateGemBonuses(); 
     const techBonuses = calculateTechniqueBonuses();
-
+   const equipmentStats = calculateTotalEquipmentStats();
     // 2. 计算玩家生命（应用伴侣生命加成）
     player.battle.playerHealth = Math.floor(
         player.reincarnationCount * 
         (1 + player.attributes.healthBonus + player.attributes.health * 0.01) *
         classBonuses.healthMultiplier * titleBonuses.healthMultiplier *
         companionBonuses.healthMultiplier * (1 + artifactBonuses.health) * (1 + bonuses.health / 100) *  (1 + techBonuses.health) *  (1 + wingHealthBonus)  *  (1 + mountHealthBonus) *
-        (1 + runeBonuses.health) * (1 + (player.mining.gems.emerald*0.05))  * (1+player.marriage.marriageBonuses.critRateBonus)  * (1+player.children.childBonuses.critRateBonus)// 应用伴侣生命加成
+        (1 + runeBonuses.health) * (1 + (player.mining.gems.emerald*0.05))  * (1+player.marriage.marriageBonuses.critRateBonus)  * (1+player.children.childBonuses.critRateBonus) * (1 + equipmentStats.health)// 应用伴侣生命加成
     );
 
     // 3. 计算玩家攻击（应用伴侣攻击加成）
@@ -15467,7 +15850,8 @@ let wingHealthBonus = 0;
         (1 + player.attributes.attackBonus + player.attributes.attack * 0.01) *
         classBonuses.attackMultiplier * titleBonuses.attackMultiplier *
         officialBonus * companionBonuses.attackMultiplier * (1 + artifactBonuses.attack) * (1 + bonuses.attack / 100) *  (1 + techBonuses.attack)  *  (1 + mountAttackBonus) *
-        (1 + runeBonuses.attack) * (1 + (player.mining.gems.sapphire*0.05)) * (1+player.children.childBonuses.goldMultiplier)// 应用伴侣攻击加成
+        (1 + runeBonuses.attack) * (1 + (player.mining.gems.sapphire*0.05)) * (1+player.children.childBonuses.goldMultiplier)  *
+        (1 + equipmentStats.attack) // 应用伴侣攻击加成
     );
 
     // 4. 计算暴击率（应用伴侣暴击率加成）
@@ -15476,7 +15860,8 @@ let wingHealthBonus = 0;
     player.battle.playerCritRate = Math.min(
         0.9,
         baseCritRate * companionBonuses.critRateMultiplier +  (1 + techBonuses.critRate) + (0.001+
-        runeBonuses.critRate) // 应用伴侣暴击率乘数
+        runeBonuses.critRate) +
+        equipmentStats.critRate // 应用伴侣暴击率乘数
     );
 
     // 5. 计算爆伤（应用伴侣爆伤加成和全属性加成）
@@ -15485,7 +15870,8 @@ let wingHealthBonus = 0;
         player.attributes.critDamage * 0.0025) *
         classBonuses.critMultiplier * titleBonuses.critMultiplier *
         companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100) *  (1 + techBonuses.critDamage)  *  (1 + mountCritDamageBonus) *
-        (1 + runeBonuses.critDamage)* (1 + (player.mining.gems.amethyst*0.05)) * (1+player.marriage.marriageBonuses.critDamageBonus)  ; // 应用伴侣爆伤加成
+        (1 + runeBonuses.critDamage)* (1 + (player.mining.gems.amethyst*0.05)) * (1+player.marriage.marriageBonuses.critDamageBonus) *
+       (1 +equipmentStats.critDamage); // 应用伴侣爆伤加成
 
     // 6. 计算连击次数（应用伴侣连击加成）
     player.battle.playerMultiAttack = Math.max(1,
@@ -18733,7 +19119,7 @@ function handleMonsterDefeated() {
                 const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
                const runeBonuses = calculateRuneBonuses();
                const worldExpBonus = 1 + runeBonuses.worldExp;
-                const finalExp =  (exp+(1+player.mining.gems.ruby)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus;
+                const finalExp =  (exp+(1+player.mining.gems.ruby * 0.2)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus;
                 
                 // 添加经验
                 addPlayerExp(finalExp);
@@ -18741,9 +19127,10 @@ function handleMonsterDefeated() {
                dropRuneMaterials();
                dropMount();
                 dropWing();
-                if (Math.random() < 0.02) { // 2%掉落率
-            dropItemsByDimension();
+                if (Math.random() < 0.01) { // 2%掉落率
+            dropItemsByDimension();            
             }
+           dropReincarnationEquipment();
                 if (player.nightClub.starCoins < dimension.cost) {
                     addBattleLog("星币不足，无法生成新怪物！");
                     closeBattle();
@@ -18946,18 +19333,18 @@ function backgroundHandleMonsterDefeated() {
         const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
          const runeBonuses = calculateRuneBonuses();
         const worldExpBonus = 1 + runeBonuses.worldExp;
-        const finalExp = (exp+(1+player.mining.gems.ruby)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus;
+        const finalExp = (exp+(1+player.mining.gems.ruby * 0.2)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus;
         
         // 添加经验
         addPlayerExp(finalExp);
         dropRuneMaterials();
         dropMount();
         dropWing();
-        // 2%概率掉落物品
-        if (Math.random() < 0.02) {
+        // 1%概率掉落物品
+        if (Math.random() < 0.01) {
             dropItemsByDimension();
         }
-        
+        dropReincarnationEquipment();
         if (player.nightClub.starCoins < dimension.cost) {
             stopBackgroundBattle();
             logAction("星币不足，后台自动战斗已停止", "warning");
@@ -23301,7 +23688,7 @@ function dropWing() {
     const dimensionLevel = player.dimensionLevel;
     if (dimensionLevel === 1) return; // 次元1不掉落
     
-    if (Math.random() < 0.01) { // 1%掉落几率
+    if (Math.random() < 0.001) { // 1%掉落几率
         const newWing = generateRandomWing(dimensionLevel);
         if (newWing) {
             player.wings.inventory.push(newWing);
@@ -23736,7 +24123,7 @@ function dropMount() {
     const dimensionLevel = player.dimensionLevel;
     if (dimensionLevel < 3) return; // 次元3以下不掉落
     
-    if (Math.random() < 0.01) { // 1%掉落几率
+    if (Math.random() < 0.001) { // 0.1%掉落几率
         const newMount = generateRandomMount(dimensionLevel);
         if (newMount) {
             player.mounts.inventory.push(newMount);
@@ -34336,7 +34723,7 @@ function dropRuneMaterials() {
     if (player.dimensionLevel < 4) return;
     
     // 只有1%的几率触发材料掉落
-    if (Math.random() >= 0.01) return;
+    if (Math.random() >= 0.001) return;
     
     // 材料掉落概率配置（从50%到0.01%）
     const materialDropRates = {
@@ -44706,7 +45093,7 @@ const treasureConfig = [
     { id: 7, name: "玄武甲", rarity: 7, baseValue: 10000000, description: "神兽玄武的甲壳，坚不可摧", color: "#008080" },
     { id: 8, name: "白虎牙", rarity: 8, baseValue: 50000000, description: "神兽白虎的牙齿，锋利无比", color: "#F5F5F5" },
     { id: 9, name: "朱雀羽", rarity: 9, baseValue: 100000000, description: "神兽朱雀的羽毛，燃烧着永恒火焰", color: "#DC143C" },
-    { id: 10, name: "青龙鳞", rarity: 10, baseValue: 1000000000, description: "神兽青龙的鳞片，蕴含着天地法则", color: "#1E90FF" }
+    { id: 10, name: "青龙鳞", rarity: 10, baseValue: 5201314, description: "彩礼青龙鳞，象征爱情结晶", color: "#1E90FF" }
 ];
 
 // 初始化宝物数据
@@ -44754,7 +45141,7 @@ function closeTreasureSystem() {
     document.getElementById('treasureSystemOverlay').style.display = 'none';
 }
 
-// 挖矿时有2%几率获得宝物
+// 挖矿时有1%几率获得宝物
 function checkTreasureDrop() {
     try {
         // 确保宝物系统已初始化
@@ -44763,7 +45150,7 @@ function checkTreasureDrop() {
         }
         
         // 1%几率获得宝物
-        if (Math.random() < 0.02) {
+        if (Math.random() < 0.01) {
             const treasure = getRandomTreasure();
             if (treasure) {
                 addTreasureToInventory(treasure.id);
@@ -44786,7 +45173,7 @@ function getRandomTreasure() {
         let rarity;
         
         // 根据概率分布确定稀有度
-     if (rand < 0.85) rarity = 1;        // 85% 几率获得1级宝物
+    if (rand < 0.85) rarity = 1;        // 85% 几率获得1级宝物
 else if (rand < 0.954) rarity = 2;  // 10.4% 几率获得2级宝物
 else if (rand < 0.9893) rarity = 3; // 3.53% 几率获得3级宝物
 else if (rand < 0.9993334) rarity = 4; // 1.0034% 几率获得4级宝物
@@ -44795,7 +45182,7 @@ else if (rand < 0.9993934) rarity = 6; // 0.01% 几率获得6级宝物
 else if (rand < 0.9993984) rarity = 7; // 0.005% 几率获得7级宝物
 else if (rand < 0.9993994) rarity = 8; // 0.001% 几率获得8级宝物
 else if (rand < 0.9993999) rarity = 9; // 0.0005% 几率获得9级宝物
-else rarity = 10;                     // 0.0001% 几率获得10级宝物
+else rarity = 10;                     // 0.0001% 几率获得10级宝物                 
         
         // 获取该稀有度的所有宝物
         const availableTreasures = treasureConfig.filter(t => t.rarity === rarity);
@@ -47542,7 +47929,1246 @@ document.addEventListener('DOMContentLoaded', function() {
      initChildSystem();
     // 启动孩子系统主循环
     addChildSystemToGameLoop();
+  setTimeout(addReincarnationEquipmentButton, 1000);
 });
+const reincarnationEquipmentConfig = {
+    // 装备部位
+    slots: ['helmet', 'chest', 'pants', 'shoes', 'necklace', 'weapon'],
+    
+    // 装备部位名称
+    slotNames: {
+        helmet: '头盔',
+        chest: '衣服',
+        pants: '裤子',
+        shoes: '鞋子',
+        necklace: '项链',
+        weapon: '武器'
+    },
+    
+    // 品质配置
+    rarities: {
+        'common': { name: '普通', min: 1, max: 20, color: '#FFFFFF', weight: 90 },
+        'uncommon': { name: '优秀', min: 15, max: 30, color: '#1EFF00', weight: 5.9389 },
+        'rare': { name: '精良', min: 25, max: 40, color: '#0070DD', weight: 2.5 },
+        'epic': { name: '史诗', min: 35, max: 50, color: '#A335EE', weight: 1 },
+        'legendary': { name: '传说', min: 45, max: 60, color: '#FF8000', weight: 0.5 },
+        'mythic': { name: '神话', min: 55, max: 70, color: '#E6CC80', weight: 0.1 },
+        'supreme': { name: '至尊', min: 65, max: 80, color: '#00CCFF', weight: 0.05 },
+        'ancient': { name: '远古', min: 75, max: 90, color: '#FF4040', weight: 0.01 },
+        'primordial': { name: '上古', min: 85, max: 100, color: '#FF00FF', weight: 0.001 },
+        'eternal': { name: '荒古', min: 100, max: 100, color: '#FFD700', weight: 0.0001 }
+    },
+    
+    // 装备等级配置 (T1-T10)
+    tiers: {
+        1: { name: 'T1', minReincarnation: 1, multiplier: 1, weight: 97 },
+        2: { name: 'T2', minReincarnation: 3, multiplier: 3, weight: 2.88334 },
+        3: { name: 'T3', minReincarnation: 5, multiplier: 12, weight: 0.1 },
+        4: { name: 'T4', minReincarnation: 8, multiplier: 42, weight: 0.01 },
+        5: { name: 'T5', minReincarnation: 10, multiplier: 150, weight: 0.005 },
+        6: { name: 'T6', minReincarnation: 12, multiplier: 525, weight: 0.001 },
+        7: { name: 'T7', minReincarnation: 15, multiplier: 1840, weight: 0.0005 },
+        8: { name: 'T8', minReincarnation: 20, multiplier: 6433, weight: 0.0001 },
+        9: { name: 'T9', minReincarnation: 25, multiplier: 22520, weight: 0.00005 },
+        10: { name: 'T10', minReincarnation: 30, multiplier: 78880, weight: 0.00001 }
+    },
+    
+    // 属性类型
+    stats: ['health', 'attack', 'critRate', 'critDamage'],
+    
+    // 属性名称
+    statNames: {
+        health: '生命加成',
+        attack: '攻击加成',
+        critRate: '暴击率',
+        critDamage: '爆伤加成'
+    },
+    
+    // 词条数量概率
+    statCountWeights: [85, 7.83334, 3, 2.5, 1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001], // 1-15个词条的概率
+    
+    // 套装配置
+    sets: {
+        'warrior': { name: '战士套装', bonuses: { 2: { health: 0.41, attack: 0.11 }, 4: { critRate: 1.05, critDamage: 1.2 }, 6: { health: 0.4, attack: 1.3 } } },
+        'mage': { name: '法师套装', bonuses: { 2: { attack: 0.25, critRate: 1.03 }, 4: { critDamage: 0.55 }, 6: { attack: 1.4, critRate: 1.08 } } },
+        'assassin': { name: '刺客套装', bonuses: { 2: { critRate: 1.06 }, 4: { critDamage: 0.3 }, 6: { critRate: 1.1, critDamage: 0.9 } } },
+        'tank': { name: '坦克套装', bonuses: { 2: { health: 0.5 }, 4: { health: 0.8 }, 6: { health: 1.8 } } },
+        'archer': { name: '射手套装', bonuses: { 2: { attack: 0.12, critRate: 1.04 }, 4: { critDamage: 0.28 }, 6: { attack: 1.35, critRate: 1.09 } } },
+        'support': { name: '辅助套装', bonuses: { 2: { health: 0.15 }, 4: { health: 0.55, attack: 0.2 }, 6: { health: 0.5, attack: 0.4 } } },
+        'suppora': { name: '神话套装', bonuses: { 2: { attack: 0.44 }, 4: { health: 0.45, attack: 0.5 }, 6: { health: 1.9, attack: 1.4 } } },
+        'supporb': { name: '侠客套装', bonuses: { 2: { critRate: 1.235 }, 4: { health: 0.35, attack: 0.4 }, 6: { health: 1.6, attack: 0.8 } } },
+        'supporc': { name: '拳皇套装', bonuses: { 2: { attack: 0.55 }, 4: { health: 0.21, critDamage: 0.2 }, 6: { health: 0.3, critDamage: 0.7 } } },
+        'suppord': { name: '洪荒套装', bonuses: { 2: { health: 1.15 }, 4: { health: 1.25, attack: 1.4 }, 6: { health: 1.2, attack: 1.2, critRate: 1.012, critDamage: 1.3 } } },
+       'suppore': { name: '渡劫套装', bonuses: { 2: { attack: 2.22 }, 4: { critDamage: 2.25, attack: 2.21 }, 6: { health: 1.3, critRate: 1.01, attack: 2.4 } } },
+        'supporf': { name: '鱼鱼套装', bonuses: { 2: { health: 0.35 }, 4: { health: 0.25, attack: 0.21 }, 6: { health: 1.2, attack: 2.2, critRate: 1.212, critDamage: 0.2 } } },
+       'supporaaa': { name: '茶茶套装', bonuses: { 2: { critDamage: 0.31 }, 4: { attack: 0.35, critDamage: 0.15 }, 6: { health: 1.5, attack: 1.8, critRate: 1.022, critDamage: 0.6 } } },
+        'supporaaa': { name: '武神套装', bonuses: { 2: { attack: 0.75 }, 4: { health: 0.75, attack: 0.21 }, 6: { health: 2.2, attack: 1.2, critRate: 1.042, critDamage: 0.3 } } },
+     'supporaaa': { name: '蚩尤套装', bonuses: { 2: { attack: 0.55 }, 4: { critDamage: 0.55, attack: 0.21 }, 6: { health: 1.00, attack: 2.00, critRate: 0.012, critDamage: 1.2 } } },
+      'supporaaa': { name: '弑神套装', bonuses: { 2: { attack: 0.25 }, 4: { health: 0.45, attack: 0.21 }, 6: { health: 1.5, attack: 1.1, critRate: 1.023, critDamage: 0.72 } } },
+    'supporaab': { name: '五行套装', bonuses: { 2: { health: 0.1, attack: 0.1, critRate: 0.01, critDamage: 0.10 }, 4: { health: 0.5, attack: 0.5, critRate: 0.05, critDamage: 0.5}, 6: { health: 0.8, attack: 0.8, critRate: 0.08, critDamage: 0.80 } } },
+   'supporaac': { name: '八荒套装', bonuses: { 2: { health: 0.2, attack: 0.1, critRate: 0.023, critDamage: 0.22 }, 4: { health: 0.4, attack: 1.0, critRate: 0.023, critDamage: 0.2}, 6: { health: 0.4, attack: 1.0, critRate: 0.021, critDamage: 0.44 } } },
+    'supporaad': { name: '圣王套装', bonuses: { 2: { health: 0.55, attack: 0.51 }, 4: { health: 0.85, attack: 0.8 }, 6: { health: 2.5, attack: 0.6, critRate: 1.01, critDamage: 0.22 } } },
+      'supporaae': { name: '永恒套装', bonuses: { 2: { health: 0.13, attack: 0.12, critRate: 0.012, critDamage: 0.15 }, 4: { health: 0.5, attack: 0.25, critRate: 1.045, critDamage: 0.40}, 6: { health: 0.98, attack: 0.78, critRate: 1.033, critDamage: 0.92 } } },
+      'supporaaf': { name: '地煞套装', bonuses: { 2: { health: 0.25, attack: 0.57 }, 4: { health: 0.35, attack: 0.91 }, 6: { health: 1.2, attack: 1.00, critRate: 1.05, critDamage: 1.72 } } },
+    'supporaag': { name: '诸神套装', bonuses: { 2: { critDamage: 0.75 }, 4: { health: 0.25, critDamage: 1.51 }, 6: { health: 1.0,  critRate: 1.03, critDamage: 2.52 } } },
+    'supporaah': { name: '不可思议套装', bonuses: { 2: { critRate: 1.1 }, 4: {  health: 1.2 , critDamage: 1.00 }, 6: { critRate: 1.3, critDamage: 4.00 } } },
+       'supporg': { name: '闫闫套装', bonuses: { 2: { critRate: 0.015 }, 4: { health: 0.35, attack: 0.22 }, 6: { health: 0.4, attack: 1.6, critRate: 1.013, critDamage: 0.8 } } },
+       'supporh': { name: '修罗套装', bonuses: { 2: { attack: 0.45 }, 4: { critDamage: 0.66, attack: 0.66 }, 6: { health: 0.5, attack: 1.1, critRate: 1.011, critDamage: 0.5 } } },
+      'suppori': { name: '麒麟套装', bonuses: { 2: { attack: 0.75 }, 4: { health: 0.75, attack: 0.7 }, 6: { health: 1.5, attack: 3.4 } } },
+     'suppork': { name: '鬼王套装', bonuses: { 2: { critDamage: 0.75 }, 4: { health: 0.35, critDamage: 1.31 }, 6: { health: 2.5, critDamage: 2.4 } } },
+   'supporl': { name: '无极套装', bonuses: { 2: { critDamage: 0.95, attack: 0.4 }, 4: { health: 0.35, critDamage: 0.9 }, 6: { critDamage: 1.9, attack: 0.6 } } },
+      'supporz': { name: '紫薇套装', bonuses: { 2: { critDamage: 0.45, attack: 0.37 }, 4: { health: 0.65, attack: 0.62 }, 6: { critRate: 1.15, attack: 1.4 } } },
+       'supporx': { name: '地藏套装', bonuses: { 2: { critRate: 1.045 }, 4: { health: 1.05, attack: 1.2 }, 6: { health: 1.2, attack: 2.12 } } },
+    'supporv': { name: '儒圣套装', bonuses: { 2: { critRate: 1.032 }, 4: { critRate: 1.055, critDamage: 0.9 }, 6: { critRate: 1.15, critDamage: 0.94 } } },
+   'supporn': { name: '玄武套装', bonuses: { 2: { health: 0.80 }, 4: { health: 1.5 }, 6: { health: 2.0 } } },
+    'supporm': { name: '青龙套装', bonuses: { 2: { attack: 0.80 }, 4: {  attack: 1.5 }, 6: {  attack: 2.0  } } },
+   'supporq': { name: '朱雀套装', bonuses: { 2: { health: 0.45, attack: 0.34 }, 4: { health: 0.55, attack: 0.55 }, 6: { health: 1.2, attack: 1.2 } } },
+   'supporw': { name: '白虎套装', bonuses: { 2: { critRate: 1.08 }, 4: { health: 0.75, critDamage: 0.72 }, 6: { attack: 1.1, critDamage: 1.2 } } },
+  'supporrqw': { name: '神威套装', bonuses: { 2: { critRate: 1.07 }, 4: { health: 0.35, attack: 0.52 }, 6: { health: 1.5, attack: 0.3 } } },
+        'hybrid': { name: '混合套装', bonuses: { 2: { health: 0.28, attack: 0.28 }, 4: { critRate: 1.04, critDamage: 0.15 }, 6: { health: 0.2, attack: 0.2, critRate: 2.06, critDamage: 0.3 } } }
+    },
+    
+    // 霸气名字词库
+    namePrefixes: [
+        '霸天', '灭世', '混沌', '永恒', '不朽', '至尊', '无敌', '破天', '斩神', '弑魔', 
+        '焚天', '冰封', '雷霆', '风暴', '星辰', '日月', '乾坤', '阴阳', '洪荒', '太古',
+        '诸神', '万界', '九幽', '轮回', '天命', '造化', '鸿蒙', '太初', '虚无', '创世',
+        '天罚', '神威', '魔尊', '帝皇', '圣王', '天尊', '神王', '魔帝', '妖皇', '仙帝',
+        '龙魂', '凤血', '麒麟', '玄武', '白虎', '朱雀', '青龙', '饕餮', '穷奇', '梼杌',
+        '时空', '命运', '因果', '轮回', '生死', '阴阳', '五行', '八卦', '九宫', '十方',
+        '无量', '无极', '太极', '两仪', '四象', '六合', '七星', '八荒', '九天', '十地',
+        '天魔', '地煞', '人皇', '鬼王', '神尊', '佛主', '道祖', '儒圣', '武神', '文曲',
+        '紫薇', '太微', '天市', '北斗', '南斗', '东皇', '西王', '中天', '北极', '南极',
+        '金乌', '玉兔', '麒麟', '凤凰', '真龙', '神龟', '白虎', '朱雀', '玄武', '青龙',
+        '盘古', '女娲', '伏羲', '神农', '轩辕', '蚩尤', '共工', '祝融', '后羿', '夸父',
+        '如来', '观音', '地藏', '文殊', '普贤', '弥勒', '燃灯', '药师', '阿弥陀', '大势至',
+        '三清', '四御', '五老', '六司', '七元', '八极', '九曜', '十都', '百解', '千劫',
+        '万法', '亿兆', '兆亿', '京垓', '秭穰', '沟涧', '正载', '极恒', '阿僧', '那由',
+        '不可思议', '无量大数', '无边', '无数', '无知', '无想', '无念', '无相', '无我', '无心'
+    ],
+    
+    nameSuffixes: [
+        '战盔', '神甲', '圣袍', '魔铠', '灵衣', '帝冠', '皇靴', '王戒', '圣链', '神兵',
+        '魔刃', '仙器', '法宝', '圣物', '神器', '魔器', '帝兵', '皇器', '王装', '圣装',
+        '战甲', '法袍', '道衣', '佛珠', '儒冠', '武靴', '文佩', '兵刃', '法器', '灵宝',
+        '天书', '地卷', '人符', '鬼玺', '神印', '魔纹', '妖丹', '仙草', '佛骨', '道心',
+        '龙鳞', '凤羽', '麒麟角', '玄武壳', '白虎牙', '朱雀翎', '青龙爪', '饕餮胃', '穷奇翼', '梼杌骨',
+        '时空轮', '命运盘', '因果线', '轮回镜', '生死簿', '阴阳图', '五行旗', '八卦阵', '九宫格', '十方印',
+        '无量塔', '无极图', '太极印', '两仪剑', '四象旗', '六合锁', '七星灯', '八荒戟', '九天剑', '十地盾',
+        '天魔琴', '地煞刀', '人皇印', '鬼王幡', '神尊冠', '佛主钵', '道祖拂', '儒圣笔', '武神枪', '文曲尺',
+        '紫薇斗', '太微仪', '天市秤', '北斗勺', '南斗尺', '东皇钟', '西王簪', '中天镜', '北极星', '南极光',
+        '金乌羽', '玉兔耳', '麒麟心', '凤凰胆', '真龙珠', '神龟甲', '白虎皮', '朱雀火', '玄武水', '青龙木',
+        '盘古斧', '女娲石', '伏羲琴', '神农鼎', '轩辕剑', '蚩尤旗', '共工柱', '祝融火', '后羿弓', '夸父杖',
+        '如来掌', '观音瓶', '地藏珠', '文殊剑', '普贤象', '弥勒袋', '燃灯古', '药师壶', '阿弥陀', '大势至',
+        '三清铃', '四御印', '五老冠', '六司簿', '七元灯', '八极图', '九曜珠', '十都符', '百解锁', '千劫链',
+        '万法轮', '亿兆镜', '兆亿尺', '京垓秤', '秭穰斗', '沟涧仪', '正载表', '极恒钟', '阿僧数', '那由算',
+        '不可思议', '无量大数', '无边海', '无数星', '无知界', '无想天', '无念地', '无相空', '无我境', '无心法'
+    ]
+};
+
+// 初始化轮回装备系统
+function initReincarnationEquipmentSystem() {
+    if (!player.reincarnationEquipment) {
+        player.reincarnationEquipment = {
+            equipped: {
+                helmet: null,
+                chest: null,
+                pants: null,
+                shoes: null,
+                necklace: null,
+                weapon: null
+            },
+            inventory: [],
+            lockedItems: [], // 锁定的装备ID列表
+            batchDiscardMode: false, // 批量丢弃模式
+            selectedItems: [] // 选中的装备ID列表
+        };
+    }
+}
+
+// 生成随机装备名字
+function generateEquipmentName() {
+    const config = reincarnationEquipmentConfig;
+    
+    // 根据装备品质和等级决定名字的霸气程度
+    const prefixPool = [...config.namePrefixes];
+    const suffixPool = [...config.nameSuffixes];
+    
+    // 高品质装备使用更霸气的名字
+    let prefixIndex, suffixIndex;
+    
+    if (Math.random() < 0.3) {
+        // 30%几率生成三字名字（前缀+中缀+后缀）
+        const midfixes = ['·', '之', '的', '', '·', '之', ''];
+        const midfix = midfixes[Math.floor(Math.random() * midfixes.length)];
+        
+        prefixIndex = Math.floor(Math.random() * prefixPool.length);
+        suffixIndex = Math.floor(Math.random() * suffixPool.length);
+        
+        return prefixPool[prefixIndex] + midfix + suffixPool[suffixIndex];
+    } else {
+        // 70%几率生成四字名字（双前缀或双后缀）
+        if (Math.random() < 0.5) {
+            // 双前缀+后缀
+            const prefix1 = prefixPool[Math.floor(Math.random() * prefixPool.length)];
+            let prefix2 = prefixPool[Math.floor(Math.random() * prefixPool.length)];
+            // 确保两个前缀不同
+            while (prefix2 === prefix1) {
+                prefix2 = prefixPool[Math.floor(Math.random() * prefixPool.length)];
+            }
+            const suffix = suffixPool[Math.floor(Math.random() * suffixPool.length)];
+            return prefix1 + prefix2 + suffix;
+        } else {
+            // 前缀+双后缀
+            const prefix = prefixPool[Math.floor(Math.random() * prefixPool.length)];
+            const suffix1 = suffixPool[Math.floor(Math.random() * suffixPool.length)];
+            let suffix2 = suffixPool[Math.floor(Math.random() * suffixPool.length)];
+            // 确保两个后缀不同
+            while (suffix2 === suffix1) {
+                suffix2 = suffixPool[Math.floor(Math.random() * suffixPool.length)];
+            }
+            return prefix + suffix1 + suffix2;
+        }
+    }
+}
+function generateEquipmentNameWithRarity(rarity, tier) {
+    const config = reincarnationEquipmentConfig;
+    let name = '';
+    
+    // 根据品质和等级决定名字的复杂度
+    const rarityComplexity = {
+        'common': 1, 'uncommon': 1, 'rare': 2, 'epic': 2, 
+        'legendary': 3, 'mythic': 3, 'supreme': 4, 
+        'ancient': 4, 'primordial': 5, 'eternal': 5
+    };
+    
+    const complexity = rarityComplexity[rarity] || 1;
+    const tierBonus = Math.min(tier, 10); // T等级加成
+    
+    // 高品质高等级装备生成更复杂的名字
+    const totalComplexity = complexity + Math.floor(tierBonus / 3);
+    
+    if (totalComplexity >= 5) {
+        // 最高复杂度：四字或五字名字
+        name = generateComplexName(3);
+    } else if (totalComplexity >= 3) {
+        // 中等复杂度：三字或四字名字
+        name = Math.random() < 0.7 ? generateComplexName(2) : generateSimpleName();
+    } else {
+        // 低复杂度：二字或三字名字
+        name = Math.random() < 0.3 ? generateComplexName(1) : generateSimpleName();
+    }
+    
+    return name;
+}
+function generateSimpleName() {
+    const config = reincarnationEquipmentConfig;
+    const prefix = config.namePrefixes[Math.floor(Math.random() * config.namePrefixes.length)];
+    const suffix = config.nameSuffixes[Math.floor(Math.random() * config.nameSuffixes.length)];
+    
+    if (Math.random() < 0.3) {
+        // 30%几率加连接符
+        const connectors = ['·', '之', '的', ''];
+        const connector = connectors[Math.floor(Math.random() * connectors.length)];
+        return prefix + connector + suffix;
+    }
+    
+    return prefix + suffix;
+}
+
+// 生成复杂名字
+function generateComplexName(complexityLevel) {
+    const config = reincarnationEquipmentConfig;
+    let name = '';
+    
+    switch (complexityLevel) {
+        case 1: // 三字名字
+            const prefix1 = config.namePrefixes[Math.floor(Math.random() * config.namePrefixes.length)];
+            const suffix1 = config.nameSuffixes[Math.floor(Math.random() * config.nameSuffixes.length)];
+            const midfixes = ['·', '之', '的', ''];
+            const midfix = midfixes[Math.floor(Math.random() * midfixes.length)];
+            name = prefix1 + midfix + suffix1;
+            break;
+            
+        case 2: // 四字名字（双前缀或双后缀）
+            if (Math.random() < 0.5) {
+                // 双前缀
+                const prefixA = config.namePrefixes[Math.floor(Math.random() * config.namePrefixes.length)];
+                let prefixB = config.namePrefixes[Math.floor(Math.random() * config.namePrefixes.length)];
+                while (prefixB === prefixA) {
+                    prefixB = config.namePrefixes[Math.floor(Math.random() * config.namePrefixes.length)];
+                }
+                const suffix = config.nameSuffixes[Math.floor(Math.random() * config.nameSuffixes.length)];
+                name = prefixA + prefixB + suffix;
+            } else {
+                // 双后缀
+                const prefix = config.namePrefixes[Math.floor(Math.random() * config.namePrefixes.length)];
+                const suffixA = config.nameSuffixes[Math.floor(Math.random() * config.nameSuffixes.length)];
+                let suffixB = config.nameSuffixes[Math.floor(Math.random() * config.nameSuffixes.length)];
+                while (suffixB === suffixA) {
+                    suffixB = config.nameSuffixes[Math.floor(Math.random() * config.nameSuffixes.length)];
+                }
+                name = prefix + suffixA + suffixB;
+            }
+            break;
+            
+        case 3: // 五字名字（双前缀+双后缀或前缀+中缀+双后缀）
+            if (Math.random() < 0.5) {
+                // 双前缀+双后缀（取前后各两字）
+                const prefixA = config.namePrefixes[Math.floor(Math.random() * config.namePrefixes.length)];
+                let prefixB = config.namePrefixes[Math.floor(Math.random() * config.namePrefixes.length)];
+                while (prefixB === prefixA) {
+                    prefixB = config.namePrefixes[Math.floor(Math.random() * config.namePrefixes.length)];
+                }
+                const suffixA = config.nameSuffixes[Math.floor(Math.random() * config.nameSuffixes.length)];
+                let suffixB = config.nameSuffixes[Math.floor(Math.random() * config.nameSuffixes.length)];
+                while (suffixB === suffixA) {
+                    suffixB = config.nameSuffixes[Math.floor(Math.random() * config.nameSuffixes.length)];
+                }
+                name = prefixA + prefixB + suffixA + suffixB;
+            } else {
+                // 前缀+中缀+双后缀
+                const prefix = config.namePrefixes[Math.floor(Math.random() * config.namePrefixes.length)];
+                const midfixes = ['·', '之', '的', ''];
+                const midfix = midfixes[Math.floor(Math.random() * midfixes.length)];
+                const suffixA = config.nameSuffixes[Math.floor(Math.random() * config.nameSuffixes.length)];
+                let suffixB = config.nameSuffixes[Math.floor(Math.random() * config.nameSuffixes.length)];
+                while (suffixB === suffixA) {
+                    suffixB = config.nameSuffixes[Math.floor(Math.random() * config.nameSuffixes.length)];
+                }
+                name = prefix + midfix + suffixA + suffixB;
+            }
+            break;
+    }
+    
+    return name;
+}
+// 根据权重随机选择
+function weightedRandom(weights) {
+    const total = weights.reduce((sum, weight) => sum + weight, 0);
+    let random = Math.random() * total;
+    
+    for (let i = 0; i < weights.length; i++) {
+        random -= weights[i];
+        if (random <= 0) {
+            return i + 1; // 返回1-6
+        }
+    }
+    return 1;
+}
+
+// 生成轮回装备
+function generateReincarnationEquipment(dimensionLevel) {
+    if (dimensionLevel < 2) return null; // 次元2以上才掉落
+    
+    if (Math.random() > 0.001) return null; // 0.1%掉落几率
+    
+    const config = reincarnationEquipmentConfig;
+    
+    // 随机选择部位
+    const slot = config.slots[Math.floor(Math.random() * config.slots.length)];
+    
+    // 根据权重随机选择T等级
+    const tierWeights = Object.values(config.tiers).map(t => t.weight);
+    const tierIndex = weightedRandom(tierWeights) - 1;
+    const tier = Object.keys(config.tiers)[tierIndex];
+    
+    // 根据权重随机选择品质
+    const rarityWeights = Object.values(config.rarities).map(r => r.weight);
+    const rarityIndex = weightedRandom(rarityWeights) - 1;
+    const rarity = Object.keys(config.rarities)[rarityIndex];
+    const rarityConfig = config.rarities[rarity];
+    
+    // 随机选择词条数量
+    const statCount = weightedRandom(config.statCountWeights);
+    
+    // 生成属性
+    const stats = {};
+    const availableStats = [...config.stats];
+    
+    for (let i = 0; i < statCount; i++) {
+        if (availableStats.length === 0) break;
+        
+        const statIndex = Math.floor(Math.random() * availableStats.length);
+        const stat = availableStats[statIndex];
+        const statValue = (Math.random() * (rarityConfig.max - rarityConfig.min) + rarityConfig.min) / 100;
+        
+        stats[stat] = (stats[stat] || 0) + statValue;
+    }
+    
+    // 检查是否生成套装（神话以上品质有2%几率）
+    let setBonus = null;
+    if (['mythic', 'supreme', 'ancient', 'primordial', 'eternal'].includes(rarity) && Math.random() < 0.02) {
+        const setNames = Object.keys(config.sets);
+        setBonus = setNames[Math.floor(Math.random() * setNames.length)];
+    }
+    // 使用新的名字生成算法
+    const equipmentName = generateEquipmentNameWithRarity(rarity, parseInt(tier));
+    // 创建装备对象
+    const equipment = {
+        id: 'req_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        name: equipmentName,
+        slot: slot,
+        tier: parseInt(tier),
+        rarity: rarity,
+        stats: stats,
+        setBonus: setBonus,
+        owner: player.name,
+        dropTime: new Date().toLocaleString('zh-CN'), 
+        isLocked: false,
+        createdAt: Date.now()
+    };
+    
+    return equipment;
+}
+
+// 计算装备总加成
+function calculateEquipmentTotalBonus(equipment) {
+    const tierMultiplier = reincarnationEquipmentConfig.tiers[equipment.tier].multiplier;
+    let totalBonus = 0;
+    
+    Object.values(equipment.stats).forEach(value => {
+        totalBonus += value * tierMultiplier;
+    });
+    
+    return totalBonus;
+}
+
+// 获取装备显示颜色
+function getEquipmentColor(equipment) {
+    return reincarnationEquipmentConfig.rarities[equipment.rarity].color;
+}
+
+// 格式化属性值显示
+function formatStatValue(value, statType) {
+    if (statType === 'critRate') {
+        return (value * 100).toFixed(2) + '%';
+    }
+    return (value * 100).toFixed(1) + '%';
+}
+// 切换轮回装备系统界面
+function toggleReincarnationEquipmentUI() {
+   if (player.level.ascentionCounta < 1) {
+        alert("需要达到轮回1转才能开启轮回装备！");
+        return;
+    }
+    const overlay = document.getElementById('reincarnationEquipmentOverlay');
+    const ui = document.getElementById('reincarnationEquipmentUI');
+    
+    if (ui.style.display === 'block') {
+        // 退出界面时自动退出批量模式
+        if (player.reincarnationEquipment.batchDiscardMode) {
+            player.reincarnationEquipment.batchDiscardMode = false;
+            player.reincarnationEquipment.selectedItems = [];
+        }
+        
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateReincarnationEquipmentUI();
+    }
+}
+
+// 更新轮回装备界面
+function updateReincarnationEquipmentUI() {
+    updateEquippedEquipmentDisplay();
+    updateEquipmentInventoryDisplay();
+    updateSetBonusesDisplay();
+    updateEquipmentStatsSummary();
+}
+
+// 更新已装备的装备显示
+function updateEquippedEquipmentDisplay() {
+    const container = document.getElementById('equippedEquipmentContainer');
+    const config = reincarnationEquipmentConfig;
+    
+    let html = '<div class="equipment-slots">';
+    
+    config.slots.forEach(slot => {
+        const equipment = player.reincarnationEquipment.equipped[slot];
+        const slotName = config.slotNames[slot];
+        
+        html += `
+            <div class="equipment-slot" data-slot="${slot}">
+                <div class="slot-name">${slotName}</div>
+                <div class="equipment-display" onclick="unequipItem('${slot}')">
+                    ${equipment ? `
+                        <div style="color: ${getEquipmentColor(equipment)}; font-weight: bold;">
+                            ${equipment.name}
+                        </div>
+                        <div>T${equipment.tier} ${config.rarities[equipment.rarity].name}</div>
+                        <div>签名: ${equipment.owner}</div>
+                        <div class="equipment-stats">
+                            ${Object.entries(equipment.stats).map(([stat, value]) => `
+                                <div>${config.statNames[stat]}: +${formatStatValue(value, stat)}</div>
+                            `).join('')}
+                        </div>
+                        ${equipment.setBonus ? `<div style="color: #FFD700;">${config.sets[equipment.setBonus].name}</div>` : ''}
+                    ` : '<div style="color: #666;">空</div>'}
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// 更新装备仓库显示
+function updateEquipmentInventoryDisplay() {
+    const container = document.getElementById('equipmentInventoryContainer');
+    const config = reincarnationEquipmentConfig;
+    
+    // 获取筛选条件
+    const filterTier = document.getElementById('inventoryFilterTier').value;
+    const filterRarity = document.getElementById('inventoryFilterRarity').value;
+    const filterSlot = document.getElementById('inventoryFilterSlot').value;
+    const filterSet = document.getElementById('inventoryFilterSet').value;
+    
+    // 筛选装备
+    let filteredEquipment = player.reincarnationEquipment.inventory;
+    
+    if (filterTier !== 'all') {
+        filteredEquipment = filteredEquipment.filter(eq => eq.tier === parseInt(filterTier));
+    }
+    
+    if (filterRarity !== 'all') {
+        filteredEquipment = filteredEquipment.filter(eq => eq.rarity === filterRarity);
+    }
+    
+    if (filterSlot !== 'all') {
+        filteredEquipment = filteredEquipment.filter(eq => eq.slot === filterSlot);
+    }
+    
+    if (filterSet !== 'all') {
+        if (filterSet === 'hasSet') {
+            filteredEquipment = filteredEquipment.filter(eq => eq.setBonus);
+        } else if (filterSet === 'noSet') {
+            filteredEquipment = filteredEquipment.filter(eq => !eq.setBonus);
+        }
+    }
+    
+    // 批量丢弃模式下的控制面板
+    let controlPanel = '';
+    if (player.reincarnationEquipment.batchDiscardMode) {
+        const selectedCount = player.reincarnationEquipment.selectedItems.length;
+        const totalDiscardable = filteredEquipment.filter(eq => isItemDiscardable(eq)).length;
+        
+        controlPanel = `
+            <div style="background: #444; padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>批量丢弃模式</strong>
+                    <span style="margin-left: 10px;">已选择: ${selectedCount}/${totalDiscardable}</span>
+                </div>
+                <div>
+                    <button onclick="toggleSelectAll()" style="background: #2196F3; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">
+                        ${selectedCount === totalDiscardable ? '取消全选' : '全选'}
+                    </button>
+                    <button onclick="executeBatchDiscard()" style="background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">
+                        丢弃选中(${selectedCount})
+                    </button>
+                    <button onclick="toggleBatchDiscardMode()" style="background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
+                        退出模式
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (filteredEquipment.length === 0) {
+        container.innerHTML = controlPanel + '<div style="text-align: center; color: #666; padding: 20px;">仓库为空</div>';
+        return;
+    }
+    
+    let html = controlPanel + '<div class="equipment-inventory-grid">';
+    
+    filteredEquipment.forEach(equipment => {
+        const isLocked = player.reincarnationEquipment.lockedItems.includes(equipment.id);
+        const isSelected = isItemSelected(equipment.id);
+        const isDiscardable = isItemDiscardable(equipment);
+        
+        html += `
+            <div class="equipment-item ${isLocked ? 'locked' : ''} ${isSelected ? 'selected' : ''}" 
+                 data-id="${equipment.id}"
+                 onclick="${player.reincarnationEquipment.batchDiscardMode ? `toggleSelectItem('${equipment.id}')` : ''}">
+                
+                ${player.reincarnationEquipment.batchDiscardMode ? `
+                    <div class="selection-checkbox">
+                        <input type="checkbox" ${isSelected ? 'checked' : ''} 
+                               ${!isDiscardable ? 'disabled' : ''} 
+                               onclick="event.stopPropagation(); toggleSelectItem('${equipment.id}')">
+                    </div>
+                ` : ''}
+                
+                <div class="equipment-header">
+                    <span style="color: ${getEquipmentColor(equipment)}; font-weight: bold;">${equipment.name}</span>
+                    <div class="equipment-actions">
+                        ${!player.reincarnationEquipment.batchDiscardMode ? `
+                            <button onclick="event.stopPropagation(); equipItem('${equipment.id}')" 
+                                    ${canEquip(equipment) ? '' : 'disabled'}>装备</button>
+                            <button onclick="event.stopPropagation(); toggleLockItem('${equipment.id}')" 
+                                    style="background: ${isLocked ? '#ff6b6b' : '#51cf66'}">
+                                ${isLocked ? '解锁' : '锁定'}
+                            </button>
+                            <button onclick="event.stopPropagation(); showExportDialog('${equipment.id}')">导出</button>
+                            <button onclick="event.stopPropagation(); discardItem('${equipment.id}')" 
+                                    style="background: #ff6b6b" ${isLocked ? 'disabled' : ''}>丢弃</button>
+                        ` : ''}
+                    </div>
+                </div>
+                <div class="equipment-info">
+                    <div>部位: ${config.slotNames[equipment.slot]}</div>
+                    <div>品质: ${config.rarities[equipment.rarity].name}</div>
+                    <div>等级: T${equipment.tier}</div>
+                    <div>要求: 轮回${config.tiers[equipment.tier].minReincarnation}转</div>
+                    <div>归属: ${equipment.owner}</div>
+                    <div style="color: #aaa; font-size: 0.85em;">掉落: ${equipment.dropTime}</div>
+                </div>
+                <div class="equipment-stats">
+                    ${Object.entries(equipment.stats).map(([stat, value]) => `
+                        <div>${config.statNames[stat]}: +${formatStatValue(value, stat)}</div>
+                    `).join('')}
+                </div>
+                ${equipment.setBonus ? `
+                    <div class="set-bonus" style="color: #FFD700;">
+                        套装: ${config.sets[equipment.setBonus].name}
+                    </div>
+                ` : ''}
+                <div class="equipment-total">
+                    总加成: +${(calculateEquipmentTotalBonus(equipment) * 100).toFixed(1)}%
+                </div>
+                ${!isDiscardable && player.reincarnationEquipment.batchDiscardMode ? `
+                    <div style="color: #ff6b6b; font-size: 0.8em; margin-top: 5px;">已锁定</div>
+                ` : ''}
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+// 更新套装加成显示
+function updateSetBonusesDisplay() {
+    const container = document.getElementById('setBonusesContainer');
+    const config = reincarnationEquipmentConfig;
+    
+    // 计算当前激活的套装
+    const equippedSets = {};
+    Object.values(player.reincarnationEquipment.equipped).forEach(equipment => {
+        if (equipment && equipment.setBonus) {
+            equippedSets[equipment.setBonus] = (equippedSets[equipment.setBonus] || 0) + 1;
+        }
+    });
+    
+    let html = '<div class="set-bonuses">';
+    
+    Object.entries(equippedSets).forEach(([setName, count]) => {
+        const setConfig = config.sets[setName];
+        html += `<div class="set-info">`;
+        html += `<h4>${setConfig.name} (${count}/6)</h4>`;
+        
+        Object.entries(setConfig.bonuses).forEach(([pieceCount, bonuses]) => {
+            const isActive = count >= parseInt(pieceCount);
+            html += `<div class="set-bonus ${isActive ? 'active' : 'inactive'}">`;
+            html += `<span>${pieceCount}件: </span>`;
+            html += Object.entries(bonuses).map(([stat, value]) => 
+                `${config.statNames[stat]} +${(value * 100).toFixed(1)}%`
+            ).join(', ');
+            html += `</div>`;
+        });
+        
+        html += `</div>`;
+    });
+    
+    if (Object.keys(equippedSets).length === 0) {
+        html += '<div style="color: #666; text-align: center;">未激活任何套装效果</div>';
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// 更新装备属性总览
+function updateEquipmentStatsSummary() {
+    const container = document.getElementById('equipmentStatsSummary');
+    
+    const totalStats = calculateTotalEquipmentStats();
+    
+    let html = `
+        <div class="stats-summary">
+            <h4>装备属性总览</h4>
+            <div>生命加成: +${(totalStats.health * 100).toFixed(1)}%</div>
+            <div>攻击加成: +${(totalStats.attack * 100).toFixed(1)}%</div>
+            <div>暴击率: +${(totalStats.critRate * 100).toFixed(2)}%</div>
+            <div>爆伤加成: +${(totalStats.critDamage * 100).toFixed(1)}%</div>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+// 检查是否可以装备
+function canEquip(equipment) {
+    const requiredReincarnation = reincarnationEquipmentConfig.tiers[equipment.tier].minReincarnation;
+    return player.level.ascentionCounta >= requiredReincarnation;
+}
+
+// 装备物品
+function equipItem(equipmentId) {
+    const equipment = player.reincarnationEquipment.inventory.find(eq => eq.id === equipmentId);
+    if (!equipment) return;
+    
+    if (!canEquip(equipment)) {
+        const required = reincarnationEquipmentConfig.tiers[equipment.tier].minReincarnation;
+        logAction(`装备要求轮回${required}转！当前轮回${player.level.ascentionCounta}转`, "error");
+        return;
+    }
+    
+    const slot = equipment.slot;
+    
+    // 如果该部位已有装备，先卸下
+    if (player.reincarnationEquipment.equipped[slot]) {
+        unequipItem(slot);
+    }
+    
+    // 从仓库移除并装备
+    player.reincarnationEquipment.equipped[slot] = equipment;
+    player.reincarnationEquipment.inventory = player.reincarnationEquipment.inventory.filter(eq => eq.id !== equipmentId);
+    
+    logAction(`装备了${reincarnationEquipmentConfig.slotNames[slot]}: ${equipment.name}`, "success");
+    updateReincarnationEquipmentUI();
+    updatePlayerBattleStats();
+}
+
+// 卸下物品
+function unequipItem(slot) {
+    const equipment = player.reincarnationEquipment.equipped[slot];
+    if (!equipment) return;
+    
+    player.reincarnationEquipment.equipped[slot] = null;
+    player.reincarnationEquipment.inventory.push(equipment);
+    
+    logAction(`卸下了${reincarnationEquipmentConfig.slotNames[slot]}: ${equipment.name}`, "info");
+    updateReincarnationEquipmentUI();
+    updatePlayerBattleStats();
+}
+
+// 切换物品锁定状态
+function toggleLockItem(equipmentId) {
+    const index = player.reincarnationEquipment.lockedItems.indexOf(equipmentId);
+    
+    if (index === -1) {
+        player.reincarnationEquipment.lockedItems.push(equipmentId);
+        logAction("物品已锁定", "info");
+    } else {
+        player.reincarnationEquipment.lockedItems.splice(index, 1);
+        logAction("物品已解锁", "info");
+    }
+    
+    updateReincarnationEquipmentUI();
+}
+
+// 丢弃物品
+function discardItem(equipmentId) {
+    const equipment = player.reincarnationEquipment.inventory.find(eq => eq.id === equipmentId);
+    if (!equipment) return;
+    
+    if (player.reincarnationEquipment.lockedItems.includes(equipmentId)) {
+        logAction("物品已锁定，无法丢弃", "error");
+        return;
+    }
+    
+    showCustomConfirm(`确定要丢弃 ${equipment.name} 吗？`, (confirmed) => {
+        if (confirmed) {
+            player.reincarnationEquipment.inventory = player.reincarnationEquipment.inventory.filter(eq => eq.id !== equipmentId);
+            logAction(`已丢弃: ${equipment.name}`, "info");
+            updateReincarnationEquipmentUI();
+        }
+    });
+}
+
+// 显示导出对话框
+function showExportDialog(equipmentId) {
+    const equipment = player.reincarnationEquipment.inventory.find(eq => eq.id === equipmentId);
+    if (!equipment) return;
+    
+    // 加密装备数据
+    const encryptedData = encryptEquipmentData(equipment);
+    const data = decryptEquipmentData(encryptedData); // 解密以获取时间信息
+    
+    document.getElementById('exportEquipmentData').value = encryptedData;
+    document.getElementById('exportTimeInfo').innerHTML = `
+        <div style="margin: 10px 0; padding: 10px; background: #444; border-radius: 5px;">
+            <div>导出时间: ${new Date(data.exportTime).toLocaleString('zh-CN')}</div>
+            <div>过期时间: ${new Date(data.expireTime).toLocaleString('zh-CN')}</div>
+            <div id="remainingTime" style="color: #4CAF50; font-weight: bold;">
+                剩余时间: ${calculateRemainingTime(data.expireTime)}
+            </div>
+        </div>
+    `;
+    
+    // 启动倒计时更新
+    startExportCountdown(data.expireTime);
+    
+    document.getElementById('exportDialog').style.display = 'block';
+    document.getElementById('exportOverlay').style.display = 'block';
+}
+function startExportCountdown(expireTime) {
+    const countdownElement = document.getElementById('remainingTime');
+    
+    const countdownInterval = setInterval(() => {
+        const remaining = calculateRemainingTime(expireTime);
+        countdownElement.textContent = `剩余时间: ${remaining}`;
+        
+        if (remaining === '已过期') {
+            clearInterval(countdownInterval);
+            countdownElement.style.color = '#f44336';
+            document.getElementById('copyExportBtn').disabled = true;
+        }
+    }, 1000);
+    
+    // 保存interval以便清理
+    window.exportCountdownInterval = countdownInterval;
+}
+// 隐藏导出对话框
+function hideExportDialog() {
+    if (window.exportCountdownInterval) {
+        clearInterval(window.exportCountdownInterval);
+        window.exportCountdownInterval = null;
+    }
+    document.getElementById('exportDialog').style.display = 'none';
+    document.getElementById('exportOverlay').style.display = 'none';
+}
+
+// 显示导入对话框
+function showImportDialog() {
+    document.getElementById('importDialog').style.display = 'block';
+    document.getElementById('importOverlay').style.display = 'block';
+    document.getElementById('importEquipmentData').value = '';
+    document.getElementById('importTimeInfo').innerHTML = '';
+    document.getElementById('importEquipmentData').focus();
+}
+function validateImportCode() {
+    const encryptedData = document.getElementById('importEquipmentData').value.trim();
+    
+    if (!encryptedData) {
+        document.getElementById('importTimeInfo').innerHTML = '';
+        return null;
+    }
+    
+    try {
+        const data = decryptEquipmentData(encryptedData);
+        if (!data) {
+            document.getElementById('importTimeInfo').innerHTML = 
+                '<div style="color: #f44336; margin: 10px 0;">无效的装备代码</div>';
+            return null;
+        }
+        
+        const remainingTime = calculateRemainingTime(data.expireTime);
+        const isExpired = remainingTime === '已过期';
+        
+        document.getElementById('importTimeInfo').innerHTML = `
+            <div style="margin: 10px 0; padding: 10px; background: #444; border-radius: 5px;">
+                <div>装备名称: ${data.name}</div>
+                <div>品质: ${reincarnationEquipmentConfig.rarities[data.rarity].name}</div>
+                <div>等级: T${data.tier}</div>
+                <div>导出时间: ${new Date(data.exportTime).toLocaleString('zh-CN')}</div>
+                <div>过期时间: ${new Date(data.expireTime).toLocaleString('zh-CN')}</div>
+                <div style="color: ${isExpired ? '#f44336' : '#4CAF50'}; font-weight: bold;">
+                    剩余时间: ${remainingTime}
+                </div>
+                ${isExpired ? '<div style="color: #f44336;">⚠️ 该代码已过期，无法导入</div>' : ''}
+            </div>
+        `;
+        
+        return { data: data, isValid: !isExpired };
+    } catch (error) {
+        document.getElementById('importTimeInfo').innerHTML = 
+            `<div style="color: #f44336; margin: 10px 0;">${error.message}</div>`;
+        return null;
+    }
+}
+// 隐藏导入对话框
+function hideImportDialog() {
+    document.getElementById('importDialog').style.display = 'none';
+    document.getElementById('importOverlay').style.display = 'none';
+}
+
+// 加密装备数据
+function encryptEquipmentData(equipment) {
+    const data = {
+        name: equipment.name,
+        slot: equipment.slot,
+        tier: equipment.tier,
+        rarity: equipment.rarity,
+        stats: equipment.stats,
+        setBonus: equipment.setBonus,
+        owner: equipment.owner,
+        dropTime: equipment.dropTime,
+        createdAt: equipment.createdAt,
+        // 添加时间限制信息
+        exportTime: Date.now(), // 导出时间
+        expireTime: Date.now() + 10 * 60 * 1000, // 10分钟过期时间
+        version: '1.0' // 数据版本
+    };
+    
+    const jsonString = JSON.stringify(data);
+    return btoa(unescape(encodeURIComponent(jsonString)));
+}
+
+// 解密装备数据
+function decryptEquipmentData(encryptedData) {
+    try {
+        const jsonString = decodeURIComponent(escape(atob(encryptedData)));
+        const data = JSON.parse(jsonString);
+        
+        // 验证数据格式
+        if (!data.exportTime || !data.expireTime) {
+            throw new Error('无效的装备代码：缺少时间信息');
+        }
+        
+        // 检查是否过期
+        const currentTime = Date.now();
+        if (currentTime > data.expireTime) {
+            throw new Error('装备代码已过期（超过10分钟）');
+        }
+        
+        // 检查导出时间是否合理
+        if (data.exportTime > currentTime) {
+            throw new Error('无效的装备代码：导出时间异常');
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('解密装备数据失败:', error);
+        return null;
+    }
+}
+function calculateRemainingTime(expireTime) {
+    const currentTime = Date.now();
+    const remaining = expireTime - currentTime;
+    
+    if (remaining <= 0) {
+        return '已过期';
+    }
+    
+    const minutes = Math.floor(remaining / (60 * 1000));
+    const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+    
+    return `${minutes}分${seconds}秒`;
+}
+
+// 导入装备
+function importEquipment() {
+    const encryptedData = document.getElementById('importEquipmentData').value.trim();
+    
+    if (!encryptedData) {
+        logAction("请输入装备代码", "error");
+        return;
+    }
+    
+    const validation = validateImportCode();
+    if (!validation || !validation.isValid) {
+        logAction("装备代码无效或已过期", "error");
+        return;
+    }
+    
+    const equipmentData = validation.data;
+    
+    // 检查是否已导入过相同的装备（防止重复导入）
+    const existingImport = player.reincarnationEquipment.inventory.find(eq => 
+        eq.exportSignature === encryptedData
+    );
+    
+    if (existingImport) {
+        logAction("该装备代码已被导入过", "error");
+        return;
+    }
+    
+    // 创建新的装备对象
+    const newEquipment = {
+        id: 'req_import_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        name: equipmentData.name,
+        slot: equipmentData.slot,
+        tier: equipmentData.tier,
+        rarity: equipmentData.rarity,
+        stats: equipmentData.stats,
+        setBonus: equipmentData.setBonus,
+        owner: equipmentData.owner || '导入的装备',
+        dropTime: equipmentData.dropTime || new Date().toLocaleString('zh-CN'),
+        isLocked: false,
+        createdAt: Date.now(),
+        // 记录导入信息
+        importTime: Date.now(),
+        originalExportTime: equipmentData.exportTime,
+        exportSignature: encryptedData // 防止重复导入
+    };
+    
+    // 添加到仓库
+    player.reincarnationEquipment.inventory.push(newEquipment);
+    
+    logAction(`成功导入装备: ${newEquipment.name}`, "success");
+    hideImportDialog();
+    updateReincarnationEquipmentUI();
+    
+    // 记录导入历史
+    recordImportHistory(newEquipment, equipmentData.owner);
+}
+
+// 记录导入历史
+function recordImportHistory(equipment, originalOwner) {
+    if (!player.reincarnationEquipment.importHistory) {
+        player.reincarnationEquipment.importHistory = [];
+    }
+    
+    player.reincarnationEquipment.importHistory.push({
+        equipmentName: equipment.name,
+        originalOwner: originalOwner,
+        importTime: Date.now(),
+        rarity: equipment.rarity,
+        tier: equipment.tier
+    });
+    
+    // 只保留最近10条记录
+    if (player.reincarnationEquipment.importHistory.length > 10) {
+        player.reincarnationEquipment.importHistory.shift();
+    }
+}
+
+// 复制导出代码
+function copyExportCode() {
+    const exportData = document.getElementById('exportEquipmentData');
+    exportData.select();
+    document.execCommand('copy');
+    logAction("装备代码已复制到剪贴板", "success");
+}
+// 计算总装备属性
+function calculateTotalEquipmentStats() {
+    const totalStats = {
+        health: 0,
+        attack: 0,
+        critRate: 0,
+        critDamage: 0
+    };
+    
+    // 计算单件装备属性
+    Object.values(player.reincarnationEquipment.equipped).forEach(equipment => {
+        if (equipment) {
+            const tierMultiplier = reincarnationEquipmentConfig.tiers[equipment.tier].multiplier;
+            
+            Object.entries(equipment.stats).forEach(([stat, value]) => {
+                totalStats[stat] += value * tierMultiplier;
+            });
+        }
+    });
+    
+    // 计算套装加成
+    const setBonuses = calculateSetBonuses();
+    Object.entries(setBonuses).forEach(([stat, value]) => {
+        totalStats[stat] += value;
+    });
+    
+    return totalStats;
+}
+
+// 计算套装加成
+function calculateSetBonuses() {
+    const setBonuses = {
+        health: 0,
+        attack: 0,
+        critRate: 0,
+        critDamage: 0
+    };
+    
+    const config = reincarnationEquipmentConfig;
+    const equippedSets = {};
+    
+    // 统计各套装件数
+    Object.values(player.reincarnationEquipment.equipped).forEach(equipment => {
+        if (equipment && equipment.setBonus) {
+            equippedSets[equipment.setBonus] = (equippedSets[equipment.setBonus] || 0) + 1;
+        }
+    });
+    
+    // 应用套装效果
+    Object.entries(equippedSets).forEach(([setName, count]) => {
+        const setConfig = config.sets[setName];
+        if (!setConfig) return;
+        
+        Object.entries(setConfig.bonuses).forEach(([pieceCount, bonuses]) => {
+            if (count >= parseInt(pieceCount)) {
+                Object.entries(bonuses).forEach(([stat, value]) => {
+                    // 每轮回1转增加10倍效果
+                    const multiplier = 1 + (player.level.ascentionCounta * 10);
+                    setBonuses[stat] += value * multiplier;
+                });
+            }
+        });
+    });
+    
+    return setBonuses;
+}
+function dropReincarnationEquipment() {
+    const dimensionLevel = player.dimensionLevel;
+    const newEquipment = generateReincarnationEquipment(dimensionLevel);
+    
+    if (newEquipment) {
+        player.reincarnationEquipment.inventory.push(newEquipment);
+        logAction(`获得轮回装备: ${newEquipment.name} (${reincarnationEquipmentConfig.rarities[newEquipment.rarity].name}) - ${newEquipment.dropTime}`, 'success');
+        updateReincarnationEquipmentUI();
+    }
+}
+function toggleBatchDiscardMode() {
+    player.reincarnationEquipment.batchDiscardMode = !player.reincarnationEquipment.batchDiscardMode;
+    
+    const batchDiscardBtn = document.getElementById('batchDiscardBtn');
+    if (player.reincarnationEquipment.batchDiscardMode) {
+        batchDiscardBtn.innerHTML = '退出批量丢弃模式';
+        batchDiscardBtn.style.background = '#f44336';
+        // 初始化选中列表
+        player.reincarnationEquipment.selectedItems = [];
+        logAction("已进入批量丢弃模式，请勾选要丢弃的装备", "info");
+    } else {
+        batchDiscardBtn.innerHTML = '批量丢弃';
+        batchDiscardBtn.style.background = '#ff9800';
+        // 清除选中状态
+        player.reincarnationEquipment.selectedItems = [];
+        logAction("已退出批量丢弃模式", "info");
+    }
+    
+    updateReincarnationEquipmentUI();
+}
+function toggleSelectItem(equipmentId) {
+    if (!player.reincarnationEquipment.batchDiscardMode) return;
+    
+    const index = player.reincarnationEquipment.selectedItems.indexOf(equipmentId);
+    if (index === -1) {
+        player.reincarnationEquipment.selectedItems.push(equipmentId);
+    } else {
+        player.reincarnationEquipment.selectedItems.splice(index, 1);
+    }
+    
+    updateReincarnationEquipmentUI();
+}
+function executeBatchDiscard() {
+    if (!player.reincarnationEquipment.batchDiscardMode || !player.reincarnationEquipment.selectedItems.length) {
+        logAction("请先选择要丢弃的装备", "error");
+        return;
+    }
+    
+    const selectedCount = player.reincarnationEquipment.selectedItems.length;
+    const lockedItems = player.reincarnationEquipment.selectedItems.filter(id => 
+        player.reincarnationEquipment.lockedItems.includes(id)
+    );
+    
+    if (lockedItems.length > 0) {
+        logAction(`有${lockedItems.length}件装备已锁定，无法丢弃`, "error");
+        return;
+    }
+    
+    showCustomConfirm(`确定要丢弃选中的${selectedCount}件装备吗？此操作不可撤销！`, (confirmed) => {
+        if (confirmed) {
+            let discardedCount = 0;
+            
+            player.reincarnationEquipment.selectedItems.forEach(equipmentId => {
+                const equipmentIndex = player.reincarnationEquipment.inventory.findIndex(eq => eq.id === equipmentId);
+                if (equipmentIndex !== -1) {
+                    const equipment = player.reincarnationEquipment.inventory[equipmentIndex];
+                    if (!player.reincarnationEquipment.lockedItems.includes(equipmentId)) {
+                        player.reincarnationEquipment.inventory.splice(equipmentIndex, 1);
+                        discardedCount++;
+                        logAction(`已丢弃: ${equipment.name}`, "info");
+                    }
+                }
+            });
+            
+            // 退出批量丢弃模式
+            player.reincarnationEquipment.batchDiscardMode = false;
+            player.reincarnationEquipment.selectedItems = [];
+            
+            logAction(`批量丢弃完成，成功丢弃${discardedCount}件装备`, "success");
+            updateReincarnationEquipmentUI();
+        }
+    });
+}
+function toggleSelectAll() {
+    if (!player.reincarnationEquipment.batchDiscardMode) return;
+    
+    const allItems = player.reincarnationEquipment.inventory
+        .filter(eq => !player.reincarnationEquipment.lockedItems.includes(eq.id))
+        .map(eq => eq.id);
+    
+    if (player.reincarnationEquipment.selectedItems.length === allItems.length) {
+        // 取消全选
+        player.reincarnationEquipment.selectedItems = [];
+    } else {
+        // 全选
+        player.reincarnationEquipment.selectedItems = [...allItems];
+    }
+    
+    updateReincarnationEquipmentUI();
+}
+function isItemSelected(equipmentId) {
+    return player.reincarnationEquipment.batchDiscardMode && 
+           player.reincarnationEquipment.selectedItems.includes(equipmentId);
+}
+
+// 检查装备是否可丢弃（未锁定）
+function isItemDiscardable(equipment) {
+    return !player.reincarnationEquipment.lockedItems.includes(equipment.id);
+}
+function showImportHistory() {
+    if (!player.reincarnationEquipment.importHistory || player.reincarnationEquipment.importHistory.length === 0) {
+        document.getElementById('importHistoryList').innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">暂无导入历史</div>';
+    } else {
+        let html = '<div class="import-history-list">';
+        player.reincarnationEquipment.importHistory.reverse().forEach((record, index) => {
+            const timeAgo = formatTimeAgo(record.importTime);
+            html += `
+                <div class="import-history-item">
+                    <div class="import-info">
+                        <strong style="color: ${getRarityColor(record.rarity)}">${record.equipmentName}</strong>
+                        <div>来自: ${record.originalOwner || '未知玩家'}</div>
+                        <div>品质: ${reincarnationEquipmentConfig.rarities[record.rarity].name}</div>
+                        <div>等级: T${record.tier}</div>
+                    </div>
+                    <div class="import-time">${timeAgo}</div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        document.getElementById('importHistoryList').innerHTML = html;
+    }
+    
+    document.getElementById('importHistoryDialog').style.display = 'block';
+    document.getElementById('importHistoryOverlay').style.display = 'block';
+}
+
+// 隐藏导入历史
+function hideImportHistory() {
+    document.getElementById('importHistoryDialog').style.display = 'none';
+    document.getElementById('importHistoryOverlay').style.display = 'none';
+}
+
+// 格式化时间显示
+function formatTimeAgo(timestamp) {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const minutes = Math.floor(diff / (60 * 1000));
+    const hours = Math.floor(diff / (60 * 60 * 1000));
+    const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+    
+    if (minutes < 1) return '刚刚';
+    if (minutes < 60) return `${minutes}分钟前`;
+    if (hours < 24) return `${hours}小时前`;
+    return `${days}天前`;
+}
+
+// 获取品质颜色
+function getRarityColor(rarity) {
+    return reincarnationEquipmentConfig.rarities[rarity]?.color || '#FFFFFF';
+}
  // 世界BOSS系统数据
         const worldBossData = {
             summonCount: 1,
@@ -48333,5 +49959,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
+
 </body>
 </html>
