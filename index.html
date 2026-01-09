@@ -3344,8 +3344,9 @@ button:disabled {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.77更新日志</h4>
+            <h4>1.78更新日志</h4>
             <h4>1群：864788026， 2群：902481027 有问题可以进群问（存档异常联系群管理修复）</h4>
+           <p>2026/01/09: 增强伴侣系统，增强停车场：现在停车场等级可以减少跑商时间，增加次元678.</p>
            <p>2026/01/07:  修复BUG导致游戏暴毙。更新玩家系统，增加轮回装备（次元2以上掉落极低，掉落的装备可以分享给别人）</p>
            <p>2026/01/04:  更新结婚系统玩法，生孩子（恩爱25级开启）有加成，孩子长大也可以工作</p>
            <p>2026/01/03:  增加结婚系统资金5W开启，无尽挖矿增加玩法：挖矿有几率出宝物，出售可以卖资金。</p>
@@ -5115,6 +5116,9 @@ button:disabled {
                 <button class="dimension-btn" onclick="changeDimension(3)">次元3</button>
                 <button class="dimension-btn" onclick="changeDimension(4)">次元4</button>
                 <button class="dimension-btn" onclick="changeDimension(5)">次元5</button>
+                <button class="dimension-btn" onclick="changeDimension(6)">次元6</button>
+                <button class="dimension-btn" onclick="changeDimension(7)">次元7</button>
+                <button class="dimension-btn" onclick="changeDimension(8)">次元8</button>
             </div>
             <div class="dimension-info">
                 当前难度: <span id="currentDimension">次元1</span><br>
@@ -7342,7 +7346,7 @@ button:disabled {
 </div>
 </div>
 </div>
-<div id="footer">版本号: v1.7.7</div>
+<div id="footer">版本号: v1.7.8</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -18793,7 +18797,10 @@ const dimensionConfig = {
     2: { cost: 3, expMultiplier: 5, attackMultiplier: 100000, name: "次元2", ascentionRequired: 1 },
     3: { cost: 5, expMultiplier: 10, attackMultiplier: 1e10, name: "次元3", ascentionRequired: 2 },
     4: { cost: 25, expMultiplier: 50, attackMultiplier: 1e20, name: "次元4", ascentionRequired: 3 },
-    5: { cost: 50, expMultiplier: 100, attackMultiplier: 1e30, name: "次元5", ascentionRequired: 4 }
+    5: { cost: 50, expMultiplier: 100, attackMultiplier: 1e30, name: "次元5", ascentionRequired: 4 },
+    6: { cost: 100, expMultiplier: 200, attackMultiplier: 1e40, name: "次元6", ascentionRequired: 6 },
+    7: { cost: 250, expMultiplier: 500, attackMultiplier: 1e50, name: "次元7", ascentionRequired: 8 },
+    8: { cost: 500, expMultiplier: 1000, attackMultiplier: 1e60, name: "次元8", ascentionRequired: 10 }
 };
 
         // 切换次元难度
@@ -19529,7 +19536,7 @@ function updateVehicleList() {
         vehicleCard.dataset.index = index;
         
         // 根据稀有度设置边框颜色
-        const rarityColor = getRarityColor(vehicle.rarity);
+        const rarityColor = getRarityColorq(vehicle.rarity);
         vehicleCard.style.border = `2px solid ${rarityColor}`;
         
         vehicleCard.innerHTML = `
@@ -19548,16 +19555,16 @@ function updateVehicleList() {
 }
 
 // 根据稀有度获取颜色
-function getRarityColor(rarity) {
+function getRarityColorq(rarity) {
     if (rarity <= 5) return '#1E90FF'; // 普通 - 蓝色
     if (rarity <= 10) return '#32CD32'; // 稀有 - 绿色
     if (rarity <= 15) return '#FFD700'; // 史诗 - 金色
     if (rarity <= 20) return '#9370DB'; // 传说 - 紫色
     if (rarity <= 25) return '#013220'; // 传说 - 紫色
-    if (rarity <= 30) return '#C0C0C0'; // 传说 - 紫色
+    if (rarity <= 30) return '#8a2be2'; // 传说 - 紫色
     if (rarity <= 35) return '#FF1493'; // 传说 - 紫色
     if (rarity <= 45) return '#FF4500'; // 神话 - 橙色
-    return '#FF0000'; // 至尊 - 粉色
+    return '#f44336'; // 至尊 - 粉色
 }
 
 // 更新停车位显示
@@ -19576,7 +19583,7 @@ function updateParkingSpots() {
         
         if (i < player.parking.parkedVehicles.length) {
             const vehicle = player.parking.parkedVehicles[i];
-         const rarityColor = getRarityColor(vehicle.rarity);
+         const rarityColor = getRarityColorq(vehicle.rarity);
             spotCard.innerHTML = `
                <div style="font-weight: bold; color: ${rarityColor}">${vehicle.brand}</div>
                 <div>${vehicle.model}</div>
@@ -19776,9 +19783,9 @@ function updateDecomposeUI() {
         vehicleDiv.style.padding = '10px';
         vehicleDiv.style.background = '#444';
         vehicleDiv.style.borderRadius = '5px';
-        vehicleDiv.style.border = `2px solid ${getRarityColor(vehicle.rarity)}`;
+        vehicleDiv.style.border = `2px solid ${getRarityColorq(vehicle.rarity)}`;
         
-        const rarityColor = getRarityColor(vehicle.rarity);
+        const rarityColor = getRarityColorq(vehicle.rarity);
         const decomposeValue = vehicle.rarity * 10000;
         
         vehicleDiv.innerHTML = `
@@ -21780,7 +21787,7 @@ function upgradeArtifact(artifactId) {
     
     // 提升属性（最多提升50%）
     const quality = artifactQualities.find(q => q.id === artifact.quality);
-    const maxBonus = quality.maxBonus * 100000000; // 最大提升100%
+    const maxBonus = quality.maxBonus * 10000000; // 最大提升100%
     
     Object.keys(artifact.bonuses).forEach(key => {
         const currentBonus = parseFloat(artifact.bonuses[key]);
@@ -23616,6 +23623,30 @@ const wingDropRates = {
         "传说级": 0.05,
         "神圣级": 0.009,
         "不朽级": 0.001
+    },
+  6: { // 次元5
+        "精良级": 0.5,
+        "卓越级": 0.3,
+        "史诗级": 0.14,
+        "传说级": 0.05,
+        "神圣级": 0.009,
+        "不朽级": 0.001
+    },
+  7: { // 次元5
+        "精良级": 0.5,
+        "卓越级": 0.3,
+        "史诗级": 0.14,
+        "传说级": 0.05,
+        "神圣级": 0.009,
+        "不朽级": 0.001
+    },
+  8: { // 次元5
+        "精良级": 0.5,
+        "卓越级": 0.3,
+        "史诗级": 0.14,
+        "传说级": 0.05,
+        "神圣级": 0.009,
+        "不朽级": 0.001
     }
 };
 // 切换翅膀系统界面
@@ -23999,6 +24030,30 @@ const mountDropRates = {
         "传说级": 0.01
     },
     5: { // 次元5
+        "精良级": 0.5,
+        "卓越级": 0.3,
+        "史诗级": 0.14,
+        "传说级": 0.05,
+        "神圣级": 0.009,
+        "不朽级": 0.001
+    },
+  6: { // 次元5
+        "精良级": 0.5,
+        "卓越级": 0.3,
+        "史诗级": 0.14,
+        "传说级": 0.05,
+        "神圣级": 0.009,
+        "不朽级": 0.001
+    },
+  7: { // 次元5
+        "精良级": 0.5,
+        "卓越级": 0.3,
+        "史诗级": 0.14,
+        "传说级": 0.05,
+        "神圣级": 0.009,
+        "不朽级": 0.001
+    },
+  8: { // 次元5
         "精良级": 0.5,
         "卓越级": 0.3,
         "史诗级": 0.14,
@@ -26488,7 +26543,7 @@ const companionRarities = {
         baseScore: 5000,
         upgradeMultiplier: 50,
         talentCount: 8,
-        talentRange: [0, 7], // 初级到太古
+        talentRange: [0, 15], // 初级到太古
         decomposeRose: 200,
          soulItem: "banlv5"
     },
@@ -26498,7 +26553,7 @@ const companionRarities = {
         baseScore: 8000,
         upgradeMultiplier: 100,
         talentCount: 10,
-        talentRange: [0, 8], // 初级到洪荒
+        talentRange: [0, 15], // 初级到洪荒
         decomposeRose: 1000,
          soulItem: "banlv6"
     },
@@ -26508,7 +26563,7 @@ const companionRarities = {
         baseScore: 1000,
         upgradeMultiplier: 30,
         talentCount: 0, // 动态计算
-        talentRange: [0, 8], // 可达到洪荒级别
+        talentRange: [0, 15], // 可达到洪荒级别
         decomposeRose: 100,
          soulItem: "banlv7"
     },
@@ -26518,7 +26573,7 @@ const companionRarities = {
         baseScore: 1000,
         upgradeMultiplier: 25,
         talentCount: 0, // 动态计算
-        talentRange: [0, 8], // 可达到洪荒级别
+        talentRange: [0, 15], // 可达到洪荒级别
         decomposeRose: 100,
          soulItem: "banlv8"
     },
@@ -26528,7 +26583,7 @@ const companionRarities = {
         baseScore: 1000,
         upgradeMultiplier: 20,
         talentCount: 0, // 动态计算
-        talentRange: [0, 8], // 可达到洪荒级别
+        talentRange: [0, 15], // 可达到洪荒级别
         decomposeRose: 100,
          soulItem: "banlv9"
     }
@@ -26540,13 +26595,13 @@ const talentTypes = [
         name: "攻击",
         base: 1,
         perLevel: 5,
-        description: (level) => `玩家总和攻击+${(0.1 + 0.2 * level).toFixed(1)}倍`
+        description: (level) => `玩家总和攻击+${(1 + 5 * level).toFixed(1)}倍`
     },
     {
         name: "爆伤",
         base: 1,
         perLevel: 5,
-        description: (level) => `玩家总和爆伤+${(0.1 + 0.2 * level).toFixed(1)}倍`
+        description: (level) => `玩家总和爆伤+${(1 + 5 * level).toFixed(1)}倍`
     },
     {
         name: "生命",
@@ -26558,13 +26613,13 @@ const talentTypes = [
         name: "全属性",
         base: 0.5,
         perLevel: 2.5,
-        description: (level) => `玩家总和全属性+${(0.1 + 0.11 * level).toFixed(2)}倍`
+        description: (level) => `玩家总和全属性+${(0.5 + 2.5 * level).toFixed(2)}倍`
     },
     {
         name: "连击",
         base: 1,
         perLevel: 5,
-        description: (level) => `玩家连击+${1 + 1 * level}`
+        description: (level) => `玩家连击+${1 + 5 * level}`
     },
     {
         name: "暴击率",
@@ -26575,7 +26630,7 @@ const talentTypes = [
 ];
 
 // 天赋品阶名称
-const talentRanks = ["初级", "中级", "高级", "终极", "圣级", "神级", "远古", "太古", "洪荒"];
+const talentRanks = ["初级", "中级", "高级", "终极", "圣级", "神级", "远古", "太古", "洪荒", "无上", "太初", "混沌", "虚数", "永恒", "归墟", "炁叕"];
 
 // 伴侣名字库
 const companionNames = ["闫闫", "茶茶", "沈砚山", "苏绾月", "林清瑶", "楚棠溪", "慕玄尘", "许清尘", "温玉珞", "林灵枢", "叶棠音", "陆剑尘", "楚絮晚", "陆星辞", "王富贵", "洛千尘", "白小纯", "白芷晴", "顾长歌", "沈青岚", "慕雨柔", "陆天行", "乔曦", "柳如烟", "香香", "尝试", "小萝莉", "通元", "鱼鱼", "花花"];
@@ -27474,7 +27529,7 @@ function washCompanion() {
             
             // 生成新天赋 - 但保留锁定状态
             const newType = Math.floor(Math.random() * talentTypes.length);
-            const newRank = Math.floor(Math.random() * 9); // 0-8级
+            const newRank = Math.floor(Math.random() * 16); // 0-8级
             talent.type = newType;
             talent.rank = newRank;
             // 注意：这里不修改 talent.locked 状态，保持原样
@@ -27920,7 +27975,7 @@ function combineCompanions() {
             rank = Math.floor(Math.random() * (newMax - newMin + 1)) + newMin;
         } else {
             // 如果没有相同类型的天赋，随机生成
-            rank = Math.floor(Math.random() * 9); // 0-8级
+            rank = Math.floor(Math.random() * 8); // 0-8级
         }
         
         newTalents.push({ type, rank });
@@ -29566,7 +29621,7 @@ function calculateTravelTime() {
     
     const baseTime = tradingConfig.cities[player.trading.travelDestination].travelTime;
     const speedBonus = player.trading.transport.speedBonus;
-    const actualTime = baseTime * (100 - speedBonus) / 100;
+    const actualTime = (baseTime * (100 - speedBonus) / 100) - Math.min(player.parking.level / 33, 1.21);
     
     return `${actualTime.toFixed(1)}分钟`;
 }
@@ -30792,7 +30847,7 @@ function travelToCity(city) {
     // 显示旅行信息
     const baseTime = tradingConfig.cities[city].travelTime;
     const speedBonus = player.trading.transport.speedBonus;
-    const actualTime = baseTime * (100 - speedBonus) / 100;
+    const actualTime = baseTime * (100 - speedBonus) / 100 - Math.min(player.parking.level / 33, 1.21);
        
     logAction(`已选择目的地：${city}，预计需要${actualTime.toFixed(1)}分钟`, "info");
     updateMapTab();
@@ -30858,7 +30913,7 @@ function startTravel() {
     const destination = player.trading.travelDestination;
     const baseTime = tradingConfig.cities[destination].travelTime;
     const speedBonus = player.trading.transport.speedBonus;
-    const actualTime = baseTime * (100 - speedBonus) / 100;
+    const actualTime = baseTime * (100 - speedBonus) / 100 - Math.min(player.parking.level / 33, 1.21);
     
     player.trading.isTraveling = true;
     player.trading.travelStartTime = Date.now();
@@ -32037,7 +32092,7 @@ function startAutoTravel(destination) {
     
     const baseTime = tradingConfig.cities[destination].travelTime;
     const speedBonus = player.trading.transport.speedBonus;
-    const actualTime = baseTime * (100 - speedBonus) / 100;
+    const actualTime = baseTime * (100 - speedBonus) / 100 - Math.min(player.parking.level / 33, 1.21);
     
     player.trading.autoTrade.currentState = 'traveling';
     player.trading.autoTrade.totalTravelTime = actualTime * 60 * 1000;
@@ -47947,30 +48002,30 @@ const reincarnationEquipmentConfig = {
     
     // 品质配置
     rarities: {
-        'common': { name: '普通', min: 1, max: 20, color: '#FFFFFF', weight: 90 },
-        'uncommon': { name: '优秀', min: 15, max: 30, color: '#1EFF00', weight: 5.9389 },
-        'rare': { name: '精良', min: 25, max: 40, color: '#0070DD', weight: 2.5 },
-        'epic': { name: '史诗', min: 35, max: 50, color: '#A335EE', weight: 1 },
-        'legendary': { name: '传说', min: 45, max: 60, color: '#FF8000', weight: 0.5 },
-        'mythic': { name: '神话', min: 55, max: 70, color: '#E6CC80', weight: 0.1 },
-        'supreme': { name: '至尊', min: 65, max: 80, color: '#00CCFF', weight: 0.05 },
-        'ancient': { name: '远古', min: 75, max: 90, color: '#FF4040', weight: 0.01 },
-        'primordial': { name: '上古', min: 85, max: 100, color: '#FF00FF', weight: 0.001 },
-        'eternal': { name: '荒古', min: 100, max: 100, color: '#FFD700', weight: 0.0001 }
+        'common': { name: '普通', min: 1, max: 20, color: '#FFFFFF', weight: 80 },
+        'uncommon': { name: '优秀', min: 5, max: 30, color: '#1EFF00', weight: 8.439 },
+        'rare': { name: '精良', min: 10, max: 40, color: '#0070DD', weight: 5 },
+        'epic': { name: '史诗', min: 20, max: 50, color: '#A335EE', weight: 3 },
+        'legendary': { name: '传说', min: 30, max: 60, color: '#FF8000', weight: 2 },
+        'mythic': { name: '神话', min: 40, max: 70, color: '#E6CC80', weight: 1 },
+        'supreme': { name: '至尊', min: 50, max: 80, color: '#00CCFF', weight: 0.5 },
+        'ancient': { name: '远古', min: 60, max: 90, color: '#FF4040', weight: 0.05 },
+        'primordial': { name: '上古', min: 70, max: 100, color: '#FF00FF', weight: 0.01 },
+        'eternal': { name: '荒古', min: 100, max: 100, color: '#FFD700', weight: 0.001 }
     },
     
     // 装备等级配置 (T1-T10)
     tiers: {
-        1: { name: 'T1', minReincarnation: 1, multiplier: 1, weight: 97 },
-        2: { name: 'T2', minReincarnation: 3, multiplier: 3, weight: 2.88334 },
-        3: { name: 'T3', minReincarnation: 5, multiplier: 12, weight: 0.1 },
-        4: { name: 'T4', minReincarnation: 8, multiplier: 42, weight: 0.01 },
-        5: { name: 'T5', minReincarnation: 10, multiplier: 150, weight: 0.005 },
-        6: { name: 'T6', minReincarnation: 12, multiplier: 525, weight: 0.001 },
-        7: { name: 'T7', minReincarnation: 15, multiplier: 1840, weight: 0.0005 },
-        8: { name: 'T8', minReincarnation: 20, multiplier: 6433, weight: 0.0001 },
-        9: { name: 'T9', minReincarnation: 25, multiplier: 22520, weight: 0.00005 },
-        10: { name: 'T10', minReincarnation: 30, multiplier: 78880, weight: 0.00001 }
+        1: { name: 'T1', minReincarnation: 1, multiplier: 1, weight: 90 },
+        2: { name: 'T2', minReincarnation: 3, multiplier: 3, weight: 8.3339 },
+        3: { name: 'T3', minReincarnation: 5, multiplier: 12, weight: 1 },
+        4: { name: 'T4', minReincarnation: 8, multiplier: 42, weight: 0.5 },
+        5: { name: 'T5', minReincarnation: 10, multiplier: 150, weight: 0.1 },
+        6: { name: 'T6', minReincarnation: 12, multiplier: 525, weight: 0.05 },
+        7: { name: 'T7', minReincarnation: 15, multiplier: 1840, weight: 0.01 },
+        8: { name: 'T8', minReincarnation: 20, multiplier: 6433, weight: 0.005 },
+        9: { name: 'T9', minReincarnation: 25, multiplier: 22520, weight: 0.001 },
+        10: { name: 'T10', minReincarnation: 30, multiplier: 78880, weight: 0.0001 }
     },
     
     // 属性类型
@@ -47985,7 +48040,7 @@ const reincarnationEquipmentConfig = {
     },
     
     // 词条数量概率
-    statCountWeights: [85, 7.83334, 3, 2.5, 1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001], // 1-15个词条的概率
+    statCountWeights: [80, 8.3334, 4, 2.5, 2, 1.5, 1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001], // 1-15个词条的概率
     
     // 套装配置
     sets: {
@@ -47994,7 +48049,7 @@ const reincarnationEquipmentConfig = {
         'assassin': { name: '刺客套装', bonuses: { 2: { critRate: 1.06 }, 4: { critDamage: 0.3 }, 6: { critRate: 1.1, critDamage: 0.9 } } },
         'tank': { name: '坦克套装', bonuses: { 2: { health: 0.5 }, 4: { health: 0.8 }, 6: { health: 1.8 } } },
         'archer': { name: '射手套装', bonuses: { 2: { attack: 0.12, critRate: 1.04 }, 4: { critDamage: 0.28 }, 6: { attack: 1.35, critRate: 1.09 } } },
-        'support': { name: '辅助套装', bonuses: { 2: { health: 0.15 }, 4: { health: 0.55, attack: 0.2 }, 6: { health: 0.5, attack: 0.4 } } },
+        'support': { name: '辅助套装', bonuses: { 2: { health: 0.25 }, 4: { health: 0.55, attack: 0.2 }, 6: { health: 0.5, attack: 0.4 } } },
         'suppora': { name: '神话套装', bonuses: { 2: { attack: 0.44 }, 4: { health: 0.45, attack: 0.5 }, 6: { health: 1.9, attack: 1.4 } } },
         'supporb': { name: '侠客套装', bonuses: { 2: { critRate: 1.235 }, 4: { health: 0.35, attack: 0.4 }, 6: { health: 1.6, attack: 0.8 } } },
         'supporc': { name: '拳皇套装', bonuses: { 2: { attack: 0.55 }, 4: { health: 0.21, critDamage: 0.2 }, 6: { health: 0.3, critDamage: 0.7 } } },
@@ -48296,9 +48351,9 @@ function generateReincarnationEquipment(dimensionLevel) {
         stats[stat] = (stats[stat] || 0) + statValue;
     }
     
-    // 检查是否生成套装（神话以上品质有2%几率）
+    // 检查是否生成套装（神话以上品质有10%几率）
     let setBonus = null;
-    if (['mythic', 'supreme', 'ancient', 'primordial', 'eternal'].includes(rarity) && Math.random() < 0.02) {
+    if (['mythic', 'supreme', 'ancient', 'primordial', 'eternal'].includes(rarity) && Math.random() < 0.10) {
         const setNames = Object.keys(config.sets);
         setBonus = setNames[Math.floor(Math.random() * setNames.length)];
     }
