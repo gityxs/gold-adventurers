@@ -3269,6 +3269,225 @@ button:disabled {
     font-size: 12px;
     line-height: 1.4;
 }
+.beast-card {
+    transition: all 0.3s ease;
+}
+
+.beast-card:hover {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+/* 小宠物 - 灰色渐变 */
+.beast-card[data-rarity="小宠物"] {
+    background: linear-gradient(135deg,#333333, #444444, #555555, #666666, #777777, #666666, #555555, #444444, #333333);
+   background-size: 400% 400%;
+    animation: gradientFlow 5s ease infinite;
+}
+
+/* 野兽 - 蓝色渐变 */
+.beast-card[data-rarity="野兽"] {
+    background: linear-gradient(135deg,#1a237e,#283593,#3949ab,#5c6bc0,#7986cb,#00acc1,#8e24aa,#1a237e);
+   background-size: 400% 400%;
+    animation: gradientFlow 5s ease infinite;
+}
+
+/* 凶兽 - 紫色渐变 */
+.beast-card[data-rarity="凶兽"] {
+    background: linear-gradient(135deg,#4a148c,#7b1fa2,#9c27b0,#ab47bc,#ce93d8,#e1bee7,#ab47bc,#9c27b0,#7b1fa2,#4a148c);
+   background-size: 400% 400%;
+    animation: gradientFlow 5s ease infinite;
+}
+
+/* 灵兽 - 青色渐变 */
+.beast-card[data-rarity="灵兽"] {
+    background: linear-gradient(135deg,#004d40, #00695c, #00897b, #009688, #26a69a, #4db6ac, #80cbc4, #b2dfdb);
+  background-size: 400% 400%;
+    animation: gradientFlow 5s ease infinite;
+}
+
+/* 圣兽 - 金色渐变 */
+.beast-card[data-rarity="圣兽"] {
+    background: linear-gradient(135deg,#ffd700, #ffec8b, #ffd700, #ffa500, #ffd700, #ffec8b, #ffd700);
+background-size: 400% 400%;
+    animation: gradientFlow 5s ease infinite;
+}
+
+/* 神兽 - 橙红渐变 */
+.beast-card[data-rarity="神兽"] {
+    background: linear-gradient(135deg,#ff0000,#ff3300,#ff6600,#ff9900,#ffcc00,#ff9900,#ff6600,#ff3300);
+    background-size: 400% 400%;
+    animation: gradientFlow 5s ease infinite;
+}
+
+/* 炁兽 - 品红渐变（七彩流光效果） */
+.beast-card[data-rarity="炁兽"] {
+    background: linear-gradient(135deg,#ff00ff,#ff0080,#ff0066,#ff0040,#ff0020,#ff0000,#ff0020,#ff0040,#ff0066,#ff0080,#ff00ff );
+    background-size: 400% 400%;
+    animation: gradientFlow 5s ease infinite;
+}
+
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+/* 确保弹窗层次 */
+#beastSystemUI {
+    z-index: 1000;
+}
+
+#beastActionOverlay {
+    z-index: 1001;
+}
+
+#beastActionModal {
+    z-index: 1002;
+}
+.equipped-beast-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border-radius: 6px;
+    padding: 8px 12px;
+    border-left: 3px solid;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 180px;
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.equipped-beast-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+}
+
+.equipped-beast-card .beast-name {
+    font-weight: bold;
+    font-size: 0.95em;
+    margin-bottom: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.equipped-beast-card .beast-rarity {
+    font-size: 0.75em;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.equipped-beast-card .beast-stats {
+    font-size: 0.8em;
+    color: #4CAF50;
+    margin-top: 5px;
+}
+
+.equipped-beast-card .beast-slots {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 0.7em;
+    color: gold;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+/* 空槽位样式 */
+.equipped-slot-empty {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 15px;
+    text-align: center;
+    color: #888;
+    font-size: 0.9em;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 60px;
+}
+
+.equipped-slot-empty:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #aaa;
+}
+select {
+    background: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+select:hover {
+    border-color: #8A2BE2;
+}
+
+select:focus {
+    border-color: #8A2BE2;
+    box-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
+}
+
+/* 快速筛选按钮样式 */
+#equippedBeastsSection button {
+    transition: all 0.2s ease;
+}
+
+#equippedBeastsSection button:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+/* 装备状态标识 */
+.beast-status-icon {
+    font-size: 0.8em;
+    margin-right: 3px;
+}
+#shareUpgradeSection input[type="number"] {
+    text-align: center;
+}
+
+#shareUpgradeSection input[type="number"]::-webkit-inner-spin-button,
+#shareUpgradeSection input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
+    height: 30px;
+}
+
+/* 神兽蛋图标动画 */
+@keyframes eggBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.egg-icon {
+    display: inline-block;
+    animation: eggBounce 2s ease-in-out infinite;
+    margin-right: 5px;
+}
+
+/* 升级按钮悬停效果 */
+#shareUpgradeSection button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+#shareUpgradeSection button:active {
+    transform: translateY(1px);
+}
+
+/* 进度条动画 */
+#upgradeProgressBar {
+    transition: width 0.5s ease-in-out;
+}
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -3317,7 +3536,7 @@ button:disabled {
            <p>26. 修仙系统：500转开启，开启经验获得条件是：获得一次灵根和血脉。材料都是杂货铺购买</p>
            <p>27. 宝图系统：600转开启，随机奖励或者打BOSS。</p>
            <p>28. 夜店系统：600转开启，店铺每级加点击伤害，特殊事件消耗50-200星币，提升30-60分钟金币或者经验收益，获得的星币可以兑换藏宝图，或者打世界地图怪物消耗（后续会加其他材料兑换）。</p>
-           <p>29. 玩家等级：50转开启，每级1倍属性飞升轮回有加成，世界地图怪物打怪升级。每100级可以飞升一次，10次飞升1转轮回，翅膀：打怪次元2以上掉落，坐骑：打怪次元3以上掉落，符文：打怪次元4以上掉落，增加轮回装备：次元2以上掉落（掉落极低，掉落的装备可以分享给别人）</p>
+           <p>29. 玩家等级：50转开启，每级1倍属性飞升轮回有加成，世界地图怪物打怪升级。每100级可以飞升一次，10次飞升1转轮回，翅膀：打怪次元2以上掉落，坐骑：打怪次元3以上掉落，符文：打怪次元4以上掉落，轮回装备：次元2以上掉落（掉落极低，掉落的装备可以分享给别人），轮回神兽：次元2以上掉落可以分享给别人</p>
            <p>30. 世界地图：50转开启，打怪掉玩家经验，每挑战一次消耗星币，如果打的时候闪退界面，那就是打不过这关。（掉落材料，翅膀，符文）。</p>
           <p>31. 直播系统：500转开启，每级增加点击伤害，粉丝数增加GPS加成，流量是获得多倍经验（获取大量玫瑰花）</p>
         <p>32. 宗门系统：1000转开启，每级GPS收益，功法库提升功法秘笈加成。</p>
@@ -3344,8 +3563,9 @@ button:disabled {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.78更新日志</h4>
+            <h4>1.79更新日志</h4>
             <h4>1群：864788026， 2群：902481027 有问题可以进群问（存档异常联系群管理修复）</h4>
+           <p>2026/01/10: 增加轮回神兽：可以升级（次元2以上掉落极低，掉落的装备可以分享给别人）.</p>
            <p>2026/01/09: 增强伴侣系统，增强停车场：现在停车场等级可以减少跑商时间，增加次元678.</p>
            <p>2026/01/07:  修复BUG导致游戏暴毙。更新玩家系统，增加轮回装备（次元2以上掉落极低，掉落的装备可以分享给别人）</p>
            <p>2026/01/04:  更新结婚系统玩法，生孩子（恩爱25级开启）有加成，孩子长大也可以工作</p>
@@ -5094,6 +5314,7 @@ button:disabled {
          <button onclick="ascendPlayer()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">飞升</button>
        <button onclick="ascendPlayera()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">轮回</button>
          <button onclick="toggleReincarnationEquipmentUI()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">轮回装备</button> 
+      <button onclick="toggleBeastSystem()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">轮回神兽</button>
       <button onclick="toggleWingSystem()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">翅膀</button>
       <button onclick="toggleMountSystem()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">坐骑</button>
      <button onclick="toggleRuneSystem()"  style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">符文</button>
@@ -7346,7 +7567,257 @@ button:disabled {
 </div>
 </div>
 </div>
-<div id="footer">版本号: v1.7.8</div>
+<!-- 轮回神兽系统覆盖层和主界面 -->
+<div id="beastSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="beastSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #8A2BE2; border-radius: 10px; z-index: 1001; width: 800px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #8A2BE2; margin: 0;">轮回神兽系统</h2>
+        <button onclick="toggleBeastSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+    
+    <!-- 系统说明区域 -->
+    <div style="margin-bottom: 15px; padding: 10px; background: #2a2a2a; border-radius: 5px;">
+        <p>在次元2及以上的世界地图战斗中有几率掉落轮回神兽。S级别越高、品质越好的神兽，加成的属性越强大。</p>
+        <p>当前轮回次数: <span id="currentAscentionCounta">0</span> | 可装备最高S级别: <span id="maxEquipSLevel">S1</span> |
+       神兽蛋: <span id="globalBeastEggCount" style="color: #FFD700;">0</span> 🥚
+    </p></p>
+    </div>
+  <!-- 在系统说明区域后，筛选操作前添加已装备神兽显示 -->
+<div id="equippedBeastsSection" style="margin-bottom: 15px; padding: 15px; background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(138, 43, 226, 0.1)); border-radius: 8px; border-left: 4px solid #8A2BE2;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+        <h4 style="color: #8A2BE2; margin: 0; display: flex; align-items: center; gap: 5px;">
+            <span>⚡ 当前已装备的神兽</span>
+            <span style="font-size: 0.8em; background: #8A2BE2; color: white; padding: 2px 8px; border-radius: 10px;">
+                ${player.beasts.equipped.length}/${getMaxBeastSlots()}
+            </span>
+        </h4>
+        <div style="display: flex; gap: 5px;">
+            <button onclick="quickFilterEquipped()" style="background: rgba(76, 175, 80, 0.2); color: #4CAF50; border: 1px solid #4CAF50; padding: 3px 10px; border-radius: 12px; cursor: pointer; font-size: 0.8em;">
+                只看已装备
+            </button>
+            <button onclick="quickFilterUnequipped()" style="background: rgba(33, 150, 243, 0.2); color: #2196F3; border: 1px solid #2196F3; padding: 3px 10px; border-radius: 12px; cursor: pointer; font-size: 0.8em;">
+                只看未装备
+            </button>
+            <button onclick="quickFilterEquippable()" style="background: rgba(255, 152, 0, 0.2); color: #FF9800; border: 1px solid #FF9800; padding: 3px 10px; border-radius: 12px; cursor: pointer; font-size: 0.8em;">
+                只看可装备
+            </button>
+        </div>
+    </div>
+    <div id="equippedBeastsList" style="display: flex; flex-wrap: wrap; gap: 10px; min-height: 60px;">
+        <!-- 已装备神兽将动态显示在这里 -->
+    </div>
+    <div style="font-size: 0.85em; color: #aaa; margin-top: 8px; display: flex; justify-content: space-between;">
+        <span>点击神兽可快速查看详情</span>
+        <button onclick="resetAllFilters()" style="background: none; color: #888; border: none; padding: 0; cursor: pointer; font-size: 0.85em;">
+            重置筛选
+        </button>
+    </div>
+</div>
+    <!-- 筛选与操作栏 -->
+    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+    <div style="display: flex; gap: 10px; align-items: center;">
+    <div>
+        <span>筛选: </span>
+        <select id="beastSLevelFilter" onchange="filterBeasts()" style="margin-right: 5px;">
+            <option value="all">全部S级别</option>
+            <option value="S1">S1</option>
+            <option value="S2">S2</option>
+            <option value="S3">S3</option>
+            <option value="S4">S4</option>
+            <option value="S5">S5</option>
+            <option value="S6">S6</option>
+            <option value="S7">S7</option>
+            <option value="S8">S8</option>
+            <option value="S9">S9</option>
+            <option value="S10">S10</option>
+        </select>
+        <select id="beastRarityFilter" onchange="filterBeasts()" style="margin-right: 5px;">
+            <option value="all">全部品质</option>
+            <option value="小宠物">小宠物</option>
+            <option value="野兽">野兽</option>
+            <option value="凶兽">凶兽</option>
+            <option value="灵兽">灵兽</option>
+            <option value="圣兽">圣兽</option>
+            <option value="神兽">神兽</option>
+            <option value="炁兽">炁兽</option>
+        </select>
+        <select id="beastEquipFilter" onchange="filterBeasts()">
+            <option value="all">全部状态</option>
+            <option value="equipped">已装备</option>
+            <option value="unequipped">未装备</option>
+            <option value="equippable">可装备</option>
+            <option value="unequippable">未达标</option>
+        </select>
+    </div>
+</div>
+  <button onclick="showImportCodeModal()" style="background: #9C27B0; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">
+        导入兑换码
+    </button>
+    <div>
+        <button onclick="lockAllFilteredBeasts()">锁定筛选</button>
+        <button onclick="discardAllUnlockedFilteredBeasts()" style="background: #d32f2f;">批量丢弃未锁定</button>
+    </div>
+</div>
+
+    <!-- 神兽仓库展示 -->
+    <div id="beastInventoryContainer">
+        <h3>神兽仓库</h3>
+        <div id="beastInventory" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto;">
+            <!-- 神兽列表将通过JavaScript动态生成 -->
+        </div>
+    </div>
+<div style="margin-bottom: 15px; padding: 10px; background: #2a2a2a; border-radius: 5px;">
+    <h4>神兽总属性</h4>
+    <div id="totalBeastBonus">
+        <!-- 总属性将通过JavaScript动态更新 -->
+    </div>
+</div>
+  
+
+<!-- 在神兽操作弹窗的按钮区域添加升级按钮 -->
+<div id="shareUpgradeSection" style="display: none; margin-top: 20px; padding: 15px; background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05)); border-radius: 8px; border-left: 4px solid #4CAF50;">
+    <h4 style="color: #4CAF50; margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
+        <span>🌟 共享升级</span>
+        <span style="font-size: 0.8em; background: #4CAF50; color: white; padding: 2px 8px; border-radius: 10px;">
+            Lv. <span id="currentShareLevel">0</span>
+        </span>
+    </h4>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <div style="color: #aaa; font-size: 0.9em;">当前加成：</div>
+            <div style="color: #4CAF50; font-size: 1.2em; font-weight: bold;">+<span id="currentBonusPercent">0</span>%</div>
+        </div>
+        <div>
+            <div style="color: #aaa; font-size: 0.9em;">拥有神兽蛋：</div>
+            <div style="color: #FFD700; font-size: 1.2em; font-weight: bold;">
+                <span id="beastEggCount">0</span> 🥚
+            </div>
+        </div>
+        <div>
+            <div style="color: #aaa; font-size: 0.9em;">下一级消耗：</div>
+            <div style="color: #FF9800; font-size: 1.2em; font-weight: bold;">
+                <span id="nextLevelCost">10</span> 🥚
+            </div>
+        </div>
+    </div>
+    
+    <!-- 升级按钮区域 -->
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button onclick="upgradeShareLevel(1)" style="background: #4CAF50; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; flex: 1; font-size: 1em;">
+            升级1级
+        </button>
+        <button onclick="upgradeShareLevel(10)" style="background: #2196F3; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; flex: 1; font-size: 1em;">
+            升级10级
+        </button>
+        <button onclick="upgradeShareLevel(50)" style="background: #9C27B0; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; flex: 1; font-size: 1em;">
+            升级50级
+        </button>
+    </div>
+    
+    <!-- 批量升级输入 -->
+    <div style="display: flex; gap: 5px; margin-bottom: 15px;">
+        <input type="number" id="customUpgradeAmount" min="1" max="1000" value="1" 
+               style="flex: 2; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;">
+        <button onclick="upgradeShareLevelCustom()" style="flex: 1; background: #FF9800; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">
+            自定义升级
+        </button>
+        <button onclick="upgradeShareLevelMax()" style="flex: 1; background: #f44336; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">
+            最大升级
+        </button>
+    </div>
+    
+    <!-- 进度条 -->
+    <div style="margin-bottom: 10px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+            <span style="color: #aaa; font-size: 0.85em;">升级进度</span>
+            <span style="color: #FFD700; font-size: 0.85em;">
+                <span id="consumedEggs">0</span>/<span id="totalEggsForNext">20</span> 蛋
+            </span>
+        </div>
+        <div style="width: 100%; height: 8px; background: #333; border-radius: 4px; overflow: hidden;">
+            <div id="upgradeProgressBar" style="height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); width: 0%; border-radius: 4px;"></div>
+        </div>
+    </div>
+    
+    <!-- 等级效果说明 -->
+    <div style="background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 5px; margin-top: 10px;">
+        <div style="color: #FFD700; font-size: 0.9em; margin-bottom: 5px;">📈 升级效果</div>
+        <div style="color: #aaa; font-size: 0.85em;">
+            • 每级提升所有神兽总属性 <span style="color: #4CAF50;">2%</span><br>
+            • 当前等级对所有神兽生效<br>
+            • 加成计算公式：总属性 × (1 + 等级 × 0.02)<br>
+            • 等级无上限，但每级消耗增加
+        </div>
+    </div>
+    </div>
+</div>
+<!-- 在现有的神兽系统UI中添加独立操作弹窗 -->
+<div id="beastActionModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #8A2BE2; border-radius: 10px; z-index: 1002; width: 600px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #8A2BE2; margin: 0;">神兽操作</h2>
+        <button onclick="closeBeastActionModal()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+    
+    <div id="selectedBeastInfo" style="margin-bottom: 20px;">
+        <!-- 神兽详细信息会动态填充到这里 -->
+    </div>
+    
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button id="btnLockUnlock" onclick="toggleLockBeast()" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; flex: 1;">锁定</button>
+        <button id="btnExportCode" onclick="exportBeastCode()" style="background: #2196F3; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; flex: 1;">生成兑换码</button>
+        <button id="btnDiscard" onclick="discardBeast()" style="background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; flex: 1;">丢弃</button>
+    </div>
+    
+    <div id="exportCodeSection" style="display: none; margin-top: 20px; padding: 15px; background: #2a2a2a; border-radius: 5px;">
+        <h4>兑换码</h4>
+        <p style="color: #aaa; font-size: 0.9em;">兑换码有效期为10分钟，复制下方代码给其他玩家：</p>
+        <textarea id="beastCodeOutput" readonly style="width: 100%; height: 60px; background: #333; color: #fff; border: 1px solid #555; padding: 5px; margin-bottom: 10px;"></textarea>
+        <button onclick="copyBeastCode()" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">复制代码</button>
+    </div>
+</div>
+
+<!-- 操作弹窗遮罩层 -->
+<div id="beastActionOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1001;"></div>    </div>
+</div>    </div>
+
+<!-- 在现有弹窗后添加导入兑换码弹窗 -->
+<div id="importCodeModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #9C27B0; border-radius: 10px; z-index: 1003; width: 500px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #9C27B0; margin: 0;">导入兑换码</h3>
+        <button onclick="closeImportCodeModal()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <p style="color: #aaa; font-size: 0.9em; margin-bottom: 10px;">
+            请输入其他玩家分享的兑换码（有效期10分钟）：
+        </p>
+        <textarea id="importCodeInput" placeholder="粘贴兑换码..." style="width: 100%; height: 80px; background: #333; color: #fff; border: 1px solid #555; padding: 10px; border-radius: 5px; font-family: monospace;"></textarea>
+    </div>
+    
+    <div style="margin-bottom: 15px; padding: 10px; background: rgba(156, 39, 176, 0.1); border-radius: 5px;">
+        <div style="color: #9C27B0; font-size: 0.9em; margin-bottom: 5px;">💡 提示</div>
+        <ul style="color: #aaa; font-size: 0.85em; margin: 0; padding-left: 20px;">
+            <li>兑换码有效期为10分钟</li>
+            <li>每个兑换码只能使用一次</li>
+            <li>导入后神兽的掉落者将变为当前玩家</li>
+        </ul>
+    </div>
+    
+    <div style="display: flex; gap: 10px;">
+        <button onclick="redeemBeastCodeFromImport()" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; flex: 1;">兑换</button>
+        <button onclick="closeImportCodeModal()" style="background: #757575; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; flex: 1;">取消</button>
+    </div>
+</div>
+
+<div id="importCodeOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1002;">
+</div>
+</div>
+
+
+</div>
+</div>
+<div id="footer">版本号: v1.7.9</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -7380,6 +7851,16 @@ button:disabled {
     soulRingMultiplier: 1,    // 魂环总加成乘数（默认1倍）
     dungeonEquipMultiplier: 1 // 副本装备总加成乘数（默认1倍）
   },
+beasts: {
+        inventory: [], // 拥有的神兽列表
+        equipped: [],
+        selectedId: null, // 当前选中的神兽ID
+        shareLevel: {
+        level: 0, // 共享等级
+        totalExp: 0, // 总消耗的神兽蛋数量
+        bonusMultiplier: 1.0 // 总属性加成倍率
+    }
+    },
 reincarnationEquipment: {
             equipped: {
                 helmet: null,
@@ -9061,7 +9542,7 @@ zhiye1: { name: '职业转换书', effect: 0, description: '用于更换职业' 
 chiban1: { name: '黑龙王翅膀', effect: 0, description: '用于强化翅膀' },
 zuoqi1: { name: '远古圣兽精魄', effect: 0, description: '用于强化坐骑' },
 fuben1: { name: '副本令牌', effect: 0, description: '用于挑战副本' },
-shenshou1: { name: '神兽蛋', effect: 0, description: '用于召唤神兽' },
+shenshou1: { name: '神兽蛋', effect: 0, description: '用于强化轮回神兽' },
 fuwen1: { name: '秘法符文', effect: 0, description: '用于强化符文' },
 fuben2: { name: '秘境钥匙', effect: 0, description: '用于开启秘境' }
 };
@@ -12908,7 +13389,15 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
     if (message.includes('自动购买')) {
         return; // 直接返回，不记录这类消息
     }
-    
+    if (message.includes("获得了轮回神兽")) {
+        // 提取神兽名和品质
+        const match = message.match(/获得了轮回神兽：(.*?)（(.*?)·(.*?)）/);
+        if (match) {
+            const [, beastName, rarity, sLevel] = match;
+            const rarityColor = beastConfig.rarities[rarity]?.color || '#FFFFFF';
+            // 可以用特殊样式显示
+        }
+    }
     const timestamp = new Date().toLocaleTimeString();
 
     // 辅助函数：将大数值转换为科学计数法
@@ -15839,13 +16328,14 @@ let wingHealthBonus = 0;
     const bonuses = calculateGemBonuses(); 
     const techBonuses = calculateTechniqueBonuses();
    const equipmentStats = calculateTotalEquipmentStats();
+   const beastBonus = calculateEquippedBeastBonus();
     // 2. 计算玩家生命（应用伴侣生命加成）
     player.battle.playerHealth = Math.floor(
         player.reincarnationCount * 
         (1 + player.attributes.healthBonus + player.attributes.health * 0.01) *
         classBonuses.healthMultiplier * titleBonuses.healthMultiplier *
         companionBonuses.healthMultiplier * (1 + artifactBonuses.health) * (1 + bonuses.health / 100) *  (1 + techBonuses.health) *  (1 + wingHealthBonus)  *  (1 + mountHealthBonus) *
-        (1 + runeBonuses.health) * (1 + (player.mining.gems.emerald*0.05))  * (1+player.marriage.marriageBonuses.critRateBonus)  * (1+player.children.childBonuses.critRateBonus) * (1 + equipmentStats.health)// 应用伴侣生命加成
+        (1 + runeBonuses.health) * (1 + (player.mining.gems.emerald*0.05))  * (1+player.marriage.marriageBonuses.critRateBonus)  * (1+player.children.childBonuses.critRateBonus) * (1 + equipmentStats.health) * (1 +beastBonus.health) // 应用伴侣生命加成
     );
 
     // 3. 计算玩家攻击（应用伴侣攻击加成）
@@ -15855,7 +16345,7 @@ let wingHealthBonus = 0;
         classBonuses.attackMultiplier * titleBonuses.attackMultiplier *
         officialBonus * companionBonuses.attackMultiplier * (1 + artifactBonuses.attack) * (1 + bonuses.attack / 100) *  (1 + techBonuses.attack)  *  (1 + mountAttackBonus) *
         (1 + runeBonuses.attack) * (1 + (player.mining.gems.sapphire*0.05)) * (1+player.children.childBonuses.goldMultiplier)  *
-        (1 + equipmentStats.attack) // 应用伴侣攻击加成
+        (1 + equipmentStats.attack) * (1 +beastBonus.attack) // 应用伴侣攻击加成
     );
 
     // 4. 计算暴击率（应用伴侣暴击率加成）
@@ -15875,7 +16365,7 @@ let wingHealthBonus = 0;
         classBonuses.critMultiplier * titleBonuses.critMultiplier *
         companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100) *  (1 + techBonuses.critDamage)  *  (1 + mountCritDamageBonus) *
         (1 + runeBonuses.critDamage)* (1 + (player.mining.gems.amethyst*0.05)) * (1+player.marriage.marriageBonuses.critDamageBonus) *
-       (1 +equipmentStats.critDamage); // 应用伴侣爆伤加成
+       (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage); // 应用伴侣爆伤加成
 
     // 6. 计算连击次数（应用伴侣连击加成）
     player.battle.playerMultiAttack = Math.max(1,
@@ -19134,10 +19624,11 @@ function handleMonsterDefeated() {
                dropRuneMaterials();
                dropMount();
                 dropWing();
-                if (Math.random() < 0.01) { // 2%掉落率
-            dropItemsByDimension();            
+                if (Math.random() < 0.01) { // 1%掉落率
+            dropItemsByDimension();          
             }
            dropReincarnationEquipment();
+           tryDropBeastAfterBattle();
                 if (player.nightClub.starCoins < dimension.cost) {
                     addBattleLog("星币不足，无法生成新怪物！");
                     closeBattle();
@@ -19352,6 +19843,7 @@ function backgroundHandleMonsterDefeated() {
             dropItemsByDimension();
         }
         dropReincarnationEquipment();
+       tryDropBeastAfterBattle();
         if (player.nightClub.starCoins < dimension.cost) {
             stopBackgroundBattle();
             logAction("星币不足，后台自动战斗已停止", "warning");
@@ -49224,6 +49716,1707 @@ function formatTimeAgo(timestamp) {
 function getRarityColor(rarity) {
     return reincarnationEquipmentConfig.rarities[rarity]?.color || '#FFFFFF';
 }
+
+const beastConfig = {
+    // S级别配置：所需轮回转生次数、属性加成范围
+    sLevels: {
+        'S1': { requiredAscention: 1, multiplierRange: [0.01, 1.00] }, 
+        'S2': { requiredAscention: 3, multiplierRange: [0.30, 3.00] }, 
+        'S3': { requiredAscention: 5, multiplierRange: [1.00, 9.00] },
+        'S4': { requiredAscention: 8, multiplierRange: [3.00, 27.00] },
+        'S5': { requiredAscention: 10, multiplierRange: [7.00, 81.00] },
+        'S6': { requiredAscention: 12, multiplierRange: [25.00, 243.00] },
+        'S7': { requiredAscention: 15, multiplierRange: [80.00, 729.00] },
+        'S8': { requiredAscention: 20, multiplierRange: [224.50, 2187.00] },
+        'S9': { requiredAscention: 25, multiplierRange: [793.50, 6561.00] },
+        'S10': { requiredAscention: 30, multiplierRange: [2250.50, 19683.00] }
+    },
+
+    // 品质配置：名称、颜色、掉落权重
+    rarities: {
+        '小宠物': { 
+            name: '小宠物', 
+            chineseName: '小宠',
+            color: '#CCCCCC', // 灰色
+            dropWeight: 90, 
+            effectMultiplier: 1.0,
+            loreWeight: 1, // 背景故事权重
+            description: '灵性初开，稚嫩可掬'
+        },
+        '野兽': { 
+            name: '野兽', 
+            chineseName: '野兽',
+            color: '#1E90FF', // 亮蓝色
+            dropWeight: 7.34, 
+            effectMultiplier: 1.25,
+            loreWeight: 2,
+            description: '山林霸主，野性难驯'
+        },
+        '凶兽': { 
+            name: '凶兽', 
+            chineseName: '凶兽',
+            color: '#8A2BE2', // 紫色
+            dropWeight: 1.5, 
+            effectMultiplier: 1.5,
+            loreWeight: 3,
+            description: '嗜血成性，凶威盖世'
+        },
+        '灵兽': { 
+            name: '灵兽', 
+            chineseName: '灵兽',
+            color: '#00CED1', // 青色
+            dropWeight: 1, 
+            effectMultiplier: 1.75,
+            loreWeight: 4,
+            description: '通晓灵性，亲近自然'
+        },
+        '圣兽': { 
+            name: '圣兽', 
+            chineseName: '圣兽',
+            color: '#FFD700', // 金色
+            dropWeight: 0.1, 
+            effectMultiplier: 2.0,
+            loreWeight: 5,
+            description: '祥瑞化身，圣光护体'
+        },
+        '神兽': { 
+            name: '神兽', 
+            chineseName: '神兽',
+            color: '#FF4500', // 橙红色
+            dropWeight: 0.05, 
+            effectMultiplier: 2.5,
+            loreWeight: 6,
+            description: '神威浩荡，镇压一方'
+        },
+        '炁兽': { 
+            name: '炁兽', 
+            chineseName: '炁兽',
+            color: '#FF1493', // 亮粉色/品红色
+            dropWeight: 0.01, 
+            effectMultiplier: 3.0,
+            loreWeight: 7,
+            description: '炁之本源，大道显化'
+        }
+    },
+
+    // 可获得的属性词条类型
+    affixTypes: ['生命加成', '攻击加成', '爆伤加成'],
+
+    // 词条数概率分布
+    affixCountProbs: {
+        1: 90,
+        2: 8.39,
+        3: 1,
+        4: 0.5,
+        5: 0.1,
+        6: 0.01
+    },
+
+    // S级别掉落概率
+    sLevelDropProbs: {
+        'S1': 90,
+        'S2': 8.3339,
+        'S3': 1,
+        'S4': 0.5,
+        'S5': 0.1,
+        'S6': 0.05,
+        'S7': 0.01,
+        'S8': 0.005,
+        'S9': 0.001,
+        'S10': 0.0001
+    }
+};
+
+// 神兽名字词库
+const beastNameParts = {
+    小宠物: {
+        prefixes: ['茸茸', '团团', '豆豆', '球球', '毛毛', '雪雪', '绒绒', '嘟嘟', '咪咪', '波波'],
+        suffixes: ['兔', '猫', '狗', '鼠', '雀', '龟', '蛙', '鱼', '狐', '狸']
+    },
+    
+    // 野兽 - 常见、威猛
+    野兽: {
+        prefixes: ['利爪', '钢牙', '迅影', '铁背', '灰鬃', '棕毛', '赤瞳', '银尾', '铜皮', '金睛'],
+        suffixes: ['狼', '虎', '豹', '熊', '狮', '象', '牛', '马', '鹰', '雕']
+    },
+    
+    // 凶兽 - 凶残、暴戾
+    凶兽: {
+        prefixes: ['血瞳', '噬魂', '裂骨', '撕风', '断金', '碎岩', '吞月', '饮血', '屠城', '灭世'],
+        suffixes: ['饕餮', '穷奇', '梼杌', '混沌', '朱厌', '祸斗', '狰', '蛊雕', '九婴', '相柳']
+    },
+    
+    // 灵兽 - 灵性、优雅
+    灵兽: {
+        prefixes: ['灵瞳', '玉角', '星纹', '月华', '霞光', '云翼', '风痕', '水镜', '雷音', '虹霓'],
+        suffixes: ['鹿', '鹤', '鸾', '鸢', '鲲', '鹏', '蛟', '螭', '夔', '虺']
+    },
+    
+    // 圣兽 - 神圣、威严
+    圣兽: {
+        prefixes: ['圣光', '天威', '神恩', '净世', '守护', '裁决', '福音', '天命', '至理', '永恒'],
+        suffixes: ['麒麟', '白泽', '貔貅', '谛听', '当康', '英招', '陆吾', '毕方', '重明', '腓腓']
+    },
+    
+    // 神兽 - 强大、尊贵
+    神兽: {
+        prefixes: ['天穹', '混沌', '虚空', '轮回', '时空', '造化', '开天', '创世', '主宰', '至尊'],
+        suffixes: ['青龙', '白虎', '朱雀', '玄武', '应龙', '烛龙', '腾蛇', '勾陈', '黄龙', '凤凰']
+    },
+    
+    // 炁兽 - 神秘、本源
+    炁兽: {
+        prefixes: ['太初', '鸿蒙', '元始', '无极', '太易', '太始', '太素', '太极', '两仪', '四象'],
+        suffixes: ['炁', '道', '源', '始', '元', '一', '极', '玄', '妙', '真']
+    }
+};
+
+// 神兽背景故事模板
+const beastLoreTemplates = {
+    // 小宠物背景 - 平凡、可爱
+    小宠物: [
+        '只是一只普通的{0}，喜欢在{1}嬉戏玩耍。',
+        '{0}族的幼崽，对世界充满好奇，经常{1}。',
+        '被主人收养的流浪{0}，虽然弱小但{1}。',
+        '在{0}中发现的幼兽，天性{1}惹人怜爱。',
+        '这只{0}似乎有着不寻常的{1}天赋。'
+    ],
+    
+    // 野兽背景 - 自然、野生
+    野兽: [
+        '山林间的{0}霸主，凭借{1}在{2}称王。',
+        '曾与猎人周旋多年的{0}，学会了{1}的生存技巧。',
+        '从{0}迁徙而来的{1}，适应了这里的{2}环境。',
+        '这只{0}的{1}在族群中堪称一绝，{2}。',
+        '在{0}的残酷竞争中存活下来的{1}，{2}。'
+    ],
+    
+    // 凶兽背景 - 凶残、危险
+    凶兽: [
+        '以{0}为食的{1}，所到之处{2}。',
+        '被{0}侵蚀心智的{1}，只剩下{2}的本能。',
+        '上古{0}的后裔，传承了{1}的凶性，{2}。',
+        '这只{0}曾{1}，被列为{2}级危险凶兽。',
+        '{0}的化身，每当{1}时便会现身{2}。'
+    ],
+    
+    // 灵兽背景 - 灵性、智慧
+    灵兽: [
+        '通晓{0}之道的{1}，能{2}。',
+        '在{0}中修炼千年的{1}，已初具{2}之能。',
+        '这只{0}天生能与{1}沟通，掌握着{2}的秘密。',
+        '{0}族的智者，曾{1}，被尊为{2}。',
+        '吸收{0}精华而诞生的{1}，拥有{2}的力量。'
+    ],
+    
+    // 圣兽背景 - 神圣、祥瑞
+    圣兽: {
+        '麒麟': '仁兽麒麟，不践生草，不履生虫，王者有德则现。',
+        '白泽': '通晓万物之情，能言人语，祥瑞之兽，辟除人间邪气。',
+        '貔貅': '纳食四方之财，吞万物而不泻，招财进宝，镇宅辟邪。',
+        '谛听': '能辨世间万物，尤善听人心，坐地听八百，卧耳听三千。',
+        '当康': '其鸣自叫，见则天下大穰，丰穰的瑞兽。',
+        '英招': '人面马身，身有虎纹，生鸟翼，徇于四海，其音如榴。',
+        '陆吾': '司天之九部及帝之囿时，人面虎身九尾，镇守昆仑。',
+        '毕方': '见则其邑有讹火，御火之精，不食五谷。',
+        '重明': '双睛在背，能搏逐猛兽虎狼，使妖灾群恶不能为害。',
+        '腓腓': '养之可以解忧愁，其状如狸，白尾有鬣。'
+    },
+    
+    // 神兽背景 - 强大、古老
+    神兽: {
+        '青龙': '东方之神，五行主木，司春，为四象之首，万物生发之始。',
+        '白虎': '西方之神，五行主金，司秋，杀伐之神，兵戈之主。',
+        '朱雀': '南方之神，五行主火，司夏，涅槃之鸟，浴火重生。',
+        '玄武': '北方之神，五行主水，司冬，龟蛇合体，司命之神。',
+        '应龙': '背生双翼，司云布雨，曾助黄帝战蚩尤，斩夸父。',
+        '烛龙': '视为昼，瞑为夜，吹为冬，呼为夏，身长千里，人面龙身。',
+        '腾蛇': '能兴云雾而游其中，无足而飞，星宿之精。',
+        '勾陈': '天皇大帝，雷神之祖，司权柄，掌兵戎之事。',
+        '黄龙': '中央之神，五行主土，轩辕之星，权柄之象。',
+        '凤凰': '非梧桐不栖，非竹实不食，非醴泉不饮，见则天下安宁。'
+    },
+    
+    // 炁兽背景 - 本源、大道
+    炁兽: [
+        '太初{0}所化的{1}，象征着{2}的本源。',
+        '鸿蒙未判之时便已存在的{0}，见证过{1}的{2}。',
+        '大道{0}的具现化，其{1}便是{2}的体现。',
+        '元始{0}凝聚而成的{1}，掌握着{2}的真理。',
+        '这并非{0}，而是{1}本身，{2}的源头。'
+    ]
+};
+const beastLoreElements = {
+    // 通用元素
+    地点: ['山林', '深谷', '秘境', '古地', '遗迹', '洞天', '福地', '绝地', '险境', '渊薮'],
+    特征: ['灵敏的嗅觉', '锋利的爪牙', '坚韧的皮毛', '强大的力量', '迅捷的速度', '狡猾的智慧', '顽强的生命力', '特殊的能力', '变异的血脉', '先祖的传承'],
+    行为: ['捕猎', '守护领地', '哺育后代', '争夺配偶', '躲避天敌', '寻找食物', '探索未知', '遵循本能', '学习技能', '积累力量'],
+    
+    // 小宠物特有
+    小宠物特征: ['柔软的绒毛', '可爱的叫声', '灵动的眼睛', '娇小的体型', '温顺的性格', '贪吃的习惯', '好奇的天性', '粘人的习性', '活泼好动', '胆小谨慎'],
+    
+    // 野兽特有
+    野兽能力: ['潜伏突袭', '群体狩猎', '追踪痕迹', '辨别方向', '适应环境', '季节性迁徙', '领地标记', '求偶展示', '伪装隐藏', '耐力持久'],
+    
+    // 凶兽特有
+    凶兽行为: ['屠戮生灵', '毁灭村庄', '吞噬修士', '引发灾祸', '制造恐慌', '污染土地', '散播瘟疫', '引发战乱', '破坏平衡', '挑战秩序'],
+    凶兽特征: ['嗜血的眼睛', '狰狞的面容', '腐臭的气息', '扭曲的肢体', '疯狂的神智', '无尽的饥饿', '毁灭的欲望', '诅咒的血脉', '痛苦的嘶吼', '邪恶的本能'],
+    
+    // 灵兽特有
+    灵兽能力: ['沟通自然', '预知危险', '治愈伤势', '净化污染', '引导灵气', '点化生灵', '破除幻象', '穿梭空间', '操控元素', '领悟道法'],
+    灵兽地点: ['灵脉源头', '月华汇聚之地', '星辰照耀之所', '灵气潮汐之处', '先天福地', '上古道场', '神圣祭坛', '自然圣地', '天地节点', '轮回间隙'],
+    
+    // 圣兽特有
+    圣兽象征: ['祥瑞', '仁德', '守护', '公正', '智慧', '慈悲', '净化', '治愈', '祝福', '指引'],
+    圣兽事迹: ['驱散瘟疫', '平息战乱', '指引迷途', '守护苍生', '镇压邪祟', '赐福大地', '启示真理', '平衡自然', '教化生灵', '传播文明'],
+    
+    // 神兽特有
+    神兽权柄: ['司掌四季', '统御元素', '掌管星辰', '主宰生死', '操控时间', '执掌轮回', '镇压气运', '守护天道', '平衡阴阳', '创生万物'],
+    神兽传说: ['开天辟地时诞生', '混沌中孕育', '参与创世之战', '定立天地法则', '划分三界六道', '镇压上古灾厄', '封印灭世魔神', '建立秩序纪元', '见证文明兴衰', '守护世界本源'],
+    
+    // 炁兽特有
+    炁兽本质: ['太初之气', '鸿蒙紫气', '混沌元气', '玄黄母气', '阴阳二气', '五行本源', '时空法则', '轮回印记', '因果丝线', '命运轨迹'],
+    炁兽形态: ['气的聚合体', '道的显化形', '规则的具现', '概念的载体', '真理的投影', '本源的波动', '大道的涟漪', '存在的证明', '虚空的回响', '无的边界']
+};
+// 切换轮回神兽系统界面
+function toggleBeastSystem() {
+     if (player.level.ascentionCounta < 1) {
+        alert("需要达到轮回1转才能开启轮回神兽！");
+        return;
+    }
+    const overlay = document.getElementById('beastSystemOverlay');
+    const ui = document.getElementById('beastSystemUI');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+       
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateBeastUI();
+    }
+}
+
+// 在世界地图战斗胜利时，有几率掉落轮回神兽
+function tryDropBeastAfterBattle() {
+  const dimensionLevel = player.dimensionLevel; 
+    if (player.dimensionLevel < 2) return;
+    
+    // 0.1% 的掉落几率
+    if (Math.random() < 0.001) {
+        const newBeast = generateRandomBeast();
+        player.beasts.inventory.push(newBeast);
+        
+        logAction(`🎉 恭喜！在世界地图战斗中获得了轮回神兽：${newBeast.name}（${newBeast.rarity}·${newBeast.sLevel}）`, 'legendary');
+        updateBeastUI();
+    }
+}
+function enableBeastDragAndDrop() {
+    const container = document.getElementById('equippedBeastsList');
+    if (!container) return;
+    
+    let draggedItem = null;
+    
+    container.querySelectorAll('.equipped-beast-card').forEach(item => {
+        item.setAttribute('draggable', 'true');
+        
+        item.addEventListener('dragstart', function(e) {
+            draggedItem = this;
+            setTimeout(() => {
+                this.style.opacity = '0.4';
+            }, 0);
+        });
+        
+        item.addEventListener('dragend', function(e) {
+            setTimeout(() => {
+                this.style.opacity = '1';
+                draggedItem = null;
+            }, 0);
+        });
+        
+        item.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+        
+        item.addEventListener('drop', function(e) {
+            e.preventDefault();
+            if (draggedItem !== this) {
+                // 重新排序装备的神兽
+                reorderEquippedBeasts(draggedItem, this);
+            }
+        });
+    });
+}
+
+// 重新排序装备的神兽
+function reorderEquippedBeasts(sourceElement, targetElement) {
+    // 获取两个神兽的索引
+    const sourceIndex = Array.from(sourceElement.parentNode.children).indexOf(sourceElement);
+    const targetIndex = Array.from(targetElement.parentNode.children).indexOf(targetElement);
+    
+    if (sourceIndex < player.beasts.equipped.length && targetIndex < player.beasts.equipped.length) {
+        // 交换数组中的位置
+        const temp = player.beasts.equipped[sourceIndex];
+        player.beasts.equipped[sourceIndex] = player.beasts.equipped[targetIndex];
+        player.beasts.equipped[targetIndex] = temp;
+        
+        // 更新显示
+        updateEquippedBeastsDisplay();
+        updatePlayerBattleStats();
+        logAction("已重新排序装备的神兽", "info");
+    }
+}
+// 生成随机轮回神兽
+function generateRandomBeast() {
+    // 1. 随机确定S级别（根据概率）
+    const sLevel = weightedRandomSelection(beastConfig.sLevelDropProbs);
+    
+    // 2. 随机确定品质（根据概率）
+    const rarityWeights = {};
+    Object.keys(beastConfig.rarities).forEach(r => {
+        rarityWeights[r] = beastConfig.rarities[r].dropWeight;
+    });
+    const rarity = weightedRandomSelection(rarityWeights);
+    
+    // 3. 随机确定词条数量（根据概率）
+    const affixCount = weightedRandomSelection(beastConfig.affixCountProbs);
+    
+    // 4. 生成词条（可以重复）
+    const affixes = [];
+    for (let i = 0; i < affixCount; i++) {
+        const affixType = beastConfig.affixTypes[Math.floor(Math.random() * beastConfig.affixTypes.length)];
+        // 计算该词条的加成数值（基于S级别范围和品质倍率）
+        const sConfig = beastConfig.sLevels[sLevel];
+        const baseMultiplier = Math.random() * (sConfig.multiplierRange[1] - sConfig.multiplierRange[0]) + sConfig.multiplierRange[0];
+        const rarityMultiplier = beastConfig.rarities[rarity].effectMultiplier;
+        const finalMultiplier = baseMultiplier * rarityMultiplier;
+        
+        affixes.push({
+            type: affixType,
+            value: finalMultiplier
+        });
+    }
+    
+    // 5. 生成神兽名字和背景故事
+   const name = generateBeastName(rarity);
+    const lore = generateBeastLore(rarity, name);
+    // 6. 创建神兽对象
+    const beast = {
+        id: 'beast_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        name: name,
+        sLevel: sLevel,
+        rarity: rarity,
+        chineseName: beastConfig.rarities[rarity].chineseName, // 添加中文名
+        description: beastConfig.rarities[rarity].description, // 添加品质描述
+        affixes: affixes,
+        requiredAscention: beastConfig.sLevels[sLevel].requiredAscention,
+        lore: lore,
+        owner: player.name, // 掉落者的玩家名字
+        dropTime: new Date().toLocaleString('zh-CN'),
+        isLocked: false, // 是否锁定
+        exportCode: null, // 兑换码
+        codeExpiry: null // 兑换码过期时间
+    };
+    
+    return beast;
+}
+
+// 生成神兽名字
+function generateBeastName(rarity) {
+    const nameParts = beastNameParts[rarity];
+    if (!nameParts) {
+        // 备用方案
+        const prefix = ['未知'][Math.floor(Math.random() * 1)];
+        const suffix = ['兽'][Math.floor(Math.random() * 1)];
+        return prefix + suffix;
+    }
+    
+    const prefix = nameParts.prefixes[Math.floor(Math.random() * nameParts.prefixes.length)];
+    const suffix = nameParts.suffixes[Math.floor(Math.random() * nameParts.suffixes.length)];
+    
+    // 炁兽特殊命名规则
+    if (rarity === '炁兽') {
+        return prefix + suffix; // 例如：太初炁、鸿蒙道
+    }
+    
+    return prefix + suffix;
+}
+
+
+// 生成神兽背景故事
+function generateBeastLore(rarity, beastName) {
+    const templates = beastLoreTemplates[rarity];
+    
+    // 如果没有对应的模板，使用通用模板
+    if (!templates) {
+        return `这是一只神秘的${rarity}，关于它的信息甚少。`;
+    }
+    
+    // 圣兽和神兽有固定的背景故事
+    if ((rarity === '圣兽' || rarity === '神兽') && typeof templates === 'object') {
+        // 检查是否有这个特定神兽的背景故事
+        for (const [key, lore] of Object.entries(templates)) {
+            if (beastName.includes(key)) {
+                return lore;
+            }
+        }
+        // 如果没有找到对应的，使用随机一个
+        const keys = Object.keys(templates);
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        return templates[randomKey];
+    }
+    
+    // 小宠物、野兽、凶兽、灵兽、炁兽使用模板
+    if (Array.isArray(templates)) {
+        const template = templates[Math.floor(Math.random() * templates.length)];
+        
+        // 根据品质选择不同的元素填充
+        switch(rarity) {
+            case '小宠物':
+                return template
+                    .replace('{0}', randomElement(['小兔', '猫咪', '小狗', '仓鼠', '小鸟']))
+                    .replace('{1}', randomElement(beastLoreElements.小宠物特征));
+                    
+            case '野兽':
+                return template
+                    .replace('{0}', randomElement(['东部森林', '西部草原', '南部丘陵', '北部雪原']))
+                    .replace('{1}', randomElement(beastLoreElements.野兽能力))
+                    .replace('{2}', randomElement(['十年之久', '数代传承', '族群领袖']));
+                    
+            case '凶兽':
+                return template
+                    .replace('{0}', randomElement(['修士', '凡人', '牲畜', '妖兽']))
+                    .replace('{1}', randomElement(['饕餮后裔', '混沌子嗣', '上古凶兽']))
+                    .replace('{2}', randomElement(['尸横遍野', '生灵涂炭', '天地变色']));
+                    
+            case '灵兽':
+                return template
+                    .replace('{0}', randomElement(['自然', '灵气', '星辰', '月华']))
+                    .replace('{1}', randomElement(['灵鹿', '仙鹤', '云鹏', '雷蛟']))
+                    .replace('{2}', randomElement(['沟通天地', '点化草木', '净化污秽']));
+                    
+            case '炁兽':
+                return template
+                    .replace('{0}', randomElement(beastLoreElements.炁兽本质))
+                    .replace('{1}', randomElement(['存在', '概念', '规则', '真理']))
+                    .replace('{2}', randomElement(['大道', '法则', '本源', '初始']));
+                    
+            default:
+                return template;
+        }
+    }
+    
+    return `关于这只${rarity}的来历，无人知晓。`;
+}
+function randomElement(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+// 加权随机选择函数
+function weightedRandomSelection(weightedMap) {
+    const totalWeight = Object.values(weightedMap).reduce((sum, weight) => sum + weight, 0);
+    let random = Math.random() * totalWeight;
+    
+    for (const [key, weight] of Object.entries(weightedMap)) {
+        random -= weight;
+        if (random <= 0) {
+            return key;
+        }
+    }
+    return Object.keys(weightedMap)[0]; // 备用
+}
+
+// 更新神兽界面
+function updateBeastUI() {
+    // 更新玩家信息
+    document.getElementById('currentAscentionCounta').textContent = player.level.ascentionCounta;
+    
+    // 计算可装备的最高S级别
+    let maxSLevel = 'S1';
+    for (const [sLevel, config] of Object.entries(beastConfig.sLevels)) {
+        if (player.level.ascentionCounta >= config.requiredAscention) {
+            maxSLevel = sLevel;
+        }
+    }
+    document.getElementById('maxEquipSLevel').textContent = maxSLevel;
+    const beastEggs = player.items.shenshou1 || 0;
+    document.getElementById('globalBeastEggCount').textContent = beastEggs;
+    // 更新总属性显示
+     const totalBonus = calculateEquippedBeastBonus();
+    const shareLevel = player.beasts.shareLevel.level || 0;
+    const shareBonusPercent = (shareLevel * 2).toFixed(1);
+    
+    document.getElementById('totalBeastBonus').innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+            <div style="text-align: center;">
+                <div style="color: #aaa; font-size: 0.8em;">生命加成</div>
+                <div style="color: #4CAF50; font-size: 1.1em;">+${((totalBonus.health - 1) * 100).toFixed(1)}%</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="color: #aaa; font-size: 0.8em;">攻击加成</div>
+                <div style="color: #4CAF50; font-size: 1.1em;">+${((totalBonus.attack - 1) * 100).toFixed(1)}%</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="color: #aaa; font-size: 0.8em;">爆伤加成</div>
+                <div style="color: #4CAF50; font-size: 1.1em;">+${((totalBonus.critDamage - 1) * 100).toFixed(1)}%</div>
+            </div>
+         <div style="text-align: center;">
+                <div style="color: #aaa; font-size: 0.8em;">共享等级</div>
+                <div style="color: #FFD700; font-size: 1.1em;">Lv.${shareLevel}</div>
+                <div style="color: #4CAF50; font-size: 0.8em;">+${shareBonusPercent}%</div>
+            </div>
+          <div style="text-align: center;">
+                <div style="color: #aaa; font-size: 0.8em;">已装备</div>
+                <div style="color: #8A2BE2; font-size: 1.1em;">${player.beasts.equipped.length}/${getMaxBeastSlots()}</div>
+            </div>
+            
+        </div>
+    `;
+    
+    // 更新已装备神兽显示
+    updateEquippedBeastsDisplay();
+    
+    // 更新神兽仓库显示
+    updateBeastInventory();
+}
+
+// 更新神兽仓库显示
+function updateBeastInventory() {
+    const container = document.getElementById('beastInventory');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    // 获取所有筛选条件
+    const sLevelFilter = document.getElementById('beastSLevelFilter').value;
+    const rarityFilter = document.getElementById('beastRarityFilter').value;
+    const equipFilter = document.getElementById('beastEquipFilter').value;
+    
+    // 筛选神兽
+    let filteredBeasts = [...player.beasts.inventory];
+    
+    // S级别筛选
+    if (sLevelFilter !== 'all') {
+        filteredBeasts = filteredBeasts.filter(beast => beast.sLevel === sLevelFilter);
+    }
+    
+    // 品质筛选
+    if (rarityFilter !== 'all') {
+        filteredBeasts = filteredBeasts.filter(beast => beast.rarity === rarityFilter);
+    }
+    
+    // 装备状态筛选
+    if (equipFilter !== 'all') {
+        filteredBeasts = filteredBeasts.filter(beast => {
+            const isEquipped = player.beasts.equipped.includes(beast.id);
+            const canEquip = player.level.ascentionCounta >= beast.requiredAscention;
+            
+            switch(equipFilter) {
+                case 'equipped':
+                    return isEquipped;
+                case 'unequipped':
+                    return !isEquipped;
+                case 'equippable':
+                    return !isEquipped && canEquip;
+                case 'unequippable':
+                    return !isEquipped && !canEquip;
+                default:
+                    return true;
+            }
+        });
+    }
+    
+    // 可选：按装备状态排序（已装备的排前面）
+    filteredBeasts.sort((a, b) => {
+        const aEquipped = player.beasts.equipped.includes(a.id);
+        const bEquipped = player.beasts.equipped.includes(b.id);
+        
+        if (aEquipped && !bEquipped) return -1;
+        if (!aEquipped && bEquipped) return 1;
+        return 0;
+    });
+    
+    if (filteredBeasts.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; color: #888; grid-column: 1 / -1; padding: 40px 20px;">
+                <div style="font-size: 3em; margin-bottom: 10px; opacity: 0.3;">🔍</div>
+                <div style="font-size: 1.1em; margin-bottom: 5px;">未找到符合条件的神兽</div>
+                <div style="font-size: 0.9em; color: #666;">
+                    当前筛选条件：${getFilterDescription(sLevelFilter, rarityFilter, equipFilter)}
+                </div>
+                <button onclick="resetAllFilters()" style="margin-top: 15px; background: #8A2BE2; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                    重置所有筛选
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    // 显示神兽数量统计
+    const equippedCount = filteredBeasts.filter(b => player.beasts.equipped.includes(b.id)).length;
+    const unequippedCount = filteredBeasts.length - equippedCount;
+    
+    if (equippedCount > 0) {
+        container.innerHTML += `
+            <div style="grid-column: 1 / -1; margin-bottom: 10px; padding: 8px 12px; background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4CAF50; border-radius: 4px;">
+                <span style="color: #4CAF50; font-weight: bold;">⚡ 已装备 (${equippedCount})</span>
+            </div>
+        `;
+    }
+    
+    // 显示神兽卡片
+    let currentSection = 'equipped';
+    filteredBeasts.forEach(beast => {
+        const isEquipped = player.beasts.equipped.includes(beast.id);
+        
+        // 在已装备和未装备之间添加分隔线
+        if (!isEquipped && currentSection === 'equipped' && equippedCount > 0) {
+            container.innerHTML += `
+                <div style="grid-column: 1 / -1; margin: 15px 0; border-top: 1px solid #444; position: relative;">
+                    <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #1a1a1a; padding: 0 15px; color: #888; font-size: 0.9em;">
+                        未装备 (${unequippedCount})
+                    </div>
+                </div>
+            `;
+            currentSection = 'unequipped';
+        }
+        
+        const beastElement = createBeastCard(beast);
+        container.appendChild(beastElement);
+    });
+}
+function getFilterDescription(sLevelFilter, rarityFilter, equipFilter) {
+    const descriptions = [];
+    
+    if (sLevelFilter !== 'all') descriptions.push(`S${sLevelFilter.slice(1)}`);
+    if (rarityFilter !== 'all') descriptions.push(rarityFilter);
+    if (equipFilter !== 'all') {
+        const equipNames = {
+            'equipped': '已装备',
+            'unequipped': '未装备',
+            'equippable': '可装备',
+            'unequippable': '未达标'
+        };
+        descriptions.push(equipNames[equipFilter] || equipFilter);
+    }
+    
+    return descriptions.length > 0 ? descriptions.join(' · ') : '无筛选条件';
+}
+
+// 重置所有筛选
+function resetAllFilters() {
+    document.getElementById('beastSLevelFilter').value = 'all';
+    document.getElementById('beastRarityFilter').value = 'all';
+    document.getElementById('beastEquipFilter').value = 'all';
+    filterBeasts();
+    logAction("已重置所有筛选条件", "info");
+}
+
+// 快速筛选函数
+function quickFilterEquipped() {
+    document.getElementById('beastEquipFilter').value = 'equipped';
+    filterBeasts();
+}
+
+function quickFilterUnequipped() {
+    document.getElementById('beastEquipFilter').value = 'unequipped';
+    filterBeasts();
+}
+
+function quickFilterEquippable() {
+    document.getElementById('beastEquipFilter').value = 'equippable';
+    filterBeasts();
+}
+// 创建神兽卡片
+function createBeastCard(beast) {
+    const div = document.createElement('div');
+    div.className = 'beast-card';
+    div.setAttribute('data-rarity', beast.rarity); // 添加品质属性用于CSS样式
+    
+    // 检查是否可装备
+    const isEquipped = player.beasts.equipped.includes(beast.id);
+    const canEquip = player.level.ascentionCounta >= beast.requiredAscention;
+    
+    // 装备状态显示
+    const equipStatus = isEquipped ? 
+        '<span style="color: #4CAF50;">✓ 已装备</span>' :
+        (canEquip ? 
+            '<span style="color: #2196F3;">可装备</span>' : 
+            `<span style="color: #FF9800;">需轮回${beast.requiredAscention}转</span>`);
+    
+    // 品质标签
+    const rarityTag = `${beastConfig.rarities[beast.rarity].chineseName || beast.rarity}`;
+    
+    div.style.cssText = `
+        border-radius: 8px;
+        padding: 12px;
+        border-left: 4px solid ${beastConfig.rarities[beast.rarity].color};
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        position: relative;
+        overflow: hidden;
+        ${beast.isLocked ? 'border: 2px solid gold; box-shadow: 0 0 10px gold;' : ''}
+    `;
+    div.onmouseenter = () => {
+        div.style.transform = 'translateY(-4px)';
+        div.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+    };
+    div.onmouseleave = () => {
+        div.style.transform = 'translateY(0)';
+        div.style.boxShadow = 'none';
+    };
+    
+    div.onclick = (e) => {
+    // 如果点击的不是按钮，可以选择是否触发快速预览
+    if (!e.target.closest('button')) {
+        // 可以添加快速预览功能，或者留空
+        // 例如：highlightBeast(beast.id);
+    }
+};
+    
+    div.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="color: ${beastConfig.rarities[beast.rarity].color}; font-weight: bold; font-size: 1.1em;">
+            ${beast.name} ${isEquipped ? '⚡' : ''}
+        </div>
+        <div style="font-size: 0.9em; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 10px;">
+            ${beast.sLevel}
+        </div>
+    </div>
+    <div style="font-size: 0.85em; color: #aaa; margin-bottom: 5px;">
+        ${rarityTag} · ${beast.description || ''}
+    </div>
+    <div style="font-size: 0.8em; color: #4CAF50; margin-bottom: 8px;">
+        ${equipStatus}
+    </div>
+    <div style="margin-top: 8px; font-size: 0.85em;">
+        ${beast.affixes.map(affix => 
+            `<div style="margin-bottom: 3px;">
+                <span style="color: #FFD700;">${affix.type}:</span> 
+                <span style="color: #4CAF50;">+${(affix.value * 100).toFixed(1)}%</span>
+            </div>`
+        ).join('')}
+    </div>
+    <div style="font-size: 0.75em; color: #888; margin-top: 8px; border-top: 1px solid #444; padding-top: 8px;">
+        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            来自: ${beast.owner || '未知'}
+        </div>
+        <div>${beast.dropTime || '未知时间'}</div>
+    </div>
+    <div style="margin-top: 10px; display: flex; gap: 5px;">
+        <button onclick="toggleEquipBeast('${beast.id}', true)" 
+                style="${isEquipped ? 'background: #f44336;' : 'background: #4CAF50;'} 
+                       color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; flex: 1;">
+            ${isEquipped ? '卸下' : '装备'}
+        </button>
+        <button onclick="openBeastActionModal('${beast.id}')" 
+                style="background: #2196F3; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; flex: 1;">
+            详细
+        </button>
+    </div>
+`;
+    
+    return div;
+}
+
+// 选择神兽
+function openBeastActionModal(beastId) {
+    player.beasts.selectedId = beastId;
+    
+    const modal = document.getElementById('beastActionModal');
+    const overlay = document.getElementById('beastActionOverlay');
+    
+    // 填充神兽信息
+    updateSelectedBeastInfo();
+    
+    // 显示共享升级界面
+    document.getElementById('shareUpgradeSection').style.display = 'block';
+    updateShareUpgradeUI();
+    
+    modal.style.display = 'block';
+    overlay.style.display = 'block';
+}
+
+// 关闭神兽操作弹窗
+function closeBeastActionModal() {
+    const modal = document.getElementById('beastActionModal');
+    const overlay = document.getElementById('beastActionOverlay');
+    
+    modal.style.display = 'none';
+    overlay.style.display = 'none';
+    player.beasts.selectedId = null; // 清空选择
+    document.getElementById('exportCodeSection').style.display = 'none'; // 隐藏兑换码区域
+}
+
+// 更新选中神兽的信息显示
+function updateSelectedBeastInfo() {
+    if (!player.beasts.selectedId) return;
+    
+    const beast = player.beasts.inventory.find(b => b.id === player.beasts.selectedId);
+    if (!beast) return;
+    
+    const rarityColor = beastConfig.rarities[beast.rarity].color;
+    const rarityName = beastConfig.rarities[beast.rarity].chineseName;
+    const isEquipped = player.beasts.equipped.includes(beast.id);
+    
+    // 生成词条详细显示
+    const affixDetails = beast.affixes.map((affix, index) => {
+        return `
+            <div style="padding: 8px; margin: 5px 0; background: rgba(0,0,0,0.3); border-radius: 4px;">
+                <div>
+                    <span style="color: #FFD700;">词条${index + 1}: ${affix.type}</span>
+                    <span style="color: #4CAF50; float: right;">+${(affix.value * 100).toFixed(1)}%</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    // 计算总加成
+    const totalBonus = {
+        '生命加成': 0,
+        '攻击加成': 0,
+        '爆伤加成': 0
+    };
+    beast.affixes.forEach(affix => {
+        totalBonus[affix.type] += affix.value;
+    });
+    
+    document.getElementById('selectedBeastInfo').innerHTML = `
+        <div style="border-left: 4px solid ${rarityColor}; padding-left: 15px; margin-bottom: 15px;">
+            <h3 style="color: ${rarityColor}; margin: 0 0 5px 0;">
+                ${beast.name} 
+                <span style="font-size: 0.8em; color: #aaa;">[${rarityName}·${beast.sLevel}]</span>
+                ${isEquipped ? '<span style="color: #4CAF50; font-size: 0.8em;">⚡ 已装备</span>' : ''}
+            </h3>
+            <div style="color: #aaa; font-size: 0.9em; margin-bottom: 5px;">
+                ${beast.description || '暂无描述'} · 需轮回${beast.requiredAscention}转
+            </div>
+        </div>
+        
+        <div style="background: rgba(255,215,0,0.1); padding: 15px; border-radius: 5px; margin: 15px 0;">
+            <div style="color: #FFD700; font-size: 0.9em; margin-bottom: 8px;">📖 神兽传说</div>
+            <div style="color: #aaa; font-style: italic;">${beast.lore || '暂无背景故事'}</div>
+        </div>
+        
+        <div style="margin: 15px 0;">
+            <div style="color: #4CAF50; font-size: 0.9em; margin-bottom: 8px;">⚡ 词条属性</div>
+            ${affixDetails || '<div style="color: #888; text-align: center;">无词条</div>'}
+        </div>
+        
+        <div style="background: rgba(138, 43, 226, 0.1); padding: 15px; border-radius: 5px; margin: 15px 0;">
+            <div style="color: #8A2BE2; font-size: 0.9em; margin-bottom: 8px;">📈 总加成效果</div>
+            <div style="display: flex; justify-content: space-around; margin-top: 8px;">
+                ${totalBonus['生命加成'] > 0 ? `<div style="text-align: center;"><div style="color: #aaa; font-size: 0.8em;">生命</div><div style="color: #4CAF50; font-size: 1.2em;">+${(totalBonus['生命加成'] * 100).toFixed(1)}%</div></div>` : ''}
+                ${totalBonus['攻击加成'] > 0 ? `<div style="text-align: center;"><div style="color: #aaa; font-size: 0.8em;">攻击</div><div style="color: #4CAF50; font-size: 1.2em;">+${(totalBonus['攻击加成'] * 100).toFixed(1)}%</div></div>` : ''}
+                ${totalBonus['爆伤加成'] > 0 ? `<div style="text-align: center;"><div style="color: #aaa; font-size: 0.8em;">爆伤</div><div style="color: #4CAF50; font-size: 1.2em;">+${(totalBonus['爆伤加成'] * 100).toFixed(1)}%</div></div>` : ''}
+            </div>
+        </div>
+        
+        <div style="font-size: 0.85em; color: #888; border-top: 1px solid #444; padding-top: 15px;">
+        <div><span style="color: #aaa;">🏷️ 原始掉落者:</span> ${beast.owner || '未知'}</div>
+        <div><span style="color: #aaa;">📅 原始掉落时间:</span> ${beast.dropTime || '未知时间'}</div>
+        <div><span style="color: #aaa;">🆔 神兽ID:</span> <span style="font-family: monospace; font-size: 0.8em;">${beast.id}</span></div>
+        ${beast.isLocked ? '<div style="color: gold; margin-top: 5px;">🔒 已锁定（无法丢弃）</div>' : ''}
+    </div>
+`;
+    
+    // 更新按钮状态
+    const lockBtn = document.getElementById('btnLockUnlock');
+    lockBtn.textContent = beast.isLocked ? '🔓 解锁' : '🔒 锁定';
+    lockBtn.style.background = beast.isLocked ? '#FF9800' : '#4CAF50';
+    
+    // 更新丢弃按钮状态
+    const discardBtn = document.getElementById('btnDiscard');
+    discardBtn.disabled = beast.isLocked;
+    discardBtn.style.opacity = beast.isLocked ? 0.5 : 1;
+    discardBtn.style.cursor = beast.isLocked ? 'not-allowed' : 'pointer';
+}
+
+// 更新已装备神兽显示
+function updateEquippedBeastsDisplay() {
+    const container = document.getElementById('equippedBeastsList');
+    const equippedSection = document.getElementById('equippedBeastsSection');
+    
+    if (!container || !equippedSection) return;
+    
+    // 更新槽位数量显示
+    const maxSlots = getMaxBeastSlots();
+    const currentCount = player.beasts.equipped.length;
+    
+    // 更新标题中的数量
+    const titleElement = equippedSection.querySelector('h4');
+    if (titleElement) {
+        const countSpan = titleElement.querySelector('span:last-child') || 
+                         (() => {
+                             const span = document.createElement('span');
+                             span.style.cssText = 'font-size: 0.8em; background: #8A2BE2; color: white; padding: 2px 8px; border-radius: 10px;';
+                             titleElement.appendChild(span);
+                             return span;
+                         })();
+        countSpan.textContent = `${currentCount}/${maxSlots}`;
+    }
+    
+    container.innerHTML = '';
+    
+    // 显示所有槽位，包括空槽位
+    for (let i = 0; i < maxSlots; i++) {
+        const slotElement = document.createElement('div');
+        
+        if (i < player.beasts.equipped.length) {
+            // 有神兽的槽位
+            const beastId = player.beasts.equipped[i];
+            const beast = player.beasts.inventory.find(b => b.id === beastId);
+            
+            if (beast) {
+                const rarityColor = beastConfig.rarities[beast.rarity].color;
+                const rarityName = beastConfig.rarities[beast.rarity].chineseName;
+                
+                // 计算总加成
+                const totalBonus = {
+                    '生命加成': 0,
+                    '攻击加成': 0,
+                    '爆伤加成': 0
+                };
+                beast.affixes.forEach(affix => {
+                    totalBonus[affix.type] += affix.value;
+                });
+                
+                slotElement.className = 'equipped-beast-card';
+                slotElement.style.borderLeftColor = rarityColor;
+                slotElement.innerHTML = `
+                    <div class="beast-slots">#${i + 1}</div>
+                    <div class="beast-name">
+                        <span style="color: ${rarityColor};">${beast.name}</span>
+                        <span class="beast-rarity" style="color: ${rarityColor};">${beast.sLevel}</span>
+                    </div>
+                    <div style="font-size: 0.8em; color: #aaa; margin-bottom: 5px;">
+                        ${rarityName}
+                    </div>
+                    <div class="beast-stats">
+                        ${totalBonus['生命加成'] > 0 ? `<div style="margin-bottom: 2px;">生命: +${(totalBonus['生命加成'] * 100).toFixed(1)}%</div>` : ''}
+                        ${totalBonus['攻击加成'] > 0 ? `<div style="margin-bottom: 2px;">攻击: +${(totalBonus['攻击加成'] * 100).toFixed(1)}%</div>` : ''}
+                        ${totalBonus['爆伤加成'] > 0 ? `<div>爆伤: +${(totalBonus['爆伤加成'] * 100).toFixed(1)}%</div>` : ''}
+                    </div>
+                `;
+                
+                slotElement.onclick = (e) => {
+                    e.stopPropagation();
+                    openBeastActionModal(beast.id);
+                };
+            }
+        } else {
+            // 空槽位
+            slotElement.className = 'equipped-slot-empty';
+            slotElement.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 1.5em; margin-bottom: 5px; opacity: 0.5;">⚡</div>
+                    <div>槽位 ${i + 1}</div>
+                    <div style="font-size: 0.8em; color: #666;">未装备</div>
+                </div>
+            `;
+            
+            // 点击空槽位可以快速装备筛选中的神兽（可选功能）
+            slotElement.onclick = (e) => {
+                e.stopPropagation();
+                // 可以在这里添加快速装备功能
+                // quickEquipToSlot(i);
+            };
+        }
+        
+        container.appendChild(slotElement);
+    }
+    
+    // 如果没有已装备的神兽，显示提示
+    if (currentCount === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; color: #888; width: 100%; padding: 20px; grid-column: 1 / -1;">
+                <div style="font-size: 2em; margin-bottom: 10px; opacity: 0.3;">⚡</div>
+                <div>当前没有已装备的神兽</div>
+                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">点击仓库中的神兽进行装备</div>
+            </div>
+        `;
+    }
+}
+
+// 可选：快速装备到指定槽位
+function quickEquipToSlot(slotIndex) {
+    // 获取当前筛选的神兽列表
+    const sLevelFilter = document.getElementById('beastSLevelFilter').value;
+    const rarityFilter = document.getElementById('beastRarityFilter').value;
+    
+    let filteredBeasts = player.beasts.inventory.filter(beast => {
+        const matchSLevel = sLevelFilter === 'all' || beast.sLevel === sLevelFilter;
+        const matchRarity = rarityFilter === 'all' || beast.rarity === rarityFilter;
+        const isEquipped = player.beasts.equipped.includes(beast.id);
+        const canEquip = player.level.ascentionCounta >= beast.requiredAscention;
+        
+        return matchSLevel && matchRarity && !isEquipped && canEquip;
+    });
+    
+    if (filteredBeasts.length === 0) {
+        logAction("没有可装备的筛选神兽", "warning");
+        return;
+    }
+    
+    // 选择第一个可装备的神兽
+    const beastToEquip = filteredBeasts[0];
+    
+    // 如果槽位已满，替换该槽位的神兽
+    if (slotIndex < player.beasts.equipped.length) {
+        const oldBeastId = player.beasts.equipped[slotIndex];
+        const oldBeast = player.beasts.inventory.find(b => b.id === oldBeastId);
+        
+        if (oldBeast) {
+            player.beasts.equipped[slotIndex] = beastToEquip.id;
+            logAction(`已将【${oldBeast.name}】替换为【${beastToEquip.name}】`, "success");
+        }
+    } else {
+        // 装备到空槽位
+        player.beasts.equipped.push(beastToEquip.id);
+        logAction(`已装备【${beastToEquip.name}】到槽位${slotIndex + 1}`, "success");
+    }
+    
+    updateBeastUI();
+    updateEquippedBeastsDisplay();
+    updatePlayerBattleStats();
+}
+
+
+function toggleEquipBeast(beastId, autoUnequip = false, event) {
+    if (event) {
+        event.stopPropagation();
+    }
+    
+    const beast = player.beasts.inventory.find(b => b.id === beastId);
+    if (!beast) return;
+    
+    // 检查是否可装备
+    if (player.level.ascentionCounta < beast.requiredAscention) {
+        logAction(`装备需要轮回${beast.requiredAscention}转！当前轮回${player.level.ascentionCounta}转`, "error");
+        return;
+    }
+    
+    const isEquipped = player.beasts.equipped.includes(beastId);
+    
+    if (isEquipped) {
+        // 卸下
+        player.beasts.equipped = player.beasts.equipped.filter(id => id !== beastId);
+        logAction(`已卸下神兽：${beast.name}`, "info");
+    } else {
+        // 检查装备槽位限制
+        const maxSlots = getMaxBeastSlots();
+        
+        // 如果槽位已满，根据参数决定是否自动卸下
+        if (player.beasts.equipped.length >= maxSlots) {
+            if (autoUnequip) {
+                // 自动卸下第一个已装备的神兽
+                const firstEquippedId = player.beasts.equipped[0];
+                const firstBeast = player.beasts.inventory.find(b => b.id === firstEquippedId);
+                if (firstBeast) {
+                    player.beasts.equipped = player.beasts.equipped.filter(id => id !== firstEquippedId);
+                    logAction(`自动卸下神兽：${firstBeast.name}`, "info");
+                }
+            } else {
+                logAction(`装备槽位已满（最大${maxSlots}个），请先卸下其他神兽`, "error");
+                return;
+            }
+        }
+        
+        // 装备新神兽
+        player.beasts.equipped.push(beastId);
+        logAction(`已装备神兽：${beast.name}`, "success");
+    }
+    
+    updateBeastUI();
+    updateEquippedBeastsDisplay(); // 更新已装备显示
+    updatePlayerBattleStats();
+  // 如果当前筛选的是已装备/未装备状态，更新显示
+    const currentEquipFilter = document.getElementById('beastEquipFilter').value;
+    if (currentEquipFilter === 'equipped' || currentEquipFilter === 'unequipped' || 
+        currentEquipFilter === 'equippable' || currentEquipFilter === 'unequippable') {
+        filterBeasts();
+    }
+}
+
+// 获取最大装备槽位
+function getMaxBeastSlots() {
+    return Math.min(6, 1 + Math.floor(player.level.ascentionCounta / 5));
+}
+// 锁定/解锁神兽
+function toggleLockBeast() {
+    if (!player.beasts.selectedId) return;
+    
+    const beast = player.beasts.inventory.find(b => b.id === player.beasts.selectedId);
+    if (beast) {
+        beast.isLocked = !beast.isLocked;
+        logAction(`已${beast.isLocked ? '锁定' : '解锁'}神兽：${beast.name}`, 'info');
+        updateSelectedBeastInfo(); // 更新弹窗内的信息
+        updateBeastUI(); // 更新主界面的神兽卡片
+    }
+}
+
+
+// 生成神兽兑换码
+function exportBeastCode() {
+    if (!player.beasts.selectedId) return;
+    
+    const beast = player.beasts.inventory.find(b => b.id === player.beasts.selectedId);
+    if (beast) {
+        // 创建包含完整神兽信息的对象（包括原始ID和所有信息）
+        const codeData = {
+            version: 2, // 更新版本号
+            beastData: {
+                // 导出所有字段
+                id: beast.id,
+                name: beast.name,
+                sLevel: beast.sLevel,
+                rarity: beast.rarity,
+                chineseName: beast.chineseName,
+                description: beast.description,
+                affixes: beast.affixes,
+                requiredAscention: beast.requiredAscention,
+                lore: beast.lore,
+                owner: beast.owner, // 保留原始掉落者
+                dropTime: beast.dropTime, // 保留原始掉落时间
+                isLocked: beast.isLocked,
+                exportCode: null, // 重置兑换码相关字段
+                codeExpiry: null
+            },
+            generatedTime: Date.now(),
+            expiresIn: 10 * 60 * 1000 // 10分钟
+        };
+        
+        // 加密数据
+        const encryptedCode = CryptoJS.AES.encrypt(JSON.stringify(codeData), ENCRYPTION_KEY).toString();
+        
+        // 存储到神兽对象中
+        beast.exportCode = encryptedCode;
+        beast.codeExpiry = Date.now() + (10 * 60 * 1000);
+        
+        // 显示兑换码
+        const generatedTime = new Date(codeData.generatedTime);
+        const expiryTime = new Date(codeData.generatedTime + codeData.expiresIn);
+        
+        document.getElementById('exportCodeSection').innerHTML = `
+            <h4>兑换码分享</h4>
+            <p style="color: #aaa; font-size: 0.9em;">
+                ⏰ 生成时间: ${generatedTime.toLocaleString('zh-CN')}<br>
+                ⏳ 过期时间: ${expiryTime.toLocaleString('zh-CN')}<br>
+                🔑 有效期: 10分钟<br>
+                👤 掉落者: ${beast.owner}<br>
+                📅 掉落时间: ${beast.dropTime}
+            </p>
+            <p style="color: #FFD700; font-size: 0.9em;">请复制下方代码分享给其他玩家：</p>
+            <textarea id="beastCodeOutput" readonly style="width: 100%; height: 60px; background: #333; color: #fff; border: 1px solid #555; padding: 10px; border-radius: 5px; font-family: monospace; margin-bottom: 10px;">${encryptedCode}</textarea>
+            <button onclick="copyBeastCode()" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; margin-right: 10px;">复制代码</button>
+            <button onclick="shareBeastCode()" style="background: #2196F3; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">分享</button>
+        `;
+        document.getElementById('exportCodeSection').style.display = 'block';
+        
+        const remainingTime = formatRemainingTime(10 * 60);
+        logAction(`已为【${beast.name}】生成兑换码，有效期：${remainingTime}`, 'success');
+    }
+}
+function shareBeastCode() {
+    const codeOutput = document.getElementById('beastCodeOutput');
+    const code = codeOutput.value;
+    
+    if (!code) {
+        logAction("没有可分享的兑换码", "error");
+        return;
+    }
+    
+    const beast = player.beasts.inventory.find(b => b.id === player.beasts.selectedId);
+    if (beast) {
+        // 解密兑换码以获取时间信息
+        try {
+            const decrypted = CryptoJS.AES.decrypt(code, ENCRYPTION_KEY);
+            const codeData = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+            
+            const expiryTime = new Date(codeData.generatedTime + codeData.expiresIn);
+            const remainingSeconds = Math.floor((expiryTime - Date.now()) / 1000);
+            const remainingTime = formatRemainingTime(remainingSeconds);
+            
+            const shareText = `分享神兽【${beast.name}（${beast.rarity}·${beast.sLevel}）】\n👤 掉落者：${beast.owner}\n📅 掉落时间：${beast.dropTime}\n⏳ 剩余时间：${remainingTime}\n\n兑换码：\n${code}\n\n有效期10分钟，请尽快兑换！`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `${beast.name} - 神兽兑换码`,
+                    text: shareText,
+                })
+                .then(() => logAction("分享成功", "success"))
+                .catch(err => {
+                    copyBeastCode();
+                    logAction("兑换码已复制，请手动分享", "success");
+                });
+            } else {
+                copyBeastCode();
+                logAction(`兑换码已复制，请手动分享\n${shareText}`, "success");
+            }
+        } catch (error) {
+            copyBeastCode();
+            logAction("兑换码已复制，请手动分享", "success");
+        }
+    }
+}
+// 格式化剩余时间
+function formatRemainingTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}分${remainingSeconds}秒`;
+}
+
+// 兑换神兽码
+function redeemBeastCode() {
+    const codeInput = document.getElementById('beastCodeInput').value.trim();
+    if (!codeInput) {
+        logAction("请输入有效的兑换码", "error");
+        return;
+    }
+    
+    try {
+        // 解密兑换码
+        const decrypted = CryptoJS.AES.decrypt(codeInput, ENCRYPTION_KEY);
+        const codeData = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+        
+        // 检查版本
+        if (!codeData.version || (codeData.version !== 1 && codeData.version !== 2)) {
+            logAction("兑换码版本不兼容", "error");
+            return;
+        }
+        
+        // 检查是否过期
+        const currentTime = Date.now();
+        const expiryTime = codeData.generatedTime + codeData.expiresIn;
+        
+        if (currentTime > expiryTime) {
+            const expiredMinutes = Math.floor((currentTime - expiryTime) / 1000 / 60);
+            logAction(`兑换码已过期${expiredMinutes}分钟！`, "error");
+            return;
+        }
+        
+        // 检查是否已经拥有相同ID的神兽
+        const existingBeast = player.beasts.inventory.find(b => b.id === codeData.beastData.id);
+        if (existingBeast) {
+            logAction("你已经拥有这个神兽了！", "error");
+            return;
+        }
+        
+        // 完全复制神兽数据（保留所有原始信息）
+        let newBeast;
+        if (codeData.version === 2) {
+            // v2版本：直接使用原始数据
+            newBeast = { ...codeData.beastData };
+        } else {
+            // v1版本兼容：保留原始数据，但需要处理缺失字段
+            const originalBeastData = codeData.beastData;
+            newBeast = {
+                id: originalBeastData.id || 'beast_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                name: originalBeastData.name,
+                sLevel: originalBeastData.sLevel,
+                rarity: originalBeastData.rarity,
+                chineseName: originalBeastData.chineseName,
+                description: originalBeastData.description,
+                affixes: originalBeastData.affixes,
+                requiredAscention: originalBeastData.requiredAscention,
+                lore: originalBeastData.lore,
+                owner: originalBeastData.owner || '未知',
+                dropTime: originalBeastData.dropTime || new Date().toLocaleString('zh-CN'),
+                isLocked: false, // 新获得的设为未锁定
+                exportCode: null,
+                codeExpiry: null
+            };
+        }
+        
+        // 添加到仓库
+        player.beasts.inventory.push(newBeast);
+        
+        // 清空输入框
+        document.getElementById('beastCodeInput').value = '';
+        
+        // 计算剩余时间
+        const remainingSeconds = Math.floor((expiryTime - currentTime) / 1000);
+        const remainingTime = formatRemainingTime(remainingSeconds);
+        
+        logAction(`🎉 成功兑换神兽：${newBeast.name}（${newBeast.rarity}·${newBeast.sLevel}），剩余有效期：${remainingTime}`, 'legendary');
+        
+        // 显示详细信息
+        logAction(`👤 掉落者：${newBeast.owner} | 📅 掉落时间：${newBeast.dropTime}`, 'info');
+        
+        updateBeastUI();
+        
+    } catch (error) {
+        logAction("兑换码无效或已损坏", "error");
+        console.error("兑换码解析错误:", error);
+    }
+}
+
+// 其他辅助功能
+function copyBeastCode() {
+    const codeOutput = document.getElementById('beastCodeOutput');
+    codeOutput.select();
+    document.execCommand('copy');
+    logAction("兑换码已复制到剪贴板", "success");
+}
+// 显示导入兑换码弹窗
+function showImportCodeModal() {
+    const modal = document.getElementById('importCodeModal');
+    const overlay = document.getElementById('importCodeOverlay');
+    const input = document.getElementById('importCodeInput');
+    
+    input.value = ''; // 清空输入框
+    modal.style.display = 'block';
+    overlay.style.display = 'block';
+    input.focus(); // 自动聚焦
+}
+
+// 关闭导入兑换码弹窗
+function closeImportCodeModal() {
+    const modal = document.getElementById('importCodeModal');
+    const overlay = document.getElementById('importCodeOverlay');
+    
+    modal.style.display = 'none';
+    overlay.style.display = 'none';
+}
+function redeemBeastCodeFromImport() {
+    const codeInput = document.getElementById('importCodeInput').value.trim();
+    if (!codeInput) {
+        logAction("请输入兑换码", "error");
+        return;
+    }
+    
+    try {
+        // 解密兑换码
+        const decrypted = CryptoJS.AES.decrypt(codeInput, ENCRYPTION_KEY);
+        const codeData = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+        
+        // 检查版本
+        if (!codeData.version || (codeData.version !== 1 && codeData.version !== 2)) {
+            logAction("兑换码版本不兼容", "error");
+            return;
+        }
+        
+        // 检查是否过期
+        const currentTime = Date.now();
+        const expiryTime = codeData.generatedTime + codeData.expiresIn;
+        
+        if (currentTime > expiryTime) {
+            const expiredMinutes = Math.floor((currentTime - expiryTime) / 1000 / 60);
+            logAction(`兑换码已过期${expiredMinutes}分钟！`, "error");
+            return;
+        }
+        
+        // 检查是否已经拥有相同ID的神兽
+        const existingBeast = player.beasts.inventory.find(b => b.id === codeData.beastData.id);
+        if (existingBeast) {
+            logAction("你已经拥有这个神兽了！", "error");
+            return;
+        }
+        
+        // 完全复制神兽数据（保留所有原始信息）
+        let newBeast;
+        if (codeData.version === 2) {
+            // v2版本：直接使用原始数据
+            newBeast = { ...codeData.beastData };
+        } else {
+            // v1版本兼容
+            const originalBeastData = codeData.beastData;
+            newBeast = {
+                id: originalBeastData.id || 'beast_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                name: originalBeastData.name,
+                sLevel: originalBeastData.sLevel,
+                rarity: originalBeastData.rarity,
+                chineseName: originalBeastData.chineseName,
+                description: originalBeastData.description,
+                affixes: originalBeastData.affixes,
+                requiredAscention: originalBeastData.requiredAscention,
+                lore: originalBeastData.lore,
+                owner: originalBeastData.owner || '未知',
+                dropTime: originalBeastData.dropTime || new Date().toLocaleString('zh-CN'),
+                isLocked: false,
+                exportCode: null,
+                codeExpiry: null
+            };
+        }
+        
+        // 添加到仓库
+        player.beasts.inventory.push(newBeast);
+        
+        // 关闭弹窗
+        closeImportCodeModal();
+        
+        // 计算剩余时间
+        const remainingSeconds = Math.floor((expiryTime - currentTime) / 1000);
+        const remainingTime = formatRemainingTime(remainingSeconds);
+        
+        logAction(`🎉 成功导入神兽：${newBeast.name}（${newBeast.rarity}·${newBeast.sLevel}），剩余有效期：${remainingTime}`, 'legendary');
+        logAction(`👤 掉落者：${newBeast.owner} | 📅 掉落时间：${newBeast.dropTime}`, 'info');
+        
+        updateBeastUI();
+        
+        // 自动选中新导入的神兽
+        setTimeout(() => {
+            openBeastActionModal(newBeast.id);
+        }, 500);
+        
+    } catch (error) {
+        logAction("兑换码无效或已损坏", "error");
+        console.error("兑换码解析错误:", error);
+    }
+}
+function discardBeast() {
+    if (!player.beasts.selectedId) return;
+    
+    const beast = player.beasts.inventory.find(b => b.id === player.beasts.selectedId);
+    if (beast && !beast.isLocked) {
+        if (confirm(`确定要丢弃神兽【${beast.name}】吗？此操作不可撤销！`)) {
+            player.beasts.inventory = player.beasts.inventory.filter(b => b.id !== player.beasts.selectedId);
+            // 同时从装备列表中移除
+            player.beasts.equipped = player.beasts.equipped.filter(id => id !== player.beasts.selectedId);
+            
+            logAction(`已丢弃神兽：${beast.name}`, 'warning');
+            closeBeastActionModal(); // 关闭弹窗
+            updateBeastUI(); // 更新主界面
+        }
+    } else if (beast && beast.isLocked) {
+        logAction("请先解锁神兽再进行丢弃操作", "error");
+    }
+}
+
+// 批量操作功能
+function lockAllFilteredBeasts() {
+    const sLevelFilter = document.getElementById('beastSLevelFilter').value;
+    const rarityFilter = document.getElementById('beastRarityFilter').value;
+    
+    let count = 0;
+    player.beasts.inventory.forEach(beast => {
+        // 检查是否满足筛选条件
+        const matchSLevel = sLevelFilter === 'all' || beast.sLevel === sLevelFilter;
+        const matchRarity = rarityFilter === 'all' || beast.rarity === rarityFilter;
+        
+        if (matchSLevel && matchRarity) {
+            if (!beast.isLocked) {
+                beast.isLocked = true;
+                count++;
+            }
+        }
+    });
+    
+    logAction(`已锁定${count}个神兽`, "success");
+    updateBeastUI(); // 更新界面显示
+}
+
+function discardAllUnlockedFilteredBeasts() {
+    const sLevelFilter = document.getElementById('beastSLevelFilter').value;
+    const rarityFilter = document.getElementById('beastRarityFilter').value;
+    
+    if (!confirm("确定要丢弃所有未锁定的筛选神兽吗？此操作不可撤销！")) return;
+    
+    let count = 0;
+    // 创建新数组，只保留不满足丢弃条件的
+    const newInventory = [];
+    
+    player.beasts.inventory.forEach(beast => {
+        // 检查是否满足筛选条件
+        const matchSLevel = sLevelFilter === 'all' || beast.sLevel === sLevelFilter;
+        const matchRarity = rarityFilter === 'all' || beast.rarity === rarityFilter;
+        
+        if (matchSLevel && matchRarity && !beast.isLocked) {
+            // 满足丢弃条件
+            count++;
+            // 同时从装备列表中移除
+            player.beasts.equipped = player.beasts.equipped.filter(id => id !== beast.id);
+        } else {
+            // 不满足丢弃条件，保留
+            newInventory.push(beast);
+        }
+    });
+    
+    // 更新库存
+    player.beasts.inventory = newInventory;
+    
+    // 如果当前选中的神兽被丢弃了，清空选择
+    if (player.beasts.selectedId && !player.beasts.inventory.find(b => b.id === player.beasts.selectedId)) {
+        player.beasts.selectedId = null;
+        document.getElementById('singleBeastActions').style.display = 'none';
+    }
+    
+    logAction(`已丢弃${count}个未锁定神兽`, "warning");
+    updateBeastUI(); // 更新界面显示
+}
+
+// 筛选神兽
+function filterBeasts() {
+    updateBeastUI(); // 这会调用 updateBeastInventory() 来更新显示
+}
+
+// 计算神兽提供的总加成（在战斗属性计算中调用）
+function calculateEquippedBeastBonus() {
+    let totalBonus = {
+        health: 1, // 生命加成
+        attack: 1, // 攻击加成  
+        critDamage: 1 // 爆伤加成
+    };
+    
+    // 只计算已装备的神兽
+    player.beasts.equipped.forEach(beastId => {
+        const beast = player.beasts.inventory.find(b => b.id === beastId);
+        if (beast && player.level.ascentionCounta >= beast.requiredAscention) {
+            beast.affixes.forEach(affix => {
+                const bonusType = getBonusType(affix.type);
+                if (totalBonus[bonusType] !== undefined) {
+                    totalBonus[bonusType] *= (1 + affix.value);
+                }
+            });
+        }
+    });
+    
+    // 应用共享等级加成
+    const shareBonus = player.beasts.shareLevel.bonusMultiplier || 1;
+    totalBonus.health *= shareBonus;
+    totalBonus.attack *= shareBonus;
+    totalBonus.critDamage *= shareBonus;
+    
+    return totalBonus;
+}
+
+// 辅助函数：词条类型映射
+function getBonusType(chineseType) {
+    const typeMap = {
+        '生命加成': 'health',
+        '攻击加成': 'attack', 
+        '爆伤加成': 'critDamage'
+    };
+    return typeMap[chineseType] || 'health';
+}
+function getEggsRequiredForNextLevel(currentLevel) {
+    // 每级基础消耗20个，每10级额外增加30个
+    const baseCost = 20;
+    const extraCost = Math.floor(currentLevel / 10) * 30;
+    return baseCost + extraCost;
+}
+
+// 计算升级到指定等级所需的总神兽蛋
+function getEggsRequiredForLevels(fromLevel, toLevel) {
+    let totalEggs = 0;
+    for (let level = fromLevel; level < toLevel; level++) {
+        totalEggs += getEggsRequiredForNextLevel(level);
+    }
+    return totalEggs;
+}
+
+// 更新共享升级界面
+function updateShareUpgradeUI() {
+    const shareLevel = player.beasts.shareLevel.level;
+    const beastEggs = player.items.shenshou1 || 0;
+    
+    // 更新显示
+    document.getElementById('currentShareLevel').textContent = shareLevel;
+    document.getElementById('currentBonusPercent').textContent = (shareLevel * 2).toFixed(1);
+    document.getElementById('beastEggCount').textContent = beastEggs;
+    
+    // 计算下一级信息
+    const eggsForNextLevel = getEggsRequiredForNextLevel(shareLevel);
+    document.getElementById('nextLevelCost').textContent = eggsForNextLevel;
+    
+    // 更新进度条（基于当前拥有的蛋）
+    const progressPercent = Math.min(100, (beastEggs / eggsForNextLevel) * 100);
+    document.getElementById('upgradeProgressBar').style.width = `${progressPercent}%`;
+    
+    // 更新消耗显示
+    document.getElementById('consumedEggs').textContent = Math.min(beastEggs, eggsForNextLevel);
+    document.getElementById('totalEggsForNext').textContent = eggsForNextLevel;
+    
+    // 更新升级按钮状态
+    const canUpgrade = beastEggs >= eggsForNextLevel;
+    document.querySelectorAll('#shareUpgradeSection button').forEach(btn => {
+        if (btn.onclick && btn.onclick.toString().includes('upgradeShareLevel')) {
+            btn.disabled = !canUpgrade;
+            btn.style.opacity = canUpgrade ? 1 : 0.6;
+            btn.style.cursor = canUpgrade ? 'pointer' : 'not-allowed';
+        }
+    });
+}
+
+// 升级共享等级
+function upgradeShareLevel(levels) {
+    const currentLevel = player.beasts.shareLevel.level;
+    const targetLevel = currentLevel + levels;
+    
+    // 计算所需总神兽蛋
+    const eggsNeeded = getEggsRequiredForLevels(currentLevel, targetLevel);
+    const currentEggs = player.items.shenshou1 || 0;
+    
+    if (currentEggs < eggsNeeded) {
+        const shortBy = eggsNeeded - currentEggs;
+        logAction(`神兽蛋不足！还需要${shortBy}个才能升级${levels}级`, "error");
+        return;
+    }
+    
+    // 消耗神兽蛋
+    player.items.shenshou1 = Math.max(0, currentEggs - eggsNeeded);
+    
+    // 升级
+    player.beasts.shareLevel.level = targetLevel;
+    player.beasts.shareLevel.totalExp += eggsNeeded;
+    player.beasts.shareLevel.bonusMultiplier = 1 + (targetLevel * 0.02);
+    
+    // 更新界面
+    updateShareUpgradeUI();
+    updateBeastUI(); // 更新总属性显示
+    
+    logAction(`🎉 共享等级提升 ${levels} 级！当前等级：Lv.${targetLevel}，总属性加成：+${(targetLevel * 2).toFixed(1)}%`, "legendary");
+    logAction(`消耗了${eggsNeeded}个神兽蛋，剩余：${player.items.beastEgg}个`, "info");
+    
+   
+}
+
+// 自定义升级
+function upgradeShareLevelCustom() {
+    const input = document.getElementById('customUpgradeAmount');
+    const levels = parseInt(input.value);
+    
+    if (isNaN(levels) || levels < 1) {
+        logAction("请输入有效的升级级数", "error");
+        return;
+    }
+    
+    upgradeShareLevel(levels);
+}
+
+// 最大升级（根据现有神兽蛋）
+function upgradeShareLevelMax() {
+    let currentLevel = player.beasts.shareLevel.level;
+    let availableEggs = player.items.shenshou1 || 0;
+    let maxLevels = 0;
+    let totalEggsNeeded = 0;
+    
+    // 计算最多能升多少级
+    while (true) {
+        const eggsForNextLevel = getEggsRequiredForNextLevel(currentLevel + maxLevels);
+        if (totalEggsNeeded + eggsForNextLevel <= availableEggs) {
+            totalEggsNeeded += eggsForNextLevel;
+            maxLevels++;
+        } else {
+            break;
+        }
+    }
+    
+    if (maxLevels === 0) {
+        const eggsNeeded = getEggsRequiredForNextLevel(currentLevel);
+        const shortBy = eggsNeeded - availableEggs;
+        logAction(`神兽蛋不足！还需要${shortBy}个才能升级1级`, "error");
+        return;
+    }
+    
+    if (confirm(`确定要消耗${totalEggsNeeded}个神兽蛋升级${maxLevels}级吗？`)) {
+        upgradeShareLevel(maxLevels);
+    }
+}
+
+
+
+
  // 世界BOSS系统数据
         const worldBossData = {
             summonCount: 1,
