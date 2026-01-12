@@ -3563,8 +3563,9 @@ select:focus {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.79更新日志</h4>
+            <h4>1.80更新日志</h4>
             <h4>1群：864788026， 2群：902481027 有问题可以进群问（存档异常联系群管理修复）</h4>
+           <p>2026/01/11: 修改自动购买功法宝箱新号上限购买0.1，修复轮回神兽丢弃。</p>
            <p>2026/01/10: 增加轮回神兽：可以升级（次元2以上掉落极低，掉落的装备可以分享给别人）.</p>
            <p>2026/01/09: 增强伴侣系统，增强停车场：现在停车场等级可以减少跑商时间，增加次元678.</p>
            <p>2026/01/07:  修复BUG导致游戏暴毙。更新玩家系统，增加轮回装备（次元2以上掉落极低，掉落的装备可以分享给别人）</p>
@@ -7654,8 +7655,11 @@ select:focus {
         导入兑换码
     </button>
     <div>
-        <button onclick="lockAllFilteredBeasts()">锁定筛选</button>
-        <button onclick="discardAllUnlockedFilteredBeasts()" style="background: #d32f2f;">批量丢弃未锁定</button>
+        <button onclick="lockAllFilteredBeasts()" style="background: #FF9800; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">锁定筛选</button>
+        <button onclick="unlockAllFilteredBeasts()" style="background: #FF9800; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">
+            解锁筛选
+        </button>
+        <button onclick="discardAllUnlockedFilteredBeasts()"  style="background: #FF9800; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">批量丢弃未锁定</button>
     </div>
 </div>
 
@@ -7817,7 +7821,7 @@ select:focus {
 
 </div>
 </div>
-<div id="footer">版本号: v1.7.9</div>
+<div id="footer">版本号: v1.8.0</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -8984,7 +8988,7 @@ traps: {
             onlineBoostEnabled: false,
             autoBuyMaterialChest: false, 
             autoBuyTechniqueChest: false, 
-            autoBuyTechniqueMaxCost: 1,
+            autoBuyTechniqueMaxCost: 0.1,
             gpsMultiplier: 1, 
             clickMultiplier: 1,
             autoConvert: false,
@@ -11124,7 +11128,7 @@ function handleVipPowerGain() {
         autoBuy: oldSave.autoBuy || [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 新增宝箱自动购买状态
         autoBuyMaterialChest: oldSave.autoBuyMaterialChest || false,
         autoBuyTechniqueChest: oldSave.autoBuyTechniqueChest || false,
-       autoBuyTechniqueMaxCost: oldSave.autoBuyTechniqueMaxCost ||1,
+       autoBuyTechniqueMaxCost: oldSave.autoBuyTechniqueMaxCost ||0.1,
         gpsMultiplie: oldSave.gpsMultiplier ||1,
         clickMultiplier: oldSave.clickMultiplier || 1,
         autoConvert: oldSave.autoConvert || false,
@@ -14409,7 +14413,7 @@ function formatTime(milliseconds) {
                         autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
                         autoBuyMaterialChest: false, // 新增：自动购买材料宝箱的状态
                       autoBuyTechniqueChest: false,
-                     autoBuyTechniqueMaxCost: 1,
+                     autoBuyTechniqueMaxCost: 0.1,
                         gpsMultiplier: 1,
                         clickMultiplier: 1,
                         autoConvert: false,
@@ -14975,7 +14979,7 @@ function formatTime(milliseconds) {
                         autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
                         autoBuyMaterialChest: false, // 新增：自动购买材料宝箱的状态
                       autoBuyTechniqueChest: false,
-                      autoBuyTechniqueMaxCost: 1,
+                      autoBuyTechniqueMaxCost: 0.1,
                         gpsMultiplier: 1,
                         clickMultiplier: 1,
                         autoConvert: false,
@@ -24117,28 +24121,22 @@ const wingDropRates = {
         "不朽级": 0.001
     },
   6: { // 次元5
-        "精良级": 0.5,
-        "卓越级": 0.3,
-        "史诗级": 0.14,
-        "传说级": 0.05,
-        "神圣级": 0.009,
-        "不朽级": 0.001
+        "卓越级": 0.60,
+        "史诗级": 0.20,
+        "传说级": 0.10,
+        "神圣级": 0.09,
+        "不朽级": 0.01
     },
   7: { // 次元5
-        "精良级": 0.5,
-        "卓越级": 0.3,
-        "史诗级": 0.14,
-        "传说级": 0.05,
-        "神圣级": 0.009,
-        "不朽级": 0.001
+        "史诗级": 0.70,
+        "传说级": 0.20,
+        "神圣级": 0.09,
+        "不朽级": 0.01
     },
   8: { // 次元5
-        "精良级": 0.5,
-        "卓越级": 0.3,
-        "史诗级": 0.14,
-        "传说级": 0.05,
-        "神圣级": 0.009,
-        "不朽级": 0.001
+        "传说级": 0.90,
+        "神圣级": 0.09,
+        "不朽级": 0.01
     }
 };
 // 切换翅膀系统界面
@@ -24529,29 +24527,23 @@ const mountDropRates = {
         "神圣级": 0.009,
         "不朽级": 0.001
     },
-  6: { // 次元5
-        "精良级": 0.5,
-        "卓越级": 0.3,
-        "史诗级": 0.14,
-        "传说级": 0.05,
-        "神圣级": 0.009,
-        "不朽级": 0.001
+  6: { // 次元6
+        "卓越级": 0.40,
+        "史诗级": 0.30,
+        "传说级": 0.20,
+        "神圣级": 0.09,
+        "不朽级": 0.01
     },
-  7: { // 次元5
-        "精良级": 0.5,
-        "卓越级": 0.3,
-        "史诗级": 0.14,
-        "传说级": 0.05,
-        "神圣级": 0.009,
-        "不朽级": 0.001
+  7: { // 次元7
+        "史诗级": 0.70,
+        "传说级": 0.20,
+        "神圣级": 0.09,
+        "不朽级": 0.01
     },
-  8: { // 次元5
-        "精良级": 0.5,
-        "卓越级": 0.3,
-        "史诗级": 0.14,
-        "传说级": 0.05,
-        "神圣级": 0.009,
-        "不朽级": 0.001
+  8: { // 次元8
+        "传说级": 0.90,
+        "神圣级": 0.09,
+        "不朽级": 0.01
     }
 };
 
@@ -51168,18 +51160,26 @@ function discardBeast() {
     if (!player.beasts.selectedId) return;
     
     const beast = player.beasts.inventory.find(b => b.id === player.beasts.selectedId);
-    if (beast && !beast.isLocked) {
-        if (confirm(`确定要丢弃神兽【${beast.name}】吗？此操作不可撤销！`)) {
-            player.beasts.inventory = player.beasts.inventory.filter(b => b.id !== player.beasts.selectedId);
-            // 同时从装备列表中移除
-            player.beasts.equipped = player.beasts.equipped.filter(id => id !== player.beasts.selectedId);
-            
-            logAction(`已丢弃神兽：${beast.name}`, 'warning');
-            closeBeastActionModal(); // 关闭弹窗
-            updateBeastUI(); // 更新主界面
-        }
-    } else if (beast && beast.isLocked) {
+    if (!beast) return;
+    
+    const isEquipped = player.beasts.equipped.includes(beast.id);
+    
+    if (isEquipped) {
+        logAction("无法丢弃已装备的神兽！请先卸下再尝试丢弃。", "error");
+        return;
+    }
+    
+    if (beast.isLocked) {
         logAction("请先解锁神兽再进行丢弃操作", "error");
+        return;
+    }
+    
+    if (confirm(`确定要丢弃神兽【${beast.name}】吗？此操作不可撤销！`)) {
+        player.beasts.inventory = player.beasts.inventory.filter(b => b.id !== player.beasts.selectedId);
+        
+        logAction(`已丢弃神兽：${beast.name}`, 'warning');
+        closeBeastActionModal(); // 关闭弹窗
+        updateBeastUI(); // 更新主界面
     }
 }
 
@@ -51189,43 +51189,142 @@ function lockAllFilteredBeasts() {
     const rarityFilter = document.getElementById('beastRarityFilter').value;
     
     let count = 0;
+    let equippedCount = 0;
+    
     player.beasts.inventory.forEach(beast => {
         // 检查是否满足筛选条件
         const matchSLevel = sLevelFilter === 'all' || beast.sLevel === sLevelFilter;
         const matchRarity = rarityFilter === 'all' || beast.rarity === rarityFilter;
+        const isEquipped = player.beasts.equipped.includes(beast.id);
         
         if (matchSLevel && matchRarity) {
             if (!beast.isLocked) {
                 beast.isLocked = true;
                 count++;
+                if (isEquipped) {
+                    equippedCount++;
+                }
             }
         }
     });
     
-    logAction(`已锁定${count}个神兽`, "success");
-    updateBeastUI(); // 更新界面显示
+    if (count > 0) {
+        let message = `已锁定${count}个筛选神兽`;
+        if (equippedCount > 0) {
+            message += `（包含${equippedCount}个已装备的）`;
+        }
+        logAction(message, "success");
+    } else {
+        logAction("没有可锁定的筛选神兽", "info");
+    }
+    
+    // 更新界面
+    updateBeastInventory();
+    
+    // 如果当前选中的神兽在弹窗中，更新弹窗显示
+    if (player.beasts.selectedId) {
+        const selectedBeast = player.beasts.inventory.find(b => b.id === player.beasts.selectedId);
+        if (selectedBeast) {
+            updateSelectedBeastInfo();
+        }
+    }
 }
-
+function unlockAllFilteredBeasts() {
+    const sLevelFilter = document.getElementById('beastSLevelFilter').value;
+    const rarityFilter = document.getElementById('beastRarityFilter').value;
+    
+    let count = 0;
+    let equippedCount = 0;
+    
+    player.beasts.inventory.forEach(beast => {
+        // 检查是否满足筛选条件
+        const matchSLevel = sLevelFilter === 'all' || beast.sLevel === sLevelFilter;
+        const matchRarity = rarityFilter === 'all' || beast.rarity === rarityFilter;
+        const isEquipped = player.beasts.equipped.includes(beast.id);
+        
+        if (matchSLevel && matchRarity) {
+            if (beast.isLocked) {
+                beast.isLocked = false;
+                count++;
+                if (isEquipped) {
+                    equippedCount++;
+                }
+            }
+        }
+    });
+    
+    if (count > 0) {
+        let message = `已解锁${count}个筛选神兽`;
+        if (equippedCount > 0) {
+            message += `（包含${equippedCount}个已装备的）`;
+        }
+        logAction(message, "success");
+    } else {
+        logAction("没有已锁定的筛选神兽", "info");
+    }
+    
+    // 更新界面
+    updateBeastInventory();
+    
+    // 如果当前选中的神兽在弹窗中，更新弹窗显示
+    if (player.beasts.selectedId) {
+        const selectedBeast = player.beasts.inventory.find(b => b.id === player.beasts.selectedId);
+        if (selectedBeast) {
+            updateSelectedBeastInfo();
+        }
+    }
+}
 function discardAllUnlockedFilteredBeasts() {
     const sLevelFilter = document.getElementById('beastSLevelFilter').value;
     const rarityFilter = document.getElementById('beastRarityFilter').value;
     
-    if (!confirm("确定要丢弃所有未锁定的筛选神兽吗？此操作不可撤销！")) return;
+    // 先检查是否有符合条件的未锁定神兽
+    let unlockedCount = 0;
+    let equippedCount = 0;
     
-    let count = 0;
-    // 创建新数组，只保留不满足丢弃条件的
+    player.beasts.inventory.forEach(beast => {
+        const matchSLevel = sLevelFilter === 'all' || beast.sLevel === sLevelFilter;
+        const matchRarity = rarityFilter === 'all' || beast.rarity === rarityFilter;
+        const isEquipped = player.beasts.equipped.includes(beast.id);
+        
+        if (matchSLevel && matchRarity && !beast.isLocked) {
+            unlockedCount++;
+            if (isEquipped) {
+                equippedCount++;
+            }
+        }
+    });
+    
+    if (unlockedCount === 0) {
+        logAction("没有可丢弃的未锁定筛选神兽", "info");
+        return;
+    }
+    
+    // 显示确认信息，包含已装备的警告
+    let confirmMessage = `确定要丢弃${unlockedCount}个未锁定的筛选神兽吗？`;
+    
+    if (equippedCount > 0) {
+        confirmMessage = `警告：筛选结果中包含${equippedCount}个已装备的未锁定神兽！\n\n已装备的神兽不会被丢弃。\n\n确定要丢弃${unlockedCount - equippedCount}个未装备的未锁定神兽吗？`;
+    }
+    
+    if (!confirm(confirmMessage)) return;
+    
+    let discardedCount = 0;
+    
+    // 创建新数组，只保留不符合丢弃条件的
     const newInventory = [];
     
     player.beasts.inventory.forEach(beast => {
         // 检查是否满足筛选条件
         const matchSLevel = sLevelFilter === 'all' || beast.sLevel === sLevelFilter;
         const matchRarity = rarityFilter === 'all' || beast.rarity === rarityFilter;
+        const isEquipped = player.beasts.equipped.includes(beast.id);
         
-        if (matchSLevel && matchRarity && !beast.isLocked) {
+        // 丢弃条件：筛选条件匹配 + 未锁定 + 未装备
+        if (matchSLevel && matchRarity && !beast.isLocked && !isEquipped) {
             // 满足丢弃条件
-            count++;
-            // 同时从装备列表中移除
-            player.beasts.equipped = player.beasts.equipped.filter(id => id !== beast.id);
+            discardedCount++;
+            // 注意：这里不需要从装备列表中移除，因为本身就不是装备状态
         } else {
             // 不满足丢弃条件，保留
             newInventory.push(beast);
@@ -51238,11 +51337,19 @@ function discardAllUnlockedFilteredBeasts() {
     // 如果当前选中的神兽被丢弃了，清空选择
     if (player.beasts.selectedId && !player.beasts.inventory.find(b => b.id === player.beasts.selectedId)) {
         player.beasts.selectedId = null;
-        document.getElementById('singleBeastActions').style.display = 'none';
+        const actionModal = document.getElementById('beastActionModal');
+        if (actionModal && actionModal.style.display === 'block') {
+            closeBeastActionModal();
+        }
     }
     
-    logAction(`已丢弃${count}个未锁定神兽`, "warning");
-    updateBeastUI(); // 更新界面显示
+    let message = `已丢弃${discardedCount}个未锁定未装备的神兽`;
+    if (equippedCount > 0) {
+        message += `（已跳过${equippedCount}个已装备的未锁定神兽）`;
+    }
+    
+    logAction(message, "warning");
+    updateBeastUI();
 }
 
 // 筛选神兽
@@ -52207,6 +52314,5 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
-
 </body>
 </html>
