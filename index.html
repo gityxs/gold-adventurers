@@ -3488,6 +3488,325 @@ select:focus {
 #upgradeProgressBar {
     transition: width 0.5s ease-in-out;
 }
+
+.landlord-field.locked {
+        background: linear-gradient(135deg, #556b2f, #6b8e23);
+        border: 2px solid #3d5326;
+        box-shadow: 0 4px 12px rgba(85, 107, 47, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .landlord-field.locked::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+            45deg,
+            rgba(109, 139, 44, 0.1),
+            rgba(109, 139, 44, 0.1) 10px,
+            rgba(85, 107, 47, 0.05) 10px,
+            rgba(85, 107, 47, 0.05) 20px
+        );
+        pointer-events: none;
+        z-index: 1;
+    }
+    
+    /* 锁定田地的文字颜色 */
+    .landlord-field.locked .landlord-field-header {
+        background: linear-gradient(to right, rgba(77, 96, 36, 0.8), rgba(109, 139, 44, 0.8));
+        border-bottom: 1px solid #5a6f1f;
+        color: #f5f5f5;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .landlord-field.locked .landlord-field-number {
+        color: #d4d4aa;
+    }
+    
+    .landlord-field.locked .plant-name {
+        color: #ffffff;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+    
+    .landlord-field.locked .landlord-plant-details,
+    .landlord-field.locked .landlord-empty-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+
+    .landlord-field.locked .landlord-mutation-tag {
+        color: #f0f0f0;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* 锁定徽章样式 */
+    .lock-badge {
+        background: linear-gradient(135deg, #556b2f, #3d5326);
+        color: #d4d4aa;
+        font-size: 0.7em;
+        padding: 3px 8px;
+        border-radius: 12px;
+        border: 1px solid #8f9779;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* 锁定按钮样式 - 军绿色 */
+    .landlord-lock-button {
+        background: linear-gradient(135deg, #8f9779, #6b8e23);
+        border: 2px solid #5a6f1f;
+        color: #ffffff;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.1em;
+        transition: all 0.3s;
+        padding: 0;
+        box-shadow: 0 2px 5px rgba(85, 107, 47, 0.4);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .landlord-lock-button:hover {
+        background: linear-gradient(135deg, #6b8e23, #556b2f);
+        border-color: #8f9779;
+        transform: scale(1.1) rotate(10deg);
+        box-shadow: 0 4px 8px rgba(85, 107, 47, 0.6);
+    }
+    
+    .landlord-lock-button.active {
+        background: linear-gradient(135deg, #3d5326, #2c3e1f);
+        border-color: #8f9779;
+        color: #d4d4aa;
+        box-shadow: 0 2px 5px rgba(61, 83, 38, 0.6);
+    }
+    
+    .landlord-lock-button.active:hover {
+        background: linear-gradient(135deg, #2c3e1f, #3d5326);
+        border-color: #a3b18a;
+        transform: scale(1.1) rotate(-10deg);
+    }
+    
+    /* 按钮内部的锁图标装饰 */
+    .landlord-lock-button::after {
+        content: '';
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        opacity: 0;
+        transition: all 0.3s;
+    }
+    
+    .landlord-lock-button:hover::after {
+        opacity: 1;
+        transform: scale(1.3);
+    }
+    
+    /* 锁定田地中的操作按钮样式 */
+    .landlord-field.locked .landlord-harvest-button {
+        background: linear-gradient(135deg, #556b2f, #6b8e23);
+        border: 1px solid #8f9779;
+        color: #ffffff;
+    }
+    
+    .landlord-field.locked .landlord-harvest-button:hover {
+        background: linear-gradient(135deg, #6b8e23, #8f9779);
+        border-color: #d4d4aa;
+    }
+    
+    .landlord-field.locked .landlord-remove-button {
+        background: linear-gradient(135deg, #8b4513, #a0522d);
+        border: 1px solid #8f9779;
+        color: #ffffff;
+    }
+    
+    .landlord-field.locked .landlord-remove-button:hover {
+        background: linear-gradient(135deg, #a0522d, #8b4513);
+        border-color: #d4d4aa;
+    }
+    
+    .landlord-field.locked .landlord-item-button {
+        background: linear-gradient(135deg, #2c5282, #2a4365);
+        border: 1px solid #8f9779;
+        color: #ffffff;
+    }
+    
+    .landlord-field.locked .landlord-item-button:hover {
+        background: linear-gradient(135deg, #2a4365, #2c5282);
+        border-color: #d4d4aa;
+    }
+    
+    /* 进度条样式调整 */
+    .landlord-field.locked .landlord-progress-bar {
+        background: rgba(61, 83, 38, 0.5);
+        border: 1px solid #8f9779;
+    }
+    
+    .landlord-field.locked .landlord-progress-fill {
+        background: linear-gradient(90deg, #8f9779, #d4d4aa);
+        box-shadow: 0 0 5px rgba(212, 212, 170, 0.5);
+    }
+    
+    /* 批量锁定按钮的军绿色主题 */
+    .lock-all-btn {
+        background: linear-gradient(135deg, #556b2f, #6b8e23);
+        color: white;
+        border: 1px solid #5a6f1f;
+    }
+    
+    .lock-all-btn:hover {
+        background: linear-gradient(135deg, #6b8e23, #8f9779);
+        border-color: #d4d4aa;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(85, 107, 47, 0.4);
+    }
+    
+    /* 解锁按钮样式 */
+    .unlock-all-btn {
+        background: linear-gradient(135deg, #8f9779, #a3b18a);
+        color: #2c3e50;
+        border: 1px solid #8f9779;
+    }
+    
+    .unlock-all-btn:hover {
+        background: linear-gradient(135deg, #a3b18a, #d4d4aa);
+        border-color: #d4d4aa;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(143, 151, 121, 0.4);
+    }
+    
+    /* 锁定有作物按钮样式 */
+    .lock-planted-btn {
+        background: linear-gradient(135deg, #2c5282, #2a4365);
+        color: white;
+        border: 1px solid #2c5282;
+    }
+    
+    .lock-planted-btn:hover {
+        background: linear-gradient(135deg, #2a4365, #2c5282);
+        border-color: #63b3ed;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(44, 82, 130, 0.4);
+    }
+    
+    /* 锁定成熟按钮样式 */
+    .lock-mature-btn {
+        background: linear-gradient(135deg, #9b2c2c, #742a2a);
+        color: white;
+        border: 1px solid #9b2c2c;
+    }
+    
+    .lock-mature-btn:hover {
+        background: linear-gradient(135deg, #742a2a, #9b2c2c);
+        border-color: #fc8181;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(155, 44, 44, 0.4);
+    }
+    
+    /* 锁定计数显示 */
+    #lockedFieldsCount {
+        font-weight: bold;
+        color: #556b2f;
+        font-size: 1.2em;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 锁定动画效果 */
+    @keyframes lockGlow {
+        0% { box-shadow: 0 0 5px #6b8e23; }
+        50% { box-shadow: 0 0 20px #8f9779, 0 0 30px #556b2f; }
+        100% { box-shadow: 0 0 5px #6b8e23; }
+    }
+    
+    .landlord-field.locked {
+        animation: lockGlow 2s ease-in-out;
+    }
+    
+    @keyframes lockIconSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .landlord-lock-button:active {
+        animation: lockIconSpin 0.5s ease;
+    }
+    
+    /* 锁定田地中的突变标签调整 */
+    .landlord-field.locked .landlord-mutation-tag {
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* 添加锁定图标的额外装饰 */
+    .landlord-field.locked .landlord-field-header::before {
+        content: '🔒';
+        position: absolute;
+        left: 15px;
+        opacity: 0.2;
+        font-size: 1.5em;
+        z-index: 1;
+    }
+    
+    /* 一键收获按钮的军绿色主题 */
+    .harvest-all-button {
+        background: linear-gradient(135deg, #556b2f, #28a745);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+        min-width: 220px;
+        box-shadow: 0 4px 10px rgba(85, 107, 47, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .harvest-all-button::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        transform: rotate(30deg);
+        transition: all 0.5s;
+    }
+    
+    .harvest-all-button:hover {
+        background: linear-gradient(135deg, #6b8e23, #20c997);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(85, 107, 47, 0.5);
+    }
+    
+    .harvest-all-button:hover::before {
+        left: 100%;
+    }
+    
+    /* 控制面板的军绿色边框 */
+    .harvest-controls {
+        border: 2px solid #8f9779;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    }
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -3563,8 +3882,9 @@ select:focus {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.80更新日志</h4>
+            <h4>1.81更新日志</h4>
             <h4>1群：864788026， 2群：902481027 有问题可以进群问（存档异常联系群管理修复）</h4>
+           <p>2026/01/15: 修改宗门功法加成，降低连击，提升攻击爆伤，总体输出提升。修复轮回装备筛选丢弃全选异常。疯狂地主田地加了锁定（以后方便一键收获）</p>
            <p>2026/01/11: 修改自动购买功法宝箱新号上限购买0.1，修复轮回神兽丢弃。</p>
            <p>2026/01/10: 增加轮回神兽：可以升级（次元2以上掉落极低，掉落的装备可以分享给别人）.</p>
            <p>2026/01/09: 增强伴侣系统，增强停车场：现在停车场等级可以减少跑商时间，增加次元678.</p>
@@ -7821,7 +8141,7 @@ select:focus {
 
 </div>
 </div>
-<div id="footer">版本号: v1.8.0</div>
+<div id="footer">版本号: v1.8.1</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -8023,6 +8343,7 @@ landlord: {
                 coins: 10000,
                 unlockedFields: 5,
                 fields: Array(50).fill(null),
+                lockedFields: Array(50).fill(false),
                 seedStorage: {},
                 fruitStorage: [],
                 itemStorage: {},
@@ -16347,7 +16668,7 @@ let wingHealthBonus = 0;
         getTotalClickValue() * 
         (1 + player.attributes.attackBonus + player.attributes.attack * 0.01) *
         classBonuses.attackMultiplier * titleBonuses.attackMultiplier *
-        officialBonus * companionBonuses.attackMultiplier * (1 + artifactBonuses.attack) * (1 + bonuses.attack / 100) *  (1 + techBonuses.attack)  *  (1 + mountAttackBonus) *
+        officialBonus * companionBonuses.attackMultiplier * (1 + artifactBonuses.attack) * (1 + bonuses.attack / 100) *  (1 + techBonuses.attack* 10)  *  (1 + mountAttackBonus) *
         (1 + runeBonuses.attack) * (1 + (player.mining.gems.sapphire*0.05)) * (1+player.children.childBonuses.goldMultiplier)  *
         (1 + equipmentStats.attack) * (1 +beastBonus.attack) // 应用伴侣攻击加成
     );
@@ -16367,7 +16688,7 @@ let wingHealthBonus = 0;
         player.attributes.critDamageBonus + 
         player.attributes.critDamage * 0.0025) *
         classBonuses.critMultiplier * titleBonuses.critMultiplier *
-        companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100) *  (1 + techBonuses.critDamage)  *  (1 + mountCritDamageBonus) *
+        companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100) *  (1 + techBonuses.critDamage* 10)  *  (1 + mountCritDamageBonus) *
         (1 + runeBonuses.critDamage)* (1 + (player.mining.gems.amethyst*0.05)) * (1+player.marriage.marriageBonuses.critDamageBonus) *
        (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage); // 应用伴侣爆伤加成
 
@@ -16375,7 +16696,7 @@ let wingHealthBonus = 0;
     player.battle.playerMultiAttack = Math.max(1,
         Math.floor(player.attributes.multiAttack / 300) + 
         player.attributes.multiAttackBonus +
-        companionBonuses.combo+ techBonuses.multiAttack +
+        companionBonuses.combo+ (1+techBonuses.multiAttack* 0.02) +
         (1+runeBonuses.combo))  // 应用伴侣连击加成
     ;
 
@@ -22950,16 +23271,16 @@ function updateTechniqueList() {
                     effectDisplay = `生命加成: +${(totalEffect * 100).toFixed(1)}%`;
                     break;
                 case 'attack':
-                    effectDisplay = `攻击加成: +${(totalEffect * 100).toFixed(1)}%`;
+                    effectDisplay = `攻击加成: +${(totalEffect * 100 * 10) .toFixed(1)}%`;
                     break;
                 case 'critRate':
                     effectDisplay = `暴击率: +${(totalEffect * 100).toFixed(1)}%`;
                     break;
                 case 'critDamage':
-                    effectDisplay = `爆伤加成: +${(totalEffect * 100).toFixed(1)}%`;
+                    effectDisplay = `爆伤加成: +${(totalEffect * 100 * 10).toFixed(1)}%`;
                     break;
                 case 'multiAttack':
-                    effectDisplay = `连击次数: +${totalEffect.toFixed(1)}`;
+                    effectDisplay = `连击次数: +${totalEffect * 0.02.toFixed(4)}`;
                     break;
                 default:
                     effectDisplay = `效果: +${(totalEffect * 100).toFixed(1)}%`;
@@ -40587,85 +40908,115 @@ lotterySystem.initPrizeProbabilities();
 
         // 渲染田地
         function renderLandlordFields() {
-            const fieldsContainer = document.getElementById('landlordFieldsContainer');
-            const unlockSection = document.getElementById('landlordUnlockSection');
-            
-            if (!fieldsContainer) return;
-            
-            fieldsContainer.innerHTML = '';
-            
-            for (let i = 0; i < player.landlord.unlockedFields; i++) {
-                const plant = player.landlord.fields[i];
-                const fieldDiv = document.createElement('div');
-                fieldDiv.className = `landlord-field ${!plant ? 'empty' : ''}`;
-                
-                if (!plant) {
-                    fieldDiv.innerHTML = `
+    const fieldsContainer = document.getElementById('landlordFieldsContainer');
+    const unlockSection = document.getElementById('landlordUnlockSection');
+    
+    if (!fieldsContainer) return;
+    
+    fieldsContainer.innerHTML = '';
+    
+    for (let i = 0; i < player.landlord.unlockedFields; i++) {
+        const plant = player.landlord.fields[i];
+        const isLocked = player.landlord.lockedFields[i];
+        const fieldDiv = document.createElement('div');
+        fieldDiv.className = `landlord-field ${!plant ? 'empty' : ''} ${isLocked ? 'locked' : ''}`;
+        
+        if (!plant) {
+            fieldDiv.innerHTML = `
+                <div class="landlord-field-header">
+                    <div class="landlord-field-info">
+                        <div class="landlord-field-number">田地 ${i + 1}</div>
                         <div class="landlord-field-status">空闲</div>
-                        <div style="font-size: 3em; color: rgba(0,0,0,0.1); margin: 20px 0;">+</div>
-                        <button class="landlord-plant-button" onclick="selectLandlordSeedForPlanting(${i})">种植</button>
-                    `;
-                } else {
-                    const timeLeft = plant.isMature ? 0 : 
-                        Math.max(0, Math.ceil(plant.growTime - (Date.now() - plant.plantedAt) / (1000 * 60)));
-                    
-                    const progress = plant.isMature ? 100 : 
-                        Math.min(100, Math.floor(((Date.now() - plant.plantedAt) / (1000 * 60)) / plant.growTime * 100));
-                    
-                    // 突变标签
-                    let mutationTags = '';
-                    
-                    // 基础突变标签
-                    plant.mutations.forEach(mutation => {
-                        const colorClass = getLandlordMutationColorClass(mutation);
-                        mutationTags += `<span class="landlord-mutation-tag ${colorClass}">${mutation}</span>`;
-                    });
-                    
-                    // 天气突变标签
-                    plant.weatherMutations.forEach(mutation => {
-                        const colorClass = getLandlordMutationColorClass(mutation);
-                        mutationTags += `<span class="landlord-mutation-tag ${colorClass}">${mutation}</span>`;
-                    });
-                    
-                    // 特殊突变标签
-                    if (plant.specialMutation) {
-                        const specialName = specialMutations[plant.type] || '特殊突变';
-                        mutationTags += `<span class="landlord-mutation-tag landlord-mutation-rainbow">${specialName}</span>`;
-                    }
-                    
-                    fieldDiv.innerHTML = `
-                        <div class="landlord-field-status">${plant.type}</div>
-                        <div class="landlord-plant-info">
-                            <div>重量: ${plant.weight.toFixed(2)}kg</div>
-                            <div>${plant.isMature ? '已成熟' : `成长中... ${timeLeft}分钟`}</div>
-                            ${mutationTags ? `<div class="landlord-mutations-list">${mutationTags}</div>` : ''}
-                        </div>
-                        <div class="landlord-field-actions">
-                            <div class="landlord-action-row">
-                                ${plant.isMature ? 
-                                    `<button class="landlord-harvest-button" onclick="harvestLandlordPlant(${i})">收获</button>` : 
-                                    `<button class="landlord-action-button" style="background: #7f8c8d; color: white;" disabled>${progress}%</button>`
-                                }
-                                <button class="landlord-remove-button" onclick="removeLandlordPlant(${i})">铲除</button>
-                            </div>
-                            <div class="landlord-action-row">
-                                <button class="landlord-item-button" onclick="selectLandlordItemForUsing(${i})">使用道具</button>
-                            </div>
-                        </div>
-                    `;
-                    
-                    // 添加生长进度条
-                    if (!plant.isMature) {
-                        const progressBar = document.createElement('div');
-                        progressBar.className = 'landlord-progress-bar';
-                        progressBar.style.marginTop = '10px';
-                        progressBar.innerHTML = `<div class="landlord-progress-fill" style="width: ${progress}%"></div>`;
-                        fieldDiv.querySelector('.landlord-plant-info').appendChild(progressBar);
-                    }
-                }
-                
-                fieldsContainer.appendChild(fieldDiv);
+                    </div>
+                    <button class="landlord-lock-button ${isLocked ? 'active' : ''}" 
+                            onclick="toggleFieldLock(${i})" 
+                            title="${isLocked ? '解锁田地' : '锁定田地'}">
+                        ${isLocked ? '🔓' : '🔒'}
+                    </button>
+                </div>
+                <div class="landlord-empty-content">
+                    <div style="font-size: 3em; color: rgba(0,0,0,0.1); margin: 20px 0;">+</div>
+                    <button class="landlord-plant-button" onclick="selectLandlordSeedForPlanting(${i})">种植</button>
+                </div>
+            `;
+        } else {
+            const timeLeft = plant.isMature ? 0 : 
+                Math.max(0, Math.ceil(plant.growTime - (Date.now() - plant.plantedAt) / (1000 * 60)));
+            
+            const progress = plant.isMature ? 100 : 
+                Math.min(100, Math.floor(((Date.now() - plant.plantedAt) / (1000 * 60)) / plant.growTime * 100));
+            
+            // 突变标签
+            let mutationTags = '';
+            
+            plant.mutations.forEach(mutation => {
+                const colorClass = getLandlordMutationColorClass(mutation);
+                mutationTags += `<span class="landlord-mutation-tag ${colorClass}">${mutation}</span>`;
+            });
+            
+            plant.weatherMutations.forEach(mutation => {
+                const colorClass = getLandlordMutationColorClass(mutation);
+                mutationTags += `<span class="landlord-mutation-tag ${colorClass}">${mutation}</span>`;
+            });
+            
+            if (plant.specialMutation) {
+                const specialName = specialMutations[plant.type] || '特殊突变';
+                mutationTags += `<span class="landlord-mutation-tag landlord-mutation-rainbow">${specialName}</span>`;
             }
+            
+            fieldDiv.innerHTML = `
+                <div class="landlord-field-header">
+                    <div class="landlord-field-info">
+                        <div class="landlord-field-number">田地 ${i + 1}</div>
+                        <div class="landlord-field-status">
+                            <span class="plant-name">${plant.type}</span>
+                            ${plant.isMature ? '<span class="mature-badge">已成熟</span>' : ''}
+                            ${isLocked ? '<span class="lock-badge">已锁定</span>' : ''}
+                        </div>
+                    </div>
+                    <button class="landlord-lock-button ${isLocked ? 'active' : ''}" 
+                            onclick="toggleFieldLock(${i})" 
+                            title="${isLocked ? '解锁田地' : '锁定田地'}">
+                        ${isLocked ? '🔓' : '🔒'}
+                    </button>
+                </div>
+                
+                <div class="landlord-plant-details">
+                    <div class="landlord-plant-info">
+                        <div class="plant-weight">重量: <span>${plant.weight.toFixed(2)}kg</span></div>
+                        <div class="plant-growth">
+                            ${plant.isMature ? 
+                                '<span style="color: #27ae60;">✓ 可收获</span>' : 
+                                `<span style="color: #f39c12;">成长中... ${timeLeft}分钟</span>`
+                            }
+                        </div>
+                        ${mutationTags ? `<div class="landlord-mutations-list">${mutationTags}</div>` : ''}
+                    </div>
+                    
+                    ${!plant.isMature ? `
+                        <div class="landlord-progress-bar">
+                            <div class="landlord-progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="landlord-field-actions">
+                        <div class="landlord-action-row">
+                            ${plant.isMature ? 
+                                `<button class="landlord-harvest-button" onclick="harvestLandlordPlant(${i})">收获</button>` : 
+                                `<button class="landlord-growth-button" disabled>${progress}%</button>`
+                            }
+                            <button class="landlord-remove-button" onclick="removeLandlordPlant(${i})">铲除</button>
+                        </div>
+                        <div class="landlord-action-row">
+                            <button class="landlord-item-button" onclick="selectLandlordItemForUsing(${i})">使用道具</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        fieldsContainer.appendChild(fieldDiv);
+    }
             
             // 解锁地块信息
             let unlockCost = 0;
@@ -41567,14 +41918,21 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
             if (!fieldDiv) return;
             
             const plant = player.landlord.fields[fieldIndex];
-            
-            if (!plant) {
-                fieldDiv.className = 'landlord-field empty';
-                fieldDiv.innerHTML = `
-                    <div class="landlord-field-status">空闲</div>
-                    <div style="font-size: 3em; color: rgba(0,0,0,0.1); margin: 20px 0;">+</div>
-                    <button class="landlord-plant-button" onclick="selectLandlordSeedForPlanting(${fieldIndex})">种植</button>
-                `;
+             const isLocked = player.landlord.lockedFields[fieldIndex];
+           if (!plant) {
+        fieldDiv.className = `landlord-field empty ${player.landlord.lockedFields[fieldIndex] ? 'locked' : ''}`;
+        fieldDiv.innerHTML = `
+            <div class="landlord-field-header">
+                <div class="landlord-field-status">空闲${player.landlord.lockedFields[fieldIndex] ? ' 🔒' : ''}</div>
+                <label class="field-lock-toggle">
+                    <input type="checkbox" ${player.landlord.lockedFields[fieldIndex] ? 'checked' : ''} 
+                           onchange="toggleFieldLock(${fieldIndex})">
+                    <span class="lock-icon">🔒</span>
+                </label>
+            </div>
+            <div style="font-size: 3em; color: rgba(0,0,0,0.1); margin: 20px 0;">+</div>
+            <button class="landlord-plant-button" onclick="selectLandlordSeedForPlanting(${fieldIndex})">种植</button>
+        `;
             } else {
                 const timeLeft = plant.isMature ? 0 : 
                     Math.max(0, Math.ceil(plant.growTime - (Date.now() - plant.plantedAt) / (1000 * 60)));
@@ -41603,9 +41961,16 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
                     mutationTags += `<span class="landlord-mutation-tag landlord-mutation-rainbow">${specialName}</span>`;
                 }
                 
-                fieldDiv.className = 'landlord-field';
+                fieldDiv.className = `landlord-field ${player.landlord.lockedFields[fieldIndex] ? 'locked' : ''}`;
                 fieldDiv.innerHTML = `
-                    <div class="landlord-field-status">${plant.type}</div>
+            <div class="landlord-field-header">
+                <div class="landlord-field-status">${plant.type}${player.landlord.lockedFields[fieldIndex] ? ' 🔒' : ''}</div>
+                <label class="field-lock-toggle">
+                    <input type="checkbox" ${player.landlord.lockedFields[fieldIndex] ? 'checked' : ''} 
+                           onchange="toggleFieldLock(${fieldIndex})">
+                    <span class="lock-icon">🔒</span>
+                </label>
+            </div>
                     <div class="landlord-plant-info">
                         <div>重量: ${plant.weight.toFixed(2)}kg</div>
                         <div>${plant.isMature ? '已成熟' : `成长中... ${timeLeft}分钟`}</div>
@@ -41634,7 +41999,46 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
                     fieldDiv.querySelector('.landlord-plant-info').appendChild(progressBar);
                 }
             }
+ if (isLocked) {
+        // 为锁定的田地添加额外的装饰元素
+        if (!fieldDiv.querySelector('.lock-decoration')) {
+            const lockDecoration = document.createElement('div');
+            lockDecoration.className = 'lock-decoration';
+            lockDecoration.style.position = 'absolute';
+            lockDecoration.style.top = '5px';
+            lockDecoration.style.right = '5px';
+            lockDecoration.style.fontSize = '0.8em';
+            lockDecoration.style.color = 'rgba(212, 212, 170, 0.5)';
+            lockDecoration.style.zIndex = '1';
+            lockDecoration.textContent = '🔒 已锁定';
+            fieldDiv.appendChild(lockDecoration);
+            
+            // 添加角标
+            const cornerLock = document.createElement('div');
+            cornerLock.className = 'corner-lock';
+            cornerLock.style.position = 'absolute';
+            cornerLock.style.top = '0';
+            cornerLock.style.left = '0';
+            cornerLock.style.width = '0';
+            cornerLock.style.height = '0';
+            cornerLock.style.borderTop = '20px solid #556b2f';
+            cornerLock.style.borderRight = '20px solid transparent';
+            cornerLock.style.zIndex = '2';
+            fieldDiv.appendChild(cornerLock);
+            
+            const lockIcon = document.createElement('div');
+            lockIcon.className = 'corner-lock-icon';
+            lockIcon.style.position = 'absolute';
+            lockIcon.style.top = '2px';
+            lockIcon.style.left = '2px';
+            lockIcon.style.color = '#d4d4aa';
+            lockIcon.style.fontSize = '0.8em';
+            lockIcon.style.zIndex = '3';
+            lockIcon.textContent = '🔒';
+            fieldDiv.appendChild(lockIcon);
         }
+    }
+       }
 
         // 启动定时器
         function startLandlordTimers() {
@@ -41700,6 +42104,7 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
                     coins: 0,
                     unlockedFields: 5,
                     fields: Array(50).fill(null),
+                    lockedFields: Array(50).fill(false),
                     seedStorage: {},
                     fruitStorage: [],
                     itemStorage: {},
@@ -41723,7 +42128,12 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
                     lastSaveTime: Date.now()
                 };
             }
-            
+            if (!player.landlord.lockedFields) {
+        player.landlord.lockedFields = Array(50).fill(false);
+    }
+    while (player.landlord.lockedFields.length < player.landlord.unlockedFields) {
+        player.landlord.lockedFields.push(false);
+    }
             // 确保fields数组长度正确
             while (player.landlord.fields.length < player.landlord.unlockedFields) {
                 player.landlord.fields.push(null);
@@ -41750,7 +42160,9 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
         // 在游戏加载时初始化疯狂地主数据
         function loadLandlordGameData() {
             initLandlordGameData();
-            
+            if (!player.landlord.lockedFields || player.landlord.lockedFields.length < player.landlord.unlockedFields) {
+        player.landlord.lockedFields = Array(50).fill(false);
+    }
             // 检查离线收益
             checkLandlordOfflineEarnings();
         }
@@ -41837,93 +42249,256 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
             
             return colorMap[mutation] || "#bdc3c7";
         }
+function toggleFieldLock(fieldIndex) {
+    if (fieldIndex >= player.landlord.unlockedFields) {
+        showLandlordNotification("田地未解锁！", "error");
+        return;
+    }
+    
+    player.landlord.lockedFields[fieldIndex] = !player.landlord.lockedFields[fieldIndex];
+    
+    // 更新显示
+    renderLandlordFields();
+    
+    const fieldNumber = fieldIndex + 1;
+    showLandlordNotification(`田地${fieldNumber}已${player.landlord.lockedFields[fieldIndex] ? '锁定' : '解锁'}！`, "info");
+    saveGame();
+    
+  updateLockedFieldsCount();
+}
 
+// 一键锁定所有田地
+function lockAllFields() {
+    for (let i = 0; i < player.landlord.unlockedFields; i++) {
+        player.landlord.lockedFields[i] = true;
+    }
+    renderLandlordFields();
+    showLandlordNotification("已锁定所有田地！", "success");
+    saveGame();
+}
+
+// 一键解锁所有田地
+function unlockAllFields() {
+    for (let i = 0; i < player.landlord.unlockedFields; i++) {
+        player.landlord.lockedFields[i] = false;
+    }
+    renderLandlordFields();
+    showLandlordNotification("所有田地已解锁！", "success");
+    saveGame();
+}
+function lockPlantedFields() {
+    let lockedCount = 0;
+    for (let i = 0; i < player.landlord.unlockedFields; i++) {
+        if (player.landlord.fields[i] !== null) {
+            player.landlord.lockedFields[i] = true;
+            lockedCount++;
+        }
+    }
+    renderLandlordFields();
+    showLandlordNotification(`已锁定${lockedCount}块有作物的田地！`, "success");
+    saveGame();
+}
+
+// 仅锁定成熟作物
+function lockMatureFields() {
+    let lockedCount = 0;
+    for (let i = 0; i < player.landlord.unlockedFields; i++) {
+        const plant = player.landlord.fields[i];
+        if (plant && plant.isMature) {
+            player.landlord.lockedFields[i] = true;
+            lockedCount++;
+        }
+    }
+    renderLandlordFields();
+    showLandlordNotification(`已锁定${lockedCount}块有成熟作物的田地！`, "success");
+    saveGame();
+}
         // 添加一个快速收获所有成熟作物的函数
        function harvestAllMatureLandlordPlants() {
-            let harvestedCount = 0;
-            let totalValue = 0;
-            let lockedCount = 0;
-            
-            player.landlord.fields.forEach((plant, index) => {
-                if (plant && plant.isMature) {
-                    // 计算价值
-                    const value = calculateLandlordPlantValue(plant);
-                    totalValue += value;
-                    
-                    // 添加到果实仓库
-                    const fruit = {
-                        type: plant.type,
-                        weight: plant.weight,
-                        value: value,
-                        mutations: [...plant.mutations],
-                        weatherMutations: [...plant.weatherMutations],
-                        specialMutation: plant.specialMutation,
-                        harvestedAt: new Date().toLocaleString('zh-CN'),
-                        harvestedTimestamp: Date.now(),
-                        isLocked: false  // 新收获的果实默认不锁定
-                    };
-                    
-                    if (player.landlord.fruitStorage.length < 200) {
-                        player.landlord.fruitStorage.push(fruit);
-                        
-                        // 重新生成植物
-                        player.landlord.fields[index] = createNewLandlordPlant(plant.type);
-                        harvestedCount++;
-                    } else {
-                        lockedCount++; // 仓库已满，无法收获
-                    }
-                }
-            });
-            
-            if (harvestedCount > 0) {
-                // 更新统计
-                player.landlord.stats.totalHarvests += harvestedCount;
-                player.landlord.stats.totalCoinsEarned += totalValue;
-                
-                // 更新显示
-                renderLandlordFields();
-                renderLandlordFruitStorage();
-                updateLandlordStats();
-                
-                let message = `一键收获了${harvestedCount}个作物，总价值${formatNumber(totalValue)}地主币！`;
-                if (lockedCount > 0) {
-                    message += ` (${lockedCount}个因仓库已满未收获)`;
-                }
-                
-                showLandlordNotification(message, "success");
-                saveGame();
-            } else {
-                if (lockedCount > 0) {
-                    showLandlordNotification("果实仓库已满，无法收获任何作物！", "error");
-                } else {
-                    showLandlordNotification("没有成熟的作物可收获！", "info");
-                }
+    let harvestedCount = 0;
+    let totalValue = 0;
+    let skippedCount = 0;
+    let lockedSkipped = 0;
+    let storageFullSkipped = 0;
+    
+    player.landlord.fields.forEach((plant, index) => {
+        if (plant && plant.isMature) {
+            // 检查田地是否锁定
+            if (player.landlord.lockedFields[index]) {
+                lockedSkipped++;
+                return; // 跳过锁定的田地
             }
+            
+            // 检查仓库是否已满
+            if (player.landlord.fruitStorage.length >= 200) {
+                storageFullSkipped++;
+                return;
+            }
+            
+            // 计算价值
+            const value = calculateLandlordPlantValue(plant);
+            totalValue += value;
+            
+            // 添加到果实仓库
+            const fruit = {
+                type: plant.type,
+                weight: plant.weight,
+                value: value,
+                mutations: [...plant.mutations],
+                weatherMutations: [...plant.weatherMutations],
+                specialMutation: plant.specialMutation,
+                harvestedAt: new Date().toLocaleString('zh-CN'),
+                harvestedTimestamp: Date.now(),
+                isLocked: false
+            };
+            
+            player.landlord.fruitStorage.push(fruit);
+            
+            // 重新生成植物
+            player.landlord.fields[index] = createNewLandlordPlant(plant.type);
+            harvestedCount++;
         }
+    });
+    
+    if (harvestedCount > 0) {
+        // 更新统计
+        player.landlord.stats.totalHarvests += harvestedCount;
+        player.landlord.stats.totalCoinsEarned += totalValue;
+        
+        // 更新显示
+        renderLandlordFields();
+        renderLandlordFruitStorage();
+        updateLandlordStats();
+        
+        let message = `一键收获了${harvestedCount}个作物，总价值${formatNumber(totalValue)}地主币！`;
+        
+        if (lockedSkipped > 0 || storageFullSkipped > 0) {
+            message += `（已跳过`;
+            if (lockedSkipped > 0) {
+                message += ` ${lockedSkipped}个锁定的田地`;
+            }
+            if (storageFullSkipped > 0) {
+                if (lockedSkipped > 0) message += '，';
+                message += ` ${storageFullSkipped}个因仓库满`;
+            }
+            message += '）';
+        }
+        
+        showLandlordNotification(message, "success");
+        saveGame();
+    } else {
+        let message = "没有可收获的成熟作物！";
+        if (lockedSkipped > 0) {
+            message = `有${lockedSkipped}个成熟作物因田地锁定未收获`;
+        } else if (storageFullSkipped > 0) {
+            message = `有${storageFullSkipped}个成熟作物因仓库已满未收获`;
+        }
+        showLandlordNotification(message, "info");
+    }
+}
 
         // 添加一键收获按钮到界面
-        function addHarvestAllButton() {
-            // 在田地页面添加一键收获按钮
-            const fieldsTab = document.getElementById('landlordFieldsTab');
-            if (fieldsTab && !fieldsTab.querySelector('.harvest-all-button')) {
-                const harvestAllButton = document.createElement('button');
-                harvestAllButton.className = 'landlord-unlock-button';
-                harvestAllButton.style.marginBottom = '20px';
-                harvestAllButton.textContent = '一键收获所有成熟作物';
-                harvestAllButton.onclick = harvestAllMatureLandlordPlants;
-                harvestAllButton.classList.add('harvest-all-button');
+     function addHarvestAllButton() {
+    const fieldsTab = document.getElementById('landlordFieldsTab');
+    if (fieldsTab && !fieldsTab.querySelector('.harvest-controls')) {
+        const controlsDiv = document.createElement('div');
+        controlsDiv.className = 'harvest-controls';
+        controlsDiv.style.marginBottom = '20px';
+        controlsDiv.style.padding = '15px';
+        controlsDiv.style.background = 'linear-gradient(135deg, #f8f9fa, #e9ecef)';
+        controlsDiv.style.borderRadius = '10px';
+        controlsDiv.style.border = '2px solid #8f9779';
+        controlsDiv.style.boxShadow = '0 4px 12px rgba(85, 107, 47, 0.1)';
+        
+        controlsDiv.innerHTML = `
+            <div style="margin-bottom: 15px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <span style="color: #556b2f; font-size: 1.2em;">🔒</span>
+                    <h3 style="margin: 0; color: #2c3e50;">田地锁定管理</h3>
+                </div>
+                <div style="font-size: 0.9em; color: #5a6f1f; padding-left: 25px;">
+                    锁定的田地不会被一键收获，但仍可单独操作
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                <button class="landlord-action-button harvest-all-button" onclick="harvestAllMatureLandlordPlants()">
+                    <span style="font-size: 1.2em; margin-right: 8px;">🚜</span>
+                    一键收获（跳过锁定）
+                </button>
                 
-                fieldsTab.insertBefore(harvestAllButton, fieldsTab.firstChild);
+                <div style="flex: 1; min-width: 250px;">
+                    <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                        <button class="lock-control-button lock-all-btn" onclick="lockAllFields()" 
+                                title="锁定所有田地，防止被一键收获">
+                            <span style="margin-right: 5px;">🔒</span>
+                            全部锁定
+                        </button>
+                        <button class="lock-control-button unlock-all-btn" onclick="unlockAllFields()"
+                                title="解锁所有田地，允许一键收获">
+                            <span style="margin-right: 5px;">🔓</span>
+                            全部解锁
+                        </button>
+                        <button class="lock-control-button lock-planted-btn" onclick="lockPlantedFields()"
+                                title="只锁定有作物的田地">
+                            <span style="margin-right: 5px;">🌱</span>
+                            锁定有作物
+                        </button>
+                        <button class="lock-control-button lock-mature-btn" onclick="lockMatureFields()"
+                                title="只锁定有成熟作物的田地">
+                            <span style="margin-right: 5px;">🌾</span>
+                            锁定成熟
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; 
+                        padding: 10px 15px; background: rgba(85, 107, 47, 0.1); 
+                        border-radius: 8px; border: 1px solid #8f9779;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 12px; height: 12px; background: #556b2f; border-radius: 2px;"></div>
+                    <span style="color: #5a6f1f; font-size: 0.85em;">锁定状态</span>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.85em; color: #6c757d;">已锁定</div>
+                    <div style="font-size: 1.4em; font-weight: bold; color: #556b2f;">
+                        <span id="lockedFieldsCount">0</span>
+                        <span style="font-size: 0.7em; color: #8f9779;"> /∞</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        fieldsTab.insertBefore(controlsDiv, fieldsTab.firstChild);
+        
+        // 更新锁定计数显示
+        updateLockedFieldsCount();
+    }
+}
+
+// 更新锁定田地计数
+function updateLockedFieldsCount() {
+    const countElement = document.getElementById('lockedFieldsCount');
+    if (countElement) {
+        let lockedCount = 0;
+        for (let i = 0; i < player.landlord.unlockedFields; i++) {
+            if (player.landlord.lockedFields[i]) {
+                lockedCount++;
             }
         }
+        countElement.textContent = lockedCount;
+    }
+}
 
-        // 在渲染田地时调用添加按钮函数
-        const originalRenderLandlordFields = renderLandlordFields;
-        renderLandlordFields = function() {
-            originalRenderLandlordFields();
-            addHarvestAllButton();
-        };
-
+// 在渲染田地后更新计数
+const originalRenderLandlordFields = renderLandlordFields;
+renderLandlordFields = function() {
+    originalRenderLandlordFields();
+    updateLockedFieldsCount();
+    addHarvestAllButton();
+};
+   
         // 卖出所有果实
        function sellAllLandlordFruits() {
     if (player.landlord.fruitStorage.length === 0) {
@@ -49597,6 +50172,8 @@ function executeBatchDiscard() {
     }
     
     const selectedCount = player.reincarnationEquipment.selectedItems.length;
+    
+    // 检查是否有锁定的装备被选中
     const lockedItems = player.reincarnationEquipment.selectedItems.filter(id => 
         player.reincarnationEquipment.lockedItems.includes(id)
     );
@@ -49609,15 +50186,20 @@ function executeBatchDiscard() {
     showCustomConfirm(`确定要丢弃选中的${selectedCount}件装备吗？此操作不可撤销！`, (confirmed) => {
         if (confirmed) {
             let discardedCount = 0;
+            let failedCount = 0;
             
             player.reincarnationEquipment.selectedItems.forEach(equipmentId => {
                 const equipmentIndex = player.reincarnationEquipment.inventory.findIndex(eq => eq.id === equipmentId);
                 if (equipmentIndex !== -1) {
                     const equipment = player.reincarnationEquipment.inventory[equipmentIndex];
+                    
+                    // 再次检查是否锁定（防止状态变化）
                     if (!player.reincarnationEquipment.lockedItems.includes(equipmentId)) {
                         player.reincarnationEquipment.inventory.splice(equipmentIndex, 1);
                         discardedCount++;
                         logAction(`已丢弃: ${equipment.name}`, "info");
+                    } else {
+                        failedCount++;
                     }
                 }
             });
@@ -49626,7 +50208,12 @@ function executeBatchDiscard() {
             player.reincarnationEquipment.batchDiscardMode = false;
             player.reincarnationEquipment.selectedItems = [];
             
-            logAction(`批量丢弃完成，成功丢弃${discardedCount}件装备`, "success");
+            if (failedCount > 0) {
+                logAction(`批量丢弃完成，成功丢弃${discardedCount}件装备，${failedCount}件装备因锁定而无法丢弃`, "warning");
+            } else {
+                logAction(`批量丢弃完成，成功丢弃${discardedCount}件装备`, "success");
+            }
+            
             updateReincarnationEquipmentUI();
         }
     });
@@ -49634,9 +50221,8 @@ function executeBatchDiscard() {
 function toggleSelectAll() {
     if (!player.reincarnationEquipment.batchDiscardMode) return;
     
-    const allItems = player.reincarnationEquipment.inventory
-        .filter(eq => !player.reincarnationEquipment.lockedItems.includes(eq.id))
-        .map(eq => eq.id);
+    // 获取当前筛选条件下的所有装备ID（未锁定的）
+    const allItems = getFilteredEquipmentIds();
     
     if (player.reincarnationEquipment.selectedItems.length === allItems.length) {
         // 取消全选
@@ -49647,6 +50233,45 @@ function toggleSelectAll() {
     }
     
     updateReincarnationEquipmentUI();
+}
+
+// 获取筛选后的装备ID列表（只包含未锁定的）
+function getFilteredEquipmentIds() {
+    const config = reincarnationEquipmentConfig;
+    
+    // 获取筛选条件
+    const filterTier = document.getElementById('inventoryFilterTier').value;
+    const filterRarity = document.getElementById('inventoryFilterRarity').value;
+    const filterSlot = document.getElementById('inventoryFilterSlot').value;
+    const filterSet = document.getElementById('inventoryFilterSet').value;
+    
+    // 筛选装备
+    let filteredEquipment = player.reincarnationEquipment.inventory;
+    
+    if (filterTier !== 'all') {
+        filteredEquipment = filteredEquipment.filter(eq => eq.tier === parseInt(filterTier));
+    }
+    
+    if (filterRarity !== 'all') {
+        filteredEquipment = filteredEquipment.filter(eq => eq.rarity === filterRarity);
+    }
+    
+    if (filterSlot !== 'all') {
+        filteredEquipment = filteredEquipment.filter(eq => eq.slot === filterSlot);
+    }
+    
+    if (filterSet !== 'all') {
+        if (filterSet === 'hasSet') {
+            filteredEquipment = filteredEquipment.filter(eq => eq.setBonus);
+        } else if (filterSet === 'noSet') {
+            filteredEquipment = filteredEquipment.filter(eq => !eq.setBonus);
+        }
+    }
+    
+    // 只返回未锁定的装备ID
+    return filteredEquipment
+        .filter(eq => !player.reincarnationEquipment.lockedItems.includes(eq.id))
+        .map(eq => eq.id);
 }
 function isItemSelected(equipmentId) {
     return player.reincarnationEquipment.batchDiscardMode && 
