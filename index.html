@@ -3882,8 +3882,9 @@ select:focus {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.81更新日志</h4>
+            <h4>1.82更新日志</h4>
             <h4>1群：864788026， 2群：902481027 有问题可以进群问（存档异常联系群管理修复）</h4>
+            <p>2026/01/17: 修改新版股票显示，方便操作 </p>
            <p>2026/01/15: 修改宗门功法加成，降低连击，提升攻击爆伤，总体输出提升。修复轮回装备筛选丢弃全选异常。疯狂地主田地加了锁定（以后方便一键收获）</p>
            <p>2026/01/11: 修改自动购买功法宝箱新号上限购买0.1，修复轮回神兽丢弃。</p>
            <p>2026/01/10: 增加轮回神兽：可以升级（次元2以上掉落极低，掉落的装备可以分享给别人）.</p>
@@ -8141,7 +8142,7 @@ select:focus {
 
 </div>
 </div>
-<div id="footer">版本号: v1.8.1</div>
+<div id="footer">版本号: v1.8.2</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -8302,6 +8303,8 @@ children: {
                 totalAssets: 1000.00,
                 holdingPercent: 0.00,
                 todayProfit: 0.00,
+                totalProfitAmount: 0.00,  // 新增：总盈亏金额
+                totalProfitPercent: 0.00,
                 tradeCount: 16,
                 initialFunds: 1000.00,
                 lastUpdateTime: Date.now()
@@ -43484,6 +43487,8 @@ function initInvestmentGame() {
                 totalAssets: 1000.00,
                 holdingPercent: 0.00,
                 todayProfit: 0.00,
+                totalProfitAmount: 0.00,  // 新增：总盈亏金额
+                totalProfitPercent: 0.00,
                 tradeCount: 16,
                 initialFunds: 1000.00,
                 lastUpdateTime: Date.now()
@@ -43641,7 +43646,41 @@ function renderInvestmentGame() {
                 max-width: 1200px;
                 margin: 0 auto;
             }
-            
+            .investment-game .profit-up {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.investment-game .profit-up:after {
+    content: ""; /* 移除默认的箭头 */
+}
+
+.investment-game .profit-down {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.investment-game .profit-down:after {
+    content: ""; /* 移除默认的箭头 */
+}
+.investment-game .clickable {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.investment-game .clickable:hover {
+    background-color: #f0f7ff !important;
+}
+
+.investment-game .holding-item:hover {
+    background-color: #f8fafc !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.investment-game .holding-item.selected {
+    background-color: #eff6ff !important;
+    border-left: 3px solid #3b82f6;
+}
             .investment-game .header {
                 text-align: center;
                 margin-bottom: 25px;
@@ -44319,18 +44358,18 @@ function renderInvestmentGame() {
                         </div>
                     </div>
                     
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <div class="chart-title">走势图</div>
-                            <div class="time-filters">
-                                <div class="time-filter active" data-points="500">点击刷新走势图</div>
-                            </div>
-                        </div>
-                        
-                        <div class="chart-placeholder" id="price-chart">
-                            <!-- 图表将通过JS动态生成 -->
-                        </div>
-                    </div>
+<div class="chart-container">
+    <div class="chart-header">
+        <div class="chart-title">走势图（最近100个数据点）</div>
+        <div class="time-filters">
+            <div class="time-filter active" data-points="100">实时刷新</div>
+        </div>
+    </div>
+    
+    <div class="chart-placeholder" id="price-chart">
+        <!-- 图表将通过JS动态生成 -->
+    </div>
+</div>
                     
                     <div class="submit-section">
                         <div class="trade-count">可用交易次数：<span id="trade-count">${game.userData.tradeCount}</span> 
@@ -44342,59 +44381,64 @@ function renderInvestmentGame() {
             </div>
             
             <!-- 资产详情界面 -->
-            <div id="assets" class="tab-content">
-                <div class="assets-header">
-                    <h2 style="margin-bottom: 20px;">资产详情</h2>
-                    <div class="assets-stats">
-                        <div class="stat-item">
-                            <div class="stat-label">可用资金</div>
-                            <div class="stat-value" id="available-funds">${game.userData.availableFunds.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">总资产</div>
-                            <div class="stat-value" id="total-assets">${game.userData.totalAssets.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">总持仓价值</div>
-                            <div class="stat-value" id="total-hold-value">${calculateTotalHoldingsValue().toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">总持仓占比</div>
-                            <div class="stat-value" id="total-holding-percent">${game.userData.holdingPercent.toFixed(2)}%</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">总盈亏比例</div>
-                            <div class="stat-value" id="today-profit">${game.userData.todayProfit >= 0 ? '+' : ''}${game.userData.todayProfit.toFixed(2)}%</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <h3 style="margin-bottom: 15px; color: #2c3e50;">持仓详情</h3>
-                
-                <table class="holdings-table" id="holdings-table">
-                    <thead>
-                        <tr>
-                            <th>股票代码</th>
-                            <th>股票名称</th>
-                            <th>持股数量</th>
-                            <th>当前价格</th>
-                            <th>成本价格</th>
-                            <th>总价格</th>
-                            <th>盈亏比例</th>
-                            <th>持仓占比</th>
-                        </tr>
-                    </thead>
-                    <tbody id="holdings-body">
-                        ${generateHoldingsTable()}
-                    </tbody>
-                </table>
-                
-                <div id="no-holdings" class="no-holding" style="${hasHoldings() ? 'display: none;' : ''}">
-                    <i class="fas fa-chart-line"></i>
-                    <h3>暂无持仓</h3>
-                    <p>您还没有持有任何股票，快去交易页面买入股票吧！</p>
-                </div>
+<div id="assets" class="tab-content">
+    <div class="assets-header">
+        <h2 style="margin-bottom: 20px;">资产详情</h2>
+        <div class="assets-stats">
+            <div class="stat-item">
+                <div class="stat-label">可用资金</div>
+                <div class="stat-value" id="available-funds">${game.userData.availableFunds.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
             </div>
+            <div class="stat-item">
+                <div class="stat-label">总资产</div>
+                <div class="stat-value" id="total-assets">${game.userData.totalAssets.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">总持仓价值</div>
+                <div class="stat-value" id="total-hold-value">${calculateTotalHoldingsValue().toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">总持仓占比</div>
+                <div class="stat-value" id="total-holding-percent">${game.userData.holdingPercent.toFixed(2)}%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">总盈亏金额</div>
+                <div class="stat-value" id="total-profit-amount">${calculateTotalProfitAmount().toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">总盈亏比例</div>
+                <div class="stat-value" id="total-profit-percent">${calculateTotalProfitPercent()}%</div>
+            </div>
+        </div>
+    </div>
+    
+    <h3 style="margin-bottom: 15px; color: #2c3e50;">持仓详情 <span style="font-size: 0.8rem; color: #6b7280; font-weight: normal;">（点击任意持仓股票可快速切换到交易页面）</span></h3>
+    
+    <table class="holdings-table" id="holdings-table">
+        <thead>
+            <tr>
+                <th>股票代码</th>
+                <th>股票名称</th>
+                <th>持股数量</th>
+                <th>当前价格</th>
+                <th>成本价格</th>
+                <th>总市值</th>
+                <th>盈亏金额</th>
+                <th>盈亏比例</th>
+                <th>持仓占比</th>
+            </tr>
+        </thead>
+        <tbody id="holdings-body">
+            ${generateHoldingsTable()}
+        </tbody>
+    </table>
+    
+    <div id="no-holdings" class="no-holding" style="${hasHoldings() ? 'display: none;' : ''}">
+        <i class="fas fa-chart-line"></i>
+        <h3>暂无持仓</h3>
+        <p>您还没有持有任何股票，快去交易页面买入股票吧！</p>
+    </div>
+</div>
             
             <!-- 股票列表界面 -->
             <div id="stocks" class="tab-content">
@@ -44460,31 +44504,74 @@ function calculateTotalHoldingsValue() {
         return sum + (stock.holdings * stock.price);
     }, 0);
 }
+function calculateTotalProfitAmount() {
+    const game = player.investmentGame;
+    let totalProfit = 0;
+    
+    game.stocks.forEach(stock => {
+        if (stock.holdings > 0 && stock.costPrice > 0) {
+            const profit = (stock.price - stock.costPrice) * stock.holdings;
+            totalProfit += profit;
+        }
+    });
+    
+    return totalProfit;
+}
 
+// 计算总盈亏比例
+function calculateTotalProfitPercent() {
+    const game = player.investmentGame;
+    let totalCost = 0;
+    let totalValue = 0;
+    
+    game.stocks.forEach(stock => {
+        if (stock.holdings > 0 && stock.costPrice > 0) {
+            totalCost += stock.holdings * stock.costPrice;
+            totalValue += stock.holdings * stock.price;
+        }
+    });
+    
+    if (totalCost <= 0) return "0.00";
+    
+    const profitPercent = ((totalValue - totalCost) / totalCost * 100);
+    return `${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}`;
+}
 // 生成持仓表格
 function generateHoldingsTable() {
     const game = player.investmentGame;
     const holdings = game.stocks.filter(stock => stock.holdings > 0);
+    const currentStock = game.stocks[game.currentStockIndex];
     
     if (holdings.length === 0) {
         return '';
     }
     
+    const totalHoldingsValue = calculateTotalHoldingsValue();
+    
     return holdings.map(stock => {
         const holdValue = stock.holdings * stock.price;
+        const costValue = stock.holdings * stock.costPrice;
+        const profitAmount = stock.costPrice > 0 ? 
+            (stock.price - stock.costPrice) * stock.holdings : 0;
         const profitPercent = stock.costPrice > 0 ? 
             ((stock.price - stock.costPrice) / stock.costPrice * 100) : 0;
-        const holdingPercent = (holdValue / game.userData.totalAssets * 100);
+        const holdingPercent = (holdValue / totalHoldingsValue * 100);
+        const isSelected = stock.code === currentStock.code;
         
         return `
-            <tr>
+            <tr class="holding-item clickable ${isSelected ? 'selected' : ''}" data-code="${stock.code}">
                 <td class="stock-code">${stock.code}</td>
                 <td>${stock.name}</td>
                 <td>${stock.holdings.toLocaleString()}</td>
                 <td>${stock.price.toFixed(3)}</td>
                 <td>${stock.costPrice > 0 ? stock.costPrice.toFixed(3) : "0.000"}</td>
                 <td>${holdValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                <td class="${profitPercent >= 0 ? 'profit-up' : 'profit-down'}">${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%</td>
+                <td class="${profitAmount >= 0 ? 'profit-up' : 'profit-down'}">
+                    ${profitAmount >= 0 ? '+' : ''}${profitAmount.toFixed(2)}
+                </td>
+                <td class="${profitPercent >= 0 ? 'profit-up' : 'profit-down'}">
+                    ${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%
+                </td>
                 <td class="holding-percent">${holdingPercent.toFixed(2)}%</td>
             </tr>
         `;
@@ -44500,9 +44587,12 @@ function hasHoldings() {
 // 生成股票列表
 function generateStocksList() {
     const game = player.investmentGame;
+    const currentStock = game.stocks[game.currentStockIndex];
+    
     return game.stocks.map(stock => {
+        const isSelected = stock.code === currentStock.code;
         return `
-            <tr class="stock-item" data-code="${stock.code}">
+            <tr class="stock-item ${isSelected ? 'selected' : ''}" data-code="${stock.code}">
                 <td class="stock-code">${stock.code}</td>
                 <td>${stock.name}</td>
                 <td>${stock.price.toFixed(3)}</td>
@@ -44555,25 +44645,6 @@ function initInvestmentEventListeners() {
         });
     });
     
-    // 股票列表项点击
-    document.querySelectorAll('.investment-game .stock-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const stockCode = this.getAttribute('data-code');
-            const stockIndex = game.stocks.findIndex(s => s.code === stockCode);
-            if (stockIndex >= 0) {
-                game.currentStockIndex = stockIndex;
-                // 切换到交易标签页
-                document.querySelector('.investment-game .tab[data-tab="trade"]').click();
-                // 更新显示
-                updateInvestmentStockDisplay();
-                updateInvestmentTradeInfo();
-                updateInvestmentHoldingsInfo();
-                updateInvestmentChart();
-                showInvestmentNotification(`已切换到股票: ${game.stocks[stockIndex].name}`, 'info');
-            }
-        });
-    });
-    
     // 交易数量按钮
     document.querySelectorAll('.investment-game .qty-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -44596,33 +44667,106 @@ function initInvestmentEventListeners() {
     
     // 交易数量输入
     const quantityInput = document.getElementById('trade-quantity');
-    quantityInput.addEventListener('input', updateInvestmentTradeInfo);
-    quantityInput.addEventListener('change', updateInvestmentTradeInfo);
+    if (quantityInput) {
+        quantityInput.addEventListener('input', updateInvestmentTradeInfo);
+        quantityInput.addEventListener('change', updateInvestmentTradeInfo);
+    }
     
     // 增加交易次数按钮
-    document.getElementById('add-trade-count').addEventListener('click', function(e) {
-        e.preventDefault();
-        game.userData.tradeCount += 5;
-        document.getElementById('trade-count').textContent = game.userData.tradeCount;
-        showInvestmentNotification('交易次数已增加5次！', 'success');
-        saveGame();
-    });
+    const addTradeCountBtn = document.getElementById('add-trade-count');
+    if (addTradeCountBtn) {
+        addTradeCountBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            game.userData.tradeCount += 5;
+            document.getElementById('trade-count').textContent = game.userData.tradeCount;
+            showInvestmentNotification('交易次数已增加5次！', 'success');
+            saveGame();
+        });
+    }
     
     // 提交交易按钮
-    document.getElementById('submit-trade').addEventListener('click', submitInvestmentTrade);
+    const submitBtn = document.getElementById('submit-trade');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', submitInvestmentTrade);
+    }
     
     // 时间过滤器
     document.querySelectorAll('.investment-game .time-filter').forEach(filter => {
-        filter.addEventListener('click', function() {
-            document.querySelectorAll('.investment-game .time-filter').forEach(f => {
-                f.classList.remove('active');
-            });
-            this.classList.add('active');
-            updateInvestmentChartFromCache(500);
+    filter.addEventListener('click', function() {
+        document.querySelectorAll('.investment-game .time-filter').forEach(f => {
+            f.classList.remove('active');
         });
+        this.classList.add('active');
+        updateInvestmentChartFromCache(100); // 固定使用100个点
+    });
+});
+    
+    // 持仓行点击事件处理（使用事件委托）
+    document.addEventListener('click', function(e) {
+        // 检查是否点击了持仓行
+        const holdingRow = e.target.closest('.holding-item.clickable');
+        if (holdingRow) {
+            e.preventDefault();
+            const stockCode = holdingRow.getAttribute('data-code');
+            const game = player.investmentGame;
+            const stockIndex = game.stocks.findIndex(s => s.code === stockCode);
+            
+            if (stockIndex >= 0) {
+                game.currentStockIndex = stockIndex;
+                
+                // 切换到交易标签页
+                const tradeTab = document.querySelector('.investment-game .tab[data-tab="trade"]');
+                if (tradeTab) {
+                    tradeTab.click();
+                }
+                
+                // 更新显示
+                updateInvestmentStockDisplay();
+                updateInvestmentTradeInfo();
+                updateInvestmentHoldingsInfo();
+                showInvestmentNotification(`已切换到持仓股票: ${game.stocks[stockIndex].name}`, 'info');
+            }
+        }
+        
+        // 检查是否点击了股票列表行
+        const stockRow = e.target.closest('.stock-item');
+        if (stockRow) {
+            e.preventDefault();
+            const stockCode = stockRow.getAttribute('data-code');
+            const game = player.investmentGame;
+            const stockIndex = game.stocks.findIndex(s => s.code === stockCode);
+            
+            if (stockIndex >= 0) {
+                game.currentStockIndex = stockIndex;
+                
+                // 切换到交易标签页
+                const tradeTab = document.querySelector('.investment-game .tab[data-tab="trade"]');
+                if (tradeTab) {
+                    tradeTab.click();
+                }
+                
+                // 更新显示
+                updateInvestmentStockDisplay();
+                updateInvestmentTradeInfo();
+                updateInvestmentHoldingsInfo();
+                showInvestmentNotification(`已切换到股票: ${game.stocks[stockIndex].name}`, 'info');
+            }
+        }
     });
 }
-
+function cleanInvestmentChartCache() {
+    const game = player.investmentGame;
+    const cacheKeys = Object.keys(game.chartHistoryCache);
+    const now = Date.now();
+    
+    // 只保留最近30分钟的数据
+    for (const key of cacheKeys) {
+        // 简单实现：如果缓存条目超过100条，删除最旧的
+        if (cacheKeys.length > 100) {
+            delete game.chartHistoryCache[key];
+        }
+    }
+}
 // 更新股票显示
 function updateInvestmentStockDisplay() {
     const game = player.investmentGame;
@@ -44641,6 +44785,23 @@ function updateInvestmentStockDisplay() {
     
     // 更新时间显示
     document.getElementById('update-time').textContent = `股价上次更新时间：${new Date().toLocaleString()}`;
+    
+    // 高亮当前选中的股票行
+    // 在股票列表页高亮
+    document.querySelectorAll('.stock-item').forEach(row => {
+        row.classList.remove('selected');
+        if (row.getAttribute('data-code') === currentStock.code) {
+            row.classList.add('selected');
+        }
+    });
+    
+    // 在持仓列表高亮
+    document.querySelectorAll('.holding-item').forEach(row => {
+        row.classList.remove('selected');
+        if (row.getAttribute('data-code') === currentStock.code) {
+            row.classList.add('selected');
+        }
+    });
 }
 
 // 更新交易数量
@@ -44757,14 +44918,16 @@ function updateInvestmentHoldingsInfo() {
 
 // 初始化价格图表
 function initInvestmentChart() {
-    updateInvestmentChartFromCache(500);
+    updateInvestmentChartFromCache(100);
 }
 
 // 从缓存更新图表
-function updateInvestmentChartFromCache(points) {
+function updateInvestmentChartFromCache(points = 100) {
     const game = player.investmentGame;
     const currentStock = game.stocks[game.currentStockIndex];
     const chartContainer = document.getElementById('price-chart');
+    
+    if (!chartContainer) return;
     
     // 生成图表数据
     const data = generateInvestmentChartData(currentStock.code, points);
@@ -44790,29 +44953,61 @@ function generateInvestmentChartData(stockCode, points) {
         return game.chartHistoryCache[cacheKey];
     }
     
-    // 生成模拟数据
+    // 固定生成100个点
+    const dataPoints = 100;
     const data = [];
-    let currentPrice = stock.price * (0.9 + Math.random() * 0.2); // 随机起始价格
+    let currentPrice = stock.price;
     
-    for (let i = 0; i < points; i++) {
-        // 模拟价格波动
-        const change = (Math.random() - 0.5) * 0.02 * currentPrice;
-        currentPrice += change;
+    // 生成模拟历史数据
+    for (let i = 0; i < dataPoints; i++) {
+        // 模拟价格波动（越早的数据波动越大）
+        const progress = i / dataPoints;
+        const volatility = 0.005 * (1 - progress * 0.5); // 随时间减少波动
+        
+        // 使用更自然的随机波动
+        const randomFactor = (Math.random() - 0.5) * 2;
+        const timeFactor = Math.sin(i * 0.1) * 0.2; // 加入时间序列影响
+        const noise = randomFactor * volatility + timeFactor * volatility * 0.3;
+        
+        currentPrice *= (1 + noise);
         
         // 确保价格合理
         currentPrice = Math.max(5, Math.min(30, currentPrice));
         
+        // 插入到数组开头，让最新价格在最后
         data.push(currentPrice);
     }
     
     // 确保最后一个点是当前价格
-    data[points - 1] = stock.price;
+    data[dataPoints - 1] = stock.price;
+    
+    // 平滑数据
+    smoothChartData(data);
     
     // 缓存数据
     game.chartHistoryCache[cacheKey] = data;
     return data;
 }
 
+function smoothChartData(data) {
+    if (data.length < 3) return data;
+    
+    const smoothed = [...data];
+    
+    for (let i = 1; i < data.length - 1; i++) {
+        // 简单的移动平均
+        smoothed[i] = (data[i-1] + data[i] + data[i+1]) / 3;
+    }
+    
+    // 保持首尾不变
+    smoothed[0] = data[0];
+    smoothed[data.length - 1] = data[data.length - 1];
+    
+    // 复制回原数组
+    for (let i = 0; i < data.length; i++) {
+        data[i] = smoothed[i];
+    }
+}
 // 生成SVG图表
 function generateInvestmentChartSVG(data, stock) {
     if (data.length === 0) return '';
@@ -44823,7 +45018,7 @@ function generateInvestmentChartSVG(data, stock) {
     const maxPrice = Math.max(...data);
     const range = maxPrice - minPrice || 1;
     
-    // 生成路径
+    // 生成更平滑的路径
     let pathData = '';
     data.forEach((price, index) => {
         const x = (index / (data.length - 1)) * width;
@@ -44832,31 +45027,65 @@ function generateInvestmentChartSVG(data, stock) {
         if (index === 0) {
             pathData += `M ${x} ${y} `;
         } else {
-            pathData += `L ${x} ${y} `;
+            // 使用三次贝塞尔曲线让路径更平滑
+            const prevX = ((index - 1) / (data.length - 1)) * width;
+            const prevY = height - ((data[index - 1] - minPrice) / range) * height;
+            const cp1x = prevX + (x - prevX) / 3;
+            const cp1y = prevY;
+            const cp2x = prevX + (x - prevX) * 2 / 3;
+            const cp2y = y;
+            
+            pathData += `C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x} ${y} `;
         }
     });
     
+    // 创建渐变填充
+    const fillColor = stock.change >= 0 ? '#10b981' : '#ef4444';
+    const gradientId = `gradient-${stock.code}`;
+    
     return `
-        <!-- 网格线 -->
         <defs>
-            <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
-                <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+            <!-- 网格线 -->
+            <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#e2e8f0" stroke-width="0.5"/>
             </pattern>
+            
+            <!-- 渐变填充 -->
+            <linearGradient id="${gradientId}" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="${fillColor}" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="${fillColor}" stop-opacity="0.1"/>
+            </linearGradient>
         </defs>
+        
+        <!-- 网格背景 -->
         <rect width="100%" height="100%" fill="url(#grid)"/>
         
+        <!-- 价格填充区域 -->
+        <path d="${pathData} L ${width} ${height} L 0 ${height} Z" 
+              fill="url(#${gradientId})" stroke="none"/>
+        
         <!-- 价格路径 -->
-        <path d="${pathData}" fill="none" stroke="${stock.change >= 0 ? '#10b981' : '#ef4444'}" 
-              stroke-width="2" stroke-linejoin="round"/>
+        <path d="${pathData}" fill="none" stroke="${fillColor}" 
+              stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
         
         <!-- 当前价格点 -->
         <circle cx="${width}" cy="${height - ((data[data.length-1] - minPrice) / range) * height}" 
-                r="4" fill="${stock.change >= 0 ? '#10b981' : '#ef4444'}" stroke="white" stroke-width="2"/>
+                r="4" fill="white" stroke="${fillColor}" stroke-width="2"/>
         
         <!-- 价格标签 -->
-        <text x="10" y="20" font-family="Arial" font-size="12" fill="#6b7280">${maxPrice.toFixed(2)}</text>
-        <text x="10" y="${height - 10}" font-family="Arial" font-size="12" fill="#6b7280">${minPrice.toFixed(2)}</text>
-        <text x="${width - 60}" y="20" font-family="Arial" font-size="12" fill="#3b82f6">当前: ${stock.price.toFixed(3)}</text>
+        <g font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#6b7280">
+            <text x="10" y="20" font-weight="600">${maxPrice.toFixed(2)}</text>
+            <text x="10" y="${height - 10}" font-weight="600">${minPrice.toFixed(2)}</text>
+        </g>
+        
+        <!-- 当前价格标签 -->
+        <g font-family="'Segoe UI', Arial, sans-serif" font-size="12">
+            <rect x="${width - 80}" y="10" width="70" height="24" rx="4" 
+                  fill="${stock.change >= 0 ? '#10b981' : '#ef4444'}" fill-opacity="0.9"/>
+            <text x="${width - 45}" y="26" text-anchor="middle" fill="white" font-weight="600">
+                ${stock.price.toFixed(2)}
+            </text>
+        </g>
     `;
 }
 
@@ -44951,9 +45180,23 @@ function updateInvestmentTotalAssets() {
         return sum + (stock.holdings * stock.price);
     }, 0);
     
+    // 计算总持仓成本
+    const totalHoldingsCost = game.stocks.reduce((sum, stock) => {
+        return sum + (stock.holdings * stock.costPrice);
+    }, 0);
+    
+    // 计算总盈亏
+    const totalProfitLoss = totalHoldingsValue - totalHoldingsCost;
+    const totalProfitLossPercent = totalHoldingsCost > 0 ? 
+        (totalProfitLoss / totalHoldingsCost * 100) : 0;
+    
     game.userData.totalAssets = game.userData.availableFunds + totalHoldingsValue;
     game.userData.holdingPercent = (totalHoldingsValue / game.userData.totalAssets * 100);
-    game.userData.todayProfit = ((game.userData.totalAssets - game.userData.initialFunds) / game.userData.initialFunds * 100);
+    game.userData.todayProfit = totalProfitLossPercent; // 改为持仓盈亏百分比
+    
+    // 保存总盈亏数据供显示使用
+    game.userData.totalProfitAmount = totalProfitLoss;
+    game.userData.totalProfitPercent = totalProfitLossPercent;
 }
 
 // 更新资产显示
@@ -44971,7 +45214,14 @@ function updateInvestmentAssetsDisplay() {
     });
     
     document.getElementById('total-holding-percent').textContent = game.userData.holdingPercent.toFixed(2) + '%';
-    document.getElementById('today-profit').textContent = `${game.userData.todayProfit >= 0 ? '+' : ''}${game.userData.todayProfit.toFixed(2)}%`;
+    
+    // 更新总盈亏
+    document.getElementById('total-profit-amount').textContent = calculateTotalProfitAmount().toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    
+    document.getElementById('total-profit-percent').textContent = calculateTotalProfitPercent() + '%';
     
     // 更新持仓表格
     document.getElementById('holdings-body').innerHTML = generateHoldingsTable();
@@ -45200,16 +45450,20 @@ function startPriceSimulation() {
         if (minutesSinceStart % 5 === 0) {
             const avgChange = game.stocks.reduce((sum, s) => sum + s.change, 0) / game.stocks.length;
             console.log(`实时模拟: 平均涨跌幅 ${avgChange.toFixed(2)}%, 市场情绪: ${currentMarketMood.toFixed(2)}`);
+      cleanInvestmentChartCache();
         }
         
     }, 60000); // 每分钟更新一次
-    
+
     // 图表更新频率更快
     game.chartUpdateTimer = setInterval(() => {
-        if (document.getElementById('investmentGameUI')?.style.display === 'block') {
-            updateInvestmentStockDisplay();
-        }
-    }, 10000);
+    if (document.getElementById('investmentGameUI')?.style.display === 'block') {
+        updateInvestmentStockDisplay();
+        
+        // 每10秒刷新一次图表
+        updateInvestmentChartFromCache(100);
+    }
+}, 10000); // 每10秒刷新一次图表
     
     logAction('股票价格实时模拟已启动', 'system');
 }
@@ -45274,6 +45528,8 @@ function initInvestmentGame() {
                 totalAssets: 1000.00,
                 holdingPercent: 0.00,
                 todayProfit: 0.00,
+                totalProfitAmount: 0.00,  // 新增：总盈亏金额
+                totalProfitPercent: 0.00,
                 tradeCount: 16,
                 initialFunds: 1000.00,
                 lastUpdateTime: Date.now()
