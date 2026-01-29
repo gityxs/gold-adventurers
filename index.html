@@ -3807,6 +3807,68 @@ select:focus {
         border: 2px solid #8f9779;
         background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     }
+.investment-game .chart-placeholder {
+    height: 300px; /* 增加高度 */
+    background: white;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: opacity 0.3s ease;
+}
+
+.investment-game .chart-placeholder svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.investment-game .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.investment-game .chart-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.investment-game .chart-title i {
+    color: #3b82f6;
+    font-size: 1rem;
+}
+
+.investment-game .price-range-info {
+    display: flex;
+    gap: 15px;
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 5px;
+}
+
+.investment-game .price-range-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.investment-game .price-range-label {
+    font-weight: 500;
+}
+
+.investment-game .price-range-value {
+    font-weight: 600;
+    color: #334155;
+}
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -3882,8 +3944,9 @@ select:focus {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.82更新日志</h4>
-            <h4>1群：864788026， 2群：902481027 有问题可以进群问（存档异常联系群管理修复）</h4>
+            <h4>1.83更新日志</h4>
+            <h4>QQ群：1群：864788026， 2群：902481027 有问题可以进群问（存档异常联系群管理修复）</h4>
+            <p>2026/01/29: 修复BUG，增强修仙系统：现在等级可以加量自动购买宝箱数量，五行之力加各种属性。 </p>
             <p>2026/01/17: 修改新版股票显示，方便操作 </p>
            <p>2026/01/15: 修改宗门功法加成，降低连击，提升攻击爆伤，总体输出提升。修复轮回装备筛选丢弃全选异常。疯狂地主田地加了锁定（以后方便一键收获）</p>
            <p>2026/01/11: 修改自动购买功法宝箱新号上限购买0.1，修复轮回神兽丢弃。</p>
@@ -5358,6 +5421,7 @@ select:focus {
         </div>
         <div style="text-align: center; margin-top: 10px;">
             <button onclick="upgradeCultivation()" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">升级</button>
+           <button onclick="toggleFiveElementsSystem()" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">五行之力</button>
         </div>
     </div>
     
@@ -5392,6 +5456,20 @@ select:focus {
     <button onclick="drawBloodline()" style="background: #FFD700; color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px;">开启宝箱</button>
     <button onclick="closeBloodlineBox()" style="background: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">关闭</button>
 </div>
+<div id="fiveElementsOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
+<div id="fiveElementsUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #8A2BE2; border-radius: 10px; z-index: 1001; width: 600px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #8A2BE2; margin: 0;">五行之力系统</h2>
+        <button onclick="toggleFiveElementsSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+    </div>
+    
+    <!-- 五行之星容器（五角星布局） -->
+    <div id="fiveElementsContainer" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center;">
+        <!-- 动态生成五行元素 -->
+    </div>
+</div>
+
+
 <!-- 伴侣探险系统UI -->
 <div id="expeditionSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
 <div id="expeditionSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #9C27B0; border-radius: 10px; z-index: 1001; width: 800px; max-height: 80vh; overflow-y: auto;">
@@ -8142,7 +8220,7 @@ select:focus {
 
 </div>
 </div>
-<div id="footer">版本号: v1.8.2</div>
+<div id="footer">版本号: v1.8.3</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -8342,6 +8420,14 @@ children: {
             notifications: [],
             lastUpdate: Date.now()
         },
+
+        fiveElements: {
+        metal: { name: "金", level: 0, cost: 1, symbol: "⭐" }, // 金
+        wood: { name: "木", level: 0, cost: 1, symbol: "🌳" }, // 木
+        water: { name: "水", level: 0, cost: 1, symbol: "💧" }, // 水
+        fire: { name: "火", level: 0, cost: 1, symbol: "🔥" }, // 火
+        earth: { name: "土", level: 0, cost: 1, symbol: "🏔️" }  // 土
+    },
 landlord: {
                 coins: 10000,
                 unlockedFields: 5,
@@ -11526,7 +11612,7 @@ const farmGPSEnhancements  = gpsEnhancementss[player.parking.level - 1] || gpsEn
 
 const gpsEnhancemenzss =  [1, 3, 6, 8, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 350, 400, 1];
 const farmGPSEnhancemezts  = gpsEnhancemenzss[player.houses.level - 1] || gpsEnhancemenzss[gpsEnhancemenzss.length - 1];
-
+    const gpsBonuqqqq = 1+player.fiveElements.metal.level * 3.00;  
     const gpsBonuss = player.level.gpsBonus * 1.00;   
    const gpsBonusssq = player.liveStream.totalEarnings * 0.00001;  
 const gpsBonusssqaa = player.landlord.stats.totalCoinsEarned * 0.0001;  
@@ -11539,7 +11625,7 @@ const farmGPSEnhancementp  = gpsEnhancementsp[player.sect.level - 1] || gpsEnhan
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.gps * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.gpsMultiplier 
         * (1 + gpsBonus) 
-        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * (1 + gpsBonusssq) * farmGPSEnhancementp * (1 + gpsBonusssqaa) * (1 + gpsBonussbb)*farmGPSEnhancemezts * marriageBonus * childBonus ;
+        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * (1 + gpsBonusssq) * farmGPSEnhancementp * (1 + gpsBonusssqaa) * (1 + gpsBonussbb)*farmGPSEnhancemezts * marriageBonus * childBonus * gpsBonuqqqq;
 }
 
 function getTotalClickValue() {
@@ -11560,7 +11646,7 @@ const farmClickMultipliersss = [1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 1
      const gpsBonuvvs = player.houses.totalIncome *  0.0001;
     const gpsBonubbs = player.parking.totalIncome *  0.0001;
     const gpsBonusss = player.level.clickBonus * 1.00; 
-
+    const gpsBonuqregg = 1+player.fiveElements.wood.level * 3.00 
 const farmClickMultiplierssa = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 1];
     const farmClickBonussa = farmClickMultiplierssa[player.liveStream.level - 1] || farmClickMultiplierssa[farmClickMultiplierssa.length - 1];
        const farmClickBonussw = player.landlord.stats.totalCoinsEarned * 0.0001;      
@@ -11570,7 +11656,7 @@ const farmClickMultiplierssa = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 3
         * player.clickMultiplier 
         * petMultiplier 
         * (1 + dungeonBonus)  // 应用副本装备总加成（含职业乘数）
-        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus * farmClickBonusss * gpsBonusss * farmClickBonussa* (1 + farmClickBonussw) * (1+gpsBonuvvs) * (1+gpsBonubbs) * marriageBonus * childBonus; 
+        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus * farmClickBonusss * gpsBonusss * farmClickBonussa* (1 + farmClickBonussw) * (1+gpsBonuvvs) * (1+gpsBonubbs) * marriageBonus * childBonus * gpsBonuqregg; 
 }
 
 
@@ -11852,7 +11938,7 @@ function onCollectionAdded(collectionType) {
 
         // 自动购买逻辑
        function checkAutoBuy() {
-    const speedMultiplier = player.autoBuySpeedBoost ? 100 : 1;
+    const speedMultiplier = player.autoBuySpeedBoost ? 600 : 1;
     player.autoBuy.forEach((enabled, index) => {
         if (enabled) {
             const type = index + 1;
@@ -11875,8 +11961,8 @@ function onCollectionAdded(collectionType) {
             ][index];
             
             if (player[costConfig.currency] >= costConfig.amount) {
-                // 计算最大可购买数量（最多100个）
-                const maxBuy = Math.min(speedMultiplier, 100);
+                // 计算最大可购买数量（最多1000个）
+                const maxBuy = Math.min(speedMultiplier, (100+player.cultivation.stage * 3));
                 const affordable = Math.floor(player[costConfig.currency] / costConfig.amount);
                 const actualBuy = Math.min(maxBuy, affordable);
                 
@@ -16663,7 +16749,7 @@ let wingHealthBonus = 0;
         (1 + player.attributes.healthBonus + player.attributes.health * 0.01) *
         classBonuses.healthMultiplier * titleBonuses.healthMultiplier *
         companionBonuses.healthMultiplier * (1 + artifactBonuses.health) * (1 + bonuses.health / 100) *  (1 + techBonuses.health) *  (1 + wingHealthBonus)  *  (1 + mountHealthBonus) *
-        (1 + runeBonuses.health) * (1 + (player.mining.gems.emerald*0.05))  * (1+player.marriage.marriageBonuses.critRateBonus)  * (1+player.children.childBonuses.critRateBonus) * (1 + equipmentStats.health) * (1 +beastBonus.health) // 应用伴侣生命加成
+        (1 + runeBonuses.health) * (1 + (player.mining.gems.emerald*0.05))  * (1+player.marriage.marriageBonuses.critRateBonus)  * (1+player.children.childBonuses.critRateBonus) * (1 + equipmentStats.health) * (1 +beastBonus.health) * (1+player.fiveElements.fire.level * 3.00) // 应用伴侣生命加成
     );
 
     // 3. 计算玩家攻击（应用伴侣攻击加成）
@@ -16693,7 +16779,7 @@ let wingHealthBonus = 0;
         classBonuses.critMultiplier * titleBonuses.critMultiplier *
         companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100) *  (1 + techBonuses.critDamage* 10)  *  (1 + mountCritDamageBonus) *
         (1 + runeBonuses.critDamage)* (1 + (player.mining.gems.amethyst*0.05)) * (1+player.marriage.marriageBonuses.critDamageBonus) *
-       (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage); // 应用伴侣爆伤加成
+       (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage) * (1+player.fiveElements.water.level * 3.00); // 应用伴侣爆伤加成
 
     // 6. 计算连击次数（应用伴侣连击加成）
     player.battle.playerMultiAttack = Math.max(1,
@@ -19944,7 +20030,7 @@ function handleMonsterDefeated() {
                 const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
                const runeBonuses = calculateRuneBonuses();
                const worldExpBonus = 1 + runeBonuses.worldExp;
-                const finalExp =  (exp+(1+player.mining.gems.ruby * 0.2)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus;
+                const finalExp =  (exp+(1+player.mining.gems.ruby * 0.2)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus *(1+player.fiveElements.earth.level * 0.2) ;
                 
                 // 添加经验
                 addPlayerExp(finalExp);
@@ -20159,7 +20245,7 @@ function backgroundHandleMonsterDefeated() {
         const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
          const runeBonuses = calculateRuneBonuses();
         const worldExpBonus = 1 + runeBonuses.worldExp;
-        const finalExp = (exp+(1+player.mining.gems.ruby * 0.2)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus;
+        const finalExp = (exp+(1+player.mining.gems.ruby * 0.2)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus *(1+player.fiveElements.earth.level * 0.2);
         
         // 添加经验
         addPlayerExp(finalExp);
@@ -26723,25 +26809,125 @@ const cultivationStages = [
     { name: "仙荒", expRequired: 850000000, multiplier: 46000 },
     { name: "神荒", expRequired: 900000000, multiplier: 48000 },
     { name: "荒古", expRequired: 1000000000, multiplier: 50000 },
-    { name: "荒祖", expRequired: 1500000000, multiplier: 52000 },
-    { name: "始荒", expRequired: 2000000000, multiplier: 54000 },
-    { name: "人道", expRequired: 2500000000, multiplier: 56000 },
-    { name: "天道", expRequired: 3000000000, multiplier: 58000 },
-    { name: "仙道", expRequired: 3500000000, multiplier: 60000 },
-    { name: "神道", expRequired: 4000000000, multiplier: 62000 },
-    { name: "帝道", expRequired: 4500000000, multiplier: 64000 },
-    { name: "轮回", expRequired: 5000000000, multiplier: 66000 },
-    { name: "时空", expRequired: 5500000000, multiplier: 68000 },
-    { name: "乾坤", expRequired: 6000000000, multiplier: 70000 },
-    { name: "规则", expRequired: 6500000000, multiplier: 72000 },
-    { name: "始祖", expRequired: 7000000000, multiplier: 74000 },
-    { name: "元神", expRequired: 7500000000, multiplier: 76000 },
-    { name: "人神", expRequired: 8000000000, multiplier: 78000 },
-    { name: "仙神", expRequired: 8500000000, multiplier: 80000 },
-    { name: "帝神", expRequired: 9000000000, multiplier: 82000 },
-    { name: "主宰", expRequired: 9500000000, multiplier: 84000 },
-    { name: "统治者", expRequired: 10000000000, multiplier: 86000 }
-
+    { name: "荒祖", expRequired: 1050000000, multiplier: 52000 },
+    { name: "始荒", expRequired: 1100000000, multiplier: 54000 },
+    { name: "人道", expRequired: 1150000000, multiplier: 56000 },
+    { name: "天道", expRequired: 1200000000, multiplier: 58000 },
+    { name: "仙道", expRequired: 1250000000, multiplier: 60000 },
+    { name: "神道", expRequired: 1300000000, multiplier: 62000 },
+    { name: "帝道", expRequired: 1350000000, multiplier: 64000 },
+    { name: "轮回", expRequired: 1400000000, multiplier: 66000 },
+    { name: "时空", expRequired: 1450000000, multiplier: 68000 },
+    { name: "乾坤", expRequired: 1500000000, multiplier: 70000 },
+    { name: "规则", expRequired: 1550000000, multiplier: 72000 },
+    { name: "始祖", expRequired: 1600000000, multiplier: 74000 },
+    { name: "元神", expRequired: 1650000000, multiplier: 76000 },
+    { name: "人神", expRequired: 1700000000, multiplier: 78000 },
+    { name: "仙神", expRequired: 1750000000, multiplier: 80000 },
+    { name: "帝神", expRequired: 1800000000, multiplier: 82000 },
+    { name: "主宰", expRequired: 1850000000, multiplier: 84000 },
+    { name: "重生", expRequired: 1900000000, multiplier: 86000 },
+    { name: "凡人★", expRequired: 1950000000, multiplier: 88000 },
+    { name: "练气★", expRequired: 2000000000, multiplier: 90000 },
+    { name: "筑基★", expRequired: 2050000000, multiplier: 92000 },
+    { name: "灵动★", expRequired: 2100000000, multiplier: 94000 },
+    { name: "灵虚★", expRequired: 2150000000, multiplier: 96000 },
+    { name: "灵寂★", expRequired: 2200000000, multiplier: 98000 },
+    { name: "开光★", expRequired: 2250000000, multiplier: 100000 },
+    { name: "融合★", expRequired: 2300000000, multiplier: 102500 },
+    { name: "聚丹★", expRequired: 2350000000, multiplier: 105000 },
+    { name: "凝丹★", expRequired: 2400000000, multiplier: 107500 },
+    { name: "韵丹★", expRequired: 2450000000, multiplier: 110000 },
+    { name: "结丹★", expRequired: 2500000000, multiplier: 112500 },
+    { name: "金丹★", expRequired: 2550000000, multiplier: 115000 },
+    { name: "聚婴★", expRequired: 2600000000, multiplier: 117500 },
+    { name: "凝婴★", expRequired: 2650000000, multiplier: 120000 },
+    { name: "结婴★", expRequired: 2700000000, multiplier: 122500 },
+    { name: "元婴★", expRequired: 2750000000, multiplier: 125000 },
+    { name: "婴变★", expRequired: 2800000000, multiplier: 127500 },
+    { name: "出窍★", expRequired: 2850000000, multiplier: 130000 },
+    { name: "元神★", expRequired: 2900000000, multiplier: 132500 },
+    { name: "分神★", expRequired: 2950000000, multiplier: 135000 },
+    { name: "化神★", expRequired: 3000000000, multiplier: 137500 },
+    { name: "洞虚★", expRequired: 3050000000, multiplier: 140000 },
+    { name: "化虚★", expRequired: 3100000000, multiplier: 142500 },
+    { name: "返虚★", expRequired: 3150000000, multiplier: 145000 },
+    { name: "合体★", expRequired: 3200000000, multiplier: 147500 },
+    { name: "合灵★", expRequired: 3250000000, multiplier: 150000 },
+    { name: "合魂★", expRequired: 3300000000, multiplier: 152500 },
+    { name: "空冥★", expRequired: 3350000000, multiplier: 155000 },
+    { name: "寂灭★", expRequired: 3400000000, multiplier: 157500 },
+    { name: "问鼎★", expRequired: 3450000000, multiplier: 160000 },
+    { name: "问道★", expRequired: 3500000000, multiplier: 162500 },
+    { name: "合道★", expRequired: 3550000000, multiplier: 165000 },
+    { name: "大帝★", expRequired: 3600000000, multiplier: 167500 },
+    { name: "半仙★", expRequired: 3650000000, multiplier: 170000 },
+    { name: "渡劫★", expRequired: 3750000000, multiplier: 172500 },
+    { name: "人仙★", expRequired: 3800000000, multiplier: 175000 },
+    { name: "真仙★", expRequired: 3850000000, multiplier: 177500 },
+    { name: "上仙★", expRequired: 3900000000, multiplier: 180000 },
+    { name: "地仙★", expRequired: 3950000000, multiplier: 182500 },
+    { name: "天仙★", expRequired: 4000000000, multiplier: 185000 },
+    { name: "玄仙★", expRequired: 4050000000, multiplier: 187500 },
+    { name: "太乙★", expRequired: 4100000000, multiplier: 190000 },
+    { name: "九天★", expRequired: 4150000000, multiplier: 192500 },
+    { name: "金仙★", expRequired: 4200000000, multiplier: 195000 },
+    { name: "仙将★", expRequired: 4250000000, multiplier: 197500 },
+    { name: "仙君★", expRequired: 4300000000, multiplier: 202500 },
+    { name: "仙王★", expRequired: 4350000000, multiplier: 205000 },
+    { name: "仙皇★", expRequired: 4400000000, multiplier: 207500 },
+    { name: "仙尊★", expRequired: 4450000000, multiplier: 210000 },
+    { name: "仙帝★", expRequired: 4500000000, multiplier: 212500 },
+    { name: "半圣★", expRequired: 4550000000, multiplier: 215000 },
+    { name: "真圣★", expRequired: 4600000000, multiplier: 217500 },
+    { name: "人圣★", expRequired: 4650000000, multiplier: 220000 },
+    { name: "地圣★", expRequired: 4700000000, multiplier: 222500 },
+    { name: "天圣★", expRequired: 4750000000, multiplier: 225000 },
+    { name: "玄圣★", expRequired: 4800000000, multiplier: 227500 },
+    { name: "大圣★", expRequired: 4850000000, multiplier: 230000 },
+    { name: "金圣★", expRequired: 4900000000, multiplier: 232500 },
+    { name: "圣将★", expRequired: 4950000000, multiplier: 235000 },
+    { name: "圣君★", expRequired: 5050000000, multiplier: 237500 },
+    { name: "圣王★", expRequired: 5100000000, multiplier: 240000 },
+    { name: "圣皇★", expRequired: 5150000000, multiplier: 242500 },
+    { name: "圣尊★", expRequired: 5200000000, multiplier: 245000 },
+    { name: "圣帝★", expRequired: 5250000000, multiplier: 247500 },
+    { name: "半神★", expRequired: 5300000000, multiplier: 250000 },
+    { name: "真神★", expRequired: 5350000000, multiplier: 252500 },
+    { name: "人神★", expRequired: 5400000000, multiplier: 255000 },
+    { name: "地神★", expRequired: 5450000000, multiplier: 257500 },
+    { name: "天神★", expRequired: 5500000000, multiplier: 260000 },
+    { name: "玄神★", expRequired: 5550000000, multiplier: 262500 },
+    { name: "金神★", expRequired: 5600000000, multiplier: 265000 },
+    { name: "神将★", expRequired: 5650000000, multiplier: 267500 },
+    { name: "神灵★", expRequired: 5700000000, multiplier: 270000 },
+    { name: "神王★", expRequired: 5750000000, multiplier: 272500 },
+    { name: "神皇★", expRequired: 5800000000, multiplier: 275000 },
+    { name: "神宗★", expRequired: 5850000000, multiplier: 277500 },
+    { name: "神尊★", expRequired: 5900000000, multiplier: 280000 },
+    { name: "神帝★", expRequired: 5950000000, multiplier: 282500 },
+    { name: "荒帝★", expRequired: 6050000000, multiplier: 285000 },
+    { name: "太荒★", expRequired: 6100000000, multiplier: 287500 },
+    { name: "仙荒★", expRequired: 6150000000, multiplier: 290000 },
+    { name: "神荒★", expRequired: 6200000000, multiplier: 292500 },
+    { name: "荒古★", expRequired: 6250000000, multiplier: 295000 },
+    { name: "荒祖★", expRequired: 6300000000, multiplier: 297500 },
+    { name: "始荒★", expRequired: 6350000000, multiplier: 302500 },
+    { name: "人道★", expRequired: 6400000000, multiplier: 305000 },
+    { name: "天道★", expRequired: 6450000000, multiplier: 307500 },
+    { name: "仙道★", expRequired: 6500000000, multiplier: 310000 },
+    { name: "神道★", expRequired: 6550000000, multiplier: 312500 },
+    { name: "帝道★", expRequired: 6600000000, multiplier: 315000 },
+    { name: "轮回★", expRequired: 6650000000, multiplier: 317500 },
+    { name: "时空★", expRequired: 6700000000, multiplier: 320000 },
+    { name: "乾坤★", expRequired: 6750000000, multiplier: 322500 },
+    { name: "规则★", expRequired: 6800000000, multiplier: 325000 },
+    { name: "始祖★", expRequired: 6850000000, multiplier: 327500 },
+    { name: "元神★", expRequired: 6900000000, multiplier: 330000 },
+    { name: "人神★", expRequired: 6950000000, multiplier: 332500 },
+    { name: "仙神★", expRequired: 7000000000, multiplier: 335000 },
+    { name: "帝神★", expRequired: 7050000000, multiplier: 337500 },
+    { name: "主宰★", expRequired: 10000000000, multiplier: 340000 }
 ];
 
 // 初始化修仙系统
@@ -26864,21 +27050,21 @@ function drawRoot() {
     const rand = Math.random();
     let tier;
     
-    if (rand < 0.8) {
-        tier = "tier1"; // 80%
-    } else if (rand < 0.95) {
-        tier = "tier2"; // 15%
-    } else if (rand < 0.998889) {
-        tier = "tier3"; // 4.8889%
-    } else if (rand < 0.999889) {
-        tier = "tier4"; // 0.1%
-    } else if (rand < 0.999989) {
-        tier = "tier5"; // 0.01%
-    } else if (rand < 0.999999) {
-        tier = "tier6"; // 0.001%
-    } else {
-        tier = "tier7"; // 0.0001%
-    }
+   if (rand < 0.85) {
+    tier = "tier1"; // 85%
+} else if (rand < 0.97) {
+    tier = "tier2"; // 12%
+} else if (rand < 0.998) {
+    tier = "tier3"; // 2.8%
+} else if (rand < 0.9998) {
+    tier = "tier4"; // 0.18%
+} else if (rand < 0.99998) {
+    tier = "tier5"; // 0.018%
+} else if (rand < 0.999998) {
+    tier = "tier6"; // 0.0018%
+} else {
+    tier = "tier7"; // 0.0002%
+}
     
     // 随机选择该品阶中的一个灵根
     const roots = rootConfig[tier];
@@ -26928,25 +27114,25 @@ function drawBloodline() {
     const rand = Math.random();
     let tier;
     
-    if (rand < 0.8) {
-        tier = "tier1"; // 80%
-    } else if (rand < 0.95) {
-        tier = "tier2"; // 15%
-    } else if (rand < 0.998889) {
-        tier = "tier3"; // 4.8889%
-    } else if (rand < 0.999889) {
-        tier = "tier4"; // 0.1%
-    } else if (rand < 0.999989) {
-        tier = "tier5"; // 0.01%
-    } else if (rand < 0.999999) {
-        tier = "tier6"; // 0.001%
-    } else if (rand < 0.9999999) {
-        tier = "tier7"; // 0.0001%
-    } else if (rand < 0.99999999) {
-        tier = "tier8"; // 0.00001%
-    } else {
-        tier = "tier9"; // 0.000001%
-    }
+  if (rand < 0.8) {
+    tier = "tier1"; // 80%
+} else if (rand < 0.96) {
+    tier = "tier2"; // 16%
+} else if (rand < 0.992) {
+    tier = "tier3"; // 3.2%
+} else if (rand < 0.9984) {
+    tier = "tier4"; // 0.64%
+} else if (rand < 0.99968) {
+    tier = "tier5"; // 0.128%
+} else if (rand < 0.999936) {
+    tier = "tier6"; // 0.0256%
+} else if (rand < 0.9999872) {
+    tier = "tier7"; // 0.00512%
+} else if (rand < 0.99999744) {
+    tier = "tier8"; // 0.001024%
+} else {
+    tier = "tier9"; // 0.000256%
+}
     
     // 随机选择该品阶中的一个血脉
     const bloodlines = bloodlineConfig[tier];
@@ -43425,92 +43611,53 @@ function initMiningData() {
             }
         }
     }
-function initInvestmentGame() {
-    if (!player.investmentGame) {
-        player.investmentGame = {
-            // 股票数据
-            stocks: [
-                {code: "zj0001", name: "鱼鱼基金", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0002", name: "闫闫基金", price: 10.00, change: 0, holdings: 0, costPrice: 0},           
-                {code: "zj0003", name: "茶茶金股", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0004", name: "麒麟企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0005", name: "云南白药", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0006", name: "黑三逢源", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0007", name: "乐途企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0008", name: "PDD企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0009", name: "空白控股", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0010", name: "慢手企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0011", name: "斗音公司", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0012", name: "阿里妈妈", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0013", name: "淘宝宝", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0014", name: "千达有限", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0015", name: "通元房产", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0016", name: "预言鱼塘", price: 10.00, change: 0, holdings: 0, costPrice: 0},            
-                {code: "zj0017", name: "新股长虹", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0018", name: "萩萩萩萩音乐", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0019", name: "盛通快递", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0020", name: "十鼎洗浴", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0021", name: "九鼎红楼", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0022", name: "星巴克", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0023", name: "大吴疆土", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0024", name: "九转仙股", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0025", name: "乌龟科技", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0026", name: "阿斯塔特", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0027", name: "万里药业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0028", name: "万里证券", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0029", name: "顶峰相见", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0030", name: "顺封快递", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0031", name: "晋商银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0032", name: "爆涨房产", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0033", name: "书法银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0034", name: "阳城银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},            
-                {code: "zj0035", name: "程羽银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0036", name: "中铁银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0037", name: "工商银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0038", name: "明港基金", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0039", name: "东坑企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0040", name: "黑龙银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0041", name: "韵达银行", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0042", name: "巴士企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0043", name: "京东公司", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0044", name: "科技企业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0045", name: "羊同药业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0046", name: "风雪药业", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0047", name: "霸王别姬", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0048", name: "一点点奶茶", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0049", name: "古茗奶茶", price: 10.00, change: 0, holdings: 0, costPrice: 0},
-                {code: "zj0050", name: "蜜雪冰城", price: 10.00, change: 0, holdings: 0, costPrice: 0}
-            ],
-            // 用户数据
-            userData: {
-                availableFunds: 1000.00,
-                totalAssets: 1000.00,
-                holdingPercent: 0.00,
-                todayProfit: 0.00,
-                totalProfitAmount: 0.00,  // 新增：总盈亏金额
-                totalProfitPercent: 0.00,
-                tradeCount: 16,
-                initialFunds: 1000.00,
-                lastUpdateTime: Date.now()
-            },
-            // 当前选中的股票
-            currentStockIndex: 0,
-            // 交易数据
-            tradeData: {
-                quantity: 0,
-                type: "buy",
-                feeRate: 0.0048
-            },
-            // 图表缓存
-            chartHistoryCache: {},
-            // 定时器
-            priceUpdateTimer: null,
-            chartUpdateTimer: null
-        };
-    }
+
+
+// 检查并修复价格合理性
+function validateStockPrices() {
+    const game = player.investmentGame;
+    if (!game) return;
+    
+    game.stocks.forEach((stock, index) => {
+        // 确保价格边界存在
+        if (!stock.priceBounds) {
+            const basePrice = stock.basePrice || stock.price || 10;
+            stock.priceBounds = {
+                min: 0.1,
+                max: 200,
+                support: Math.max(0.5, basePrice * 0.5),
+                resistance: Math.min(150, basePrice * 1.5)
+            };
+        }
+        
+        const bounds = stock.priceBounds;
+        
+        // 如果价格异常，进行修复
+        if (stock.price <= 0) {
+            // 价格不能为0或负数
+            stock.price = bounds.min;
+            console.warn(`修复股票 ${stock.code} 的异常价格: ${stock.price} -> ${bounds.min}`);
+        }
+        
+        if (stock.price < bounds.min) {
+            // 随机决定是反弹到支撑位还是保持低位
+            if (Math.random() < 0.7) {
+                stock.price = bounds.support;
+            }
+        }
+        
+        if (stock.price > bounds.max * 1.5) {
+            // 价格过高时回调
+            stock.price = bounds.resistance;
+        }
+        
+        // 更新涨跌幅
+        const basePrice = stock.basePrice || 10;
+        stock.change = ((stock.price - basePrice) / basePrice * 100);
+    });
 }
 
-// 切换模拟投资游戏界面
+// 在每次打开游戏界面时调用
 function toggleInvestmentGame() {
     if (player.battle.maxStage < 2) {
         alert("需要打怪模式达到第3层才能开启疯狂地主！");
@@ -43520,6 +43667,8 @@ function toggleInvestmentGame() {
     if (ui.style.display === 'none') {
         // 初始化游戏数据
         initInvestmentGame();
+        // 检查价格合理性
+        validateStockPrices();
         // 模拟离线期间的价格变化
         simulateOfflinePriceChanges();
         // 生成游戏界面
@@ -43553,8 +43702,21 @@ function simulateOfflinePriceChanges() {
     if (minutesDiff > 0) {
         console.log(`检测到离线 ${minutesDiff} 分钟，模拟价格变化`);
         
+        // 初始化价格边界
+        game.stocks.forEach(stock => {
+            if (!stock.priceBounds) {
+                const basePrice = stock.basePrice || 10;
+                stock.priceBounds = {
+                    min: 0.1,
+                    max: 200,
+                    support: Math.max(0.5, basePrice * 0.5),
+                    resistance: Math.min(150, basePrice * 1.5)
+                };
+            }
+        });
+        
         // 每分钟模拟一次价格变化
-        for (let i = 0; i < minutesDiff; i++) {
+        for (let i = 0; i < Math.min(minutesDiff, 1440); i++) { // 最多模拟24小时
             // 为每个股票生成变化
             game.stocks.forEach((stock, index) => {
                 if (!stock.randomParams) {
@@ -43568,6 +43730,7 @@ function simulateOfflinePriceChanges() {
                 
                 const params = stock.randomParams;
                 const basePrice = stock.basePrice || 10;
+                const bounds = stock.priceBounds;
                 
                 // 计算价格变化
                 const normalRand = (Math.random() + Math.random() + Math.random() - 1.5) * 2;
@@ -43579,20 +43742,65 @@ function simulateOfflinePriceChanges() {
                 
                 // 均值回归
                 const deviation = (stock.price - basePrice) / basePrice;
-                priceChange += -deviation * params.meanReversion * 0.005;
+                priceChange += -deviation * params.meanReversion * 0.004;
+                
+                // 边界效应
+                const distanceToMin = (stock.price - bounds.min) / bounds.min;
+                if (distanceToMin < 0.5 && priceChange < 0) {
+                    // 接近下限时，下跌幅度减小
+                    priceChange *= (1 - (0.5 - distanceToMin));
+                }
                 
                 // 应用变化
-                stock.price *= (1 + priceChange);
+                let newPrice = stock.price * (1 + priceChange);
                 
-                // 边界检查
-                if (stock.price < 1) stock.price = 1 + Math.random() * 2;
-                if (stock.price > 100) stock.price = 100 - Math.random() * 10;
+                // 边界检查（智能版）
+                if (newPrice < bounds.min) {
+                    if (Math.random() < 0.6) {
+                        // 60%概率反弹
+                        newPrice = stock.price * (1 + Math.abs(priceChange) * 0.5);
+                    } else {
+                        // 40%概率跌穿支撑，但有限度
+                        newPrice = Math.max(bounds.min * 0.8, newPrice);
+                    }
+                }
+                
+                if (newPrice > bounds.max) {
+                    if (Math.random() < 0.6) {
+                        // 60%概率回调
+                        newPrice = stock.price * (1 - Math.abs(priceChange) * 0.5);
+                    } else {
+                        // 40%概率突破阻力，但有限度
+                        newPrice = Math.min(bounds.max * 1.2, newPrice);
+                    }
+                }
+                
+                stock.price = newPrice;
                 
                 // 更新涨跌幅
                 stock.change = ((stock.price - basePrice) / basePrice * 100);
                 
                 // 记录历史
                 params.lastChange = priceChange;
+        stock.priceHistory = stock.priceHistory || [];
+    stock.priceHistory.push(stock.price);
+    if (stock.priceHistory.length > 50) {
+        stock.priceHistory.shift();
+    }
+    
+    // 同时记录到randomParams中
+    if (stock.randomParams) {
+        stock.randomParams.priceHistory = stock.randomParams.priceHistory || [];
+        stock.randomParams.priceHistory.push(stock.price);
+        if (stock.randomParams.priceHistory.length > 100) {
+            stock.randomParams.priceHistory.shift();
+        }
+    }
+    
+    // 清除缓存
+    if (stock._changeCache) {
+        delete stock._changeCache;
+    }
             });
         }
         
@@ -43601,9 +43809,41 @@ function simulateOfflinePriceChanges() {
         
         // 更新总资产
         updateInvestmentTotalAssets();
-        
-        logAction(`离线期间模拟了 ${minutesDiff} 分钟的价格变化`, 'info');
+
+        logAction(`离线期间模拟了 ${Math.min(minutesDiff, 1440)} 分钟的价格变化`, 'info');
     }
+}
+function initPriceHistory() {
+    const game = player.investmentGame;
+    if (!game) return;
+    
+    game.stocks.forEach(stock => {
+        // 如果价格历史为空，填充一些初始数据
+        if (!stock.priceHistory || stock.priceHistory.length === 0) {
+            stock.priceHistory = [stock.price];
+            
+            // 生成一些模拟历史数据
+            let currentPrice = stock.price;
+            for (let i = 0; i < 20; i++) {
+                const change = (Math.random() - 0.5) * 0.1;
+                currentPrice = Math.max(0.1, currentPrice * (1 + change));
+                stock.priceHistory.unshift(currentPrice);
+            }
+            
+            // 确保历史数据不超过50个
+            if (stock.priceHistory.length > 50) {
+                stock.priceHistory = stock.priceHistory.slice(-50);
+            }
+        }
+        
+        // 确保randomParams中也有价格历史
+        if (!stock.randomParams) {
+            stock.randomParams = {};
+        }
+        if (!stock.randomParams.priceHistory) {
+            stock.randomParams.priceHistory = [...stock.priceHistory];
+        }
+    });
 }
 function closeInvestmentGame() {
     const ui = document.getElementById('investmentGameUI');
@@ -44360,9 +44600,30 @@ function renderInvestmentGame() {
                     
 <div class="chart-container">
     <div class="chart-header">
-        <div class="chart-title">走势图（最近100个数据点）</div>
+        <div>
+            <div class="chart-title">
+                <i class="fas fa-chart-line"></i>
+                价格走势图
+            </div>
+            <div class="price-range-info">
+                <div class="price-range-item">
+                    <span class="price-range-label">最高：</span>
+                    <span class="price-range-value" id="chart-max-price">--</span>
+                </div>
+                <div class="price-range-item">
+                    <span class="price-range-label">最低：</span>
+                    <span class="price-range-value" id="chart-min-price">--</span>
+                </div>
+                <div class="price-range-item">
+                    <span class="price-range-label">波动：</span>
+                    <span class="price-range-value" id="chart-range">--</span>
+                </div>
+            </div>
+        </div>
         <div class="time-filters">
-            <div class="time-filter active" data-points="100">实时刷新</div>
+            <div class="time-filter" id="refresh-chart-btn" title="刷新图表">
+                <i class="fas fa-redo">点击刷新图表</i>
+            </div>
         </div>
     </div>
     
@@ -44517,7 +44778,23 @@ function calculateTotalProfitAmount() {
     
     return totalProfit;
 }
-
+// 更新图表价格范围显示
+function updateChartPriceRange(data) {
+    if (!data || data.length === 0) return;
+    
+    const minPrice = Math.min(...data);
+    const maxPrice = Math.max(...data);
+    const range = maxPrice - minPrice;
+    const rangePercent = (range / minPrice * 100).toFixed(2);
+    
+    const maxElement = document.getElementById('chart-max-price');
+    const minElement = document.getElementById('chart-min-price');
+    const rangeElement = document.getElementById('chart-range');
+    
+    if (maxElement) maxElement.textContent = maxPrice.toFixed(2);
+    if (minElement) minElement.textContent = minPrice.toFixed(2);
+    if (rangeElement) rangeElement.textContent = `${range.toFixed(2)} (${rangePercent}%)`;
+}
 // 计算总盈亏比例
 function calculateTotalProfitPercent() {
     const game = player.investmentGame;
@@ -44590,18 +44867,114 @@ function generateStocksList() {
     const currentStock = game.stocks[game.currentStockIndex];
     
     return game.stocks.map(stock => {
+        // 计算涨跌幅 - 选择你喜欢的计算方式
+        const recentChange = calculateRecentPriceChange(stock); // 基础版
+        
         const isSelected = stock.code === currentStock.code;
+        
+        // 更新stock.change字段保持兼容性
+        stock.change = recentChange;
+        
         return `
             <tr class="stock-item ${isSelected ? 'selected' : ''}" data-code="${stock.code}">
                 <td class="stock-code">${stock.code}</td>
                 <td>${stock.name}</td>
                 <td>${stock.price.toFixed(3)}</td>
-                <td class="${stock.change >= 0 ? 'profit-up' : 'profit-down'}">${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}%</td>
+                <td class="${recentChange >= 0 ? 'profit-up' : 'profit-down'}">
+                    ${recentChange >= 0 ? '+' : ''}${recentChange.toFixed(2)}%
+                </td>
             </tr>
         `;
     }).join('');
 }
-
+function calculateRecentPriceChange(stock) {
+    const priceHistory = stock.priceHistory || [];
+    const historyLength = priceHistory.length;
+    
+    if (historyLength < 2) {
+        // 没有足够历史数据，使用基于basePrice的涨跌幅
+        const basePrice = stock.basePrice || stock.price || 10;
+        return ((stock.price - basePrice) / basePrice) * 100;
+    }
+    
+    // 获取最近的价格
+    const currentPrice = priceHistory[historyLength - 1];
+    
+    // 计算相对于N个周期前的价格变化
+    const lookbackPeriods = Math.min(10, historyLength - 1);
+    const previousPrice = priceHistory[historyLength - 1 - lookbackPeriods];
+    
+    if (previousPrice <= 0) {
+        return 0;
+    }
+    
+    // 计算涨跌幅：(当前价格 - 之前价格) / 之前价格 * 100
+    const changePercent = ((currentPrice - previousPrice) / previousPrice) * 100;
+    
+    return changePercent;
+}
+function calculateChangeFromArray(priceArray) {
+    const length = priceArray.length;
+    const lookback = Math.min(10, length - 1);
+    
+    if (lookback < 1) return 0;
+    
+    let totalChange = 0;
+    let changes = [];
+    
+    // 收集最近的变化
+    for (let i = length - 1; i >= length - lookback; i--) {
+        if (i > 0 && priceArray[i-1] > 0) {
+            const change = ((priceArray[i] - priceArray[i-1]) / priceArray[i-1]) * 100;
+            changes.push(change);
+        }
+    }
+    
+    if (changes.length === 0) return 0;
+    
+    // 计算总变化（不是平均值）
+    totalChange = changes.reduce((sum, change) => sum + change, 0);
+    
+    // 可选：对近期变化给予更高权重
+    if (changes.length >= 3) {
+        const weights = [1.5, 1.3, 1.1, 1, 1, 1, 1, 1, 1, 1];
+        totalChange = 0;
+        for (let i = 0; i < Math.min(changes.length, 10); i++) {
+            totalChange += changes[i] * (weights[i] || 1);
+        }
+        // 归一化
+        totalChange = totalChange / changes.length;
+    }
+    
+    return totalChange;
+}
+function getRecentPriceChange(stock) {
+    // 创建缓存
+    if (!stock._changeCache) {
+        stock._changeCache = {
+            value: 0,
+            timestamp: 0,
+            cacheDuration: 60000 // 缓存1分钟
+        };
+    }
+    
+    const cache = stock._changeCache;
+    const now = Date.now();
+    
+    // 如果缓存有效且未过期，直接返回缓存值
+    if (now - cache.timestamp < cache.cacheDuration) {
+        return cache.value;
+    }
+    
+    // 重新计算涨跌幅
+    const recentChange = calculateRecentPriceChange(stock);
+    
+    // 更新缓存
+    cache.value = recentChange;
+    cache.timestamp = now;
+    
+    return recentChange;
+}
 // 初始化投资游戏事件监听
 function initInvestmentEventListeners() {
     const game = player.investmentGame;
@@ -44932,6 +45305,9 @@ function updateInvestmentChartFromCache(points = 100) {
     // 生成图表数据
     const data = generateInvestmentChartData(currentStock.code, points);
     
+    // 更新价格范围显示
+    updateChartPriceRange(data);
+    
     // 创建SVG图表
     chartContainer.innerHTML = `
         <svg width="100%" height="100%" viewBox="0 0 800 300" preserveAspectRatio="none">
@@ -44949,43 +45325,82 @@ function generateInvestmentChartData(stockCode, points) {
     if (!stock) return [];
     
     // 检查缓存
-    if (game.chartHistoryCache[cacheKey]) {
-        return game.chartHistoryCache[cacheKey];
+    if (game.chartHistoryCache[cacheKey] && 
+        Date.now() - (game.chartHistoryCache[cacheKey].timestamp || 0) < 30000) {
+        return game.chartHistoryCache[cacheKey].data;
     }
     
     // 固定生成100个点
-    const dataPoints = 100;
+    const dataPoints = Math.min(points, 100);
     const data = [];
-    let currentPrice = stock.price;
     
-    // 生成模拟历史数据
-    for (let i = 0; i < dataPoints; i++) {
-        // 模拟价格波动（越早的数据波动越大）
-        const progress = i / dataPoints;
-        const volatility = 0.005 * (1 - progress * 0.5); // 随时间减少波动
+    // 获取最近的价格历史（如果有的话）
+    const priceHistory = stock.randomParams?.priceHistory || [];
+    const historyLength = priceHistory.length;
+    
+    if (historyLength >= dataPoints) {
+        // 如果有足够的历史数据，直接使用
+        data.push(...priceHistory.slice(-dataPoints));
+    } else {
+        // 生成模拟历史数据
+        let currentPrice = stock.price;
         
-        // 使用更自然的随机波动
-        const randomFactor = (Math.random() - 0.5) * 2;
-        const timeFactor = Math.sin(i * 0.1) * 0.2; // 加入时间序列影响
-        const noise = randomFactor * volatility + timeFactor * volatility * 0.3;
+        for (let i = 0; i < dataPoints; i++) {
+            // 模拟价格波动
+            const progress = i / dataPoints;
+            const volatility = 0.005 * (1 - progress * 0.5);
+            
+            const randomFactor = (Math.random() - 0.5) * 2;
+            const timeFactor = Math.sin(i * 0.1) * 0.2;
+            const noise = randomFactor * volatility + timeFactor * volatility * 0.3;
+            
+            currentPrice *= (1 + noise);
+            
+            // 确保价格在合理范围内
+            const bounds = stock.priceBounds || { min: 0.1, max: 200 };
+            if (currentPrice < bounds.min) {
+                currentPrice = bounds.min * (1 + Math.random() * 0.1);
+            }
+            if (currentPrice > bounds.max) {
+                currentPrice = bounds.max * (0.9 + Math.random() * 0.1);
+            }
+            
+            // 确保数据足够平滑
+            if (i > 0 && Math.abs(data[i-1] - currentPrice) > data[i-1] * 0.1) {
+                currentPrice = data[i-1] * (1 + (Math.random() - 0.5) * 0.05);
+            }
+            
+            data.unshift(currentPrice); // 添加到开头
+        }
         
-        currentPrice *= (1 + noise);
-        
-        // 确保价格合理
-        currentPrice = Math.max(5, Math.min(30, currentPrice));
-        
-        // 插入到数组开头，让最新价格在最后
-        data.push(currentPrice);
+        // 确保最后一个点是当前价格
+        data[dataPoints - 1] = stock.price;
     }
-    
-    // 确保最后一个点是当前价格
-    data[dataPoints - 1] = stock.price;
     
     // 平滑数据
     smoothChartData(data);
     
-    // 缓存数据
-    game.chartHistoryCache[cacheKey] = data;
+    // 确保价格有合理的波动范围
+    const minPrice = Math.min(...data);
+    const maxPrice = Math.max(...data);
+    
+    if (maxPrice - minPrice < 0.01) {
+        // 如果价格波动太小，增加一些波动
+        const midPrice = (maxPrice + minPrice) / 2;
+        data.forEach((price, i) => {
+            const variation = (Math.sin(i * 0.2) * 0.05 + (Math.random() - 0.5) * 0.02) * midPrice;
+            data[i] = Math.max(midPrice * 0.8, Math.min(midPrice * 1.2, price + variation));
+        });
+    }
+    
+    // 缓存数据（带时间戳）
+    game.chartHistoryCache[cacheKey] = {
+        data: data,
+        timestamp: Date.now(),
+        min: Math.min(...data),
+        max: Math.max(...data)
+    };
+    
     return data;
 }
 
@@ -44993,10 +45408,15 @@ function smoothChartData(data) {
     if (data.length < 3) return data;
     
     const smoothed = [...data];
+    const smoothingFactor = 0.3; // 平滑系数
     
     for (let i = 1; i < data.length - 1; i++) {
-        // 简单的移动平均
-        smoothed[i] = (data[i-1] + data[i] + data[i+1]) / 3;
+        // 使用加权平均进行平滑
+        smoothed[i] = (
+            data[i-1] * smoothingFactor + 
+            data[i] * (1 - smoothingFactor * 2) + 
+            data[i+1] * smoothingFactor
+        );
     }
     
     // 保持首尾不变
@@ -45008,12 +45428,37 @@ function smoothChartData(data) {
         data[i] = smoothed[i];
     }
 }
+function updateInvestmentChart() {
+    const chartContainer = document.getElementById('price-chart');
+    if (!chartContainer) return;
+    
+    const game = player.investmentGame;
+    const currentStock = game.stocks[game.currentStockIndex];
+    
+    // 清除缓存，强制重新生成
+    const cacheKey = `${currentStock.code}_100`;
+    delete game.chartHistoryCache[cacheKey];
+    
+    // 更新图表
+    updateInvestmentChartFromCache(100);
+    
+    // 添加更新动画效果
+    chartContainer.style.opacity = '0.7';
+    setTimeout(() => {
+        chartContainer.style.opacity = '1';
+    }, 300);
+}
 // 生成SVG图表
 function generateInvestmentChartSVG(data, stock) {
     if (data.length === 0) return '';
     
     const width = 800;
     const height = 300;
+    const padding = { top: 20, right: 60, bottom: 20, left: 60 }; // 增加左右边距
+    
+    const availableWidth = width - padding.left - padding.right;
+    const availableHeight = height - padding.top - padding.bottom;
+    
     const minPrice = Math.min(...data);
     const maxPrice = Math.max(...data);
     const range = maxPrice - minPrice || 1;
@@ -45021,15 +45466,15 @@ function generateInvestmentChartSVG(data, stock) {
     // 生成更平滑的路径
     let pathData = '';
     data.forEach((price, index) => {
-        const x = (index / (data.length - 1)) * width;
-        const y = height - ((price - minPrice) / range) * height;
+        const x = padding.left + (index / (data.length - 1)) * availableWidth;
+        const y = padding.top + availableHeight - ((price - minPrice) / range) * availableHeight;
         
         if (index === 0) {
             pathData += `M ${x} ${y} `;
         } else {
             // 使用三次贝塞尔曲线让路径更平滑
-            const prevX = ((index - 1) / (data.length - 1)) * width;
-            const prevY = height - ((data[index - 1] - minPrice) / range) * height;
+            const prevX = padding.left + ((index - 1) / (data.length - 1)) * availableWidth;
+            const prevY = padding.top + availableHeight - ((data[index - 1] - minPrice) / range) * availableHeight;
             const cp1x = prevX + (x - prevX) / 3;
             const cp1y = prevY;
             const cp2x = prevX + (x - prevX) * 2 / 3;
@@ -45041,13 +45486,18 @@ function generateInvestmentChartSVG(data, stock) {
     
     // 创建渐变填充
     const fillColor = stock.change >= 0 ? '#10b981' : '#ef4444';
-    const gradientId = `gradient-${stock.code}`;
+    const gradientId = `gradient-${stock.code}-${Date.now()}`;
+    
+    // 计算当前价格在图表中的位置
+    const currentPrice = data[data.length - 1];
+    const currentX = width - padding.right;
+    const currentY = padding.top + availableHeight - ((currentPrice - minPrice) / range) * availableHeight;
     
     return `
         <defs>
             <!-- 网格线 -->
-            <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
-                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#e2e8f0" stroke-width="0.5"/>
+            <pattern id="grid-${gradientId}" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e2e8f0" stroke-width="0.5"/>
             </pattern>
             
             <!-- 渐变填充 -->
@@ -45058,10 +45508,15 @@ function generateInvestmentChartSVG(data, stock) {
         </defs>
         
         <!-- 网格背景 -->
-        <rect width="100%" height="100%" fill="url(#grid)"/>
+        <rect x="${padding.left}" y="${padding.top}" width="${availableWidth}" height="${availableHeight}" 
+              fill="url(#grid-${gradientId})" stroke="none"/>
+        
+        <!-- Y轴价格标签背景 -->
+        <rect x="0" y="${padding.top}" width="${padding.left}" height="${availableHeight}" 
+              fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
         
         <!-- 价格填充区域 -->
-        <path d="${pathData} L ${width} ${height} L 0 ${height} Z" 
+        <path d="${pathData} L ${width - padding.right} ${height - padding.bottom} L ${padding.left} ${height - padding.bottom} Z" 
               fill="url(#${gradientId})" stroke="none"/>
         
         <!-- 价格路径 -->
@@ -45069,22 +45524,76 @@ function generateInvestmentChartSVG(data, stock) {
               stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
         
         <!-- 当前价格点 -->
-        <circle cx="${width}" cy="${height - ((data[data.length-1] - minPrice) / range) * height}" 
+        <circle cx="${currentX}" cy="${currentY}" 
                 r="4" fill="white" stroke="${fillColor}" stroke-width="2"/>
         
-        <!-- 价格标签 -->
+        <!-- Y轴价格标签 -->
         <g font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#6b7280">
-            <text x="10" y="20" font-weight="600">${maxPrice.toFixed(2)}</text>
-            <text x="10" y="${height - 10}" font-weight="600">${minPrice.toFixed(2)}</text>
+            <!-- 最高价标签（左上角） -->
+            <rect x="5" y="${padding.top - 10}" width="${padding.left - 10}" height="20" 
+                  rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+            <text x="${padding.left / 2}" y="${padding.top + 4}" text-anchor="middle" font-weight="600" fill="#334155">
+                ${maxPrice.toFixed(2)}
+            </text>
+            
+            <!-- 最低价标签（左下角） -->
+            <rect x="5" y="${height - padding.bottom - 10}" width="${padding.left - 10}" height="20" 
+                  rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+            <text x="${padding.left / 2}" y="${height - padding.bottom + 4}" text-anchor="middle" font-weight="600" fill="#334155">
+                ${minPrice.toFixed(2)}
+            </text>
+            
+            <!-- 中间价格标签（可选） -->
+            <rect x="5" y="${height / 2 - 10}" width="${padding.left - 10}" height="20" 
+                  rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+            <text x="${padding.left / 2}" y="${height / 2 + 4}" text-anchor="middle" font-weight="600" fill="#334155">
+                ${((maxPrice + minPrice) / 2).toFixed(2)}
+            </text>
         </g>
         
         <!-- 当前价格标签 -->
         <g font-family="'Segoe UI', Arial, sans-serif" font-size="12">
-            <rect x="${width - 80}" y="10" width="70" height="24" rx="4" 
+            <rect x="${width - padding.right - 80}" y="${padding.top + 10}" width="70" height="24" rx="4" 
                   fill="${stock.change >= 0 ? '#10b981' : '#ef4444'}" fill-opacity="0.9"/>
-            <text x="${width - 45}" y="26" text-anchor="middle" fill="white" font-weight="600">
+            <text x="${width - padding.right - 45}" y="${padding.top + 26}" text-anchor="middle" fill="white" font-weight="600">
                 ${stock.price.toFixed(2)}
             </text>
+        </g>
+        
+        <!-- X轴网格线 -->
+        <g stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2">
+            <line x1="${padding.left}" y1="${padding.top + availableHeight * 0.25}" 
+                  x2="${width - padding.right}" y2="${padding.top + availableHeight * 0.25}"/>
+            <line x1="${padding.left}" y1="${padding.top + availableHeight * 0.5}" 
+                  x2="${width - padding.right}" y2="${padding.top + availableHeight * 0.5}"/>
+            <line x1="${padding.left}" y1="${padding.top + availableHeight * 0.75}" 
+                  x2="${width - padding.right}" y2="${padding.top + availableHeight * 0.75}"/>
+        </g>
+        
+        <!-- Y轴网格线 -->
+        <g stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2">
+            <line x1="${padding.left + availableWidth * 0.25}" y1="${padding.top}" 
+                  x2="${padding.left + availableWidth * 0.25}" y2="${height - padding.bottom}"/>
+            <line x1="${padding.left + availableWidth * 0.5}" y1="${padding.top}" 
+                  x2="${padding.left + availableWidth * 0.5}" y2="${height - padding.bottom}"/>
+            <line x1="${padding.left + availableWidth * 0.75}" y1="${padding.top}" 
+                  x2="${padding.left + availableWidth * 0.75}" y2="${height - padding.bottom}"/>
+        </g>
+        
+        <!-- 坐标轴 -->
+        <g stroke="#cbd5e1" stroke-width="2">
+            <!-- Y轴 -->
+            <line x1="${padding.left}" y1="${padding.top}" 
+                  x2="${padding.left}" y2="${height - padding.bottom}"/>
+            <!-- X轴 -->
+            <line x1="${padding.left}" y1="${height - padding.bottom}" 
+                  x2="${width - padding.right}" y2="${height - padding.bottom}"/>
+        </g>
+        
+        <!-- 时间标签（可选） -->
+        <g font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle">
+            <text x="${padding.left}" y="${height - 5}">过去</text>
+            <text x="${width - padding.right}" y="${height - 5}">现在</text>
         </g>
     `;
 }
@@ -45263,6 +45772,14 @@ function startPriceSimulation() {
             if (!stock.basePrice) {
                 stock.basePrice = stock.price || 10;
             }
+            if (!stock.priceBounds) {
+                stock.priceBounds = {
+                    min: 0.1,   // 最低0.1元
+                    max: 200,   // 最高200元
+                    support: Math.max(0.5, stock.basePrice * 0.5), // 支撑位
+                    resistance: Math.min(150, stock.basePrice * 1.5) // 阻力位
+                };
+            }
         });
     }
     
@@ -45284,7 +45801,7 @@ function startPriceSimulation() {
     
     let lastMarketEventTime = Date.now();
     let currentMarketMood = 0;
-    let lastUpdateTime = Date.now(); // 记录上一次更新时间
+    let lastUpdateTime = Date.now();
     
     // 每分钟更新一次价格
     game.priceUpdateTimer = setInterval(() => {
@@ -45315,14 +45832,14 @@ function startPriceSimulation() {
             }
         }
         
-        // 为所有股票更新价格
+        // 为所有股票更新价格（修复版）
         game.stocks.forEach((stock, index) => {
             const params = stock.randomParams;
-            const basePrice = stock.basePrice;
+            const bounds = stock.priceBounds;
             
             // 计算自上次更新以来的时间间隔
             const timeDiff = updateTime - lastUpdateTime;
-            const timeFactor = Math.min(timeDiff / 60000, 5); // 最多考虑5分钟的影响
+            const timeFactor = Math.min(timeDiff / 60000, 5);
             
             // 1. 基础趋势
             const trendChange = params.trendStrength * timeFactor;
@@ -45331,8 +45848,22 @@ function startPriceSimulation() {
             const timeBasedRand = Math.sin(updateTime * 0.0001 + index) * 0.5 + 0.5;
             const normalRand = (Math.random() + Math.random() + Math.random() - 1.5) * 2;
             
-            // 3. 波动率
+            // 3. 波动率（动态调整）
             let currentVolatility = params.baseVolatility;
+            
+            // 价格越低，波动率相对越高
+            if (stock.price < 5) {
+                currentVolatility *= 1.5;
+            }
+            // 价格接近边界时降低波动率
+            if (stock.price < bounds.min * 1.5) {
+                currentVolatility *= 0.7;
+            }
+            if (stock.price > bounds.max * 0.8) {
+                currentVolatility *= 0.7;
+            }
+            
+            // 时间波动
             currentVolatility *= (0.9 + Math.sin(updateTime * 0.00005) * 0.2);
             
             // 4. 随机事件
@@ -45341,14 +45872,35 @@ function startPriceSimulation() {
                 currentVolatility *= eventMagnitude;
             }
             
-            // 5. 均值回归
+            // 5. 均值回归（更智能的版本）
+            const basePrice = stock.basePrice || 10;
             const deviationFromMean = (stock.price - basePrice) / basePrice;
-            const reversionForce = -deviationFromMean * params.meanReversion * 0.005 * timeFactor;
+            let reversionForce = -deviationFromMean * params.meanReversion * 0.003 * timeFactor;
             
-            // 6. 动量效应
-            const momentumEffect = params.lastChange * 0.2;
+            // 6. 边界效应（更平滑的处理）
+            const distanceToMin = (stock.price - bounds.min) / bounds.min;
+            const distanceToMax = (bounds.max - stock.price) / bounds.max;
             
-            // 7. 计算价格变化
+            // 接近下限时增加反弹概率
+            if (distanceToMin < 0.5) {
+                const bounceProbability = 1 - (distanceToMin * 2);
+                if (Math.random() < bounceProbability * 0.1) {
+                    reversionForce += Math.abs(reversionForce) * 0.5;
+                }
+            }
+            
+            // 接近上限时增加回调概率
+            if (distanceToMax < 0.5) {
+                const pullbackProbability = 1 - (distanceToMax * 2);
+                if (Math.random() < pullbackProbability * 0.1) {
+                    reversionForce -= Math.abs(reversionForce) * 0.5;
+                }
+            }
+            
+            // 7. 动量效应
+            const momentumEffect = params.lastChange * 0.15;
+            
+            // 8. 计算价格变化
             const modelIndex = minutesSinceStart % 6;
             let priceChange = 0;
             
@@ -45384,7 +45936,7 @@ function startPriceSimulation() {
             
             // 板块效应
             if (index % 3 === minutesSinceStart % 3) {
-                priceChange += (Math.random() - 0.5) * 0.003;
+                priceChange += (Math.random() - 0.5) * 0.002;
             }
             
             // 记录历史变化
@@ -45394,24 +45946,47 @@ function startPriceSimulation() {
                 params.priceHistory.shift();
             }
             
-            // 应用价格变化
+            // 应用价格变化（修复版）
             const oldPrice = stock.price;
-            stock.price *= (1 + priceChange);
             
-            // 确保价格合理性
-            if (stock.price < 1) {
-                stock.price = 1 + Math.random() * 2;
-            } else if (stock.price > 100) {
-                stock.price = 100 - Math.random() * 10;
+            // 计算新价格
+            let newPrice = stock.price * (1 + priceChange);
+            
+            // 更智能的边界处理
+            if (newPrice < bounds.min) {
+                // 在极低价时，随机决定是反弹还是继续下跌
+                if (Math.random() < 0.7) {
+                    // 70%概率反弹
+                    const bounceStrength = 0.05 + Math.random() * 0.1;
+                    newPrice = stock.price * (1 + bounceStrength);
+                } else {
+                    // 30%概率继续下跌，但有最小限制
+                    newPrice = Math.max(bounds.min * 0.9, newPrice);
+                }
+            }
+            
+            if (newPrice > bounds.max) {
+                // 在极高价时，随机决定是回调还是继续上涨
+                if (Math.random() < 0.7) {
+                    // 70%概率回调
+                    const pullbackStrength = 0.05 + Math.random() * 0.1;
+                    newPrice = stock.price * (1 - pullbackStrength);
+                } else {
+                    // 30%概率继续上涨，但有最大限制
+                    newPrice = Math.min(bounds.max * 1.1, newPrice);
+                }
             }
             
             // 防止价格停滞
-            if (Math.abs(stock.price - oldPrice) < 0.001) {
-                const microChange = (Math.random() - 0.5) * 0.01;
-                stock.price *= (1 + microChange);
+            if (Math.abs(newPrice - oldPrice) < 0.001) {
+                const microChange = (Math.random() - 0.5) * 0.005;
+                newPrice = stock.price * (1 + microChange);
             }
             
-            // 更新涨跌幅
+            // 更新价格
+            stock.price = newPrice;
+            
+            // 更新涨跌幅（基于basePrice）
             stock.change = ((stock.price - basePrice) / basePrice * 100);
             
             // 记录最高/最低价
@@ -45421,11 +45996,35 @@ function startPriceSimulation() {
             if (!stock.lowestPrice || stock.price < stock.lowestPrice) {
                 stock.lowestPrice = stock.price;
             }
+            
+            // 动态调整阻力位和支撑位
+            const avgPrice = params.priceHistory.length > 0 ?
+                params.priceHistory.reduce((a, b) => a + b, 0) / params.priceHistory.length :
+                basePrice;
+            
+            stock.priceBounds.support = Math.max(bounds.min, avgPrice * 0.7);
+            stock.priceBounds.resistance = Math.min(bounds.max, avgPrice * 1.3);
+              params.priceHistory = params.priceHistory || [];
+params.priceHistory.push(stock.price);
+
+// 只保留最近50个价格记录
+if (params.priceHistory.length > 50) {
+    params.priceHistory.shift();
+}
+
+// 同时更新stock对象的价格历史
+stock.priceHistory = stock.priceHistory || [];
+stock.priceHistory.push(stock.price);
+if (stock.priceHistory.length > 50) {
+    stock.priceHistory.shift();
+}
+if (stock._changeCache) {
+    delete stock._changeCache;
+}
         });
-        
-        // 更新最后更新时间（不要用这个控制离线模拟）
+
+        // 更新最后更新时间
         lastUpdateTime = updateTime;
-        game.lastRealUpdateTime = updateTime; // 只用于记录，不用于离线计算
         
         // 如果游戏界面打开，更新显示
         if (document.getElementById('investmentGameUI')?.style.display === 'block') {
@@ -45438,35 +46037,27 @@ function startPriceSimulation() {
             if (timeElement) {
                 timeElement.textContent = `股价更新时间：${new Date().toLocaleTimeString()}`;
             }
-            
-            if (document.getElementById('market-mood')) {
-                const moodText = currentMarketMood > 0.3 ? '📈 看涨' : 
-                                currentMarketMood < -0.3 ? '📉 看跌' : '➡️ 震荡';
-                document.getElementById('market-mood').textContent = `市场情绪: ${moodText}`;
-            }
         }
         
         // 每5分钟记录一次日志
         if (minutesSinceStart % 5 === 0) {
             const avgChange = game.stocks.reduce((sum, s) => sum + s.change, 0) / game.stocks.length;
             console.log(`实时模拟: 平均涨跌幅 ${avgChange.toFixed(2)}%, 市场情绪: ${currentMarketMood.toFixed(2)}`);
-      cleanInvestmentChartCache();
         }
         
     }, 60000); // 每分钟更新一次
-
+    
     // 图表更新频率更快
     game.chartUpdateTimer = setInterval(() => {
-    if (document.getElementById('investmentGameUI')?.style.display === 'block') {
-        updateInvestmentStockDisplay();
-        
-        // 每10秒刷新一次图表
-        updateInvestmentChartFromCache(100);
-    }
-}, 10000); // 每10秒刷新一次图表
+        if (document.getElementById('investmentGameUI')?.style.display === 'block') {
+            updateInvestmentStockDisplay();
+            updateInvestmentChartFromCache(100);
+        }
+    }, 10000);
     
     logAction('股票价格实时模拟已启动', 'system');
 }
+
 // 初始化投资游戏
 function initInvestmentGame() {
     if (!player.investmentGame) {
@@ -45522,29 +46113,220 @@ function initInvestmentGame() {
                 {code: "zj0048", name: "一点点奶茶", price: 10.00, change: 0, holdings: 0, costPrice: 0},
                 {code: "zj0049", name: "古茗奶茶", price: 10.00, change: 0, holdings: 0, costPrice: 0},
                 {code: "zj0050", name: "蜜雪冰城", price: 10.00, change: 0, holdings: 0, costPrice: 0}
-            ],
+            ].map(stock => {
+                // 为每只股票添加完整的初始数据
+                const basePrice = stock.price;
+                return {
+                    ...stock,
+                    basePrice: basePrice,  // 基础价格
+                    priceBounds: {         // 价格边界
+                        min: 0.1,          // 最低价 0.1元
+                        max: 200,          // 最高价 200元
+                        support: Math.max(0.5, basePrice * 0.5),   // 支撑位
+                        resistance: Math.min(150, basePrice * 1.5) // 阻力位
+                    },
+                    randomParams: null,    // 随机参数（运行时生成）
+                    highestPrice: basePrice, // 历史最高价
+                    lowestPrice: basePrice,  // 历史最低价
+                    priceHistory: [],        // 价格历史记录
+                    tradeHistory: []         // 交易历史记录
+                };
+            }),
+            
+            // 用户数据
             userData: {
-                availableFunds: 1000.00,
-                totalAssets: 1000.00,
-                holdingPercent: 0.00,
-                todayProfit: 0.00,
-                totalProfitAmount: 0.00,  // 新增：总盈亏金额
-                totalProfitPercent: 0.00,
-                tradeCount: 16,
-                initialFunds: 1000.00,
-                lastUpdateTime: Date.now()
+                availableFunds: 1000.00,        // 可用资金
+                totalAssets: 1000.00,           // 总资产
+                holdingPercent: 0.00,           // 持仓占比
+                todayProfit: 0.00,              // 今日盈亏比例
+                totalProfitAmount: 0.00,        // 总盈亏金额
+                totalProfitPercent: 0.00,       // 总盈亏比例
+                tradeCount: 16,                 // 交易次数
+                initialFunds: 1000.00,          // 初始资金
+                lastUpdateTime: Date.now(),     // 最后更新时间
+                totalTrades: 0,                 // 总交易次数
+                totalVolume: 0,                 // 总交易量
+                totalCommission: 0              // 总手续费
             },
+            
+            // 当前选中的股票
             currentStockIndex: 0,
+            
+            // 交易数据
             tradeData: {
-                quantity: 0,
-                type: "buy",
-                feeRate: 0.0048
+                quantity: 0,                    // 交易数量
+                type: "buy",                    // 交易类型：buy/sell
+                feeRate: 0.0048                 // 手续费率 0.48%
             },
+            
+            // 图表缓存
             chartHistoryCache: {},
+            
+            // 定时器
             priceUpdateTimer: null,
-            chartUpdateTimer: null
+            chartUpdateTimer: null,
+            
+            // 离线数据
+            offlineData: {
+                lastOfflineUpdate: Date.now()
+            },
+            
+            // 游戏状态
+            gameState: {
+                startTime: Date.now(),          // 游戏开始时间
+                marketMood: 0,                  // 市场情绪 (-1 到 1)
+                lastMarketEvent: Date.now(),    // 上次市场事件时间
+                totalMarketEvents: 0,           // 总市场事件数
+                marketTrend: 0                  // 市场趋势
+            },
+            
+            // 统计信息
+            statistics: {
+                totalBuyOrders: 0,              // 总买入订单
+                totalSellOrders: 0,             // 总卖出订单
+                totalProfit: 0,                 // 总盈利
+                totalLoss: 0,                   // 总亏损
+                bestTrade: {                    // 最佳交易
+                    stockCode: "",
+                    profit: 0,
+                    date: 0
+                },
+                worstTrade: {                   // 最差交易
+                    stockCode: "",
+                    loss: 0,
+                    date: 0
+                }
+            },
+            
+            // 设置选项
+            settings: {
+                autoUpdateChart: true,          // 自动更新图表
+                showPriceBounds: true,          // 显示价格边界
+                notificationEnabled: true,      // 启用通知
+                chartPoints: 100,               // 图表点数
+                refreshInterval: 10000          // 刷新间隔（毫秒）
+            }
         };
+    } else {
+        // 确保现有股票数据的完整性
+        player.investmentGame.stocks = player.investmentGame.stocks.map(stock => {
+            // 如果股票数据不完整，补充缺失字段
+            const basePrice = stock.basePrice || stock.price || 10;
+            
+            return {
+                code: stock.code || `zj${(player.investmentGame.stocks.indexOf(stock) + 1).toString().padStart(4, '0')}`,
+                name: stock.name || "未知股票",
+                price: stock.price || 10.00,
+                change: stock.change || 0,
+                holdings: stock.holdings || 0,
+                costPrice: stock.costPrice || 0,
+                basePrice: basePrice,
+                priceBounds: stock.priceBounds || {
+                    min: 0.1,
+                    max: 200,
+                    support: Math.max(0.5, basePrice * 0.5),
+                    resistance: Math.min(150, basePrice * 1.5)
+                },
+                randomParams: stock.randomParams || null,
+                highestPrice: stock.highestPrice || basePrice,
+                lowestPrice: stock.lowestPrice || basePrice,
+                priceHistory: stock.priceHistory || [],
+                tradeHistory: stock.tradeHistory || []
+            };
+        });
+        
+        // 确保用户数据完整性
+        player.investmentGame.userData = {
+            availableFunds: player.investmentGame.userData?.availableFunds || 1000.00,
+            totalAssets: player.investmentGame.userData?.totalAssets || 1000.00,
+            holdingPercent: player.investmentGame.userData?.holdingPercent || 0.00,
+            todayProfit: player.investmentGame.userData?.todayProfit || 0.00,
+            totalProfitAmount: player.investmentGame.userData?.totalProfitAmount || 0.00,
+            totalProfitPercent: player.investmentGame.userData?.totalProfitPercent || 0.00,
+            tradeCount: player.investmentGame.userData?.tradeCount || 16,
+            initialFunds: player.investmentGame.userData?.initialFunds || 1000.00,
+            lastUpdateTime: player.investmentGame.userData?.lastUpdateTime || Date.now(),
+            totalTrades: player.investmentGame.userData?.totalTrades || 0,
+            totalVolume: player.investmentGame.userData?.totalVolume || 0,
+            totalCommission: player.investmentGame.userData?.totalCommission || 0
+        };
+        
+        // 确保交易数据完整性
+        player.investmentGame.tradeData = {
+            quantity: player.investmentGame.tradeData?.quantity || 0,
+            type: player.investmentGame.tradeData?.type || "buy",
+            feeRate: player.investmentGame.tradeData?.feeRate || 0.0048
+        };
+        
+        // 确保游戏状态完整性
+        player.investmentGame.gameState = {
+            startTime: player.investmentGame.gameState?.startTime || Date.now(),
+            marketMood: player.investmentGame.gameState?.marketMood || 0,
+            lastMarketEvent: player.investmentGame.gameState?.lastMarketEvent || Date.now(),
+            totalMarketEvents: player.investmentGame.gameState?.totalMarketEvents || 0,
+            marketTrend: player.investmentGame.gameState?.marketTrend || 0
+        };
+        
+        // 确保统计信息完整性
+        player.investmentGame.statistics = {
+            totalBuyOrders: player.investmentGame.statistics?.totalBuyOrders || 0,
+            totalSellOrders: player.investmentGame.statistics?.totalSellOrders || 0,
+            totalProfit: player.investmentGame.statistics?.totalProfit || 0,
+            totalLoss: player.investmentGame.statistics?.totalLoss || 0,
+            bestTrade: player.investmentGame.statistics?.bestTrade || {
+                stockCode: "",
+                profit: 0,
+                date: 0
+            },
+            worstTrade: player.investmentGame.statistics?.worstTrade || {
+                stockCode: "",
+                loss: 0,
+                date: 0
+            }
+        };
+        
+        // 确保设置选项完整性
+        player.investmentGame.settings = {
+            autoUpdateChart: player.investmentGame.settings?.autoUpdateChart !== false,
+            showPriceBounds: player.investmentGame.settings?.showPriceBounds !== false,
+            notificationEnabled: player.investmentGame.settings?.notificationEnabled !== false,
+            chartPoints: player.investmentGame.settings?.chartPoints || 100,
+            refreshInterval: player.investmentGame.settings?.refreshInterval || 10000
+        };
+        
+        // 确保其他数据完整性
+        player.investmentGame.chartHistoryCache = player.investmentGame.chartHistoryCache || {};
+        player.investmentGame.offlineData = player.investmentGame.offlineData || {
+            lastOfflineUpdate: Date.now()
+        };
+        
+        // 初始化价格边界
+        player.investmentGame.stocks.forEach(stock => {
+            if (!stock.priceBounds) {
+                const basePrice = stock.basePrice || stock.price || 10;
+                stock.priceBounds = {
+                    min: 0.1,
+                    max: 200,
+                    support: Math.max(0.5, basePrice * 0.5),
+                    resistance: Math.min(150, basePrice * 1.5)
+                };
+            }
+            
+            // 确保价格在合理范围内
+            if (stock.price < stock.priceBounds.min) {
+                stock.price = stock.priceBounds.min * (1 + Math.random() * 0.5);
+            }
+            
+            if (stock.price > stock.priceBounds.max) {
+                stock.price = stock.priceBounds.max * (0.8 + Math.random() * 0.2);
+            }
+        });
     }
+    
+    // 验证价格合理性
+    validateStockPrices();
+    initPriceHistory();
+    logAction('投资游戏数据初始化完成', 'system');
 }
 
 // 在游戏加载时初始化投资游戏数据
@@ -46176,7 +46958,7 @@ function updateMarriageUI() {
             <div>配偶: ${marriage.spouseName}</div>
             <div>性别: ${marriage.spouseGender === 'male' ? '男性' : '女性'}</div>
             <div>结婚日期: ${new Date(marriage.marriageDate).toLocaleDateString()}</div>
-            <div>恩爱等级: ${marriage.loveLevel}</div>
+            <div>恩爱等级: ${marriage.loveLevel}${marriage.loveLevel >= 999 ? " (MAX)" : ""}</div>
             <div>恩爱经验: ${marriage.loveExp}/${getLoveExpRequired(marriage.loveLevel)}</div>
             <div>赠送礼物次数: ${marriage.totalGifts}</div>
             <div>共度时光次数: ${marriage.totalTimeSpent}</div>
@@ -46237,6 +47019,12 @@ function proposeMarriage() {
 function giveGiftToSpouse() {
     if (!player.marriage.isMarried) return;
     
+    // 检查等级上限
+    if (player.marriage.loveLevel >= 999) {
+        logAction("恩爱等级已达上限(999级)，无法继续提升", "info");
+        return;
+    }
+    
     if (player.investmentGame.userData.availableFunds < 1314) {
         logAction("资金不足！需要1314元", "error");
         return;
@@ -46263,6 +47051,12 @@ function giveGiftToSpouse() {
 function spendTimeWithSpouse() {
     if (!player.marriage.isMarried) return;
     
+    // 检查等级上限
+    if (player.marriage.loveLevel >= 999) {
+        logAction("恩爱等级已达上限(999级)，无法继续提升", "info");
+        return;
+    }
+    
     if (player.investmentGame.userData.availableFunds < 99999) {
         logAction("资金不足！需要99999元", "error");
         return;
@@ -46284,13 +47078,21 @@ function spendTimeWithSpouse() {
     updateDisplay();
     saveGame();
 }
+
 // 全国旅行
 function spendAimeWithSpouse() {
+    if (!player.marriage.isMarried) return;
+    
+    // 检查等级上限
+    if (player.marriage.loveLevel >= 999) {
+        logAction("恩爱等级已达上限(999级)，无法继续提升", "info");
+        return;
+    }
+    
     if (player.marriage.loveLevel < 20) {
         alert("需要结婚等级20级！");
         return;
     }
-    if (!player.marriage.isMarried) return;
     
     if (player.investmentGame.userData.availableFunds < 5201314) {
         logAction("资金不足！需要5201314元", "error");
@@ -46354,20 +47156,45 @@ function renameSpouse() {
         }
     });
 }
+
 // 恩爱等级系统
 function getLoveExpRequired(level) {
-    return level * 1000; // 每级需要1000经验
+    // 999级为上限
+    if (level >= 999) {
+        return "∞";
+    }
+    
+    // 动态经验公式：每级需求逐渐增加
+    const baseExp = 1000;
+    const growthFactor = 1.1; // 每级增加10%需求
+    return Math.floor(baseExp * Math.pow(growthFactor, level - 1));
 }
 
 function checkLoveLevelUp() {
     const marriage = player.marriage;
-    const expRequired = getLoveExpRequired(marriage.loveLevel);
     
-    while (marriage.loveExp >= expRequired) {
+    // 检查是否已达上限
+    if (marriage.loveLevel >= 999) {
+        marriage.loveExp = 0;
+        return;
+    }
+    
+    let expRequired = getLoveExpRequired(marriage.loveLevel);
+    
+    while (marriage.loveExp >= expRequired && marriage.loveLevel < 9999) {
         marriage.loveExp -= expRequired;
         marriage.loveLevel++;
         
         logAction(`恩爱等级提升到 ${marriage.loveLevel} 级！`, "success");
+        
+        // 达到上限时提示
+        if (marriage.loveLevel >= 999) {
+            logAction("恭喜！恩爱等级已达上限(999级)！", "success");
+            marriage.loveExp = 0;
+            break;
+        }
+        
+        expRequired = getLoveExpRequired(marriage.loveLevel);
         
         // 更新婚姻加成
         updateMarriageBonuses();
@@ -46383,23 +47210,23 @@ function updateMarriageBonuses() {
     marriage.marriageBonuses = {
         gpsMultiplier: 1 + (level * 1), // 每级增加100% GPS
         clickMultiplier: 1 + (level * 0.5), // 每级增加50% 点击
-        critRateBonus: 1+(level * 1), // 每级增加100% 生命
-        critDamageBonus: 1+(level * 0.5) // 每级增加50% 爆伤
-        
+        critRateBonus: 1 + (level * 1), // 每级增加100% 生命
+        critDamageBonus: 1 + (level * 0.5) // 每级增加50% 爆伤
     };
     
     // 更新UI显示
     const bonusInfo = document.getElementById('bonusInfo');
     if (bonusInfo) {
+        const isMaxLevel = level >= 999;
         bonusInfo.innerHTML = `
-            <div>GPS加成: +${((marriage.marriageBonuses.gpsMultiplier - 1) * 100).toFixed(1)}%</div>
-            <div>点击加成: +${((marriage.marriageBonuses.clickMultiplier - 1) * 100).toFixed(1)}%</div>
-            <div>生命: +${(marriage.marriageBonuses.critRateBonus * 100).toFixed(2)}%</div>
-            <div>爆伤: +${(marriage.marriageBonuses.critDamageBonus * 100).toFixed(1)}%</div>
-           
+            <div>GPS加成: +${((marriage.marriageBonuses.gpsMultiplier - 1) * 100).toFixed(1)}%${isMaxLevel ? " (MAX)" : ""}</div>
+            <div>点击加成: +${((marriage.marriageBonuses.clickMultiplier - 1) * 100).toFixed(1)}%${isMaxLevel ? " (MAX)" : ""}</div>
+            <div>生命: +${(marriage.marriageBonuses.critRateBonus * 100).toFixed(2)}%${isMaxLevel ? " (MAX)" : ""}</div>
+            <div>爆伤: +${(marriage.marriageBonuses.critDamageBonus * 100).toFixed(1)}%${isMaxLevel ? " (MAX)" : ""}</div>
         `;
     }
 }
+
 function addMarriageSystemToGameLoop() {
     setInterval(() => {
         if (player.marriage && player.marriage.isMarried) {
@@ -46409,15 +47236,18 @@ function addMarriageSystemToGameLoop() {
             const minutesPassed = Math.floor((now - lastUpdate) / (1000 * 60));
             
             if (minutesPassed > 0) {
-                player.marriage.loveExp += minutesPassed * player.marriage.loveLevel;
-                player.marriage.lastUpdate = now;
-                
-                // 检查是否升级
-                checkLoveLevelUp();
-                
-                // 每10分钟保存一次
-                if (minutesPassed % 10 === 0) {
-                    saveGame();
+                // 达到上限时不增加经验
+                if (player.marriage.loveLevel < 999) {
+                    player.marriage.loveExp += minutesPassed * player.marriage.loveLevel;
+                    player.marriage.lastUpdate = now;
+                    
+                    // 检查是否升级
+                    checkLoveLevelUp();
+                    
+                    // 每10分钟保存一次
+                    if (minutesPassed % 10 === 0) {
+                        saveGame();
+                    }
                 }
             }
             
@@ -46426,6 +47256,7 @@ function addMarriageSystemToGameLoop() {
         }
     }, 60000); // 每分钟检查一次
 }
+
 function initMarriageSystem() {
     if (!player.marriage) {
         player.marriage = {
@@ -46451,6 +47282,11 @@ function initMarriageSystem() {
     
     // 启动婚姻系统循环
     addMarriageSystemToGameLoop();
+}
+
+// 新增：检查是否达到等级上限的函数
+function isMaxLoveLevel() {
+    return player.marriage && player.marriage.isMarried && player.marriage.loveLevel >= 999;
 }
 // 宝物配置
 const treasureConfig = [
@@ -52401,7 +53237,89 @@ function upgradeShareLevelMax() {
         upgradeShareLevel(maxLevels);
     }
 }
+function toggleFiveElementsSystem() {
+    const overlay = document.getElementById("fiveElementsOverlay");
+    const ui = document.getElementById("fiveElementsUI");
+    if (ui.style.display === "block") {
+        ui.style.display = "none";
+        overlay.style.display = "none";
+    } else {
+        ui.style.display = "block";
+        overlay.style.display = "block";
+        updateFiveElementsUI(); // 更新界面显示
+    }
+}
 
+// 更新五行之力界面
+function updateFiveElementsUI() {
+    const container = document.getElementById("fiveElementsContainer");
+    container.innerHTML = ""; // 清空容器
+    
+    // 五行元素配置（升级消耗的符文）
+    const elementConfig = {
+        metal: { soulType: "gold", soulName: "金符文" }, // 金消耗
+        wood: { soulType: "wood", soulName: "木符文" },   // 木消耗
+        water: { soulType: "water", soulName: "水符文" }, // 水消耗
+        fire: { soulType: "fire", soulName: "火符文" },  // 火消耗
+        earth: { soulType: "earth", soulName: "土符文" }  // 土消耗
+    };
+    
+    // 遍历五行元素生成界面
+    Object.entries(player.fiveElements).forEach(([key, element]) => {
+        const config = elementConfig[key];
+        const soulCount = player.runes.materials[config.soulType] || 0; // 当前拥有
+        const cost = element.cost; // 当前升级成本
+        
+        const elementDiv = document.createElement("div");
+        elementDiv.style.padding = "15px";
+        elementDiv.style.background = "#333";
+        elementDiv.style.borderRadius = "8px";
+        elementDiv.innerHTML = `
+            <div style="font-size: 24px; margin-bottom: 5px;">${element.symbol}</div>
+            <div style="font-weight: bold; color: #8A2BE2;">${element.name}之力</div>
+            <div>等级: ${element.level}</div>
+            <div>升级消耗: ${cost}个${config.soulName}</div>
+            <div>当前拥有: ${soulCount}个</div>
+            <button onclick="upgradeFiveElement('${key}')" 
+                    style="margin-top: 10px; padding: 5px 10px; background: ${soulCount >= cost ? '#4CAF50' : '#f44336'}; color: white; border: none; border-radius: 3px; cursor: ${soulCount >= cost ? 'pointer' : 'not-allowed'};" 
+                    ${soulCount < cost ? "disabled" : ""}>
+                升级
+            </button>
+        `;
+        container.appendChild(elementDiv);
+    });
+}
+
+// 升级五行元素函数
+function upgradeFiveElement(elementKey) {
+    const element = player.fiveElements[elementKey];
+    const config = {
+        metal: { soulType: "gold", soulName: "金符文" },
+        wood: { soulType: "wood", soulName: "木符文" },
+        water: { soulType: "water", soulName: "水符文" },
+        fire: { soulType: "fire", soulName: "火符文" },
+        earth: { soulType: "earth", soulName: "土符文" }
+    }[elementKey];
+    
+    const soulType = config.soulType;
+    const cost = element.cost;
+    
+    if ((player.runes.materials[soulType] || 0) >= cost) {
+        // 消耗灵魂
+        player.runes.materials[soulType] -= cost;
+        // 升级元素
+        element.level++;
+        // 增加下次升级成本（例如每次翻倍）
+        element.cost = Math.floor(element.cost * 2
+);
+        
+        logAction(`${element.name}之力提升至 ${element.level} 级！`, "success");
+        updateFiveElementsUI(); // 更新界面
+        updateItemDisplay();    // 更新道具显示
+    } else {
+        logAction(`${config.soulName}不足！需要 ${cost} 个`, "error");
+    }
+}
 
 
 
@@ -53195,5 +54113,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
+
 </body>
 </html>
