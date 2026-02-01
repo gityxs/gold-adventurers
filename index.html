@@ -3914,7 +3914,7 @@ select:focus {
             <p>23. 神器锻造系统：500转开启，探索获取材料，6个品质，集齐套装加格外属性。</p>
            <p>24. 星域探索：300转开启，获取新材料，商店：（发票可以兑换4材料，星尘：杂货铺或者藏宝图。暗物质：购买宝石。宇宙晶体：升级神器。神器碎片：锻造神器）</p>
            <p>25. 宝石系统：800转开启，提供大量属性</p>
-           <p>26. 修仙系统：500转开启，开启经验获得条件是：获得一次灵根和血脉。材料都是杂货铺购买</p>
+           <p>26. 修仙系统：500转开启，开启经验获得条件是：获得一次灵根和血脉。材料都是杂货铺购买，法宝：世界地图掉落材料合成</p>
            <p>27. 宝图系统：600转开启，随机奖励或者打BOSS。</p>
            <p>28. 夜店系统：600转开启，店铺每级加点击伤害，特殊事件消耗50-200星币，提升30-60分钟金币或者经验收益，获得的星币可以兑换藏宝图，或者打世界地图怪物消耗（后续会加其他材料兑换）。</p>
            <p>29. 玩家等级：50转开启，每级1倍属性飞升轮回有加成，世界地图怪物打怪升级。每100级可以飞升一次，10次飞升1转轮回，翅膀：打怪次元2以上掉落，坐骑：打怪次元3以上掉落，符文：打怪次元4以上掉落，轮回装备：次元2以上掉落（掉落极低，掉落的装备可以分享给别人），轮回神兽：次元2以上掉落可以分享给别人</p>
@@ -3944,8 +3944,9 @@ select:focus {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.83更新日志</h4>
+            <h4>1.84更新日志</h4>
             <h4>QQ群：1群：864788026， 2群：902481027 有问题可以进群问（存档异常联系群管理修复）</h4>
+            <p>2026/02/01: 增强修仙系统：法宝：世界地图打怪掉落材料合成（群里兑换码可以领取：落宝金钱）。 </p>
             <p>2026/01/29: 修复BUG，增强修仙系统：现在等级可以加量自动购买宝箱数量，五行之力加各种属性。 </p>
             <p>2026/01/17: 修改新版股票显示，方便操作 </p>
            <p>2026/01/15: 修改宗门功法加成，降低连击，提升攻击爆伤，总体输出提升。修复轮回装备筛选丢弃全选异常。疯狂地主田地加了锁定（以后方便一键收获）</p>
@@ -5375,99 +5376,242 @@ select:focus {
     </div>
 </div>
 <!-- 修仙系统UI -->
-<div id="cultivationSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
-<div id="cultivationSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #4CAF50; border-radius: 10px; z-index: 1001; width: 600px; max-height: 80vh; overflow-y: auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="color: #4CAF50; margin: 0;">修仙系统</h2>
-        <button onclick="toggleCultivationSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+<div id="cultivationSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;"></div>
+<div id="cultivationSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(145deg, #1a1a2e, #16213e); color: white; padding: 25px; border: 2px solid #4CAF50; border-radius: 15px; z-index: 1001; width: 750px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #4CAF50;">
+        <h2 style="color: #4CAF50; margin: 0; text-shadow: 0 2px 5px rgba(0,0,0,0.3); font-size: 28px;">⚡ 修仙系统</h2>
+        <button onclick="toggleCultivationSystem()" style="background: linear-gradient(45deg, #f44336, #c62828); color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s;">关闭</button>
     </div>
-    <div style="display: flex; gap: 10px; margin: 15px 0;">
-    <!-- 当前灵根信息 -->
-    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
-        <h3 style="color: #4CAF50; margin-top: 0;">当前灵根</h3>
-        <div id="currentRootInfo" style="text-align: center; padding: 0px;">
-            尚未检测灵根
+    
+    <!-- 顶部状态栏 -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;">
+        <!-- 当前灵根信息 -->
+        <div style="background: linear-gradient(145deg, #2c2c54, #40407a); padding: 20px; border-radius: 12px; border-left: 5px solid #FFD700; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+            <h3 style="color: #FFD700; margin-top: 0; margin-bottom: 15px; font-size: 18px; display: flex; align-items: center;">
+                <span style="margin-right: 8px;">🌿</span> 当前灵根
+            </h3>
+            <div id="currentRootInfo" style="text-align: center; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 15px;">
+                尚未检测灵根
+            </div>
+            <button onclick="openRootBox()" style="width: 100%; background: linear-gradient(45deg, #2196F3, #0D47A1); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s;">开启灵根宝箱</button>
         </div>
-        <div style="text-align: center; margin-top: 10px;">
-            <button onclick="openRootBox()" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">开启灵根宝箱</button>
+        
+        <!-- 当前血脉信息 -->
+        <div style="background: linear-gradient(145deg, #2c2c54, #40407a); padding: 20px; border-radius: 12px; border-left: 5px solid #d4af37; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+            <h3 style="color: #d4af37; margin-top: 0; margin-bottom: 15px; font-size: 18px; display: flex; align-items: center;">
+                <span style="margin-right: 8px;">💉</span> 当前血脉
+            </h3>
+            <div id="currentBloodlineInfo" style="text-align: center; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 15px;">
+                尚未检测血脉
+            </div>
+            <button onclick="openBloodlineBox()" style="width: 100%; background: linear-gradient(45deg, #9C27B0, #6A1B9A); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s;">开启血脉宝箱</button>
         </div>
-    </div>
-    <div style="margin-top: 0px; background: #333; padding: 15px; border-radius: 8px;">
-        <h3 style="color: #4CAF50; margin-top: 0;">当前血脉</h3>
-        <div id="currentBloodlineInfo" style="text-align: center; padding: 0px;">
-            尚未检测血脉
-        </div>
-        <div style="text-align: center; margin-top: 10px;">
-            <button onclick="openBloodlineBox()" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">开启血脉宝箱</button>
-        </div>
-    </div>
-    <!-- 修仙阶段 -->
-    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
-        <h3 style="color: #4CAF50; margin-top: 0;">修仙阶段</h3>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <div>境界等级: <span id="stageLevel">0</span></div>
-        </div>
-        <div style="margin-bottom: 10px;">
-            <div>当前经验: <span id="currentExp">0</span></div>
-            <div>升级所需: <span id="nextExp">1000</span></div>
-      <div style="margin-top: 10px; background: #444; padding: 10px; border-radius: 5px;">
-        <p>经验计算公式: (灵根加成 × 血脉加成) × 转生次数</p>
-        <p>当前每分钟经验: <span id="currentExpPerMinute">0</span></p>
-    </div>
-</div>
-        </div>
-        <div class="exp-bar">
-            <div id="expProgress" class="exp-progress" style="width: 0%;"></div>
-        </div>
-        <div style="text-align: center; margin-top: 10px;">
-            <button onclick="upgradeCultivation()" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">升级</button>
-           <button onclick="toggleFiveElementsSystem()" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">五行之力</button>
+        
+        <!-- 装备法宝 -->
+        <div style="background: linear-gradient(145deg, #2c2c54, #40407a); padding: 20px; border-radius: 12px; border-left: 5px solid #FF5722; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+            <h3 style="color: #FF5722; margin-top: 0; margin-bottom: 15px; font-size: 18px; display: flex; align-items: center;">
+                <span style="margin-right: 8px;">🔮</span> 装备法宝
+            </h3>
+            <div id="currentMagicToolInfo" style="text-align: center; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 15px;">
+                无装备法宝
+            </div>
+            <button onclick="openMagicToolSystem()" style="width: 100%; background: linear-gradient(45deg, #FF5722, #D84315); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s;">法宝系统</button>
         </div>
     </div>
     
-    <!-- 阶段加成 -->
-    <div style="background: #333; padding: 15px; border-radius: 8px;">
-        <h3 style="color: #4CAF50; margin-top: 0;">阶段加成</h3>
-        <div id="stageBonusInfo">
-            当前加成: 点击收益+GPS × <span id="gpsMultiplier">1</span>
+    <!-- 修仙阶段和经验 -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px;">
+        <!-- 修仙阶段 -->
+        <div style="background: linear-gradient(145deg, #2c2c54, #40407a); padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+            <h3 style="color: #4CAF50; margin-top: 0; margin-bottom: 20px; font-size: 20px; display: flex; align-items: center;">
+                <span style="margin-right: 10px;">📈</span> 修仙阶段
+            </h3>
+            
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px;">
+                    <span>境界等级: <span id="stageLevel" style="color: #FFD700; font-weight: bold;">0</span></span>
+                    <span>境界: <span id="currentStageqa" style="color: #4CAF50; font-weight: bold;">凡人</span></span>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>当前经验: <span id="currentExp" style="color: #4CAF50; font-weight: bold;">0</span></span>
+                        <span>升级所需: <span id="nextExp" style="color: #FFD700; font-weight: bold;">1000</span></span>
+                    </div>
+                    
+                    <!-- 经验条 -->
+                    <div style="background: #444; height: 20px; border-radius: 10px; overflow: hidden; margin-bottom: 10px;">
+                        <div id="expProgress" style="height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); width: 0%; transition: width 0.5s ease; border-radius: 10px;"></div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(76, 175, 80, 0.1); padding: 15px; border-radius: 8px;">
+                    <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">经验计算公式</div>
+                    <div style="font-size: 16px; color: #4CAF50;">(灵根加成 × 血脉加成 × 法宝加成) × 转生次数</div>
+                    <div style="margin-top: 10px; font-size: 16px;">当前每分钟经验: <span id="currentExpPerMinute" style="color: #FFD700; font-weight: bold;">0</span></div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="upgradeCultivation()" style="flex: 1; background: linear-gradient(45deg, #4CAF50, #2E7D32); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: all 0.3s;">突破境界</button>
+                <button onclick="toggleFiveElementsSystem()" style="flex: 1; background: linear-gradient(45deg, #8A2BE2, #6A1B9A); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: all 0.3s;">五行之力</button>
+            </div>
+        </div>
+        
+        <!-- 阶段加成和法宝加成 -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            <!-- 阶段加成 -->
+            <div style="background: linear-gradient(145deg, #2c2c54, #40407a); padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                <h3 style="color: #4CAF50; margin-top: 0; margin-bottom: 15px; font-size: 18px; display: flex; align-items: center;">
+                    <span style="margin-right: 8px;">✨</span> 阶段加成
+                </h3>
+                <div id="stageBonusInfo" style="text-align: center; padding: 15px; background: rgba(76, 175, 80, 0.2); border-radius: 8px;">
+                    <div style="font-size: 24px; color: #FFD700; font-weight: bold; margin-bottom: 5px;">
+                        <span id="gpsMultiplier">1</span>倍
+                    </div>
+                    <div style="font-size: 14px; color: #aaa;">点击收益+GPS</div>
+                </div>
+            </div>
+            
+            <!-- 法宝加成 -->
+            <div style="background: linear-gradient(145deg, #2c2c54, #40407a); padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                <h3 style="color: #FF5722; margin-top: 0; margin-bottom: 15px; font-size: 18px; display: flex; align-items: center;">
+                    <span style="margin-right: 8px;">⚡</span> 法宝加成
+                </h3>
+                <div id="magicToolBonusInfo" style="text-align: center; padding: 15px; background: rgba(255, 87, 34, 0.2); border-radius: 8px;">
+                    <div style="font-size: 24px; color: #FFD700; font-weight: bold; margin-bottom: 5px;">
+                        <span id="magicToolMultiplier">1</span>倍
+                    </div>
+                    <div style="font-size: 14px; color: #aaa;">修炼速度加成</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- 灵根宝箱UI -->
-<div id="rootBoxOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
-<div id="rootBoxUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #FFD700; border-radius: 10px; z-index: 1001; width: 400px; text-align: center;">
-    <h3 style="color: #FFD700; margin-top: 0;">灵根宝箱</h3>
-    <p>消耗1个灵根检测器开启宝箱</p>
-    <div id="rootResult" style="margin: 20px 0; font-size: 18px; min-height: 60px; display: flex; align-items: center; justify-content: center;">
-        点击开启获取灵根
-    </div>
-    <button onclick="drawRoot()" style="background: #FFD700; color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px;">开启宝箱</button>
-    <button onclick="closeRootBox()" style="background: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">关闭</button>
-</div>
-<!-- 血脉宝箱UI -->
-<div id="bloodlineBoxOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
-<div id="bloodlineBoxUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #FFD700; border-radius: 10px; z-index: 1001; width: 400px; text-align: center;">
-    <h3 style="color: #FFD700; margin-top: 0;">血脉宝箱</h3>
-    <p>消耗1个血脉检测剂开启宝箱</p>
-    <div id="bloodlineResult" style="margin: 20px 0; font-size: 18px; min-height: 60px; display: flex; align-items: center; justify-content: center;">
-        点击开启获取血脉
-    </div>
-    <button onclick="drawBloodline()" style="background: #FFD700; color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px;">开启宝箱</button>
-    <button onclick="closeBloodlineBox()" style="background: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">关闭</button>
-</div>
-<div id="fiveElementsOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
-<div id="fiveElementsUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #8A2BE2; border-radius: 10px; z-index: 1001; width: 600px; max-height: 80vh; overflow-y: auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="color: #8A2BE2; margin: 0;">五行之力系统</h2>
-        <button onclick="toggleFiveElementsSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>
+<!-- 法宝系统UI -->
+<div id="magicToolOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;"></div>
+<div id="magicToolUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(145deg, #1a1a2e, #16213e); color: white; padding: 25px; border: 2px solid #FF5722; border-radius: 15px; z-index: 1001; width: 800px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #FF5722;">
+        <h2 style="color: #FF5722; margin: 0; text-shadow: 0 2px 5px rgba(0,0,0,0.3); font-size: 28px;">🔮 法宝系统</h2>
+        <button onclick="closeMagicToolSystem()" style="background: linear-gradient(45deg, #f44336, #c62828); color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">关闭</button>
     </div>
     
-    <!-- 五行之星容器（五角星布局） -->
-    <div id="fiveElementsContainer" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center;">
+    <!-- 当前装备的法宝 -->
+    <div style="background: linear-gradient(145deg, #2c2c54, #40407a); padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+        <h3 style="color: #FF5722; margin-top: 0; margin-bottom: 15px; font-size: 20px;">当前装备</h3>
+        <div id="equippedMagicTool" style="text-align: center; padding: 20px; background: rgba(255, 87, 34, 0.1); border-radius: 8px; min-height: 80px; display: flex; align-items: center; justify-content: center;">
+            未装备任何法宝
+        </div>
+    </div>
+    
+    <div style="background: linear-gradient(145deg, #2c2c54, #40407a); padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+        <h3 style="color: #FF5722; margin-top: 0; margin-bottom: 20px; font-size: 20px;">法宝合成</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px;">
+            <!-- 左侧：材料选择和合成配方 -->
+            <div>
+                <!-- 材料选择 -->
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <h4 style="color: #FFD700; margin-top: 0; margin-bottom: 15px;">材料选择</h4>
+                    <div id="magicMaterials" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-height: 300px; overflow-y: auto; padding: 5px;">
+                        <!-- 材料会通过JS动态生成 -->
+                    </div>
+                    <div style="margin-top: 10px; color: #aaa; font-size: 12px;">
+                        点击材料查看可合成的法宝
+                    </div>
+                </div>
+                
+                <!-- 合成配方显示 -->
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
+                    <h4 style="color: #4CAF50; margin-top: 0; margin-bottom: 15px;">合成配方</h4>
+                    <div id="craftingRecipes" style="min-height: 150px; max-height: 200px; overflow-y: auto; padding: 10px;">
+                        <div style="text-align: center; color: #666; padding: 20px;">
+                            选择材料查看合成配方
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧：合成预览和操作 -->
+            <div style="display: flex; flex-direction: column;">
+                <!-- 合成结果预览 -->
+                <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 8px; margin-bottom: 15px; flex: 1;">
+                    <h4 style="color: #4CAF50; margin-top: 0; margin-bottom: 15px;">合成预览</h4>
+                    <div id="magicToolPreview" style="text-align: center; padding: 20px; background: rgba(76, 175, 80, 0.1); border-radius: 8px; min-height: 200px; display: flex; align-items: center; justify-content: center; flex: 1;">
+                        <div style="width: 100%;">
+                            <div style="font-size: 48px; margin-bottom: 20px;">🔮</div>
+                            <div style="font-size: 18px; color: #aaa; margin-bottom: 10px;">法宝合成工坊</div>
+                            <div style="color: #666; font-size: 14px;">选择左侧材料开始合成</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 操作区域 -->
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
+                    <div id="selectedMaterialsInfo" style="color: #aaa; margin-bottom: 10px; min-height: 40px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 5px;">
+                        未选择材料
+                    </div>
+                    <button onclick="craftSelectedTool()" id="craftButton" style="width: 100%; background: #555; color: #888; border: none; padding: 12px; border-radius: 8px; cursor: not-allowed; font-weight: bold; font-size: 16px;" disabled>请选择要合成的法宝</button>
+                    <button onclick="clearSelection()" style="width: 100%; background: #666; color: white; border: none; padding: 8px; border-radius: 8px; cursor: pointer; margin-top: 10px;">清空选择</button>
+                </div>
+            </div>
+        </div>
+           
+          
+
+    
+    <!-- 已拥有的法宝 -->
+    <div style="background: linear-gradient(145deg, #2c2c54, #40407a); padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+        <h3 style="color: #FF5722; margin-top: 0; margin-bottom: 15px; font-size: 20px;">我的法宝库</h3>
+        <div id="magicToolInventory" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; max-height: 300px; overflow-y: auto; padding: 10px;">
+            <!-- 法宝会通过JS动态生成 -->
+        </div>
+    </div>
+</div>
+</div>
+<!-- 灵根宝箱UI (保持原有样式，稍作美化) -->
+<div id="rootBoxOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;"></div>
+<div id="rootBoxUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(145deg, #1a1a2e, #16213e); color: white; padding: 30px; border: 2px solid #FFD700; border-radius: 15px; z-index: 1001; width: 450px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <h3 style="color: #FFD700; margin-top: 0; margin-bottom: 15px; font-size: 24px;">🌿 灵根宝箱</h3>
+    <p style="color: #aaa; margin-bottom: 20px;">消耗1个灵根检测器开启宝箱</p>
+    <div id="rootResult" style="margin: 25px 0; padding: 20px; background: rgba(255, 215, 0, 0.1); border-radius: 10px; font-size: 20px; min-height: 80px; display: flex; align-items: center; justify-content: center;">
+        点击开启获取灵根
+    </div>
+    <div style="display: flex; gap: 10px; justify-content: center;">
+        <button onclick="drawRoot()" style="background: linear-gradient(45deg, #FFD700, #FFA000); color: black; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;">开启宝箱</button>
+        <button onclick="closeRootBox()" style="background: linear-gradient(45deg, #f44336, #c62828); color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: bold;">关闭</button>
+    </div>
+</div>
+
+<!-- 血脉宝箱UI (保持原有样式，稍作美化) -->
+<div id="bloodlineBoxOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;"></div>
+<div id="bloodlineBoxUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(145deg, #1a1a2e, #16213e); color: white; padding: 30px; border: 2px solid #d4af37; border-radius: 15px; z-index: 1001; width: 450px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <h3 style="color: #d4af37; margin-top: 0; margin-bottom: 15px; font-size: 24px;">💉 血脉宝箱</h3>
+    <p style="color: #aaa; margin-bottom: 20px;">消耗1个血脉检测剂开启宝箱</p>
+    <div id="bloodlineResult" style="margin: 25px 0; padding: 20px; background: rgba(212, 175, 55, 0.1); border-radius: 10px; font-size: 20px; min-height: 80px; display: flex; align-items: center; justify-content: center;">
+        点击开启获取血脉
+    </div>
+    <div style="display: flex; gap: 10px; justify-content: center;">
+        <button onclick="drawBloodline()" style="background: linear-gradient(45deg, #d4af37, #b8941f); color: black; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;">开启宝箱</button>
+        <button onclick="closeBloodlineBox()" style="background: linear-gradient(45deg, #f44336, #c62828); color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: bold;">关闭</button>
+    </div>
+</div>
+
+<!-- 五行之力UI (保持原有样式，稍作美化) -->
+<div id="fiveElementsOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;"></div>
+<div id="fiveElementsUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #8A2BE2; border-radius: 10px; z-index: 1001; width: 600px; max-height: 80vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #8A2BE2;">
+        <h2 style="color: #8A2BE2; margin: 0; text-shadow: 0 2px 5px rgba(0,0,0,0.3); font-size: 28px;">🌀 五行之力系统</h2>
+        <button onclick="toggleFiveElementsSystem()" style="background: linear-gradient(45deg, #f44336, #c62828); color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">关闭</button>
+    </div>
+    
+    <!-- 五行之星容器 -->
+    <div id="fiveElementsContainer" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center;">
         <!-- 动态生成五行元素 -->
     </div>
 </div>
+
 
 
 <!-- 伴侣探险系统UI -->
@@ -8220,7 +8364,7 @@ select:focus {
 
 </div>
 </div>
-<div id="footer">版本号: v1.8.3</div>
+<div id="footer">版本号: v1.8.4</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -8283,6 +8427,34 @@ reincarnationEquipment: {
             foundCount: Array(10).fill(0), // 每个宝物找到的数量
             soldCount: Array(10).fill(0) // 每个宝物出售的数量
         }, 
+       magicTools: {
+            equipped: null, // 当前装备的法宝ID
+            inventory: [],  // 拥有的法宝ID列表
+            materials: {},  // 拥有的材料数量
+            // 初始化基础材料
+            materials: {
+                spirit_stone: 0,
+                wood: 0,
+                water_crystal: 0,
+                fire_crystal: 0,
+                metal_crystal: 0,
+                wood_crystal: 0,
+                earth_crystal: 0,
+                yin_stone: 0,
+                yang_stone: 0,
+                immortal_feather: 0,
+                celestial_silk: 0,
+                chaos_fragment: 0,
+                space_stone: 0,
+                time_sand: 0,
+                destiny_fragment: 0,
+                star_dust: 0,
+                law_crystal: 0,
+                eternity_core: 0,
+                time_essence: 0,
+                space_crystal: 0
+            }
+        },
 children: {
             isPregnant: false,
             pregnancyStart: 0,
@@ -11021,6 +11193,20 @@ function confirmActivationCode() {
                 logAction("您已拥有此称号", "info");
             }
             break;
+case "LINGQI1":
+    // 检查是否已拥有该法宝（避免重复获取）
+    if (player.magicTools.inventory.includes("moonlight_pearlu")) {
+        logAction("已拥有落宝金钱法宝，无法重复兑换", "error");
+        success = false;
+    } else {
+        // 添加法宝到库存
+        player.magicTools.inventory.push("moonlight_pearlu");
+        rewardMsg = "获得法宝：落宝金钱";
+        success = true;
+        // 可选：自动装备该法宝
+        player.magicTools.equipped = "moonlight_pearlu";
+    }
+    break;
         case "补偿宝石损失":
         player.items.divineGem = (player.items.divineGem || 0) + 1;
         rewardMsg = "获得1个神级宝石";
@@ -20035,6 +20221,7 @@ function handleMonsterDefeated() {
                 // 添加经验
                 addPlayerExp(finalExp);
                 addBattleLog(`获得${finalExp.toLocaleString()}经验！`);
+              dropMagicMaterial();
                dropRuneMaterials();
                dropMount();
                 dropWing();
@@ -20249,6 +20436,7 @@ function backgroundHandleMonsterDefeated() {
         
         // 添加经验
         addPlayerExp(finalExp);
+       dropMagicMaterial();
         dropRuneMaterials();
         dropMount();
         dropWing();
@@ -26961,6 +27149,7 @@ function toggleCultivationSystem() {
         ui.style.display = 'block';
         overlay.style.display = 'block';
         updateCultivationUI();
+       updateMagicToolUI();
     }
 }
 
@@ -26978,7 +27167,7 @@ function updateCultivationUI() {
     
     // 更新当前阶段显示
     document.getElementById('currentStageq').textContent = stage.name;
-    
+      document.getElementById('currentStageqa').textContent = stage.name;
     // 其他更新逻辑保持不变...
     const nextStage = cultivationStages[stageIndex + 1];
     
@@ -27182,21 +27371,69 @@ function upgradeCultivation() {
     updateDisplay();
     updateCultivationUI(); // 如果修仙界面打开，也需要更新
 }
-
+// 更新修仙经验UI显示
+function updateCultivationExpUI(expGain, equippedBonus, collectionBonus) {
+    const expPerMinuteElement = document.getElementById('currentExpPerMinute');
+    const collectionInfoElement = document.getElementById('magicToolCollectionInfo');
+    
+    if (expPerMinuteElement) {
+        expPerMinuteElement.textContent = expGain.toFixed(2);
+    }
+    
+    // 更新法宝收集加成显示
+    if (collectionInfoElement) {
+        const ownedCount = player.magicTools?.inventory?.length || 0;
+        collectionInfoElement.innerHTML = `
+            <div style="color: #4CAF50; font-size: 14px;">
+                法宝收集加成: ${ownedCount}个法宝 × 1% = <span style="color: #FFD700; font-weight: bold;">${((collectionBonus - 1) * 100).toFixed(1)}%</span>
+            </div>
+            <div style="color: #aaa; font-size: 12px; margin-top: 5px;">
+                装备加成: ${equippedBonus.toFixed(1)}倍，总加成: ${(equippedBonus * collectionBonus).toFixed(2)}倍
+            </div>
+        `;
+    }
+    
+    // 更新法宝加成显示
+    const magicToolBonusElement = document.getElementById('magicToolMultiplier');
+    if (magicToolBonusElement) {
+        const totalBonus = equippedBonus * collectionBonus;
+        magicToolBonusElement.textContent = totalBonus.toFixed(2);
+    }
+}
 // 每分钟获取经验
 function gainCultivationExp() {
    if (!player.cultivation || !player.cultivation.root || !player.cultivation.bloodline) return;
     
-    // 每分钟经验 = 转生次数 × 灵根加成
-   const rootBonus = player.cultivation.root.bonus;
+    // 计算基础加成
+    const rootBonus = player.cultivation.root.bonus;
     const bloodlineBonus = player.cultivation.bloodline.bonus;
-    const expGain = (rootBonus * bloodlineBonus) * player.reincarnationCount;
+    
+    // 计算装备法宝加成（如果有装备法宝）
+    let equippedToolBonus = 1;
+    if (player.magicTools && player.magicTools.equipped) {
+        const tool = magicToolConfig.tools.find(t => t.id === player.magicTools.equipped);
+        if (tool) {
+            equippedToolBonus = tool.bonus;
+        }
+    }
+    
+    // 计算法宝收集加成：每拥有一个法宝额外提升1%
+    let collectionBonus = 1;
+    if (player.magicTools && player.magicTools.inventory) {
+        const ownedToolsCount = player.magicTools.inventory.length;
+        collectionBonus = 1 + (ownedToolsCount * 0.01); // 每拥有一个法宝+1%
+    }
+    
+    // 每分钟经验 = 转生次数 × 灵根加成 × 血脉加成 × 装备法宝加成 × 收集加成
+    const expGain = (rootBonus * bloodlineBonus * equippedToolBonus * collectionBonus) * player.reincarnationCount;
     player.cultivation.exp += expGain/60;
+    
     const stage = cultivationStages[player.cultivation.stage];
     player.cultivation.bonus = stage.multiplier;
-    // 更新UI
- document.getElementById('currentExpPerMinute').textContent = expGain.toFixed(2);
-  updateDisplay();
+    
+    // 更新UI显示
+    updateCultivationExpUI(expGain, equippedToolBonus, collectionBonus);
+    updateDisplay();
     updateCultivationUI();
 }
 // 计算离线经验
@@ -27204,7 +27441,22 @@ function calculateOfflineCultivationExp(offlineMinutes) {
     if (!player.cultivation || !player.cultivation.root || !player.cultivation.bloodline) return;
      const rootBonus = player.cultivation.root.bonus;
     const bloodlineBonus = player.cultivation.bloodline.bonus;
-    const expGain = offlineMinutes * (rootBonus * bloodlineBonus) * player.reincarnationCount;
+    // 计算装备法宝加成（如果有装备法宝）
+    let equippedToolBonus = 1;
+    if (player.magicTools && player.magicTools.equipped) {
+        const tool = magicToolConfig.tools.find(t => t.id === player.magicTools.equipped);
+        if (tool) {
+            equippedToolBonus = tool.bonus;
+        }
+    }
+    
+    // 计算法宝收集加成：每拥有一个法宝额外提升2%
+    let collectionBonus = 1;
+    if (player.magicTools && player.magicTools.inventory) {
+        const ownedToolsCount = player.magicTools.inventory.length;
+        collectionBonus = 1 + (ownedToolsCount * 0.01); // 每拥有一个法宝+1%
+    }
+    const expGain = (rootBonus * bloodlineBonus * equippedToolBonus * collectionBonus) * player.reincarnationCount;
     player.cultivation.exp += expGain;
     
     logAction(`离线获得${expGain}点修仙经验`, "info");
@@ -53320,7 +53572,2463 @@ function upgradeFiveElement(elementKey) {
         logAction(`${config.soulName}不足！需要 ${cost} 个`, "error");
     }
 }
+// 法宝系统配置
+const magicToolConfig = {
+    // 法宝列表（每个法宝只能获得一个）
+    tools: [
+        // 初级法宝
+     { 
+            id: "spirit_gathering_flagaa", 
+            name: "青锋剑", 
+            description: "<p>后天灵宝<p><p>描述：百炼精钢掺杂微量“青铁”铸成，剑身泛着黯淡的青光，凡俗眼中的神兵利器，但在修士眼中仅是勉强能灌注灵力、比凡铁锋利些的制式兵器。易卷刃，遇强大护体罡气或坚硬妖兽甲壳难以破防。<p><p>神威：①灵力传导：可灌注微薄灵力，使剑身更锋锐、坚固。②青光微闪：夜间舞剑有微弱青光，聊胜于无。<p>",
+            bonus: 1.1,
+            materials: { spirit_stone: 100, wood: 50, metal_crystal: 5 },
+            tier: 1,
+            color: "#4CAF50",
+            unique: true  // 唯一性标识
+        },
+     { 
+            id: "spirit_gathering_flagab", 
+            name: "清心玉佩", 
+            description: "<p>后天灵宝<p><p>描述：由普通“静心玉”雕琢而成，长期佩戴能让人心绪稍感平和，对初入打坐者避免杂念有微弱辅助。效果极易被外界干扰或自身强烈情绪覆盖，对心魔几乎无效。<p><p>神威：①微弱宁神：略微提升入定速度。②示警温凉：当佩戴者情绪剧烈波动或遭遇阴邪之气时，玉佩会微微发凉。<p>",
+            bonus: 1.1,
+            materials: { spirit_stone: 100, water_crystal: 40, yin_stone: 10 },
+            tier: 1,
+            color: "#4CAF50",
+            unique: true  // 唯一性标识
+        },
+     { 
+            id: "spirit_gathering_flagac", 
+            name: "避尘袍", 
+            description: "<p>后天灵宝<p><p>描述：以“蚕丝蛛网”混织的法袍，刻有最基础的避尘阵法。可自动弹开灰尘、雨水、普通污渍，保持洁净。无任何防御力，穿着舒适，为低阶修士彰显身份的常见服饰。<p><p>神威：①洁净自身：不染尘埃污垢。②微光：在灵力灌注下，衣袍有非常黯淡的流光，外观尚可。<p>",
+            bonus: 1.1,
+            materials: { spirit_stone: 100, water_crystal: 30, earth_crystal: 15 },
+            tier: 1,
+            color: "#4CAF50",
+            unique: true  // 唯一性标识
+        },
+        { 
+            id: "spirit_gathering_flag", 
+            name: "青龙偃月刀", 
+            description: "<p>后天灵宝<p><p>描述：关羽神兵，刀身青龙盘绕。刀重八十二斤，挥舞时青龙显化，更可引动忠义之力。<p><p>神威：①青龙显化：召唤青龙助战 ②忠义之力：对不忠不义者伤害翻倍 ③刀气如龙：刀气化青龙攻击<p>",
+            bonus: 1.2,
+            materials: { spirit_stone: 250, fire_crystal: 50 },
+            tier: 1,
+            color: "#4CAF50",
+            unique: true  // 唯一性标识
+        },
+      { 
+            id: "spirit_gathering_flaga", 
+            name: "丈八蛇矛", 
+            description: "<p>后天灵宝<p><p>描述：张飞神兵，矛身如蛇扭曲。矛出如毒蛇吐信，诡异刁钻，更可引动狂暴之力。<p><p>神威：①毒蛇之噬：攻击带剧毒 ②狂暴之力：受伤越重威力越强 ③蛇影重重：矛影化万蛇<p>",
+            bonus: 1.2,
+            materials: { spirit_stone: 50, wood: 100, water_crystal: 30, fire_crystal: 30 },
+            tier: 1,
+            color: "#4CAF40",
+            unique: true  // 唯一性标识
+        },
+             { 
+            id: "spirit_gathering_flagb", 
+            name: "龙渊剑", 
+            description: "<p>后天灵宝<p><p>描述：欧冶子所铸，剑成引龙渊之灵。剑身如秋水，锋利无双，更可召唤渊龙。<p><p>神威：①龙渊剑气：剑气如水连绵不绝 ②渊龙召唤：召唤渊龙助战 ③剑心通明：持剑时心境澄明<p>",
+            bonus: 1.2,
+            materials: { spirit_stone: 50, wood: 30, water_crystal: 100, fire_crystal: 200 },
+            tier: 1,
+            color: "#4CAF60",
+            unique: true  // 唯一性标识
+        },
+        { 
+            id: "moonlight_pearl", 
+            name: "太阿剑", 
+            description: "<p>后天灵宝<p><p>描述：威道之剑，剑气存于天地。剑未出鞘，剑气已至，更可引动天地威压。<p><p>神威：①威道剑气：剑气蕴含天地威严 ②未出先至：剑气先于剑至 ③威压领域：展开领域压制敌人<p>",
+            bonus: 1.3,
+            materials: { spirit_stone: 300, wood: 200, water_crystal: 140, fire_crystal: 200 },
+            tier: 1,
+            color: "#2196F5",
+            unique: true
+        },
+        { 
+            id: "moonlight_pearla", 
+            name: "赤霄剑", 
+            description: "<p>后天灵宝<p><p>描述：帝道之剑，剑身赤红如霞。剑出斩白蛇，更可引动帝王紫气。<p><p>神威：①斩白蛇：对妖邪伤害翻倍 ②帝王紫气：紫气护体万邪不侵 ③赤霄剑气：剑气如霞绚烂夺目<p>",
+            bonus: 1.3,
+            materials: { spirit_stone: 100, wood: 200, water_crystal: 340, fire_crystal: 100 },
+            tier: 1,
+            color: "#2196F5",
+            unique: true
+        },
+        { 
+            id: "moonlight_pearlb", 
+            name: "湛卢剑", 
+            description: "<p>后天灵宝<p><p>描述：仁道之剑，剑身湛蓝如水。剑出无血，只斩因果，更可引动仁者之力。<p><p>神威：①因果之斩：斩断因果联系 ②仁者无敌：对邪恶者伤害翻倍 ③湛蓝剑气：剑气如水净化一切<p>",
+            bonus: 1.3,
+            materials: { spirit_stone: 50, wood: 330, water_crystal: 540, fire_crystal: 120 },
+            tier: 1,
+            color: "#2196F5",
+            unique: true
+        },
+        { 
+            id: "moonlight_pearlc", 
+            name: "纯钧剑", 
+            description: "<p>后天灵宝<p><p>描述：尊贵之剑，剑身尊贵无双。剑出如君子，更可引动贵族气运。<p><p>神威：①尊贵之气：压制一切凡俗兵器 ②君子之剑：剑法堂堂正正 ③贵族气运：持剑者气运提升<p>",
+            bonus: 1.2,
+            materials: { spirit_stone: 100, wood: 130, water_crystal: 140, fire_crystal: 220 },
+            tier: 1,
+            color: "#2196F1",
+            unique: true
+        },
+       { 
+            id: "moonlight_pearld", 
+            name: "鱼肠剑", 
+            description: "<p>后天灵宝<p><p>描述：勇绝之剑，剑身短小精悍。专诸刺王僚，更可引动刺客之道。<p><p>神威：①一击必杀：第一击威力提升十倍 ②隐身刺杀：持剑时可隐身 ③勇绝之气：不成功便成仁<p>",
+            bonus: 1.3,
+            materials: { spirit_stone: 110, wood: 130, water_crystal: 140, fire_crystal: 620 },
+            tier: 1,
+            color: "#2196F1",
+            unique: true
+        },
+       { 
+            id: "moonlight_pearle", 
+            name: "承影剑", 
+            description: "<p>后天灵宝<p><p>描述：优雅之剑，剑身无形无影。剑出无影，杀人无形，更可引动优雅之道。<p><p>神威：①无形无影：剑身隐形 ②优雅之击：攻击如艺术 ③影遁术：可在影子中穿梭<p>",
+            bonus: 1.4,
+            materials: { spirit_stone: 510, wood: 530, water_crystal: 540, fire_crystal: 520 },
+            tier: 1,
+            color: "#2196F1",
+            unique: true
+        },
+       { 
+            id: "moonlight_pearlf", 
+            name: "七星龙渊", 
+            description: "<p>后天灵宝<p><p>描述：诚信之剑，剑身七星龙渊。剑出如龙吟，更可引动诚信之力。<p><p>神威：①龙吟震慑：剑鸣震慑敌人 ②诚信之力：对背信者伤害翻倍 ③七星指引：可指引方向<p>",
+            bonus: 1.3,
+            materials: { spirit_stone: 810, wood: 230, water_crystal: 240},
+            tier: 1,
+            color: "#2196F1",
+            unique: true
+        },
+       { 
+            id: "moonlight_pearlg", 
+            name: "泰阿剑", 
+            description: "<p>后天灵宝<p><p>描述：威道之剑，剑气存于天地。剑未出鞘，剑气已至，更可引动天地威压。<p><p>神威：①天地威压：借天地威压攻击 ②剑气自生：剑气自动护主 ③泰阿领域：展开领域压制敌人<p>",
+            bonus: 1.4,
+            materials: { spirit_stone: 810, wood: 830, water_crystal: 540, fire_crystal: 820 },
+            tier: 1,
+            color: "#2196F1",
+            unique: true
+        },
+      { 
+            id: "moonlight_pearlh", 
+            name: "巨阙剑", 
+            description: "<p>后天灵宝<p><p>描述:巨剑无锋，大巧不工。剑身厚重，更可引动厚重之力。<p><p>神威：①厚重之力：攻击势大力沉 ②无锋之剑：专破防御 ③巨阙镇压：可镇压敌人<p>",
+            bonus: 1.1,
+            materials: { spirit_stone: 30, wood: 30, water_crystal: 50, fire_crystal: 20 },
+            tier: 1,
+            color: "#2196F1",
+            unique: true
+        },
+      { 
+            id: "moonlight_pearll", 
+            name: "胜邪剑", 
+            description: "<p>后天灵宝<p><p>描述：邪恶之剑，剑身邪气凛然。剑出邪恶，更可引动邪恶之力。<p><p>神威：①邪恶之力：攻击带邪恶属性 ②邪气侵蚀：侵蚀敌人心智 ③胜邪领域：展开领域增强邪恶<p>",
+            bonus: 1.2,
+            materials: { spirit_stone: 110, wood: 210, water_crystal: 110, fire_crystal: 210 },
+            tier: 1,
+            color: "#2196F2",
+            unique: true
+        },
+      { 
+            id: "moonlight_pearlm", 
+            name: "工布剑", 
+            description: "<p>后天灵宝<p><p>描述：霸道之剑，剑身霸道无双。剑出霸道，更可引动霸道之气。<p><p>神威：①霸道之气：压制一切软弱 ②霸道剑法：剑法霸道无双 ③工布领域：展开领域强制单挑<p>",
+            bonus: 1.1,
+            materials: { spirit_stone: 50, wood: 50, water_crystal: 50, fire_crystal: 50 },
+            tier: 1,
+            color: "#2196F2",
+            unique: true
+        },
+      { 
+            id: "moonlight_pearln", 
+            name: "方天画戟", 
+            description: "<p>后天灵宝<p><p>描述：吕布神兵，戟身刻画日月山河。戟重如山，挥舞时天地变色，更可引动山河之力。<p><p>神威：①山河之力：借山河之力攻击 ②无双战意：战意越强威力越强 ③画戟领域：展开领域压制敌人<p>",
+            bonus: 1.2,
+            materials: { spirit_stone: 150, wood: 150, water_crystal: 250, fire_crystal: 150 },
+            tier: 1,
+            color: "#2196F6",
+            unique: true
+        },
+      { 
+            id: "moonlight_pearlo", 
+            name: "龙胆亮银枪", 
+            description: "<p>后天灵宝<p><p>描述：赵云佩枪，枪身银白，龙胆为魂。枪出如龙，勇猛无双，更可召唤龙魂助战。<p><p>神威：①龙胆威压：压制一切坐骑 ②枪出如龙：枪法威力倍增 ③龙魂召唤：召唤银龙虚影<p>",
+            bonus: 1.2,
+            materials: { spirit_stone: 450, wood: 150, water_crystal: 150},
+            tier: 1,
+            color: "#2196F6",
+            unique: true
+        },
+      { 
+            id: "moonlight_pearlp", 
+            name: "虎魄刀", 
+            description: "<p>后天灵宝<p><p>描述：蚩尤以坐骑战虎魂魄炼制，刀身血红，虎啸阵阵。刀出必饮血，煞气冲天，持之易入魔。<p><p>神威：①虎魄噬魂：吞噬敌人魂魄 ②煞气领域：展开领域削弱敌人 ③战虎召唤：召唤战虎虚影助战<p>",
+            bonus: 1.3,
+            materials: { spirit_stone: 450, wood: 880},
+            tier: 1,
+            color: "#2196F6",
+            unique: true
+        },
+      { 
+            id: "moonlight_pearlq", 
+            name: "画影剑", 
+            description: "<p>后天灵宝<p><p>描述：影之剑，剑出如画。剑招优美如画，更可引动画中世界。<p><p>神威：①画中世界：可将敌人摄入画中 ②画影剑气：剑气如画绚丽 ③影遁术：可在画影中穿梭<p>",
+            bonus: 1.3,
+            materials: { spirit_stone: 250,fire_crystal: 880},
+            tier: 1,
+            color: "#2196F6",
+            unique: true
+        },
+     { 
+            id: "moonlight_pearlr", 
+            name: "宵练剑", 
+            description: "<p>后天灵宝<p><p>描述：光之剑，剑出如光。剑速如光，更可引动光之力。<p><p>神威：①光速剑：剑速达到光速 ②光之剑：剑身发光耀眼 ③宵练领域：展开领域加速一切<p>",
+            bonus: 1.2,
+            materials: { spirit_stone: 250,fire_crystal: 180},
+            tier: 1,
+            color: "#2196F2",
+            unique: true
+        },
+     { 
+            id: "moonlight_pearls", 
+            name: "含光剑", 
+            description: "<p>后天灵宝<p><p>描述：无形之剑，剑身无形。剑出无形，更可引动无形之力。<p><p>神威：①无形剑：剑身完全隐形 ②无形剑气：剑气无形 ③含光领域：展开领域隐藏一切<p>",
+            bonus: 1.3,
+            materials: { wood: 150, water_crystal: 250, fire_crystal: 1050},
+            tier: 1,
+            color: "#2196F2",
+            unique: true
+        },
+     { 
+            id: "moonlight_pearlt", 
+            name: "龙雀刀", 
+            description: "<p>后天灵宝<p><p>描述：刀身龙雀交缠，刀出龙雀齐鸣。刀法霸道，更可召唤龙雀。<p><p>神威：①龙雀齐鸣：刀鸣震慑敌人 ②龙雀召唤：召唤龙雀虚影 ③霸道刀法：刀法霸道无双<p>",
+            bonus: 1.1,
+            materials: { wood: 50, water_crystal: 50, fire_crystal: 110},
+            tier: 1,
+            color: "#2196F1",
+            unique: true
+        },
+     { 
+            id: "moonlight_pearlu", 
+            name: "落宝金钱", 
+            description: "<p>后天灵宝<p><p>描述：金钱有翅，可落宝物。专落先天至宝之下一切宝物，但无法落兵器。<p><p>神威：①落宝：可落一切法宝 ②金钱领域：展开领域禁止使用法宝 ③财运加持：持之财运亨通<p>",
+            bonus: 1.4,
+            materials: { wood: 1500, water_crystal: 530, fire_crystal: 110},
+            tier: 1,
+            color: "#2196F1",
+            unique: true
+        },
+     { 
+            id: "moonlight_pearlv", 
+            name: "钉头七箭书", 
+            description: "<p>后天灵宝<p><p>描述：诅咒至宝，书草人，射七箭。拜射草人，可咒杀大罗金仙，但需付出巨大代价。<p><p>神威：①咒杀：拜射二十一日可咒杀敌人 ②诅咒转移：可转移自身诅咒 ③钉头七箭：七箭齐发威力倍增<p>",
+            bonus: 1.4,
+            materials: { wood: 1500, water_crystal: 530, fire_crystal: 110},
+            tier: 1,
+            color: "#2196F1",
+            unique: true
+        },
+        { 
+            id: "flame_ringaa", 
+            name: "化血神刀", 
+            description: "<p>后天灵宝<p><p>描述：中者立时化为脓血，歹毒无比。刀出必饮血，更可诅咒敌人。<p><p>神威：①化血神刀：中刀即化血 ②血咒：刀带诅咒 ③饮血增强：饮血越多威力越强<p>",
+            bonus: 1.1,
+            materials: { spirit_stone: 100, fire_crystal: 300 },
+            tier: 1,
+            color: "#FF5732",
+            unique: true
+        },
+        
+        // 中级法宝
+        { 
+            id: "yin_yang_mirror", 
+            name: "戮魂幡", 
+            description: "<p>先天灵宝<p><p>描述：魔道至宝，摇动可收人魂魄。防不胜防，更可炼制魂兵。<p><p>神威：①收人魂魄：摇动即收魂 ②魂兵炼制：用魂魄炼制魂兵 ③戮魂领域：展开领域削弱神魂<p>",
+            bonus: 1.5,
+            materials: { spirit_stone: 2000, yin_stone: 100, yang_stone: 100 },
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+        { 
+            id: "yin_yang_mirrora", 
+            name: "火尖枪", 
+            description: "<p>先天灵宝<p><p>描述：双轮转动，风火之势。上天入地，速度无双，更可释放风火攻击。<p><p>神威：①风火轮速：速度冠绝三界 ②风火攻击：释放风火 ③轮影重重：化出无数轮影<p>",
+            bonus: 1.5,
+            materials: { spirit_stone: 1500, fire_crystal: 500, yang_stone: 100 },
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+        { 
+            id: "yin_yang_mirrorb", 
+            name: "风火轮", 
+            description: "<p>先天灵宝<p><p>描述：双轮转动，风火之势。上天入地，速度无双，更可释放风火攻击。<p><p>神威：①风火轮速：速度冠绝三界 ②风火攻击：释放风火 ③轮影重重：化出无数轮影<p>",
+            bonus: 1.5,
+            materials: { water_crystal: 1500, fire_crystal: 500, yang_stone: 88 },
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+        { 
+            id: "yin_yang_mirrorc", 
+            name: "六魂幡", 
+            description: "<p>先天灵宝<p><p>描述：魔道至宝，幡有六尾。摇动可伤圣人，但需以自身魂魄为引。<p><p>神威：①伤圣：可伤圣人魂魄 ②六魂幡动：摇动即攻击 ③魂魄献祭：献祭魂魄增强威力<p>",
+            bonus: 1.5,
+            materials: { metal_crystal: 200, yin_stone: 200},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+        { 
+            id: "yin_yang_mirrord", 
+            name: "斩仙飞刀", 
+            description: "<p>先天灵宝<p><p>描述：陆压道人法宝，葫芦内有一线毫光。白光一转，取人首级，连元神都逃不掉。<p><p>神威：①斩仙：专斩仙人 ②飞刀必中：必中要害 ③元神锁定：锁定敌人元神<p>",
+            bonus: 1.6,
+            materials: { metal_crystal: 200, yang_stone: 300, fire_crystal: 1200, spirit_stone: 2000},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+        { 
+            id: "yin_yang_mirrore", 
+            name: "干将莫邪", 
+            description: "<p>先天灵宝<p><p>描述：挚情之剑，雌雄双生。干将炽热如火，莫邪清冷如冰。双剑合璧，引动天地至情之力，威力倍增<p><p>神威：①双剑合璧：威力提升十倍 ②至情之力：情感越深威力越强 ③心意相通：双剑之主可心灵感应<p>",
+            bonus: 1.7,
+            materials: { yin_stone: 500, yang_stone: 400, fire_crystal: 2200, spirit_stone: 2000},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+        { 
+            id: "yin_yang_mirrorf", 
+            name: "金灵珠", 
+            description: "<p>先天灵宝<p><p>描述：先天金灵凝聚，持之可操控金属。可强化金属宝物，更可召唤金灵。<p><p>神威：①金属操控：操控一切金属 ②宝物强化：强化金属宝物 ③金灵召唤：可召唤金灵助战<p>",
+            bonus: 1.5,
+            materials: { spirit_stone: 1200, metal_crystal: 200, yang_stone: 200},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+        { 
+            id: "yin_yang_mirrorj", 
+            name: "土灵珠", 
+            description: "<p>先天灵宝<p><p>描述：先天土灵凝聚，持之可操控大地。可召唤地震，更可召唤土灵。<p><p>神威：①大地操控：操控地形地貌 ②地震术：召唤地震攻击 ③土灵召唤：可召唤土灵助战<p>",
+            bonus: 1.5,
+            materials: { spirit_stone: 1200, wood_crystal: 200, yin_stone: 200},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+        { 
+            id: "yin_yang_mirrorh", 
+            name: "火灵珠", 
+            description: "<p>先天灵宝<p><p>描述：先天火灵凝聚，持之可操控火焰。可召唤天火，更可召唤火灵。<p><p>神威：①火焰操控：操控一切火焰 ②天火降临：召唤天火攻击 ③火灵召唤：可召唤火灵助战<p>",
+            bonus: 1.5,
+            materials: { water_crystal: 2000, yang_stone: 300, yin_stone: 200},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrorg", 
+            name: "水灵珠", 
+            description: "<p>先天灵宝<p><p>描述：先天水灵凝聚，持之可操控水流。可召唤降雨，更可召唤水灵。<p><p>神威：①水流操控：操控一切水流 ②呼风唤雨：召唤降雨 ③水灵召唤：可召唤水灵助战<p>",
+            bonus: 1.5,
+            materials: { water_crystal: 2000, spirit_stone: 3000, yin_stone: 100},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrorm", 
+            name: "木灵珠", 
+            description: "<p>先天灵宝<p><p>描述：先天木灵凝聚，持之可操控植物。可加速植物生长，更可召唤木灵。<p><p>神威：①植物操控：操控一切植物 ②生长加速：加速灵植生长 ③木灵召唤：可召唤木灵助战<p>",
+            bonus: 1.5,
+            materials: { wood: 2000, wood_crystal: 300, yin_stone: 150},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrorl", 
+            name: "芭蕉扇", 
+            description: "<p>先天灵宝<p><p>描述：昆仑山先天灵根芭蕉叶所化，分阴阳二扇。阳扇扇出火，阴扇扇出风，更可扇飞敌人。<p><p>神威：①煽风点火：阳扇出火，阴扇出风 ②扇飞敌人：一扇将人扇飞八万四千里 ③灭火克风：可灭天下火，定天下风<p>",
+            bonus: 1.7,
+            materials: { wood: 1500, metal_crystal: 500, yin_stone: 150},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirroro", 
+            name: "金刚琢", 
+            description: "<p>先天灵宝<p><p>描述：太上老君锟钢炼成，被还丹点成，善能变化。可套取天下万物，水火不侵。<p><p>神威：①套取万物：可套一切宝物兵器 ②变化大小：大小如意 ③金刚不坏：坚硬无比<p>",
+            bonus: 1.7,
+            materials: { spirit_stone: 1500, metal_crystal: 300, yang_stone: 250},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrorp", 
+            name: "羊脂玉净瓶", 
+            description: "<p>先天灵宝<p><p>描述：观音菩萨另一法宝，瓶插杨柳枝。内盛三光神水，更可收人宝物，妙用无穷。<p><p>神威：①收人宝物：可收一切宝物 ②杨柳回春：柳枝有疗伤奇效 ③瓶中世界：内蕴小千世界<p>",
+            bonus: 1.6,
+            materials: { wood: 2500, water_crystal: 2300, wood_crystal: 200},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrorpa", 
+            name: "摄心铃", 
+            description: "<p>先天灵宝<p><p>描述：一只银色铃铛，摇动时发出清脆铃声。铃声可扰乱敌人心神，制造幻听，对心志不坚者甚至可短暂操控其行动。但对神识强大者效果甚微。<p><p>神威：①心神扰乱：干扰敌人注意力与施法 ②幻听制造：制造虚假的声音指令 ③短暂操控：操控低阶或心神失守的敌人<p>",
+            bonus: 1.6,
+            materials: { wood: 2000, water_crystal: 3000, wood_crystal: 150},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrorpb", 
+            name: "养魂木", 
+            description: "<p>先天灵宝<p><p>描述：一段温润如玉的黑色神木，可温养魂魄，治疗神魂创伤。将残魂寄养其中，有几率使其逐渐恢复，甚至重聚魂体。对鬼修、魂体而言是无上至宝。<p><p>神威：①神魂疗愈：加速神魂伤势恢复 ②魂体滋养：增强魂体强度 ③避劫之所：可助神魂躲避天劫、风劫<p>",
+            bonus: 1.6,
+            materials: { wood: 2000, water_crystal: 3000, wood_crystal: 150, yin_stone: 200},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrorpc", 
+            name: "北斗七星剑", 
+            description: "<p>先天灵宝<p><p>描述：七剑一套，对应天枢至摇光七星。布成剑阵，引动北斗星力，杀伐无双，更可借星力续命延寿。<p><p>神威：①七星连珠：七剑合一，威力暴增 ②北斗续命：逆转生死，续命延寿 ③星陨剑阵：引动星辰坠落攻击<p>",
+            bonus: 1.6,
+            materials: { spirit_stone: 2000, fire_crystal: 3000, yang_stone: 150, metal_crystal: 200},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrorpd", 
+            name: "万魂棺", 
+            description: "<p>先天灵宝<p><p>描述：一具以养魂木为主材打造的棺椁。活人躺入可滋养神魂，治疗魂伤；将敌人封印其中，可缓慢炼化其神魂；也可作为鬼修的本命法宝，修行事半功倍。<p><p>神威：①炼魂化魄：炼化棺内敌人的魂魄 ②养魂圣地：加速神魂修炼与恢复 ③鬼域空间：棺内自成小型鬼域<p>",
+            bonus: 1.7,
+            materials: { spirit_stone: 2000, wood: 2000, wood_crystal: 450, yin_stone: 500},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrorq", 
+            name: "九宫图", 
+            description: "<p>先天灵宝<p><p>描述：图分九宫，演化天地。布九宫大阵，困杀一体，更可推演天机。<p><p>神威：①九宫大阵：困杀非圣人修士 ②天机推演：推演阵法变化 ③九宫遁术：可在阵内瞬移<p>",
+            bonus: 1.8,
+            materials: { wood: 1500, yin_stone: 200, yang_stone: 200, metal_crystal: 300, wood_crystal: 200, earth_crystal: 300},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrorr", 
+            name: "万兽谱", 
+            description: "<p>先天灵宝<p><p>描述：一本金色典籍，可收录妖兽精魄。收录后，可消耗法力召唤其精魄虚影助战，虚影拥有本体部分实力与天赋神通。收录的妖兽越强、血脉越高，召唤消耗越大。<p><p>神威：①万兽召唤：召唤收录妖兽的精魄 ②血脉压制：对兽类敌人产生威压 ③兽魂融合：暂时与某兽魂融合，获得其特性<p>",
+            bonus: 1.6,
+            materials: { yin_stone: 200, yang_stone: 300, wood_crystal: 200, earth_crystal: 300},
+            tier: 2,
+            color: "#9C27B2",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrors", 
+            name: "摄魂幡", 
+            description: "<p>先天灵宝<p><p>描述：一杆漆黑魂幡，摇动时可摄取无主游魂或重伤敌人的魂魄。魂幡内自成空间，可炼化魂魄为魂力补充自身，或炼制为幡中阴兵。<p><p>神威：①摄魂夺魄：摄取魂魄 ②阴兵借道：驱使幡中阴兵作战 ③魂力吞噬：炼化魂魄补充神识消耗<p>",
+            bonus: 1.7,
+            materials: { yin_stone: 600, wood: 3000},
+            tier: 2,
+            color: "#9C27B1",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrort", 
+            name: "同心蛊", 
+            description: "<p>先天灵宝<p><p>描述：一对子母奇蛊，分别植入两人体内（通常为道侣或生死兄弟）。双方可模糊感知对方情绪、方位与安危，一方重伤时另一方可分担部分伤害，距离过远时感应减弱。<p><p>神威：①心灵感应：模糊感知对方状态 ②伤害分担：分担部分伤害 ③同心协力：联手时默契度大增<p>",
+            bonus: 1.7,
+            materials: { yin_stone: 600, yang_stone: 600},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirroru", 
+            name: "百灵朝凤簪", 
+            description: "<p>先天灵宝<p><p>描述：一支凤首玉簪，对一切禽类妖兽有天然的统御力。佩戴者所过之处，百鸟来朝，可命禽类妖兽为己所用，但对凤凰、金乌等顶级神禽效果有限。<p><p>神威：①百鸟听令：统御普通禽类妖兽 ②凤威震慑：对禽类产生血脉压制 ③翱翔九天：大幅提升飞行速度与能力<p>",
+            bonus: 1.6,
+            materials: { wood: 3000, spirit_stone: 3000},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+       { 
+            id: "yin_yang_mirrorv", 
+            name: "命运赌桌", 
+            description: "<p>先天灵宝<p><p>描述：一张虚幻的赌桌，可邀请一位敌人进行“命运赌局”。赌注可以是修为、寿元、气运、法宝等。赌局形式随机（猜拳、掷骰、比大小等），结果由冥冥中的命运裁定，作弊无效。<p><p>神威：①强制赌局：邀请敌人进行赌斗 ②命运裁决：结果公正，实力无法影响 ③高风险高回报：可能瞬间获得巨大收益或损失<p>",
+            bonus: 1.8,
+            materials: { wood: 3000, wood_crystal: 1000},
+            tier: 2,
+            color: "#9C27B0",
+            unique: true
+        },
+        { 
+            id: "five_elements_pan", 
+            name: "五行炉", 
+            description: "<p>先天灵宝<p><p>描述：内蕴五行之火，可炼化万物。炼丹炼器，更可炼化敌人。<p><p>神威：①五行炼化：可炼化一切 ②炼丹炼器：提升成功率 ③炉火攻击：释放五行之火<p>",
+            bonus: 1.6,
+            materials: { metal_crystal: 300, wood_crystal: 300, water_crystal: 300, fire_crystal: 300, earth_crystal: 300 },
+            tier: 2,
+            color: "#FFD700",
+            unique: true
+        },
+        
+        // 高级法宝
+        { 
+            id: "immortal_fan", 
+            name: "阴阳二气瓶", 
+            description: "<p>通天灵宝​<p><p>描述：内蕴阴阳二气，瓶收万物。收入瓶中，一时三刻化为脓水，更可炼化万物。<p><p>神威：①收人炼化：收入即炼化 ②阴阳二气：可化阴阳攻击 ③瓶内世界：内蕴小千世界<p>",
+            bonus: 1.8,
+            materials: { yin_stone: 300, yang_stone: 301, chaos_fragment: 150, time_sand: 50  },
+            tier: 2,
+            color: "#00BCD4",
+            unique: true
+        },
+        { 
+            id: "immortal_fana", 
+            name: "八卦炉", 
+            description: "<p>通天灵宝​<p><p>描述：太上老君炼丹炉，内蕴六丁神火。可炼九转金丹，更可炼化万物。<p><p>神威：①炼化万物：六丁神火炼化一切 ②九转金丹：可炼九转金丹 ③炉内世界：内蕴八卦空间<p>",
+            bonus: 1.8,
+            materials: { spirit_stone: 5000, fire_crystal: 5000, yang_stone: 350, immortal_feather: 150  },
+            tier: 2,
+            color: "#00BCD4",
+            unique: true
+        },
+        { 
+            id: "immortal_fanb", 
+            name: "清净琉璃瓶", 
+            description: "<p>通天灵宝​<p><p>描述：观音菩萨法宝，瓶内盛甘露水。洒出可活死人肉白骨，更可净化一切邪祟。<p><p>神威：①起死回生：可复活死亡不超过七日者 ②净化魔气：净化一切魔道修士 ③甘露疗伤：治疗一切伤势<p>",
+            bonus: 1.9,
+            materials: { water_crystal: 5000, fire_crystal: 5000, space_stone: 250, immortal_feather: 250  },
+            tier: 2,
+            color: "#00BCD4",
+            unique: true
+        },
+        { 
+            id: "immortal_fanc", 
+            name: "乾坤鼎", 
+            description: "<p>通天灵宝​<p><p>描述：太上老君炼丹至宝，可返本归元，转化后天为先天。炼丹炼器，成功率百分之百，更可提升宝物品质。<p><p>神威：①后天返先天：转化后天宝物为先天 ②百分成功：炼丹炼器必成 ③鼎镇乾坤：可镇压一方世界<p>",
+            bonus: 1.9,
+            materials: { spirit_stone: 5000, fire_crystal: 3000, metal_crystal: 550, time_sand: 50, space_stone: 50, chaos_fragment: 50},
+            tier: 2,
+            color: "#00BCD4",
+            unique: true
+        },
+        { 
+            id: "immortal_fand", 
+            name: "阴阳生死镜", 
+            description: "<p>通天灵宝​<p><p>描述：镜分阴阳两面，阴面照死，阳面照生。照人神魂，判人生死，更可逆转阴阳，颠倒生死。<p><p>神威：①判人生死：照之即定生死 ②逆转阴阳：短暂逆转生死规则 ③阴阳领域：展开领域压制敌人<p>",
+            bonus: 1.9,
+            materials: { spirit_stone: 5000, yin_stone: 500, yang_stone: 550, space_stone: 100, chaos_fragment: 50},
+            tier: 2,
+            color: "#00BCD4",
+            unique: true
+        },
+        { 
+            id: "immortal_fane", 
+            name: "五色神光扇", 
+            description: "<p>通天灵宝​<p><p>描述：孔宣本命神通所化，扇分青、黄、赤、黑、白五色。一扇之下，五行之内无物不刷，无宝不落。<p><p>神威：①五行归元：刷落一切五行宝物 ②五色护体：五行攻击无效 ③神光遁术：五行之内任意穿梭<p>",
+            bonus: 2,
+            materials: { water_crystal: 5000, fire_crystal: 5000, metal_crystal: 500, wood_crystal: 500, earth_crystal: 500},
+            tier: 2,
+            color: "#00BCD1",
+            unique: true
+        },
+        { 
+            id: "immortal_fanf", 
+            name: "通灵宝玉", 
+            description: "<p>玄天灵宝​​<p><p>描述：一块天生有灵性的美玉，长期佩戴可与万物之灵（山灵、水灵、草木之精等）进行简单沟通，更容易获得天地精灵的好感与帮助。<p><p>神威：①万物通灵：与非人灵体沟通 ②自然亲和：提升在自然环境中运气 ③精灵召唤：召唤附近弱小的自然精灵<p>",
+            bonus: 2.1,
+            materials: { spirit_stone: 5000, wood: 5000, wood_crystal: 500, chaos_fragment: 200, immortal_feather: 200},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+        { 
+            id: "immortal_fanfa", 
+            name: "时空涟漪琴", 
+            description: "<p>玄天灵宝​​<p><p>描述：一架古琴，弹奏时琴音会引起微小时空涟漪。熟练者可通过琴音轻微干扰局部时间流速，或制造空间褶皱隐藏自身，琴道至高者可拨动“世界之弦”。<p><p>神威：①涟漪干扰：干扰敌人时空感知 ②褶皱隐身：藏身于空间褶皱 ③弦音共振：与天地法则短暂共振<p>",
+            bonus: 2.2,
+            materials: { spirit_stone: 4000, wood: 6000, wood_crystal: 700, celestial_silk: 400, immortal_feather: 300},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+        { 
+            id: "immortal_fanfb", 
+            name: "岁月长河图卷", 
+            description: "<p>玄天灵宝​​<p><p>描述：图卷展开，可见一条奔流不息的光阴长河虚影。持之可短暂跳出现有时间线，窥探过去未来片段，但每次使用都会损耗自身寿元，且可能迷失在时间乱流中。<p><p>神威：①时间跳跃：短暂前往过去或未来 ②光阴回溯：让局部区域时间倒流 ③因果显化：可看见事物间的因果连线<p>",
+            bonus: 2.1,
+            materials: { yang_stone: 1000, yin_stone: 1000, space_stone: 600, time_sand: 300, immortal_feather: 400},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+        { 
+            id: "immortal_fanfe", 
+            name: "番天印", 
+            description: "<p>玄天灵宝​​<p><p>描述：元始天尊取半截不周山炼制。一印压下，犹如不周山倒，威力无穷。<p><p>神威：①不周山压：如山压顶 ②番天印法：印法威力巨大 ③印镇乾坤：可镇压敌人<p>",
+            bonus: 2.0,
+            materials: { yang_stone: 1000, yin_stone: 1000, space_stone: 300, time_sand: 200, chaos_fragment: 200},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanfo", 
+            name: "九龙神火罩", 
+            description: "<p>玄天灵宝​​<p><p>描述：内藏九条火龙，放出三昧真火。焚烧一切，更可困敌炼化。<p><p>神威：①九龙神火：九条火龙喷火 ②神火罩体：困敌炼化 ③三昧真火：火焰为三昧真火<p>",
+            bonus: 2.2,
+            materials: { water_crystal: 5000, yang_stone: 2000, space_stone: 500, chaos_fragment: 500},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanfp", 
+            name: "星陨铁重剑", 
+            description: "<p>玄天灵宝​​<p><p>描述：天外陨铁炼制，重达十万八千斤。剑身刻有星辰符文，挥动时引动星辰重力，一剑出，星辰陨。<p><p>神威：①星辰重力：可改变局部重力 ②陨星坠落：召唤陨石攻击 ③破法特性：克制一切法术防御<p>",
+            bonus: 2.1,
+            materials: { water_crystal: 5000, metal_crystal: 2500, time_sand: 500, star_dust: 50},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanfq", 
+            name: "彗尾拂尘", 
+            description: "<p>玄天灵宝​​<p><p>描述：彗星之尾炼制，尘丝银白。挥动时彗尾扫过，净化邪祟，更可借彗星之力推演天机。<p><p>神威：①净化万物：可净化一切污秽 ②彗星预警：彗星现世前会有感应 ③扫尘除垢：拂去心魔尘埃<p>",
+            bonus: 2.3,
+            materials: { wood: 10000, yang_stone: 2500,celestial_silk: 500, immortal_feather: 500, space_stone: 500, star_dust: 50},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanfu", 
+            name: "星辰棋盘", 
+            description: "<p>玄天灵宝​​<p><p>描述：棋盘如星空，棋子为星辰。对弈可推演天机，布阵困敌，更可将敌人摄入棋盘世界。<p><p>神威：①星空棋局：布阵困杀敌人 ②天机推演：对弈推演未来 ③棋子化星：棋子可化为真实星辰攻击<p>",
+            bonus: 2.3,
+            materials: { yang_stone: 2500, yang_stone: 2500,chaos_fragment: 500, space_stone: 500, law_crystal: 50, star_dust: 50},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanfv", 
+            name: "日冕神冠", 
+            description: "<p>玄天灵宝​​<p><p>描述：日冕精华凝聚，冠冕璀璨。戴之可得太阳星眷顾，化身大日神君，执掌太阳真火。<p><p>神威：①大日化身：短暂化身大日金乌 ②真火领域：展开领域，焚烧一切 ③日冕护体：免疫火系攻击<p>",
+            bonus: 2.4,
+            materials: { fire_crystal: 5000,yang_stone: 2500, yang_stone: 2500,chaos_fragment: 500, space_stone: 800, law_crystal: 100, destiny_fragment: 50},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanfw", 
+            name: "月宫桂树杖", 
+            description: "<p>玄天灵宝​​<p><p>描述：月宫桂树枝干炼制，清香扑鼻。杖出时月桂飘香，令人沉醉，更可沟通太阴星力，施展月宫秘法。<p><p>神威：①月桂飘香：香气有迷魂之效 ②太阴召唤：召唤月宫投影 ③不死特性：如月宫桂树般难以摧毁<p>",
+            bonus: 2.5,
+            materials: { wood: 10000,wood_crystal: 5000, yang_stone: 5000,immortal_feather: 1000, chaos_fragment: 1000, law_crystal: 50, destiny_fragment: 50},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanfs", 
+            name: "流星逐日弓", 
+            description: "<p>玄天灵宝​​<p><p>描述：弓身如流星，弓弦为日光凝聚。箭出如流星逐日，速度冠绝三界，可射日诛神。<p><p>神威：①逐日之速：箭速超越光速 ②诛神之威：对神道修士伤害翻倍 ③流星雨：可一次性射出万箭<p>",
+            bonus: 2.6,
+            materials: { spirit_stone: 10000,metal_crystal: 5000, yang_stone: 5000,immortal_feather: 800, chaos_fragment: 1200, law_crystal: 100, destiny_fragment: 100},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanfy", 
+            name: "九曜星宫灯", 
+            description: "<p>玄天灵宝​​<p><p>描述：九盏宫灯，对应九曜星君。点燃后星光璀璨，布成九曜大阵，困杀一体，更可借星光推演天机。<p><p>神威：①九曜困杀：九灯成阵，非大罗不可破 ②星光推演：借星光推演吉凶 ③星君投影：短暂召唤星君分身助战<p>",
+            bonus: 2.5,
+            materials: { spirit_stone: 8000,metal_crystal: 4000, yang_stone: 5000,time_sand: 300, chaos_fragment: 1100, star_dust: 100, destiny_fragment: 100},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanfz", 
+            name: "紫微帝印", 
+            description: "<p>玄天灵宝​​<p><p>描述：紫微星核炼制，帝气缭绕。执掌此印，可得紫微帝星认可，掌帝王命格，镇压国运气数。<p><p>神威：①帝王威压：压制一切非帝王命格者 ②国运加持：借一国气运修炼 ③紫微护体：帝星投影，万法不侵<p>",
+            bonus: 2.5,
+            materials: { spirit_stone: 8000,earth_crystal: 9000, yang_stone: 3000,time_sand: 900, chaos_fragment: 700, star_dust: 50, destiny_fragment: 150},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+        { 
+            id: "immortal_fang", 
+            name: "龙之逆鳞", 
+            description: "<p>玄天灵宝​​<p><p>描述：一片真正巨龙颈下最珍贵的逆鳞。持之可获得真龙的部分威压与气运，对水族有绝对命令权，但也会吸引龙族敌视与追杀。<p><p>神威：①真龙威压：散发龙威震慑万灵 ②统御水族：命令一切水中妖族 ③龙气护体：获得一丝真龙气运加持<p>",
+            bonus: 2.1,
+            materials: { chaos_fragment: 1000},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+        { 
+            id: "immortal_fanh", 
+            name: "涅槃羽", 
+            description: "<p>玄天灵宝​​<p><p>描述：一根真正的凤凰涅槃后遗留的本命真羽。蕴含一丝涅槃法则，持有者在濒死时，羽毛会自动燃烧，为其争取一次涅槃重生的机会。<p><p>神威：①涅槃重生：提供一次复活机会 ②凤凰真火：可释放一缕真火护体或攻敌 ③百鸟朝宗：对飞禽吸引力大增<p>",
+            bonus: 2.1,
+            materials: { immortal_feather: 1000},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+        { 
+            id: "immortal_fanm", 
+            name: "因果反噬甲", 
+            description: "<p>玄天灵宝​​<p><p>描述：一件半透明的铠甲，由因果丝线编织而成。当敌人对穿戴者发动攻击时，铠甲会自动记录攻击所蕴含的“因”，并在之后将其部分“果”反弹给攻击者。<p><p>神威：①伤害记录：记录攻击来源与强度 ②因果反弹：将部分伤害/负面效果返还 ③业力屏蔽：削弱业力带来的影响<p>",
+            bonus: 2.2,
+            materials: { yin_stone: 1000, yang_stone: 1000, chaos_fragment: 200, immortal_feather: 200, celestial_silk: 200},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+        { 
+            id: "immortal_fanl", 
+            name: "弑神枪", 
+            description: "<p>玄天灵宝​​<p><p>描述：魔祖罗睺伴生至宝，混沌青莲根茎所化。可伤圣人元神，杀伐无双。<p><p>神威：①伤圣：可伤圣人 ②杀伐之气：杀气冲天 ③弑神枪法：枪法专为杀戮<p>",
+            bonus: 2.3,
+            materials: { yin_stone: 1000, yang_stone: 1000, chaos_fragment: 300, immortal_feather: 300, metal_crystal: 1000},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+        { 
+            id: "immortal_fann", 
+            name: "量天尺", 
+            description: "<p>玄天灵宝​​<p><p>描述：后天功德至宝，可丈量天地。攻击无双，更可度量因果。<p><p>神威：①丈量天地：可测量一切 ②功德攻击：攻击带功德之力 ③量天尺法：尺法威力巨大<p>",
+            bonus: 2.0,
+            materials: { wood: 10000, yang_stone: 1000, metal_crystal: 1000, chaos_fragment: 300},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+        { 
+            id: "immortal_fano", 
+            name: "清净竹", 
+            description: "<p>玄天灵宝​​<p><p>描述：六根清净竹，可打人元神。令人昏迷，更可净化心灵。<p><p>神威：①打人元神：专打神魂 ②清净之力：净化心灵 ③竹影重重：化出无数竹影<p>",
+            bonus: 2.2,
+            materials: { wood: 10000, water_crystal: 10000, wood_crystal: 10000, chaos_fragment: 500},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+        { 
+            id: "immortal_fanp", 
+            name: "诛仙四剑", 
+            description: "<p>玄天灵宝​​<p><p>描述：诛仙剑、戮仙剑、陷仙剑、绝仙剑，每一把都是先天杀伐至宝。诛仙利，戮仙亡，陷仙四处起红光，绝仙变化无穷妙。<p><p>神威：①诛仙斩神：对神道修士伤害翻倍 ②戮仙灭魂：专斩神魂 ③陷仙困敌：剑气成阵困敌 ④绝仙变化：剑气千变万化<p>",
+            bonus: 2.4,
+            materials: { space_stone: 1000, time_sand: 1000, destiny_fragment: 100, star_dust: 100},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanq", 
+            name: "轩辕剑", 
+            description: "<p>玄天灵宝​​<p><p>描述：圣道之剑，剑身一面刻日月星辰，一面刻山川草木；剑柄一面书农耕畜养之术，一面书四海一统之策。金色剑光，帝王之气。<p><p>神威：①圣道威压：压制一切邪魔外道 ②人道之剑：对人族伤害翻倍 ③轩辕剑气：剑气蕴含人道气运<p>",
+            bonus: 2.5,
+            materials: { chaos_fragment: 1000, destiny_fragment: 100, law_crystal: 100, star_dust: 200},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanr", 
+            name: "星辰羽衣", 
+            description: "<p>玄天灵宝​​<p><p>描述：以星辰之光织就，衣上星辰流转。穿之可隐身星空，更可借星辰之力防御。<p><p>神威：①星空隐身：在星空下完全隐身 ②星辰护体：星光自动防御 ③星移斗转：可短距离瞬移<p>",
+            bonus: 2.6,
+            materials: {  yang_stone: 1500, chaos_fragment: 300, space_stone: 300, time_sand: 300, star_dust: 300},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fans", 
+            name: "周天星辰图", 
+            description: "<p>玄天灵宝​​<p><p>描述：图卷展开，三百六十五颗主星、一万四千八百辅星具现，演化周天星斗大阵。持图者可借星辰之力，改天换地。<p><p>神威：①星力灌注：借周天星辰之力修炼 ②星辰坠落：召唤星辰虚影攻击 ③星空领域：展开领域，压制一切非星辰法则<p>",
+            bonus: 2.7,
+            materials: {  chaos_fragment: 600, space_stone: 600, destiny_fragment: 300, law_crystal: 500, star_dust: 300},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fant", 
+            name: "河图洛书", 
+            description: "<p>玄天灵宝​​<p><p>描述：帝俊、伏羲推演至宝，内含周天星斗大阵与混元河洛大阵奥秘。推演天机，阵法极致，包罗万象。<p><p>神威：①周天星斗：可布天道第一杀阵 ②混元河洛：演化洪荒山川地理 ③天机推演：圣人之下推演第一<p>",
+            bonus: 2.8,
+            materials: {  chaos_fragment: 1000, time_sand: 500, space_stone: 500, destiny_fragment: 400, law_crystal: 800, star_dust: 200},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanta", 
+            name: "太阴灭绝神轮", 
+            description: "<p>玄天灵宝​​<p><p>描述：月华凝聚，呈银白色轮盘。转动时太阴神光洒落，冻结时空，灭绝生机。月圆之夜威力倍增。<p><p>神威：①时空冻结：神光所及，时空凝滞 ②生机灭绝：剥夺敌人生命本源 ③月华灌注：吸收月华无限续航<p>",
+            bonus: 2.9,
+            materials: {  chaos_fragment: 1500, time_sand: 900, space_stone: 600, destiny_fragment: 800, law_crystal: 800, star_dust: 200, law_crystal: 200},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fantb", 
+            name: "银河九天带", 
+            description: "<p>玄天灵宝​​<p><p>描述：九天银河炼制，银光璀璨，柔软如绸。展开可化银河天堑，困敌防御，更可引动星辰之力。<p><p>神威：①银河天堑：化出银河阻挡一切 ②星辰锁链：可捆缚大罗金仙 ③星光疗愈：星光有疗伤奇效<p>",
+            bonus: 3.1,
+            materials: {  chaos_fragment: 1500, time_sand: 1500, space_stone: 1500, destiny_fragment: 1000, law_crystal: 1000, star_dust: 200, law_crystal: 300},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanu", 
+            name: "十二品业火红莲", 
+            description: "<p>玄天灵宝​​<p><p>描述：冥河老祖伴生至宝，莲台血红，业火熊熊。端坐莲台，防御无双，更可焚烧业力，业力越深，焚烧越烈。<p><p>神威：①业火焚身：引动敌人业力焚烧 ②红莲护体：免疫一切火系攻击 ③血海不枯：连接血海，法力无尽<p>",
+            bonus: 2.9,
+            materials: {  fire_crystal: 10000, yang_stone: 2000, space_stone: 600, destiny_fragment: 500, law_crystal: 500},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanv", 
+            name: "七宝妙树", 
+            description: "<p>玄天灵宝​​<p><p>描述：准提道人证道之宝，乃菩提树所化。树上悬七宝：金、银、琉璃、玻瓈、砗磲、赤珠、玛瑙。七彩光华，无物不刷。<p><p>神威：①万宝归宗：可刷落一切法宝 ②菩提悟道：树下悟道速度千倍 ③七宝护体：七色光华防御无双<p>",
+            bonus: 2.9,
+            materials: {  wood: 10000, wood_crystal: 2000, chaos_fragment: 500, star_dust: 300, law_crystal: 700},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanw", 
+            name: "盘古幡", 
+            description: "<p>玄天灵宝​​<p><p>描述：元始天尊至宝，幡面混沌色，挥动时撕裂鸿蒙，粉碎时空。拥有开辟天地之能，为一切防御法宝克星。<p><p>神威：①混沌剑气：撕裂一切防御 ②开天辟地：可短暂开辟小千世界 ③定地水火风：平息一切能量暴动<p>",
+            bonus: 3.1,
+            materials: {  yang_stone: 3000, chaos_fragment: 700, space_stone: 700, destiny_fragment: 500, law_crystal: 1000},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fany", 
+            name: "混沌珠", 
+            description: "<p>玄天灵宝​​<p><p>描述：内含一方未开混沌，可遮掩天机，躲避天道探查。更可借混沌之气修炼，为无上悟道之宝。<p><p>神威：①混沌世界：内蕴完整世界雏形 ②遮掩天机：圣人难算 ③混沌之气：可转化一切能量<p>",
+            bonus: 3.3,
+            materials: {  spirit_stone: 20000, chaos_fragment: 5000, destiny_fragment: 2000},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+       { 
+            id: "immortal_fanz", 
+            name: "山河社稷图", 
+            description: "<p>玄天灵宝​​<p><p>描述：女娲圣人之宝，图内自生大千寰宇，山川河岳。一图一世界，生灵无尽，可因生因灭，尽在掌中。<p><p>神威：①世界囚笼：将敌人摄入图中世界 ②造化生灵：图内可演化真实生灵 ③山河镇压：借图中世界之力镇压敌人<p>",
+            bonus: 3.2,
+            materials: {  chaos_fragment: 5000, star_dust: 1000, law_crystal: 1000, destiny_fragment: 1000},
+            tier: 3,
+            color: "#00BCD1",
+            unique: true
+        },
+        { 
+            id: "chaos_cauldron", 
+            name: "天地玄黄玲珑塔", 
+            description: "<p>玄天灵宝​​<p><p>描述：开天功德玄黄之气凝聚，后天第一功德至宝。立于头顶则先天不败，玄黄之气垂落，万法不侵，立于不败之地。<p><p>神威：①功德护体：玄黄之气免疫一切攻击 ②镇压气运：可保一方势力气运不衰 ③万法不侵：圣人之下攻击无效<p>",
+            bonus: 3.4,
+            materials: { chaos_fragment: 3000, yang_stone: 6000, eternity_core: 50, law_crystal: 1200, destiny_fragment: 1000},
+            tier: 3,
+            color: "#E91E63",
+            unique: true
+        },
+        
+        // 传说法宝
+        { 
+            id: "heavens_will_compass", 
+            name: "东皇钟", 
+            description: "<p>混沌灵宝​​<p><p>描述：东皇太一伴生至宝，钟体呈混沌玄黄色，钟身刻日月星辰、地水火风。钟响时时空凝固，镇压鸿蒙，演化天道玄机。内蕴一方混沌世界，可演化万物。<p><p>神威：①时空禁锢：钟声所及，时间停滞，空间冻结 ②镇压鸿蒙：可镇压一方世界气运 ③演化混沌：钟内自成世界，可困圣人<p>",
+            bonus: 3.7,
+            materials: { chaos_fragment: 2000, space_stone: 2000, destiny_fragment: 500, time_essence: 200, eternity_core: 200},
+            tier: 4,
+            color: "#8A2BE2",
+            unique: true
+        },
+        { 
+            id: "heavens_will_compassa", 
+            name: "鸿蒙量天尺", 
+            description: "<p>混沌灵宝<p><p>描述：开天功德凝聚，与天地玄黄玲珑塔一攻一防。尺量天地，划分阴阳，一尺之下可丈量因果，削人气运。通体紫金，刻有鸿蒙符文，挥动时引动混沌之气，有开天辟地之威。<p><p>神威：①丈量天地：可测量空间距离，破除一切空间禁制 ②削运斩命：直接攻击敌人气运与寿命 ③功德护体：万邪不侵，因果不沾<p>",
+            bonus: 3.6,
+            materials: { chaos_fragment: 1500, space_stone: 1500, destiny_fragment: 500, law_crystal: 500, eternity_core: 500},
+            tier: 4,
+            color: "#8A2BE2",
+            unique: true
+        },
+        { 
+            id: "heavens_will_compassb", 
+            name: "造化笔", 
+            description: "<p>混沌灵宝<p><p>描述：可书写法则，画虚为实。一笔出，法则现，天地从。但每书写一字，消耗万年寿元。<p><p>神威：①言出法随：书写即成法则 ②造化生灵：可创造真实生灵 ③修改现实：短暂修改局部天道规则<p>",
+            bonus: 3.8,
+            materials: { star_dust: 1500, law_crystal: 1500, eternity_core: 600, time_essence: 700, space_crystal: 400},
+            tier: 4,
+            color: "#8A2BE2",
+            unique: true
+        },
+        { 
+            id: "heavens_will_compassc", 
+            name: "黑洞之瞳", 
+            description: "<p>混沌灵宝<p><p>描述：模拟黑洞炼制，呈纯黑色球体。催动可产生吞噬之力，吞噬万物，连光都无法逃脱。<p><p>神威：①万物吞噬：可吞噬一切攻击 ②空间扭曲：扭曲周围空间 ③引力奇点：产生超强引力场<p>",
+            bonus: 3.9,
+            materials: { yin_stone: 5000, space_stone: 2500, star_dust: 1500, law_crystal: 1500,  time_essence: 300, space_crystal: 1000},
+            tier: 4,
+            color: "#8A2BE2",
+            unique: true
+        },
+        { 
+            id: "heavens_will_compassd", 
+            name: "平行世界门扉", 
+            description: "<p>混沌灵宝<p><p>描述：一扇看似普通的木门，打开后可能连接其他平行世界。门后世界随机，可能富饶，可能危险，可能相似，可能截然不同。每次开门消耗巨大，且无法控制目的地。<p><p>神威：①世界穿越：随机进入平行世界 ②资源获取：从其他世界获取特有资源 ③危机转嫁：将强敌引入危险世界<p>",
+            bonus: 4.2,
+            materials: { chaos_fragment: 4000, space_stone: 4000, star_dust: 1500, law_crystal: 1500,  eternity_core: 1000, space_crystal: 1400},
+            tier: 4,
+            color: "#8A2BE2",
+            unique: true
+        },
+        { 
+            id: "heavens_will_compasse", 
+            name: "因果轮回盘", 
+            description: "<p>混沌灵宝<p><p>描述：盘分六道，缓缓旋转。可追查一切因果来源，将自身业力暂时转移，或将敌人打入畜生道虚影受百世轮回之苦。<p><p>神威：①因果追溯：查找事件根源 ②业力转移：转移部分业力 ③六道轮回：精神层面施加轮回折磨<p>",
+            bonus: 4.4,
+            materials: { yang_stone: 10000, chaos_fragment: 4000, time_sand: 5000, destiny_fragment: 3000,  eternity_core: 3000},
+            tier: 4,
+            color: "#8A2BE2",
+            unique: true
+        },
+        { 
+            id: "heavens_will_compassf", 
+            name: "虚空古镜", 
+            description: "<p>混沌灵宝<p><p>描述：镜面漆黑如深渊，可映照诸天万界任意地点。持镜者可穿透空间阻隔，观察亿万里外景象，更可开辟临时空间通道。<p><p>神威：①万界洞察：观察任意已知坐标地点 ②虚空通道：开辟临时空间门 ③镜面反射：反弹空间类攻击<p>",
+            bonus: 4,
+            materials: { spirit_stone: 20000, chaos_fragment: 2000, space_stone: 2000, star_dust: 3000,  space_crystal: 500},
+            tier: 4,
+            color: "#8A2BE2",
+            unique: true
+        },
+        { 
+            id: "heavens_will_compassg", 
+            name: "大道之种", 
+            description: "<p>混沌灵宝<p><p>描述：开天辟地前，鸿蒙中孕育的第一粒“概念”。无形无质，存在于真实与虚幻之间。它不是法宝，而是一粒包含“道”之终极可能的种子。<p><p>神威：①道之起源：可于体内或身外开辟一条从未存在过的“道”的雏形。②规则定义：在自身“道”的覆盖范围内，可暂时重写或否定现有天地法则。③概念化身：自身存在逐渐升华为一种“概念”，难以被任何形式的攻击彻底抹除。<p>",
+            bonus: 4.5,
+            materials: { chaos_fragment: 5000, space_stone: 4000, law_crystal: 1000, eternity_core: 2000, time_essence: 3000,  space_crystal: 5000},
+            tier: 4,
+            color: "#8A2BE2",
+            unique: true
+        },
+        { 
+            id: "heavens_will_compassga", 
+            name: "诸果之因", 
+            description: "<p>混沌灵宝<p><p>描述：一株生长于因果长河源头的虚无之树，其上每一片叶子都是一段“起因”，而每一条根须都连接着一个“结果”。它不决定因果，而是因果本身的一种“具象化投影”。<p><p>神威：①因果洞察：看穿万物（包括圣人）的因果线。②因果嫁接：在微小事件上，替换或添加一个有利于自己的“因”，从而改变“果”。③因果绝缘：短暂将自身或某物从当前因果网中“摘除”，避开基于因果的推演、诅咒或攻击。<p>",
+            bonus: 4.6,
+            materials: { chaos_fragment: 8000, space_stone: 7000, law_crystal: 1500, eternity_core: 3000, time_essence: 1500,  space_crystal: 5000},
+            tier: 4,
+            color: "#8A2BE2",
+            unique: true
+        },
+        { 
+            id: "eternity_pagoda", 
+            name: "万物归零剑", 
+            description: "<p>混沌灵宝<p><p>描述：并非一把剑，而是一个“将万物归于虚无”的终极指令的具象化。它没有剑招，没有剑气，只有“斩出”这个动作。被其“斩中”的概念（如生命、时间、空间、法则），将从根源上被判定为“从未存在过”。<p><p>神威：①概念抹杀：指定一个“概念”进行斩杀，该概念将从当前宇宙信息中被彻底删除。②存在否定：使一个目标（无论其实力多强）的“存在”本身被暂时否定，陷入“非有非无”的彻底静止状态。<p>",
+            bonus: 5.0,
+            materials: { law_crystal: 10000, destiny_fragment: 10000,eternity_core: 5000, time_essence: 5000, space_crystal: 5000 },
+            tier: 4,
+            color: "#FF9800",
+            unique: true
+        }
+    ],
+    
+    // 材料列表
+    materials: [
+        // 常见材料 - 70%几率
+        { id: "spirit_stone", name: "灵石", color: "#4CAF50", dropChance: 0.80, tier: 1 },
+        { id: "wood", name: "灵木", color: "#8BC34A", dropChance: 0.80, tier: 1 },
+        { id: "water_crystal", name: "水晶", color: "#2196F3", dropChance: 0.80, tier: 1 },
+        { id: "fire_crystal", name: "火晶", color: "#FF5722", dropChance: 0.80, tier: 1 },
+        
+        // 稀有材料 - 5%几率
+        { id: "metal_crystal", name: "金晶", color: "#FFD700", dropChance: 0.05, tier: 2 },
+        { id: "wood_crystal", name: "木晶", color: "#8BC34A", dropChance: 0.05, tier: 2 },
+        { id: "earth_crystal", name: "土晶", color: "#795548", dropChance: 0.05, tier: 2 },
+        { id: "yin_stone", name: "阴石", color: "#9C27B0", dropChance: 0.05, tier: 2 },
+        { id: "yang_stone", name: "阳石", color: "#FF9800", dropChance: 0.05, tier: 2 },
+        
+        // 珍贵材料 - 1%几率
+        { id: "immortal_feather", name: "仙羽", color: "#00BCD4", dropChance: 0.01, tier: 3 },
+        { id: "celestial_silk", name: "天蚕丝", color: "#E91E63", dropChance: 0.01, tier: 3 },
+        { id: "chaos_fragment", name: "混沌碎片", color: "#673AB7", dropChance: 0.01, tier: 3 },
+        { id: "space_stone", name: "空间石", color: "#3F51B5", dropChance: 0.01, tier: 3 },
+        { id: "time_sand", name: "时光砂", color: "#009688", dropChance: 0.01, tier: 3 },
+        
+        // 传奇材料 - 0.1%几率
+        { id: "destiny_fragment", name: "命运碎片", color: "#8A2BE2", dropChance: 0.001, tier: 4 },
+        { id: "star_dust", name: "星辰尘", color: "#FFD700", dropChance: 0.001, tier: 4 },
+        { id: "law_crystal", name: "法则水晶", color: "#4CAF50", dropChance: 0.001, tier: 4 },
+        
+        // 神话材料 - 0.01%几率
+        { id: "eternity_core", name: "永恒核心", color: "#FF5722", dropChance: 0.0001, tier: 5 },
+        { id: "time_essence", name: "时光精华", color: "#2196F3", dropChance: 0.0001, tier: 5 },
+        { id: "space_crystal", name: "空间水晶", color: "#9C27B0", dropChance: 0.0001, tier: 5 }
+    ],
+    
+    
+    baseDropChance: 0.02 
+};
 
+// 初始化法宝系统
+function initMagicToolSystem() {
+    if (!player.magicTools) {
+        player.magicTools = {
+            equipped: null,
+            inventory: [],
+            materials: {}
+        };
+        
+        // 初始化所有材料为0
+        magicToolConfig.materials.forEach(material => {
+            player.magicTools.materials[material.id] = 0;
+        });
+    }
+    
+    // 更新UI后显示可合成的法宝
+    setTimeout(() => {
+        updateMagicToolUI();
+        // 默认显示可合成的法宝
+        showAllCraftableTools();
+    }, 100);
+}
+function showCollectionBonusInfo() {
+    const ownedCount = player.magicTools?.inventory?.length || 0;
+    const collectionBonus = 1 + (ownedCount * 0.02);
+    
+    const info = document.createElement('div');
+    info.style.position = 'fixed';
+    info.style.top = '100px';
+    info.style.right = '20px';
+    info.style.background = 'linear-gradient(145deg, #4CAF5040, #4CAF5020)';
+    info.style.color = 'white';
+    info.style.padding = '15px';
+    info.style.borderRadius = '10px';
+    info.style.borderLeft = '5px solid #4CAF50';
+    info.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+    info.style.zIndex = '9999';
+    info.style.minWidth = '200px';
+    info.style.maxWidth = '250px';
+    info.style.transform = 'translateX(400px)';
+    info.style.transition = 'transform 0.5s ease-out';
+    
+    info.innerHTML = `
+        <div style="font-weight: bold; color: #4CAF50; margin-bottom: 10px;">法宝收集加成</div>
+        <div style="font-size: 18px; font-weight: bold; color: #FFD700; margin-bottom: 5px;">+${ownedCount}%</div>
+        <div style="font-size: 12px; color: #aaa;">已收集: ${ownedCount}/${magicToolConfig.tools.length} 个法宝</div>
+        <div style="font-size: 11px; color: #666; margin-top: 10px;">每收集一个法宝额外提升1%修炼速度</div>
+    `;
+    
+    document.body.appendChild(info);
+    
+    // 动画显示
+    setTimeout(() => {
+        info.style.transform = 'translateX(0)';
+    }, 10);
+    
+    // 动画隐藏
+    setTimeout(() => {
+        info.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+            if (info.parentNode) {
+                document.body.removeChild(info);
+            }
+        }, 500);
+    }, 3000);
+}
+
+// 当获得新法宝时调用显示收集加成
+function onNewMagicToolObtained(toolId) {
+    // 显示合成成功提示后，再显示收集加成
+    setTimeout(showCollectionBonusInfo, 3500);
+}
+// 打开法宝系统
+function openMagicToolSystem() {
+    initMagicToolSystem();
+    
+    const ui = document.getElementById('magicToolUI');
+    const overlay = document.getElementById('magicToolOverlay');
+    
+    if (ui.style.display === 'block') {
+        ui.style.display = 'none';
+        overlay.style.display = 'none';
+    } else {
+        ui.style.display = 'block';
+        overlay.style.display = 'block';
+        updateMagicToolUI();
+    }
+}
+
+// 关闭法宝系统
+function closeMagicToolSystem() {
+    document.getElementById('magicToolUI').style.display = 'none';
+    document.getElementById('magicToolOverlay').style.display = 'none';
+}
+
+// 更新法宝系统界面
+function updateMagicToolUI() {
+    updateEquippedTool();
+    updateMaterialsDisplay();
+    updateMagicToolInventory();
+    
+    // 初始化时清空选择
+    if (!selectedToolForCrafting) {
+        const previewDiv = document.getElementById('magicToolPreview');
+        if (previewDiv && previewDiv.innerHTML.includes("法宝合成工坊")) {
+            // 已经初始化了，不需要重复设置
+        } else {
+            clearSelection();
+        }
+    }
+    
+    // 更新收集加成显示
+    updateCultivationExpUI(0, 1, 1);
+}
+function showAllCraftableTools() {
+    const recipesDiv = document.getElementById('craftingRecipes');
+    
+    // 查找所有可合成且未拥有的法宝
+    const craftableTools = magicToolConfig.tools.filter(tool => 
+        checkCanCraftTool(tool.id) && 
+        !player.magicTools.inventory.includes(tool.id)  // 不显示已拥有的
+    );
+    
+    if (craftableTools.length === 0) {
+        // 检查是否有已经拥有的法宝
+        const ownedToolsCount = player.magicTools.inventory.length;
+        const totalToolsCount = magicToolConfig.tools.length;
+        
+        if (ownedToolsCount >= totalToolsCount) {
+            recipesDiv.innerHTML = `
+                <div style="text-align: center; padding: 30px; color: #4CAF50;">
+                    <div style="font-size: 36px; margin-bottom: 20px;">🎉</div>
+                    <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">恭喜！</div>
+                    <div style="font-size: 14px; margin-bottom: 5px;">你已经收集了所有法宝！</div>
+                    <div style="font-size: 12px; color: #aaa; margin-top: 10px;">
+                        获得 ${ownedToolsCount}% 的永久修炼加成
+                    </div>
+                </div>
+            `;
+        } else {
+            recipesDiv.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #666;">
+                    <div style="font-size: 24px; margin-bottom: 10px;">⏳</div>
+                    <div style="font-size: 14px; margin-bottom: 5px;">当前没有可合成的法宝</div>
+                    <div style="font-size: 12px; color: #aaa; margin-top: 10px;">
+                        已收集: ${ownedToolsCount}/${totalToolsCount} 个法宝
+                        <div style="height: 4px; background: #444; border-radius: 2px; margin-top: 5px; overflow: hidden;">
+                            <div style="height: 100%; width: ${(ownedToolsCount / totalToolsCount) * 100}%; background: #4CAF50;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        return;
+    }
+    
+    let recipesHTML = `
+        <div style="margin-bottom: 10px; font-size: 12px; color: #4CAF50; font-weight: bold;">
+            可合成的法宝 (${craftableTools.length}个):
+        </div>
+    `;
+    
+    craftableTools.forEach(tool => {
+        recipesHTML += `
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #4CAF50; cursor: pointer;"
+                 onclick="selectToolForCrafting('${tool.id}')"
+                 onmouseenter="this.style.background='rgba(76,175,80,0.2)'"
+                 onmouseleave="this.style.background='rgba(76,175,80,0.1)'">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 14px; font-weight: bold; color: ${tool.color};">${tool.name}</div>
+                        <div style="font-size: 11px; color: #aaa; margin-top: 2px;">T${tool.tier} 法宝 • ${tool.bonus.toFixed(1)}倍加成</div>
+                    </div>
+                    <div style="font-size: 20px; color: #4CAF50;">➜</div>
+                </div>
+            </div>
+        `;
+    });
+    
+    // 添加收集进度信息
+    const ownedToolsCount = player.magicTools.inventory.length;
+    const totalToolsCount = magicToolConfig.tools.length;
+    const remainingTools = totalToolsCount - ownedToolsCount;
+    
+    recipesHTML += `
+        <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px; font-size: 11px; color: #aaa;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span>收集进度:</span>
+                <span>${ownedToolsCount}/${totalToolsCount}</span>
+            </div>
+            <div style="height: 4px; background: #444; border-radius: 2px; overflow: hidden; margin-bottom: 5px;">
+                <div style="height: 100%; width: ${(ownedToolsCount / totalToolsCount) * 100}%; background: #4CAF50;"></div>
+            </div>
+            <div style="text-align: center;">
+                剩余可合成: <span style="color: #FFD700;">${remainingTools}</span> 个法宝
+            </div>
+        </div>
+    `;
+    
+    recipesDiv.innerHTML = recipesHTML;
+}
+
+// 显示所有法宝配方
+function showAllRecipes() {
+    const recipesDiv = document.getElementById('craftingRecipes');
+    
+    const ownedToolsCount = player.magicTools.inventory.length;
+    const totalToolsCount = magicToolConfig.tools.length;
+    const unownedTools = magicToolConfig.tools.filter(tool => 
+        !player.magicTools.inventory.includes(tool.id)
+    );
+    
+    if (unownedTools.length === 0) {
+        recipesDiv.innerHTML = `
+            <div style="text-align: center; padding: 30px; color: #4CAF50;">
+                <div style="font-size: 36px; margin-bottom: 20px;">🏆</div>
+                <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">全收集达成！</div>
+                <div style="font-size: 14px; margin-bottom: 5px;">你已经获得了所有法宝</div>
+                <div style="font-size: 12px; color: #aaa; margin-top: 15px;">
+                    享受 ${ownedToolsCount}% 的永久修炼加成吧！
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    let recipesHTML = `
+        <div style="margin-bottom: 10px; font-size: 12px; color: #FFD700; font-weight: bold;">
+            未获得的法宝配方 (${unownedTools.length}/${totalToolsCount}):
+        </div>
+    `;
+    
+    // 按品级分组
+    const toolsByTier = {};
+    unownedTools.forEach(tool => {
+        if (!toolsByTier[tool.tier]) {
+            toolsByTier[tool.tier] = [];
+        }
+        toolsByTier[tool.tier].push(tool);
+    });
+    
+    Object.keys(toolsByTier).sort((a, b) => a - b).forEach(tier => {
+        const tierColor = getTierColor(tier);
+        recipesHTML += `
+            <div style="margin-bottom: 10px;">
+                <div style="font-size: 11px; color: ${tierColor}; margin-bottom: 5px; padding-bottom: 3px; border-bottom: 1px solid ${tierColor}40; display: flex; justify-content: space-between;">
+                    <span>T${tier} 法宝</span>
+                    <span>${toolsByTier[tier].length}个</span>
+                </div>
+        `;
+        
+        toolsByTier[tier].forEach(tool => {
+            const canCraft = checkCanCraftTool(tool.id);
+            const missingMaterials = getMissingMaterials(tool.id);
+            
+            recipesHTML += `
+                <div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 5px; margin-bottom: 5px; cursor: pointer;"
+                     onclick="selectToolForCrafting('${tool.id}')"
+                     onmouseenter="this.style.background='rgba(255,255,255,0.1)'"
+                     onmouseleave="this.style.background='rgba(255,255,255,0.05)'">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="color: ${tool.color}; font-size: 12px; font-weight: bold;">${tool.name}</div>
+                            <div style="font-size: 9px; color: ${canCraft ? '#4CAF50' : '#666'}; background: ${canCraft ? 'rgba(76,175,80,0.2)' : 'rgba(102,102,102,0.2)'}; padding: 1px 4px; border-radius: 2px;">
+                                ${canCraft ? '可合成' : '材料不足'}
+                            </div>
+                        </div>
+                        <div style="font-size: 10px; color: #FFD700; font-weight: bold;">${tool.bonus.toFixed(1)}×</div>
+                    </div>
+                    ${missingMaterials.length > 0 ? `
+                        <div style="font-size: 9px; color: #666; margin-top: 3px;">
+                            缺少: ${missingMaterials.map(m => `<span style="color: ${m.color};">${m.name}</span>`).join(', ')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+        
+        recipesHTML += `</div>`;
+    });
+    
+    // 添加收集进度
+    recipesHTML += `
+        <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #aaa; margin-bottom: 5px;">
+                <span>法宝收集进度</span>
+                <span>${ownedToolsCount}/${totalToolsCount}</span>
+            </div>
+            <div style="height: 6px; background: #444; border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
+                <div style="height: 100%; width: ${(ownedToolsCount / totalToolsCount) * 100}%; background: linear-gradient(90deg, #4CAF50, #8BC34A);"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #666;">
+                <span>加成: ${ownedToolsCount}%</span>
+                <span>剩余: ${unownedTools.length}个</span>
+            </div>
+        </div>
+    `;
+    
+    // 添加快捷按钮
+    recipesHTML += `
+        <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+            <button onclick="showAllCraftableTools()" style="background: rgba(76,175,80,0.2); color: #4CAF50; border: 1px solid #4CAF50; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 10px;">
+                只看可合成
+            </button>
+            <button onclick="clearSelection()" style="background: rgba(255,255,255,0.1); color: #aaa; border: 1px solid #666; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 10px;">
+                清空选择
+            </button>
+        </div>
+    `;
+    
+    recipesDiv.innerHTML = recipesHTML;
+}
+function getMissingMaterials(toolId) {
+    const tool = magicToolConfig.tools.find(t => t.id === toolId);
+    if (!tool) return [];
+    
+    const missing = [];
+    for (const [materialId, required] of Object.entries(tool.materials)) {
+        const have = player.magicTools.materials[materialId] || 0;
+        if (have < required) {
+            const material = magicToolConfig.materials.find(m => m.id === materialId);
+            missing.push({
+                id: materialId,
+                name: material.name,
+                color: material.color,
+                have: have,
+                need: required
+            });
+        }
+    }
+    
+    return missing;
+}
+// 更新装备的法宝显示
+function updateEquippedTool() {
+    const equippedDiv = document.getElementById('equippedMagicTool');
+    const bonusInfo = document.getElementById('magicToolBonusInfo');
+    const multiplier = document.getElementById('magicToolMultiplier');
+    
+    if (player.magicTools.equipped) {
+        const tool = magicToolConfig.tools.find(t => t.id === player.magicTools.equipped);
+        if (tool) {
+            equippedDiv.innerHTML = `
+                <div style="width: 100%;">
+                    <div style="font-size: 20px; font-weight: bold; color: ${tool.color}; margin-bottom: 5px;">${tool.name}</div>
+                    <div style="color: #aaa; margin-bottom: 10px;">${tool.description}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>加成: <span style="color: #FFD700; font-weight: bold;">${tool.bonus * 100}%</span></span>
+                        <button onclick="unequipMagicTool()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">卸下</button>
+                    </div>
+                </div>
+            `;
+            
+            multiplier.textContent = tool.bonus.toFixed(1);
+        }
+    } else {
+        equippedDiv.innerHTML = `
+            <div style="text-align: center; width: 100%;">
+                <div style="font-size: 18px; color: #aaa; margin-bottom: 10px;">未装备任何法宝</div>
+                <div style="color: #666;">装备法宝可提升修炼速度</div>
+            </div>
+        `;
+        multiplier.textContent = "1";
+    }
+    
+    // 更新主界面的法宝信息
+    const mainToolInfo = document.getElementById('currentMagicToolInfo');
+    if (player.magicTools.equipped) {
+        const tool = magicToolConfig.tools.find(t => t.id === player.magicTools.equipped);
+        mainToolInfo.innerHTML = `
+            <div style="color: ${tool.color}; font-weight: bold;">${tool.name}</div>
+            <div style="font-size: 12px; color: #aaa;">${tool.bonus.toFixed(1)}倍修炼</div>
+        `;
+    } else {
+        mainToolInfo.textContent = "无装备法宝";
+    }
+}
+// 添加全局变量来跟踪选择
+let selectedToolForCrafting = null; // 当前选择的要合成的法宝ID
+let selectedMaterialsForPreview = {}; // 用于预览的材料选择
+// 更新材料显示
+function updateMaterialsDisplay() {
+    const materialsDiv = document.getElementById('magicMaterials');
+    materialsDiv.innerHTML = '';
+    
+    // 计算每个材料相关的未获得法宝数量
+    const materialToolCounts = {};
+    magicToolConfig.materials.forEach(material => {
+        const unownedToolsUsingMaterial = magicToolConfig.tools.filter(tool => 
+            Object.keys(tool.materials).includes(material.id) && 
+            !player.magicTools.inventory.includes(tool.id)
+        );
+        materialToolCounts[material.id] = unownedToolsUsingMaterial.length;
+    });
+    
+    // 按品级分组显示
+    const tiers = {};
+    magicToolConfig.materials.forEach(material => {
+        if (!tiers[material.tier]) {
+            tiers[material.tier] = [];
+        }
+        tiers[material.tier].push(material);
+    });
+    
+    // 按品级从低到高显示
+    Object.keys(tiers).sort((a, b) => a - b).forEach(tier => {
+        // 添加品级标题
+        const tierHeader = document.createElement('div');
+        tierHeader.style.gridColumn = '1 / -1';
+        tierHeader.style.color = getTierColor(tier);
+        tierHeader.style.fontSize = '14px';
+        tierHeader.style.fontWeight = 'bold';
+        tierHeader.style.marginTop = tier > 1 ? '10px' : '0';
+        tierHeader.style.marginBottom = '8px';
+        tierHeader.style.paddingBottom = '5px';
+        tierHeader.style.borderBottom = `1px solid ${getTierColor(tier)}40`;
+        tierHeader.textContent = getTierName(tier);
+        materialsDiv.appendChild(tierHeader);
+        
+        // 显示该品级的材料
+        tiers[tier].forEach(material => {
+            const count = player.magicTools.materials[material.id] || 0;
+            const toolCount = materialToolCounts[material.id] || 0;
+            const materialDiv = document.createElement('div');
+            materialDiv.style.padding = '10px';
+            materialDiv.style.background = 'rgba(255,255,255,0.05)';
+            materialDiv.style.borderRadius = '6px';
+            materialDiv.style.textAlign = 'center';
+            materialDiv.style.border = `2px solid ${material.color}`;
+            materialDiv.style.cursor = 'pointer';
+            materialDiv.style.position = 'relative';
+            materialDiv.style.overflow = 'hidden';
+            materialDiv.style.transition = 'all 0.2s';
+            
+            // 如果该材料没有未获得的配方，变灰显示
+            if (toolCount === 0) {
+                materialDiv.style.opacity = '0.6';
+                materialDiv.style.filter = 'grayscale(0.3)';
+            }
+            
+            // 悬停效果
+            materialDiv.onmouseenter = () => {
+                if (toolCount > 0) {
+                    materialDiv.style.transform = 'translateY(-2px)';
+                    materialDiv.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+                }
+            };
+            materialDiv.onmouseleave = () => {
+                materialDiv.style.transform = 'translateY(0)';
+                materialDiv.style.boxShadow = 'none';
+            };
+            
+            // 点击查看可合成的法宝
+            materialDiv.onclick = () => {
+                if (toolCount > 0) {
+                    showRecipesForMaterial(material.id);
+                }
+            };
+            
+            // 添加材料品级背景
+            const tierIndicator = document.createElement('div');
+            tierIndicator.style.position = 'absolute';
+            tierIndicator.style.top = '0';
+            tierIndicator.style.right = '0';
+            tierIndicator.style.width = '0';
+            tierIndicator.style.height = '0';
+            tierIndicator.style.borderLeft = '15px solid transparent';
+            tierIndicator.style.borderRight = '15px solid transparent';
+            tierIndicator.style.borderBottom = `15px solid ${material.color}`;
+            tierIndicator.style.transform = 'rotate(45deg)';
+            tierIndicator.style.opacity = '0.3';
+            materialDiv.appendChild(tierIndicator);
+            
+            // 添加配方数量提示
+            if (toolCount > 0) {
+                const recipeCount = document.createElement('div');
+                recipeCount.style.position = 'absolute';
+                recipeCount.style.top = '3px';
+                recipeCount.style.left = '3px';
+                recipeCount.style.fontSize = '9px';
+                recipeCount.style.color = '#4CAF50';
+                recipeCount.style.background = 'rgba(0,0,0,0.5)';
+                recipeCount.style.padding = '1px 4px';
+                recipeCount.style.borderRadius = '3px';
+                recipeCount.style.fontWeight = 'bold';
+                recipeCount.textContent = `${toolCount}配方`;
+                materialDiv.appendChild(recipeCount);
+            }
+            
+            materialDiv.innerHTML += `
+                <div style="font-size: 12px; color: ${material.color}; margin-bottom: 3px; position: relative; z-index: 1;">${material.name}</div>
+                <div style="font-size: 18px; font-weight: bold; color: ${count > 0 ? '#FFD700' : '#666'}; position: relative; z-index: 1;">${count}</div>
+                <div style="font-size: 10px; color: #666; position: relative; z-index: 1; margin-top: 2px;">${(material.dropChance * 100).toFixed(2)}%</div>
+                ${toolCount === 0 ? 
+                    '<div style="font-size: 9px; color: #4CAF50; position: relative; z-index: 1; margin-top: 3px; background: rgba(76,175,80,0.2); padding: 1px 4px; border-radius: 3px;">已全部获得</div>' : 
+                    ''
+                }
+            `;
+            materialsDiv.appendChild(materialDiv);
+        });
+    });
+    
+    // 添加统计信息
+    const statsDiv = document.createElement('div');
+    statsDiv.style.gridColumn = '1 / -1';
+    statsDiv.style.marginTop = '15px';
+    statsDiv.style.padding = '10px';
+    statsDiv.style.background = 'rgba(255,255,255,0.05)';
+    statsDiv.style.borderRadius = '8px';
+    statsDiv.style.fontSize = '11px';
+    statsDiv.style.color = '#aaa';
+    
+    const ownedToolsCount = player.magicTools.inventory.length;
+    const totalToolsCount = magicToolConfig.tools.length;
+    const remainingTools = totalToolsCount - ownedToolsCount;
+    
+    statsDiv.innerHTML = `
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+            <span>法宝收集:</span>
+            <span><span style="color: #4CAF50;">${ownedToolsCount}</span>/${totalToolsCount}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+            <span>剩余可合成:</span>
+            <span style="color: ${remainingTools > 0 ? '#FFD700' : '#4CAF50'}">${remainingTools}个</span>
+        </div>
+    `;
+    
+    materialsDiv.appendChild(statsDiv);
+    
+    // 在材料显示底部添加按钮
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.style.gridColumn = '1 / -1';
+    buttonsDiv.style.display = 'flex';
+    buttonsDiv.style.gap = '10px';
+    buttonsDiv.style.marginTop = '10px';
+    buttonsDiv.style.justifyContent = 'center';
+    
+    buttonsDiv.innerHTML = `
+        <button onclick="showAllCraftableTools()" style="background: linear-gradient(45deg, #4CAF50, #2E7D32); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; flex: 1;">
+            可合成法宝
+        </button>
+        <button onclick="showAllRecipes()" style="background: rgba(255,255,255,0.1); color: #aaa; border: 1px solid #666; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; flex: 1;">
+            所有配方
+        </button>
+    `;
+    
+    materialsDiv.appendChild(buttonsDiv);
+}
+// 获取品级颜色
+function getTierColor(tier) {
+    const colors = {
+        1: '#4CAF50', // 绿色 - 常见
+        2: '#2196F3', // 蓝色 - 稀有
+        3: '#9C27B0', // 紫色 - 珍贵
+        4: '#FF9800', // 橙色 - 传奇
+        5: '#FF5722'  // 红色 - 神话
+    };
+    return colors[tier] || '#FFFFFF';
+}
+
+// 获取品级名称
+function getTierName(tier) {
+    const names = {
+        1: '常见材料 (80%掉落几率)',
+        2: '稀有材料 (5%掉落几率)',
+        3: '珍贵材料 (1%掉落几率)',
+        4: '传奇材料 (0.1%掉落几率)',
+        5: '神话材料 (0.01%掉落几率)'
+    };
+    return names[tier] || `品级 ${tier}`;
+}
+
+function showRecipesForMaterial(materialId) {
+    const recipesDiv = document.getElementById('craftingRecipes');
+    const material = magicToolConfig.materials.find(m => m.id === materialId);
+    
+    if (!material) return;
+    
+    // 查找使用该材料且未拥有的法宝
+    const toolsUsingMaterial = magicToolConfig.tools.filter(tool => 
+        Object.keys(tool.materials).includes(materialId) && 
+        !player.magicTools.inventory.includes(tool.id)  // 不显示已拥有的
+    );
+    
+    if (toolsUsingMaterial.length === 0) {
+        recipesDiv.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #666;">
+                <div style="font-size: 24px; margin-bottom: 10px;">📭</div>
+                <div style="font-size: 14px; margin-bottom: 5px;">没有新的配方</div>
+                <div style="font-size: 12px; color: #aaa;">
+                    使用 <span style="color: ${material.color};">${material.name}</span> 的法宝已经全部获得了
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    // 显示配方列表
+    let recipesHTML = `
+        <div style="margin-bottom: 10px; font-size: 12px; color: #aaa;">
+            使用 <span style="color: ${material.color}; font-weight: bold;">${material.name}</span> 的配方 (${toolsUsingMaterial.length}个):
+        </div>
+    `;
+    
+    toolsUsingMaterial.forEach(tool => {
+        const requiredCount = tool.materials[materialId];
+        const hasCount = player.magicTools.materials[materialId] || 0;
+        const canCraft = checkCanCraftTool(tool.id);
+        
+        recipesHTML += `
+            <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid ${tool.color}; cursor: pointer;"
+                 onclick="selectToolForCrafting('${tool.id}')"
+                 onmouseenter="this.style.background='rgba(255,255,255,0.1)'"
+                 onmouseleave="this.style.background='rgba(255,255,255,0.05)'">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <div style="font-size: 14px; font-weight: bold; color: ${tool.color};">${tool.name}</div>
+                        <div style="font-size: 11px; color: #aaa; margin-top: 2px;">${tool.description}</div>
+                    </div>
+                    <div style="font-size: 10px; color: ${canCraft ? '#4CAF50' : '#f44336'}; background: ${canCraft ? 'rgba(76,175,80,0.2)' : 'rgba(244,67,54,0.2)'}; padding: 2px 6px; border-radius: 3px;">
+                        ${canCraft ? '可合成' : '材料不足'}
+                    </div>
+                </div>
+                <div style="margin-top: 8px;">
+                    <div style="font-size: 11px; color: #666; margin-bottom: 4px;">需要${material.name}:</div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="color: ${hasCount >= requiredCount ? '#4CAF50' : '#f44336'}; font-weight: bold;">
+                            ${hasCount}/${requiredCount}
+                        </div>
+                        <div style="flex: 1; height: 4px; background: #444; border-radius: 2px; overflow: hidden;">
+                            <div style="height: 100%; width: ${Math.min(100, (hasCount / requiredCount) * 100)}%; background: ${hasCount >= requiredCount ? '#4CAF50' : '#f44336'};"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    recipesDiv.innerHTML = recipesHTML;
+    
+    // 默认选择第一个可合成的法宝
+    const firstCraftableTool = toolsUsingMaterial.find(tool => checkCanCraftTool(tool.id));
+    if (firstCraftableTool) {
+        selectToolForCrafting(firstCraftableTool.id);
+    } else if (toolsUsingMaterial.length > 0) {
+        // 如果没有可合成的，至少显示第一个
+        selectToolForCrafting(toolsUsingMaterial[0].id);
+    }
+}
+function checkCanCraftTool(toolId) {
+    const tool = magicToolConfig.tools.find(t => t.id === toolId);
+    if (!tool) return false;
+    
+    // 检查是否已经拥有（如果已拥有，不能合成）
+    if (player.magicTools.inventory.includes(toolId)) {
+        return false;
+    }
+    
+    // 检查材料是否足够
+    for (const [materialId, required] of Object.entries(tool.materials)) {
+        const have = player.magicTools.materials[materialId] || 0;
+        if (have < required) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+function selectToolForCrafting(toolId) {
+    selectedToolForCrafting = toolId;
+    const tool = magicToolConfig.tools.find(t => t.id === toolId);
+    
+    if (!tool) return;
+    
+    // 更新预览显示
+    updateToolPreview(tool);
+    
+    // 更新材料选择信息
+    updateSelectedMaterialsInfo(tool);
+    
+    // 更新合成按钮状态
+    updateCraftButton(tool);
+}
+// 更新法宝预览
+function updateToolPreview(tool) {
+    const previewDiv = document.getElementById('magicToolPreview');
+    const alreadyOwned = player.magicTools.inventory.includes(tool.id);
+    const canCraft = checkCanCraftTool(tool.id);
+    const tierColor = getTierColor(tool.tier);
+    
+    // 如果已拥有，显示不同的预览
+    if (alreadyOwned) {
+        previewDiv.innerHTML = `
+            <div style="width: 100%;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                    <div style="font-size: 40px; color: #4CAF50;">✅</div>
+                    <div>
+                        <div style="font-size: 24px; font-weight: bold; color: ${tool.color};">${tool.name}</div>
+                        <div style="font-size: 12px; color: ${tierColor}; background: ${tierColor}20; padding: 2px 10px; border-radius: 10px; display: inline-block; margin-top: 5px;">已拥有 • T${tool.tier} 法宝</div>
+                    </div>
+                </div>
+                
+                <div style="color: #aaa; margin-bottom: 15px; font-size: 14px; line-height: 1.4;">${tool.description}</div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div style="background: rgba(255, 215, 0, 0.1); padding: 10px; border-radius: 8px;">
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">基础加成</div>
+                        <div style="font-size: 20px; color: #FFD700; font-weight: bold;">${tool.bonus.toFixed(1)}倍</div>
+                    </div>
+                    <div style="background: rgba(76, 175, 80, 0.1); padding: 10px; border-radius: 8px;">
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">收集加成</div>
+                        <div style="font-size: 20px; color: #4CAF50; font-weight: bold;">+1%</div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(76, 175, 80, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid #4CAF50;">
+                    <div style="font-size: 14px; color: #4CAF50; font-weight: bold; margin-bottom: 5px;">已添加到法宝库</div>
+                    <div style="font-size: 12px; color: #aaa;">这个法宝正在为你的修炼提供加成</div>
+                </div>
+            </div>
+        `;
+        
+        // 如果已拥有，禁用合成按钮
+        const craftButton = document.getElementById('craftButton');
+        craftButton.disabled = true;
+        craftButton.style.background = '#666';
+        craftButton.style.color = '#aaa';
+        craftButton.textContent = '已拥有';
+        
+        return;
+    }
+    
+    // 未拥有的法宝预览
+    const missingMaterials = getMissingMaterials(tool.id);
+    
+    previewDiv.innerHTML = `
+        <div style="width: 100%;">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                <div style="font-size: 40px;">${canCraft ? '🔮' : '⏳'}</div>
+                <div>
+                    <div style="font-size: 24px; font-weight: bold; color: ${tool.color};">${tool.name}</div>
+                    <div style="font-size: 12px; color: ${tierColor}; background: ${tierColor}20; padding: 2px 10px; border-radius: 10px; display: inline-block; margin-top: 5px;">T${tool.tier} 法宝</div>
+                </div>
+            </div>
+            
+            <div style="color: #aaa; margin-bottom: 15px; font-size: 14px; line-height: 1.4;">${tool.description}</div>
+            
+            ${missingMaterials.length > 0 ? `
+                <div style="color: #f44336; margin-bottom: 15px; font-size: 14px; background: rgba(244, 67, 54, 0.1); padding: 10px; border-radius: 8px; border-left: 3px solid #f44336;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">缺少材料:</div>
+                    ${missingMaterials.map(m => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 3px;">
+                            <span style="color: ${m.color};">${m.name}</span>
+                            <span>${m.have}/${m.need}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : ''}
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <div style="background: rgba(255, 215, 0, 0.1); padding: 10px; border-radius: 8px;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">修炼加成</div>
+                    <div style="font-size: 20px; color: #FFD700; font-weight: bold;">${tool.bonus.toFixed(1)}倍</div>
+                </div>
+                <div style="background: rgba(76, 175, 80, 0.1); padding: 10px; border-radius: 8px;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">收集加成</div>
+                    <div style="font-size: 20px; color: #4CAF50; font-weight: bold;">+1%</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <div style="font-size: 12px; color: #666; margin-bottom: 8px;">合成状态:</div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="font-size: 14px; color: ${canCraft ? '#4CAF50' : '#f44336'}; font-weight: bold;">
+                        ${canCraft ? '可合成' : '材料不足'}
+                    </div>
+                    ${canCraft ? 
+                        '<div style="font-size: 12px; color: #4CAF50; background: rgba(76,175,80,0.2); padding: 2px 8px; border-radius: 3px;">✓ 材料充足</div>' : 
+                        '<div style="font-size: 12px; color: #f44336; background: rgba(244,67,54,0.2); padding: 2px 8px; border-radius: 3px;">✗ 缺少材料</div>'
+                    }
+                </div>
+            </div>
+        </div>
+    `;
+}
+function updateSelectedMaterialsInfo(tool) {
+    const infoDiv = document.getElementById('selectedMaterialsInfo');
+    
+    if (!tool) {
+        infoDiv.innerHTML = "未选择法宝";
+        return;
+    }
+    
+    let materialsHTML = `
+        <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">合成 ${tool.name} 所需材料:</div>
+    `;
+    
+    let allMaterialsAvailable = true;
+    let totalRequired = 0;
+    let totalHave = 0;
+    
+    for (const [materialId, required] of Object.entries(tool.materials)) {
+        const material = magicToolConfig.materials.find(m => m.id === materialId);
+        const have = player.magicTools.materials[materialId] || 0;
+        const isAvailable = have >= required;
+        
+        if (!isAvailable) allMaterialsAvailable = false;
+        
+        totalRequired += required;
+        totalHave += Math.min(have, required);
+        
+        materialsHTML += `
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; font-size: 11px;">
+                <span style="color: ${material.color};">${material.name}</span>
+                <span style="color: ${isAvailable ? '#4CAF50' : '#f44336'}; font-weight: bold;">
+                    ${have}/${required}
+                </span>
+            </div>
+        `;
+    }
+    
+    // 添加进度条
+    const progressPercent = totalRequired > 0 ? (totalHave / totalRequired) * 100 : 0;
+    materialsHTML += `
+        <div style="margin-top: 8px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #666; margin-bottom: 3px;">
+                <span>材料收集进度</span>
+                <span>${totalHave}/${totalRequired}</span>
+            </div>
+            <div style="height: 4px; background: #444; border-radius: 2px; overflow: hidden;">
+                <div style="height: 100%; width: ${progressPercent}%; background: ${allMaterialsAvailable ? '#4CAF50' : '#f44336'};"></div>
+            </div>
+        </div>
+    `;
+    
+    infoDiv.innerHTML = materialsHTML;
+}
+function updateCraftButton(tool) {
+    const craftButton = document.getElementById('craftButton');
+    const alreadyOwned = player.magicTools.inventory.includes(tool.id);
+    const canCraft = checkCanCraftTool(tool.id);
+    
+    if (alreadyOwned) {
+        craftButton.disabled = true;
+        craftButton.style.background = '#666';
+        craftButton.style.color = '#aaa';
+        craftButton.textContent = '已拥有该法宝';
+    } else if (canCraft) {
+        craftButton.disabled = false;
+        craftButton.style.background = `linear-gradient(45deg, ${tool.color}, ${tool.color}80)`;
+        craftButton.style.color = 'white';
+        craftButton.textContent = `合成 ${tool.name}`;
+        craftButton.onclick = () => craftSelectedTool();
+    } else {
+        craftButton.disabled = true;
+        craftButton.style.background = '#555';
+        craftButton.style.color = '#888';
+        craftButton.textContent = '材料不足';
+    }
+}
+function craftSelectedTool() {
+    if (!selectedToolForCrafting) {
+        logAction("请先选择要合成的法宝", "error");
+        return;
+    }
+    
+    craftMagicTool(selectedToolForCrafting);
+}
+function clearSelection() {
+    selectedToolForCrafting = null;
+    selectedMaterialsForPreview = {};
+    
+    // 重置显示
+    const previewDiv = document.getElementById('magicToolPreview');
+    previewDiv.innerHTML = `
+        <div style="width: 100%;">
+            <div style="font-size: 48px; margin-bottom: 20px;">🔮</div>
+            <div style="font-size: 18px; color: #aaa; margin-bottom: 10px;">法宝合成工坊</div>
+            <div style="color: #666; font-size: 14px;">点击材料查看配方或使用下方按钮</div>
+        </div>
+    `;
+    
+    document.getElementById('selectedMaterialsInfo').innerHTML = "未选择材料";
+    
+    // 默认显示可合成的法宝
+    showAllCraftableTools();
+    
+    const craftButton = document.getElementById('craftButton');
+    craftButton.disabled = true;
+    craftButton.style.background = '#555';
+    craftButton.style.color = '#888';
+    craftButton.textContent = '请选择要合成的法宝';
+}
+
+// 更新法宝库存显示
+function updateMagicToolInventory() {
+    const inventoryDiv = document.getElementById('magicToolInventory');
+    inventoryDiv.innerHTML = '';
+    
+    if (player.magicTools.inventory.length === 0) {
+        inventoryDiv.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #666;">
+                <div style="font-size: 48px; margin-bottom: 20px;">📦</div>
+                <div style="font-size: 18px; margin-bottom: 10px;">法宝库空空如也</div>
+                <div style="color: #aaa;">快去合成你的第一个法宝吧！</div>
+            </div>
+        `;
+        return;
+    }
+    
+    // 添加收集进度条
+    const progressContainer = document.createElement('div');
+    progressContainer.style.gridColumn = '1 / -1';
+    progressContainer.style.marginBottom = '20px';
+    progressContainer.id = 'magicToolCollectionProgress';
+    inventoryDiv.appendChild(progressContainer);
+    
+    // 更新收集进度
+    updateCollectionProgress();
+    
+    // 按品级排序显示法宝
+    const sortedTools = [...player.magicTools.inventory]
+        .map(id => magicToolConfig.tools.find(t => t.id === id))
+        .filter(tool => tool) // 过滤掉可能为null的值
+        .sort((a, b) => a.tier - b.tier); // 按品级排序
+    
+    sortedTools.forEach(tool => {
+        const isEquipped = player.magicTools.equipped === tool.id;
+        const toolDiv = document.createElement('div');
+        toolDiv.style.padding = '15px';
+        toolDiv.style.background = isEquipped 
+            ? `linear-gradient(145deg, ${tool.color}40, ${tool.color}20)` 
+            : 'rgba(255,255,255,0.05)';
+        toolDiv.style.borderRadius = '8px';
+        toolDiv.style.border = `2px solid ${tool.color}`;
+        toolDiv.style.position = 'relative';
+        toolDiv.style.overflow = 'hidden';
+        
+        // 添加品级角标
+        const tierBadge = document.createElement('div');
+        tierBadge.style.position = 'absolute';
+        tierBadge.style.top = '5px';
+        tierBadge.style.right = '5px';
+        tierBadge.style.background = tool.color;
+        tierBadge.style.color = 'white';
+        tierBadge.style.fontSize = '10px';
+        tierBadge.style.padding = '2px 6px';
+        tierBadge.style.borderRadius = '3px';
+        tierBadge.style.fontWeight = 'bold';
+        tierBadge.textContent = `T${tool.tier}`;
+        toolDiv.appendChild(tierBadge);
+        
+        toolDiv.innerHTML += `
+            <div style="font-size: 16px; font-weight: bold; color: ${tool.color}; margin-bottom: 5px; padding-right: 30px;">${tool.name}</div>
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 10px; min-height: 40px;">${tool.description}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="color: #FFD700; font-weight: bold;">${tool.bonus.toFixed(1)}倍</span>
+                <span style="font-size: 12px; color: #666;">
+                    <span style="color: #4CAF50;">+1%</span> 收集加成
+                </span>
+            </div>
+            ${isEquipped 
+                ? '<button style="width: 100%; background: #f44336; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;" onclick="unequipMagicTool()">卸下</button>'
+                : '<button style="width: 100%; background: #4CAF50; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;" onclick="equipMagicTool(\'' + tool.id + '\')">装备</button>'
+            }
+        `;
+        inventoryDiv.appendChild(toolDiv);
+    });
+}
+// 选择材料（用于合成预览）
+let selectedMaterials = {};
+function selectMaterial(materialId) {
+    const material = magicToolConfig.materials.find(m => m.id === materialId);
+    if (!material) return;
+    
+    if (!selectedMaterials[materialId]) {
+        selectedMaterials[materialId] = 0;
+    }
+    selectedMaterials[materialId]++;
+    
+    updateMagicToolPreview();
+}
+
+// 更新合成预览
+function updateMagicToolPreview() {
+    const previewDiv = document.getElementById('magicToolPreview');
+    const materialsInfo = document.getElementById('selectedMaterialsInfo');
+    const craftButton = document.getElementById('craftButton');
+    
+    // 清空预览
+    previewDiv.innerHTML = "选择材料查看可合成的法宝";
+    craftButton.disabled = true;
+    craftButton.style.background = '#555';
+    craftButton.style.color = '#888';
+    craftButton.textContent = '选择材料';
+    
+    if (Object.keys(selectedMaterials).length === 0) {
+        materialsInfo.textContent = "未选择材料";
+        return;
+    }
+    
+    // 显示已选择的材料
+    let materialsText = "已选择材料: ";
+    for (const [materialId, count] of Object.entries(selectedMaterials)) {
+        const material = magicToolConfig.materials.find(m => m.id === materialId);
+        if (material) {
+            const tierColor = getTierColor(material.tier);
+            materialsText += `<span style="color: ${tierColor}">${material.name}×${count}</span> `;
+        }
+    }
+    materialsInfo.innerHTML = materialsText;
+    
+    // 检查可以合成的法宝
+    for (const tool of magicToolConfig.tools) {
+        let canCraft = true;
+        
+        // 检查材料是否足够
+        for (const [materialId, required] of Object.entries(tool.materials)) {
+            const have = selectedMaterials[materialId] || 0;
+            if (have < required) {
+                canCraft = false;
+                break;
+            }
+        }
+        
+        if (canCraft) {
+            // 检查是否已经拥有该法宝
+            const alreadyOwned = player.magicTools.inventory.includes(tool.id);
+            
+            // 显示可以合成的法宝
+            const tierColor = getTierColor(tool.tier);
+            previewDiv.innerHTML = `
+                <div style="width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <div style="font-size: 30px;">${alreadyOwned ? '✅' : '🔮'}</div>
+                        <div>
+                            <div style="font-size: 22px; font-weight: bold; color: ${tool.color};">${alreadyOwned ? '已拥有' : '可以合成'}: ${tool.name}</div>
+                            <div style="font-size: 12px; color: ${tierColor}; background: ${tierColor}20; padding: 2px 8px; border-radius: 10px; display: inline-block;">T${tool.tier} 法宝</div>
+                        </div>
+                    </div>
+                    ${alreadyOwned ? 
+                        '<div style="color: #f44336; margin-bottom: 15px; font-size: 14px; background: rgba(244, 67, 54, 0.1); padding: 8px; border-radius: 5px;">⚠️ 已拥有该法宝，无法重复获得</div>' : 
+                        `<div style="color: #aaa; margin-bottom: 15px; font-size: 14px;">${tool.description}</div>`
+                    }
+                    <div style="color: #FFD700; font-weight: bold; font-size: 18px; margin-bottom: 10px;">修炼加成: ${tool.bonus.toFixed(1)}倍</div>
+                    <div style="color: #4CAF50; font-size: 14px; margin-bottom: 15px;">收集加成: +1% 修炼速度</div>
+                    <div style="margin-top: 10px;">
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">所需材料:</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 5px;">${Object.entries(tool.materials).map(([id, required]) => {
+                            const material = magicToolConfig.materials.find(m => m.id === id);
+                            const hasMaterial = (player.magicTools.materials[id] || 0) >= required;
+                            const isSelected = (selectedMaterials[id] || 0) >= required;
+                            return `<div style="background: ${isSelected ? (hasMaterial ? '#4CAF5040' : '#f4433640') : '#555'}; 
+                                    color: ${isSelected ? (hasMaterial ? '#4CAF50' : '#f44336') : '#888'}; 
+                                    padding: 3px 8px; border-radius: 5px; font-size: 11px;">
+                                    ${material?.name}×${required} ${!hasMaterial ? '❌' : '✅'}
+                                </div>`;
+                        }).join('')}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 检查玩家是否已有足够材料且未拥有该法宝
+            let hasAllMaterials = true;
+            if (!alreadyOwned) {
+                for (const [materialId, required] of Object.entries(tool.materials)) {
+                    const have = player.magicTools.materials[materialId] || 0;
+                    if (have < required) {
+                        hasAllMaterials = false;
+                        break;
+                    }
+                }
+            }
+            
+            if (!alreadyOwned && hasAllMaterials) {
+                craftButton.disabled = false;
+                craftButton.style.background = `linear-gradient(45deg, ${tool.color}, ${tool.color}80)`;
+                craftButton.style.color = 'white';
+                craftButton.textContent = `合成 ${tool.name}`;
+                craftButton.onclick = () => craftMagicTool(tool.id);
+            } else if (alreadyOwned) {
+                craftButton.textContent = '已拥有';
+                craftButton.style.background = '#666';
+                craftButton.style.color = '#aaa';
+            } else {
+                craftButton.textContent = '材料不足';
+                craftButton.style.background = '#555';
+                craftButton.style.color = '#888';
+            }
+            
+            return;
+        }
+    }
+    
+    // 如果没有找到可合成的法宝
+    previewDiv.innerHTML = `
+        <div style="text-align: center; width: 100%;">
+            <div style="font-size: 24px; margin-bottom: 10px;">❓</div>
+            <div style="font-size: 18px; color: #aaa; margin-bottom: 10px;">无法合成法宝</div>
+            <div style="color: #666; font-size: 14px;">当前材料组合无法合成任何法宝</div>
+            <div style="color: #aaa; font-size: 12px; margin-top: 15px;">请尝试不同的材料组合</div>
+        </div>
+    `;
+}
+
+
+// 合成法宝
+function craftMagicTool(toolId) {
+    const tool = magicToolConfig.tools.find(t => t.id === toolId);
+    if (!tool) return;
+    
+    // 检查是否已经拥有该法宝
+    if (player.magicTools.inventory.includes(toolId)) {
+        const errorMsg = `你已经拥有${tool.name}了！每个法宝只能获得一个。`;
+        logAction(errorMsg, "error");
+        showAlreadyOwnedNotification(tool);
+        return;
+    }
+    
+    // 检查材料是否足够
+    let missingMaterials = [];
+    for (const [materialId, required] of Object.entries(tool.materials)) {
+        const have = player.magicTools.materials[materialId] || 0;
+        if (have < required) {
+            const material = magicToolConfig.materials.find(m => m.id === materialId);
+            missingMaterials.push(`${material.name} (需要${required}个，只有${have}个)`);
+        }
+    }
+    
+    if (missingMaterials.length > 0) {
+        const errorMsg = `材料不足！缺少: ${missingMaterials.join(', ')}`;
+        logAction(errorMsg, "error");
+        alert(`合成失败！\n\n缺少以下材料:\n${missingMaterials.join('\n')}`);
+        return;
+    }
+    
+    // 扣除材料
+    for (const [materialId, required] of Object.entries(tool.materials)) {
+        player.magicTools.materials[materialId] -= required;
+    }
+    
+    // 添加法宝到库存
+    player.magicTools.inventory.push(toolId);
+    
+    // 显示合成成功提示
+    showCraftSuccessNotification(tool);
+    
+    // 更新收集加成显示
+    updateCollectionProgress();
+    
+    // 重置选择
+    clearSelection();
+    
+    logAction(`成功合成法宝: ${tool.name}！`, "success");
+    updateMagicToolUI();
+    updateDisplay();
+    
+    // 延迟显示收集加成信息
+    setTimeout(showCollectionBonusInfo, 3500);
+}
+function showCraftSuccessNotification(tool) {
+    const notification = document.createElement('div');
+    notification.style.position = 'fixed';
+    notification.style.top = '50%';
+    notification.style.left = '50%';
+    notification.style.transform = 'translate(-50%, -50%) scale(0.5)';
+    notification.style.background = `linear-gradient(145deg, ${tool.color}40, ${tool.color}20)`;
+    notification.style.color = 'white';
+    notification.style.padding = '30px';
+    notification.style.borderRadius = '20px';
+    notification.style.border = `3px solid ${tool.color}`;
+    notification.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+    notification.style.zIndex = '10000';
+    notification.style.minWidth = '300px';
+    notification.style.maxWidth = '400px';
+    notification.style.textAlign = 'center';
+    notification.style.opacity = '0';
+    notification.style.transition = 'all 0.5s ease-out';
+    
+    notification.innerHTML = `
+        <div style="font-size: 48px; margin-bottom: 20px;">✨</div>
+        <div style="font-size: 28px; font-weight: bold; color: ${tool.color}; margin-bottom: 10px;">合成成功！</div>
+        <div style="font-size: 22px; font-weight: bold; margin-bottom: 15px;">${tool.name}</div>
+        <div style="color: #aaa; margin-bottom: 20px;">${tool.description}</div>
+        <div style="background: rgba(255, 215, 0, 0.2); padding: 10px; border-radius: 10px; margin-bottom: 20px;">
+            <div style="font-size: 18px; color: #FFD700;">修炼加成: ${tool.bonus.toFixed(1)}倍</div>
+        </div>
+        <div style="color: #666; font-size: 14px;">该法宝已添加到你的法宝库中</div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 动画显示
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translate(-50%, -50%) scale(1)';
+    }, 10);
+    
+    // 动画隐藏
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translate(-50%, -50%) scale(0.5)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 500);
+    }, 3000);
+}
+function showAlreadyOwnedNotification(tool) {
+    const notification = document.createElement('div');
+    notification.style.position = 'fixed';
+    notification.style.top = '50%';
+    notification.style.left = '50%';
+    notification.style.transform = 'translate(-50%, -50%) scale(0.5)';
+    notification.style.background = `linear-gradient(145deg, #f4433640, #f4433620)`;
+    notification.style.color = 'white';
+    notification.style.padding = '30px';
+    notification.style.borderRadius = '20px';
+    notification.style.border = `3px solid #f44336`;
+    notification.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+    notification.style.zIndex = '10000';
+    notification.style.minWidth = '300px';
+    notification.style.maxWidth = '400px';
+    notification.style.textAlign = 'center';
+    notification.style.opacity = '0';
+    notification.style.transition = 'all 0.5s ease-out';
+    
+    notification.innerHTML = `
+        <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
+        <div style="font-size: 28px; font-weight: bold; color: #f44336; margin-bottom: 10px;">已拥有该法宝</div>
+        <div style="font-size: 22px; font-weight: bold; margin-bottom: 15px;">${tool.name}</div>
+        <div style="color: #aaa; margin-bottom: 20px;">每个法宝只能拥有一个</div>
+        <div style="background: rgba(244, 67, 54, 0.2); padding: 10px; border-radius: 10px; margin-bottom: 20px;">
+            <div style="font-size: 16px; color: #FFD700;">法宝收集加成已生效: +1%修炼速度</div>
+        </div>
+        <div style="color: #666; font-size: 14px;">继续收集其他法宝来获得更多加成！</div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 动画显示
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translate(-50%, -50%) scale(1)';
+    }, 10);
+    
+    // 动画隐藏
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translate(-50%, -50%) scale(0.5)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 500);
+    }, 3000);
+}
+function updateCollectionProgress() {
+    const totalTools = magicToolConfig.tools.length;
+    const ownedTools = player.magicTools.inventory.length;
+    const progress = totalTools > 0 ? (ownedTools / totalTools) * 100 : 0;
+    
+    // 更新法宝收集进度显示
+    const collectionProgressElement = document.getElementById('magicToolCollectionProgress');
+    if (collectionProgressElement) {
+        collectionProgressElement.innerHTML = `
+            <div style="margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="color: #FFD700;">法宝收集进度</span>
+                    <span style="color: #4CAF50;">${ownedTools}/${totalTools}</span>
+                </div>
+                <div style="background: #444; height: 10px; border-radius: 5px; overflow: hidden;">
+                    <div style="height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); width: ${progress}%; transition: width 0.5s;"></div>
+                </div>
+            </div>
+            <div style="color: #aaa; font-size: 12px; text-align: center;">
+                每收集一个法宝获得1%修炼加成，当前加成: <span style="color: #FFD700;">${ownedTools}%</span>
+            </div>
+        `;
+    }
+}
+// 装备法宝
+function equipMagicTool(toolId) {
+    if (!player.magicTools.inventory.includes(toolId)) {
+        logAction("未拥有该法宝", "error");
+        return;
+    }
+    
+    player.magicTools.equipped = toolId;
+    
+    const tool = magicToolConfig.tools.find(t => t.id === toolId);
+    if (tool) {
+        logAction(`装备法宝: ${tool.name}`, "success");
+    }
+    
+    updateMagicToolUI();
+    updateCultivationExpUI(0, 1, 1); // 更新加成显示
+}
+
+
+// 卸下法宝
+function unequipMagicTool() {
+    player.magicTools.equipped = null;
+    logAction("已卸下法宝", "info");
+    updateMagicToolUI();
+    updateCultivationExpUI(0, 1, 1); // 更新加成显示
+}
+
+// 材料掉落函数（在其他地方调用，掉落几率为1%）
+function dropMagicMaterial() {
+    // 基础掉落判定
+    if (Math.random() > magicToolConfig.baseDropChance) {
+        return false;
+    }
+    
+    // 计算总权重
+    let totalWeight = 0;
+    magicToolConfig.materials.forEach(material => {
+        totalWeight += material.dropChance;
+    });
+    
+    // 随机选择材料
+    let random = Math.random() * totalWeight;
+    let selectedMaterial = null;
+    
+    for (const material of magicToolConfig.materials) {
+        random -= material.dropChance;
+        if (random <= 0) {
+            selectedMaterial = material;
+            break;
+        }
+    }
+    
+    if (selectedMaterial) {
+        // 获得材料
+        player.magicTools.materials[selectedMaterial.id] = (player.magicTools.materials[selectedMaterial.id] || 0) + 1;
+        
+        // 显示掉落提示
+        showMaterialDropNotification(selectedMaterial);
+        
+        // 更新显示
+        updateMagicToolUI();
+        updateDisplay();
+        
+        return true;
+    }
+    
+    return false;
+}
+function showMaterialDropNotification(material) {
+    // 创建掉落提示元素
+    const notification = document.createElement('div');
+    notification.style.position = 'fixed';
+    notification.style.top = '20px';
+    notification.style.right = '20px';
+    notification.style.background = `linear-gradient(145deg, ${material.color}40, ${material.color}20)`;
+    notification.style.color = 'white';
+    notification.style.padding = '15px 20px';
+    notification.style.borderRadius = '10px';
+    notification.style.borderLeft = `5px solid ${material.color}`;
+    notification.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+    notification.style.zIndex = '9999';
+    notification.style.minWidth = '200px';
+    notification.style.maxWidth = '300px';
+    notification.style.transform = 'translateX(400px)';
+    notification.style.transition = 'transform 0.5s ease-out';
+    notification.style.display = 'flex';
+    notification.style.alignItems = 'center';
+    notification.style.gap = '10px';
+    
+    // 添加图标
+    const icon = document.createElement('div');
+    icon.style.fontSize = '24px';
+    icon.textContent = '✨';
+    notification.appendChild(icon);
+    
+    // 添加内容
+    const content = document.createElement('div');
+    content.innerHTML = `
+        <div style="font-weight: bold; color: ${material.color}; margin-bottom: 5px;">获得材料</div>
+        <div style="font-size: 18px; font-weight: bold;">${material.name}</div>
+        <div style="font-size: 12px; color: #FFD700; margin-top: 5px;">掉落几率: ${(material.dropChance * 100).toFixed(1)}%</div>
+    `;
+    notification.appendChild(content);
+    
+    // 添加到页面
+    document.body.appendChild(notification);
+    
+    // 动画显示
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 10);
+    
+    // 动画隐藏
+    setTimeout(() => {
+        notification.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 500);
+    }, 3000);
+    
+    // 同时记录到日志
+    logAction(`获得材料: ${material.name} (${(material.dropChance * 100).toFixed(1)}%几率)`, "success");
+}
 
 
  // 世界BOSS系统数据
@@ -54113,6 +56821,5 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
-
 </body>
 </html>
