@@ -3944,8 +3944,10 @@ select:focus {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.84更新日志</h4>
+            <h4>1.852更新日志</h4>
             <h4>QQ群：1群：864788026， 2群：902481027 有问题可以进群问（存档异常联系群管理修复）</h4>
+             <p>2026/02/03: 修复符文无法合成，宗门玩家不能派遣</p>
+           <p>2026/02/03: 挖矿增加自动使用药水，法宝材料挖矿也有几率掉落。增加股票购买上限， 增加房子，宗门任务增加一键派遣。</p>
             <p>2026/02/01: 增强修仙系统：法宝：世界地图打怪掉落材料合成（群里兑换码可以领取：落宝金钱）。 </p>
             <p>2026/01/29: 修复BUG，增强修仙系统：现在等级可以加量自动购买宝箱数量，五行之力加各种属性。 </p>
             <p>2026/01/17: 修改新版股票显示，方便操作 </p>
@@ -5525,7 +5527,7 @@ select:focus {
                 <!-- 合成配方显示 -->
                 <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
                     <h4 style="color: #4CAF50; margin-top: 0; margin-bottom: 15px;">合成配方</h4>
-                    <div id="craftingRecipes" style="min-height: 150px; max-height: 200px; overflow-y: auto; padding: 10px;">
+                    <div id="craftingRecipes" style="min-height: 150px; max-height: 450px; overflow-y: auto; padding: 10px;">
                         <div style="text-align: center; color: #666; padding: 20px;">
                             选择材料查看合成配方
                         </div>
@@ -6976,6 +6978,11 @@ select:focus {
     
     <!-- 任务派遣标签页 -->
     <div id="sectMissions" class="sect-tabcontent" style="display:none;">
+    <div style="margin-bottom: 15px;">
+        <button onclick="startAllAvailableMissions()" style="background: #9C27B0; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-right: 10px;">一键派遣所有任务</button>
+          <button onclick="recallAllMissions()" style="background: #FF9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-right: 10px;" title="立即召回所有弟子，但不会获得奖励">一键召回</button>
+        <span style="font-size: 0.9em;">自动派遣符合条件的弟子执行所有可接任务</span>
+    </div>
         <div id="missionList" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px;">
             <!-- 任务卡片将动态生成 -->
         </div>
@@ -7604,6 +7611,8 @@ select:focus {
                 <button id="miningToggleBtn" onclick="toggleMining()">开始自动挖矿</button>
                 <button onclick="useMiningPotion()">使用体力药水</button>
                 <button onclick="buyMiningPotion()">购买药水 (1个宝藏金币)</button>
+                <button id="autoPotionToggleBtn" onclick="toggleAutoPotion()">开启自动药水</button>
+                <button onclick="adjustPotionThreshold()">调整药水阈值</button>
                 <button onclick="clearMiningNotifications()">清空通知</button>
             </div>
         </div>
@@ -8364,7 +8373,7 @@ select:focus {
 
 </div>
 </div>
-<div id="footer">版本号: v1.8.4</div>
+<div id="footer">版本号: v1.8.52</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -8590,7 +8599,9 @@ children: {
                 detector: 1
             },
             notifications: [],
-            lastUpdate: Date.now()
+            lastUpdate: Date.now(),
+            autoPotion: false,
+            autoPotionThreshold: 5
         },
 
         fiveElements: {
@@ -10229,7 +10240,11 @@ const mysteryConfig = [
     { stage: 23, name: "奥秘创造者", levelCost: 50000000000, totalBonus: 60000 },
     { stage: 24, name: "创世神", levelCost: 75000000000, totalBonus: 80000 },
     { stage: 25, name: "位面之子", levelCost: 100000000000, totalBonus: 100000 },
-   { stage: 26, name: "版本之子", levelCost: 1000000000000, totalBonus: 1000000 }
+    { stage: 26, name: "版本之子", levelCost: 500000000000, totalBonus: 200000 },
+    { stage: 27, name: "维度主宰", levelCost: 1000000000000, totalBonus: 400000 },
+    { stage: 28, name: "时空旅者", levelCost: 5000000000000, totalBonus: 600000 },
+    { stage: 29, name: "次元神", levelCost: 10000000000000, totalBonus: 800000 },
+    { stage: 30, name: "超越者", levelCost: 50000000000000, totalBonus: 1000000 }
 ];
         // 装备配置
       const equipmentTypes = {
@@ -23021,19 +23036,26 @@ function createSect() {
     
     // 自动添加掌门（玩家自己）
     player.sect.members.push({
-        id: "leader",
-        name: player.name,
-        aptitude: "SS",
-        loyalty: 100,
-        status: "idle",
-        joinTime: Date.now()
-    });
+    id: "leader",
+    name: player.name,
+    aptitude: "SS",  // 可以设置玩家资质，比如SS
+    loyalty: 100,
+    status: "idle",
+    joinTime: Date.now(),
+    isPlayer: true  // 添加标记，表示这是玩家
+});
     
     logAction("成功创建宗门！", "success");
     updateSectUI();
    updateSectNameDisplay();
 }
-
+function getIdleMembers(includePlayer = true) {
+    return player.sect.members.filter(member => {
+        if (member.status !== 'idle') return false;
+        if (member.id === 'leader' && !includePlayer) return false;
+        return true;
+    });
+}
 // 更新宗门界面
 function updateSectUI() {
     if (!player.sect.created) {
@@ -23101,16 +23123,23 @@ function updateMemberList() {
         // 检查成员是否在任务中
         const isOnMission = member.status === 'onMission';
         
+        // 判断是否为玩家
+        const isPlayer = member.id === 'leader';
+        
         memberCard.innerHTML = `
             <div style="display: flex; justify-content: space-between;">
-                <div style="font-weight: bold;">${member.name}</div>
+                <div style="font-weight: bold; ${isPlayer ? 'color: #FFD700;' : ''}">
+                    ${member.name} ${isPlayer ? '👑' : ''}
+                </div>
                 <div style="color: ${aptitudeColor};">${member.aptitude}</div>
             </div>
             <div>忠诚度: ${member.loyalty}</div>
             <div>状态: ${isOnMission ? '<span style="color: #FF9800;">任务中</span>' : '空闲'}</div>
-            ${member.id !== 'leader' && !isOnMission ? `
-            <button onclick="expelMember('${member.id}')" style="margin-top: 10px; background: #f44336; color: white; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">驱逐</button>
-            <button onclick="giftMember('${member.id}')" style="background: #4CAF50; color: white; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; font-size: 12px; flex: 1;">赠礼</button>
+            ${!isPlayer && !isOnMission ? `
+            <div style="display: flex; gap: 5px; margin-top: 10px;">
+                <button onclick="expelMember('${member.id}')" style="flex: 1; background: #f44336; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; font-size: 12px;">驱逐</button>
+                <button onclick="giftMember('${member.id}')" style="flex: 1; background: #4CAF50; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; font-size: 12px;">赠礼</button>
+            </div>
             ` : ''}
         `;
         
@@ -23215,6 +23244,134 @@ function recruitMember() {
 // 计算招募成本
 function calculateRecruitCost() {
     return 100 * Math.pow(1.15, player.sect.members.length);
+}
+function startAllAvailableMissions() {
+    if (!player.sect.created) {
+        logAction("请先创建宗门！", "error");
+        return;
+    }
+    
+    // 获取所有任务
+    const missions = initSectMissions();
+    const aptitudesOrder = { 'C': 1, 'B': 2, 'A': 3, 'S': 4, 'SS': 5, 'SSS': 6 };
+    
+    // 获取所有空闲成员（包括玩家）
+    const idleMembers = player.sect.members
+        .filter(member => member.status === 'idle')
+        .sort((a, b) => {
+            // 玩家优先
+            if (a.id === 'leader' && b.id !== 'leader') return -1;
+            if (b.id === 'leader' && a.id !== 'leader') return 1;
+            
+            // 按资质等级降序排序
+            const aLevel = aptitudesOrder[a.aptitude] || 0;
+            const bLevel = aptitudesOrder[b.aptitude] || 0;
+            if (bLevel !== aLevel) return bLevel - aLevel;
+            
+            // 同资质按忠诚度降序排序
+            return b.loyalty - a.loyalty;
+        });
+    
+    if (idleMembers.length === 0) {
+        logAction("没有空闲的成员可以派遣！", "error");
+        return;
+    }
+    
+    let missionsAssigned = 0;
+    let membersAssigned = 0;
+    
+    // 为每个空闲成员寻找能执行的任务
+    idleMembers.forEach(member => {
+        const memberLevel = aptitudesOrder[member.aptitude] || 0;
+        
+        // 寻找该成员能执行的所有任务
+        const availableMissions = missions.filter(mission => {
+            const requiredLevel = aptitudesOrder[mission.requiredAptitude];
+            return memberLevel >= requiredLevel;
+        });
+        
+        if (availableMissions.length > 0) {
+            // 选择最适合的任务（按难度排序，先做高难度）
+            availableMissions.sort((a, b) => b.difficulty - a.difficulty);
+            const selectedMission = availableMissions[0];
+            
+            // 为这个任务创建一个新的任务实例
+            const missionInstanceId = `${selectedMission.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            
+            // 更新成员状态
+            member.status = 'onMission';
+            
+            // 添加任务实例
+            player.sect.missions.push({
+                id: missionInstanceId,
+                baseMissionId: selectedMission.id,
+                name: selectedMission.name,
+                memberId: member.id,
+                memberName: member.name,
+                memberAptitude: member.aptitude,
+                isPlayer: member.id === 'leader',  // 标记是否为玩家
+                startTime: Date.now(),
+                duration: selectedMission.duration,
+                reward: selectedMission.reward,
+                difficulty: selectedMission.difficulty
+            });
+            
+            // 计算忠诚度加成（玩家忠诚度固定100）
+            const loyaltyBonus = calculateLoyaltyBonus(member.loyalty);
+            const bonusPercent = (loyaltyBonus * 100 - 100).toFixed(1);
+            
+            // 如果是玩家，显示特殊信息
+            if (member.id === 'leader') {
+                logAction(`🗡️ 掌门 ${member.name} 亲自出马执行任务: ${selectedMission.name}`, "success");
+            } else {
+                logAction(`派遣 ${member.name}(${member.aptitude}) 执行任务: ${selectedMission.name}`, "success");
+            }
+            
+            missionsAssigned++;
+            membersAssigned++;
+        }
+    });
+    
+    if (membersAssigned > 0) {
+        const playerCount = idleMembers.filter(m => m.id === 'leader' && m.status === 'onMission').length;
+        const discipleCount = membersAssigned - playerCount;
+        
+        let message = `成功派遣 ${membersAssigned} 名成员执行任务！`;
+        if (playerCount > 0) {
+            message += `（其中掌门亲自执行 ${playerCount} 个任务）`;
+        }
+        logAction(message, "success");
+    } else {
+        logAction("没有可以执行的任务", "warning");
+    }
+    
+    updateSectUI();
+}
+function recallAllMissions() {
+    if (!player.sect.created || player.sect.missions.length === 0) {
+        logAction("当前没有进行中的任务", "info");
+        return;
+    }
+    
+    if (!confirm("确定要召回所有弟子吗？召回后不会获得任何任务奖励！")) {
+        return;
+    }
+    
+    const missionCount = player.sect.missions.length;
+    
+    // 召回所有任务中的弟子
+    player.sect.missions.forEach(mission => {
+        const member = player.sect.members.find(m => m.id === mission.memberId);
+        if (member) {
+            member.status = 'idle';
+        }
+    });
+    
+    // 清空任务列表
+    player.sect.missions = [];
+    
+    logAction(`已召回所有${missionCount}个任务中的弟子`, "info");
+    updateSectUI();
 }
 
 // 驱逐弟子
@@ -23324,10 +23481,18 @@ function updateMissionList() {
     missionContainer.innerHTML = '';
     activeMissionContainer.innerHTML = '';
     
-    // 获取任务列表
+    // 获取所有基础任务
     const missions = initSectMissions();
     
-    // 显示可用任务
+    // 计算每个基础任务有多少个实例在执行
+    const missionStats = {};
+    player.sect.missions.forEach(mission => {
+        if (mission.baseMissionId) {
+            missionStats[mission.baseMissionId] = (missionStats[mission.baseMissionId] || 0) + 1;
+        }
+    });
+    
+    // 显示任务卡片
     missions.forEach(mission => {
         const missionCard = document.createElement('div');
         missionCard.className = 'mission-card';
@@ -23335,48 +23500,89 @@ function updateMissionList() {
         missionCard.style.padding = '10px';
         missionCard.style.borderRadius = '5px';
         
+        // 计算该任务有多少人在执行
+        const activeCount = missionStats[mission.id] || 0;
+        const maxActiveCount = 99; // 可设置最大同时执行人数
+        
         missionCard.innerHTML = `
             <h4 style="margin: 0 0 10px 0; color: #8B4513;">${mission.name}</h4>
             <p style="margin: 0 0 10px 0; font-size: 0.9em;">${mission.description}</p>
             <div style="font-size: 0.9em; margin-bottom: 10px;">
                 <div>要求资质: ${mission.requiredAptitude}</div>
                 <div>耗时: ${formatTimes(mission.duration)}</div>
-                <div>奖励: ${mission.reward.stones}灵石, ${mission.reward.exp}声望</div>
+                <div>奖励: ${mission.reward.stones}灵石/人, ${mission.reward.exp}声望/人</div>
+                ${mission.reward.itemChance ? `<div>物品掉落几率: ${(mission.reward.itemChance * 100).toFixed(0)}%</div>` : ''}
+                <div style="color: ${activeCount > 0 ? '#4CAF50' : '#FF9800'}; margin-top: 5px;">
+                    🚀 执行中: ${activeCount}人
+                </div>
             </div>
-            <button onclick="startMissionq('${mission.id}')" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; width: 100%;">派遣弟子</button>
+            <button onclick="startMissionq('${mission.id}')" 
+                style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; width: 100%;">
+                🚀 派遣符合条件的弟子
+            </button>
+            <div style="font-size: 0.8em; color: #999; text-align: center; margin-top: 5px;">
+                可多人同时执行
+            </div>
         `;
         
         missionContainer.appendChild(missionCard);
     });
     
-    // 显示进行中的任务
+    // 显示进行中的任务实例
     if (player.sect.missions.length === 0) {
-        activeMissionContainer.innerHTML = '<p>当前没有进行中的任务</p>';
+        activeMissionContainer.innerHTML = '<p style="text-align: center; color: #999;">当前没有进行中的任务</p>';
     } else {
+        // 按任务类型分组显示
+        const missionsByType = {};
+        
         player.sect.missions.forEach(mission => {
-            const missionItem = document.createElement('div');
-            missionItem.style.marginBottom = '10px';
-            missionItem.style.padding = '10px';
-            missionItem.style.background = '#555';
-            missionItem.style.borderRadius = '5px';
+            if (!missionsByType[mission.name]) {
+                missionsByType[mission.name] = [];
+            }
+            missionsByType[mission.name].push(mission);
+        });
+        
+        Object.entries(missionsByType).forEach(([missionName, missionInstances]) => {
+            const missionGroup = document.createElement('div');
+            missionGroup.style.marginBottom = '15px';
+            missionGroup.style.padding = '10px';
+            missionGroup.style.background = '#555';
+            missionGroup.style.borderRadius = '8px';
             
-            const remaining = mission.startTime + mission.duration - Date.now();
-            const progress = remaining > 0 ? 100 - (remaining / mission.duration * 100) : 100;
-            
-            missionItem.innerHTML = `
-                <div style="display: flex; justify-content: space-between;">
-                    <div>${mission.name}</div>
-                    <div>${formatTimes(remaining > 0 ? remaining : 0)}</div>
-                </div>
-                <div style="height: 5px; background: #444; border-radius: 3px; margin-top: 5px;">
-                    <div style="height: 100%; background: #8B4513; border-radius: 3px; width: ${progress}%;"></div>
+            let groupContent = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 style="margin: 0; color: #8B4513;">${missionName}</h4>
+                    <span style="color: #FFD700;">${missionInstances.length}人执行中</span>
                 </div>
             `;
             
-            activeMissionContainer.appendChild(missionItem);
+            missionInstances.forEach(mission => {
+                const remaining = mission.startTime + mission.duration - Date.now();
+                const progress = remaining > 0 ? 100 - (remaining / mission.duration * 100) : 100;
+                const member = player.sect.members.find(m => m.id === mission.memberId);
+                const memberName = member ? member.name : "未知弟子";
+                
+                groupContent += `
+                    <div style="margin-bottom: 8px; padding: 8px; background: #444; border-radius: 5px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9em;">
+                            <span>${memberName}(${mission.memberAptitude || member?.aptitude || '?'})</span>
+                            <span style="color: ${remaining > 0 ? '#FFD700' : '#4CAF50'}">
+                                ${remaining > 0 ? formatTimes(remaining) : '已完成'}
+                            </span>
+                        </div>
+                        <div style="height: 4px; background: #333; border-radius: 2px; margin-top: 5px;">
+                            <div style="height: 100%; background: #8B4513; border-radius: 2px; width: ${progress}%;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            missionGroup.innerHTML = groupContent;
+            activeMissionContainer.appendChild(missionGroup);
         });
     }
 }
+
 
 // 开始任务
 function startMissionq(missionId) {
@@ -23387,61 +23593,180 @@ function startMissionq(missionId) {
     
     // 获取任务详情
     const missions = initSectMissions();
-    const mission = missions.find(m => m.id === missionId);
-    if (!mission) return;
+    const baseMission = missions.find(m => m.id === missionId);
+    if (!baseMission) return;
     
-    // 查找符合条件的空闲弟子
+    // 查找所有符合条件的空闲成员（包括玩家）
     const aptitudesOrder = { 'C': 1, 'B': 2, 'A': 3, 'S': 4, 'SS': 5, 'SSS': 6 };
-    const requiredLevel = aptitudesOrder[mission.requiredAptitude];
+    const requiredLevel = aptitudesOrder[baseMission.requiredAptitude];
     
     const availableMembers = player.sect.members.filter(member => 
         member.status === 'idle' && aptitudesOrder[member.aptitude] >= requiredLevel
     );
     
     if (availableMembers.length === 0) {
-        logAction("没有符合条件的空闲弟子！", "error");
+        logAction("没有符合条件的空闲成员！", "error");
         return;
     }
     
-    // 选择忠诚度最高的弟子
-    availableMembers.sort((a, b) => b.loyalty - a.loyalty);
-    const member = availableMembers[0];
+    let membersAssigned = 0;
+    let playerAssigned = false;
     
-    // 更新弟子状态
-    member.status = 'onMission';
-    
-    // 添加任务
-    player.sect.missions.push({
-        id: missionId,
-        name: mission.name,
-        memberId: member.id,
-        startTime: Date.now(),
-        duration: mission.duration,
-        reward: mission.reward
+    // 为所有符合条件的成员创建任务实例
+    availableMembers.forEach(member => {
+        const missionInstanceId = `${missionId}_${Date.now()}_${member.id}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // 更新成员状态
+        member.status = 'onMission';
+        
+        // 添加任务实例
+        player.sect.missions.push({
+            id: missionInstanceId,
+            baseMissionId: missionId,
+            name: baseMission.name,
+            memberId: member.id,
+            memberName: member.name,
+            memberAptitude: member.aptitude,
+            isPlayer: member.id === 'leader',
+            startTime: Date.now(),
+            duration: baseMission.duration,
+            reward: baseMission.reward,
+            difficulty: baseMission.difficulty
+        });
+        
+        // 计算忠诚度加成
+        const loyaltyBonus = calculateLoyaltyBonus(member.loyalty);
+        
+        // 如果是玩家，显示特殊信息
+        if (member.id === 'leader') {
+            logAction(`🗡️ 掌门 ${member.name} 亲自出马执行任务: ${baseMission.name}`, "success");
+            playerAssigned = true;
+        } else {
+            const bonusPercent = (loyaltyBonus * 100 - 100).toFixed(1);
+            logAction(`派遣 ${member.name}(${member.aptitude}) 执行任务: ${baseMission.name}`, "success");
+        }
+        
+        membersAssigned++;
     });
- // 计算预计加成
-    const loyaltyBonus = calculateLoyaltyBonus(member.loyalty);
-    const bonusPercent = (loyaltyBonus * 100 - 100).toFixed(1);
     
-    logAction(`派遣 ${member.name} 执行任务: ${mission.name} (预计忠诚度${loyaltyBonus >= 1 ? '+' : ''}${bonusPercent}%奖励)`, "success");
+    if (membersAssigned > 0) {
+        let message = `成功派遣 ${membersAssigned} 名成员执行 ${baseMission.name} 任务！`;
+        if (playerAssigned) {
+            message += `（掌门亲自参与）`;
+        }
+        logAction(message, "success");
+    }
+    
     updateSectUI();
-    
-    // 设置任务完成计时器
-    setTimeout(() => completeMissionq(missionId), mission.duration);
 }
 
-function completeMissionq(missionId) {
-    const missionIndex = player.sect.missions.findIndex(m => m.id === missionId);
+// 修改任务完成函数，为玩家添加特殊奖励
+function completeMissionq(missionInstanceId) {
+    const missionIndex = player.sect.missions.findIndex(m => m.id === missionInstanceId);
     if (missionIndex === -1) return;
     
     const mission = player.sect.missions[missionIndex];
     const member = player.sect.members.find(m => m.id === mission.memberId);
     
     if (member) {
+        // 检查任务是否已经完成
+        if (member.status !== 'onMission') {
+            player.sect.missions.splice(missionIndex, 1);
+            updateSectUI();
+            return;
+        }
+        
+        // 恢复成员状态
+        member.status = 'idle';
+        
+        // 计算忠诚度加成（玩家忠诚度固定100）
+        const loyaltyBonus = calculateLoyaltyBonus(member.loyalty);
+        
+        // 发放奖励（应用忠诚度加成）
+        let stonesReward = Math.floor(mission.reward.stones * loyaltyBonus);
+        let expReward = Math.floor(mission.reward.exp * loyaltyBonus);
+        
+        // 如果是玩家，可以给予额外奖励
+        if (member.id === 'leader') {
+            // 掌门执行任务获得额外20%奖励
+            stonesReward = Math.floor(stonesReward * 1.2);
+            expReward = Math.floor(expReward * 1.2);
+        }
+        
+        player.sect.spiritStones += stonesReward;
+        player.sect.exp += expReward;
+        
+        // 物品掉落
+        if (mission.reward.itemChance && Math.random() < mission.reward.itemChance) {
+            const items = ['primaryGem', 'advancedGem', 'rebornDan', 'cultivationPill'];
+            const randomItem = items[Math.floor(Math.random() * items.length)];
+            player.items[randomItem] = (player.items[randomItem] || 0) + 1;
+            
+            // 如果是玩家，可能有更高几率获得稀有物品
+            if (member.id === 'leader' && Math.random() < 0.3) {
+                // 掌门有30%几率额外获得一个物品
+                const additionalItem = items[Math.floor(Math.random() * items.length)];
+                player.items[additionalItem] = (player.items[additionalItem] || 0) + 1;
+                logAction(`🗡️ 掌门 ${member.name} 完成${mission.name}，带回${getItemName(randomItem)}和${getItemName(additionalItem)}！获得${stonesReward}灵石和${expReward}声望！`, "success");
+            } else {
+                logAction(`${member.name}完成${mission.name}带回${getItemName(randomItem)}！获得${stonesReward}灵石和${expReward}声望！`, "success");
+            }
+        } else {
+            if (member.id === 'leader') {
+                logAction(`🗡️ 掌门 ${member.name} 完成${mission.name}，获得${stonesReward}灵石和${expReward}声望！（额外20%奖励）`, "success");
+            } else {
+                logAction(`${member.name}完成${mission.name}，获得${stonesReward}灵石和${expReward}声望！`, "success");
+            }
+        }
+        
+        // 根据忠诚度变化调整忠诚度（玩家的忠诚度不变）
+        if (member.id !== 'leader') {
+            const loyaltyChange = Math.floor((loyaltyBonus - 1) * 5);
+            member.loyalty += loyaltyChange;
+            
+            // 确保忠诚度在合理范围内
+            if (member.loyalty < 0) member.loyalty = 0;
+            if (member.loyalty > 100) member.loyalty = 100;
+            
+            if (loyaltyChange > 0) {
+                logAction(`${member.name}的忠诚度提升了${loyaltyChange}点！`, "info");
+            } else if (loyaltyChange < 0) {
+                logAction(`${member.name}的忠诚度降低了${Math.abs(loyaltyChange)}点！`, "warning");
+            }
+        }
+        
+        // 检查升级
+        checkSectLevelUp();
+        
+        // 移除任务实例
+        player.sect.missions.splice(missionIndex, 1);
+        
+        setTimeout(() => {
+            updateSectUI();
+        }, 100);
+    }
+}
+
+
+function completeMissionq(missionInstanceId) {
+    const missionIndex = player.sect.missions.findIndex(m => m.id === missionInstanceId);
+    if (missionIndex === -1) return;
+    
+    const mission = player.sect.missions[missionIndex];
+    const member = player.sect.members.find(m => m.id === mission.memberId);
+    
+    if (member) {
+        // 检查任务是否已经完成（防止重复执行）
+        if (member.status !== 'onMission') {
+            player.sect.missions.splice(missionIndex, 1);
+            updateSectUI();
+            return;
+        }
+        
         // 恢复弟子状态
         member.status = 'idle';
         
-      // 计算忠诚度加成/减成
+        // 计算忠诚度加成
         const loyaltyBonus = calculateLoyaltyBonus(member.loyalty);
         
         // 发放奖励（应用忠诚度加成）
@@ -23451,18 +23776,18 @@ function completeMissionq(missionId) {
         player.sect.spiritStones += stonesReward;
         player.sect.exp += expReward;
         
-       if (mission.reward.itemChance && Math.random() < mission.reward.itemChance) {
+        if (mission.reward.itemChance && Math.random() < mission.reward.itemChance) {
             // 随机获得一种物品
             const items = ['primaryGem', 'advancedGem', 'rebornDan', 'cultivationPill'];
             const randomItem = items[Math.floor(Math.random() * items.length)];
             player.items[randomItem] = (player.items[randomItem] || 0) + 1;
             
-            logAction(`${member.name}完成任务带回${getItemName(randomItem)}！(忠诚度加成: ${(loyaltyBonus * 100 - 100).toFixed(1)}%)`, "success");
+            logAction(`${member.name}完成${mission.name}带回${getItemName(randomItem)}！(忠诚度加成: ${(loyaltyBonus * 100 - 100).toFixed(1)}%)`, "success");
         } else {
-            logAction(`${member.name}完成任务，获得${stonesReward}灵石和${expReward}声望！(忠诚度加成: ${(loyaltyBonus * 100 - 100).toFixed(1)}%)`, "success");
+            logAction(`${member.name}完成${mission.name}，获得${stonesReward}灵石和${expReward}声望！(忠诚度加成: ${(loyaltyBonus * 100 - 100).toFixed(1)}%)`, "success");
         }
+        
         // 根据忠诚度变化调整忠诚度
-        // 高奖励会增加忠诚度，低奖励会减少忠诚度
         const loyaltyChange = Math.floor((loyaltyBonus - 1) * 5);
         member.loyalty += loyaltyChange;
         
@@ -23475,16 +23800,41 @@ function completeMissionq(missionId) {
         } else if (loyaltyChange < 0) {
             logAction(`${member.name}的忠诚度降低了${Math.abs(loyaltyChange)}点！`, "warning");
         }
+        
         // 检查升级
         checkSectLevelUp();
         
-        // 移除任务
+        // 移除任务实例
         player.sect.missions.splice(missionIndex, 1);
         
-        // 更新UI - 这会重新渲染成员列表，显示驱逐按钮
-        updateSectUI();
+        setTimeout(() => {
+            updateSectUI();
+        }, 100);
     }
 }
+let isCheckingMissions = false;
+
+setInterval(() => {
+    if (player.sect && player.sect.created && !isCheckingMissions) {
+        isCheckingMissions = true;
+        
+        // 复制任务列表，避免在遍历时修改数组
+        const missionsToCheck = [...player.sect.missions];
+        
+        missionsToCheck.forEach(mission => {
+            if (Date.now() - mission.startTime >= mission.duration) {
+                // 只处理尚未完成的任务
+                const missionInProgress = player.sect.missions.find(m => m.id === mission.id);
+                if (missionInProgress) {
+                    completeMissionq(mission.id);
+                }
+            }
+        });
+        
+        isCheckingMissions = false;
+    }
+}, 1000);
+
 function calculateLoyaltyBonus(loyalty) {
     if (loyalty >= 50) {
         // 高于50忠诚度，每点增加1.5%奖励
@@ -25910,8 +26260,7 @@ const treasureMapLevels = [
         { type: "banlv2", amount: 10 }, 
         { type: "banlv7", amount: 10 },
        { type: "banlv8", amount: 2 },  
-       { type: "fuben1", amount: 1 },
-       { type: "zhiye1", amount: 1 },        
+       { type: "fuben1", amount: 1 },      
       { type: "banlv9", amount: 2 }  
     ]},
     { level: 5, name: "五级藏宝图", monsterMinStage: 800, monsterMaxStage: 1000, expReward: 1000000, rewards: [
@@ -25933,8 +26282,7 @@ const treasureMapLevels = [
        { type: "banlv2", amount: 20 },  
          { type: "banlv7", amount: 3 },
        { type: "banlv8", amount: 3 },
-       { type: "fuben1", amount: 1 },  
-       { type: "zhiye1", amount: 1 },    
+       { type: "fuben1", amount: 1 },      
       { type: "banlv9", amount: 3 }  
     ]}
 ];
@@ -26080,8 +26428,8 @@ function openTreasureChestBatch(count) {
         // 随机生成藏宝图等级
         const levelRand = Math.random();
         let level;
-        if (levelRand < 0.7) level = 1;
-        else if (levelRand < 0.92) level = 2;
+        if (levelRand < 0.8) level = 1;
+        else if (levelRand < 0.95) level = 2;
         else if (levelRand < 0.98) level = 3;
         else if (levelRand < 0.995) level = 4;
         else level = 5;
@@ -26615,7 +26963,7 @@ function giveTreasureRewards(map, isBattleWin) {
             player.items.fuben1 = (player.items.fuben1 || 0) + 1;
             rewardText += "<br>获得副本令牌x1！";
         }
-      if (Math.random() < 0.1) {
+      if (Math.random() < 0.01) {
             player.items.fuben2 = (player.items.fuben2 || 0) + 1;
             rewardText += "<br>获得秘境钥匙x1！";
         }
@@ -43434,65 +43782,134 @@ function isFruitEligibleForLottery(fruit) {
             return player.mining.baseMaxStamina + ((player.mining.staminaUpgradeLevel - 1) * 10);
         }
 
-         function updateMiningUI() {
-        const maxStamina = getMiningMaxStamina();
-        const staminaPercent = (player.mining.stamina / maxStamina) * 100;
-        
-        // 更新基础信息
-        document.getElementById('miningDepth').textContent = player.mining.depth.toLocaleString() + ' 米';
-        document.getElementById('miningPower').textContent = player.mining.power;
-        document.getElementById('miningMaxStamina').textContent = maxStamina;
-        
-        // 更新体力条
-        document.getElementById('miningStaminaBar').style.width = staminaPercent + '%';
-        document.getElementById('miningStaminaText').textContent = 
-            Math.floor(player.mining.stamina) + ' / ' + maxStamina;
-        
-        // 确保所有宝石属性都存在
-        for (let i = 0; i < miningGemsConfig.length; i++) {
-            const gem = miningGemsConfig[i];
-            if (player.mining.gems[gem.key] === undefined) {
-                player.mining.gems[gem.key] = 0;
-            }
+        function updateMiningUI() {
+    const maxStamina = getMiningMaxStamina();
+    const staminaPercent = (player.mining.stamina / maxStamina) * 100;
+    
+    // 更新基础信息
+    document.getElementById('miningDepth').textContent = player.mining.depth.toLocaleString() + ' 米';
+    document.getElementById('miningPower').textContent = player.mining.power;
+    document.getElementById('miningMaxStamina').textContent = maxStamina;
+    
+    // 更新体力条
+    document.getElementById('miningStaminaBar').style.width = staminaPercent + '%';
+    document.getElementById('miningStaminaText').textContent = 
+        Math.floor(player.mining.stamina) + ' / ' + maxStamina;
+    
+    // 确保所有宝石属性都存在
+    for (let i = 0; i < miningGemsConfig.length; i++) {
+        const gem = miningGemsConfig[i];
+        if (player.mining.gems[gem.key] === undefined) {
+            player.mining.gems[gem.key] = 0;
         }
-        
-        // 更新宝石数量显示
-        document.getElementById('miningRuby').textContent = player.mining.gems.ruby || 0;
-        document.getElementById('miningSapphire').textContent = player.mining.gems.sapphire || 0;
-        document.getElementById('miningEmerald').textContent = player.mining.gems.emerald || 0;
-        document.getElementById('miningAmethyst').textContent = player.mining.gems.amethyst || 0;
-        document.getElementById('miningDiamond').textContent = player.mining.gems.diamond || 0;
-        document.getElementById('miningOre').textContent = player.mining.ore;
-        
-        // 更新药水数量
-        document.getElementById('miningPotionCount').textContent = player.mining.potions;
-        
-        // 更新升级信息
-        document.getElementById('miningPowerLevel').textContent = player.mining.upgrades.power;
-        document.getElementById('miningStaminaLevel').textContent = player.mining.staminaUpgradeLevel;
-        document.getElementById('miningDetectorLevel').textContent = player.mining.upgrades.detector;
-        
-        // 更新按钮状态
-        document.getElementById('upgradeMiningPowerBtn').textContent = `升级 (${1000 * player.mining.upgrades.power})`;
-        document.getElementById('upgradeMiningStaminaBtn').textContent = `升级 (${10000 * player.mining.staminaUpgradeLevel})`;
-        document.getElementById('upgradeMiningDetectorBtn').textContent = `升级 (${50000 * player.mining.upgrades.detector})`;
-        
-        document.getElementById('upgradeMiningPowerBtn').disabled = player.mining.upgrades.power >= 100;
-        document.getElementById('upgradeMiningStaminaBtn').disabled = player.mining.staminaUpgradeLevel >= 10;
-        document.getElementById('upgradeMiningDetectorBtn').disabled = player.mining.upgrades.detector >= 10;
-        
-        // 更新挖矿按钮
-        const miningBtn = document.getElementById('miningToggleBtn');
-        miningBtn.textContent = player.mining.isMining ? '停止自动挖矿' : '开始自动挖矿';
-        miningBtn.style.background = player.mining.isMining ? 
-            'linear-gradient(135deg, #ff4757 0%, #ff3742 100%)' : 
-            'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
-        
-        // 更新通知显示
-        updateMiningNotifications();
     }
+    
+    // 更新宝石数量显示
+    document.getElementById('miningRuby').textContent = player.mining.gems.ruby || 0;
+    document.getElementById('miningSapphire').textContent = player.mining.gems.sapphire || 0;
+    document.getElementById('miningEmerald').textContent = player.mining.gems.emerald || 0;
+    document.getElementById('miningAmethyst').textContent = player.mining.gems.amethyst || 0;
+    document.getElementById('miningDiamond').textContent = player.mining.gems.diamond || 0;
+    document.getElementById('miningOre').textContent = player.mining.ore;
+    
+    // 更新药水数量
+    document.getElementById('miningPotionCount').textContent = player.mining.potions;
+    
+    // 更新升级信息
+    document.getElementById('miningPowerLevel').textContent = player.mining.upgrades.power;
+    document.getElementById('miningStaminaLevel').textContent = player.mining.staminaUpgradeLevel;
+    document.getElementById('miningDetectorLevel').textContent = player.mining.upgrades.detector;
+    
+    // 更新按钮状态
+    document.getElementById('upgradeMiningPowerBtn').textContent = `升级 (${1000 * player.mining.upgrades.power})`;
+    document.getElementById('upgradeMiningStaminaBtn').textContent = `升级 (${10000 * player.mining.staminaUpgradeLevel})`;
+    document.getElementById('upgradeMiningDetectorBtn').textContent = `升级 (${50000 * player.mining.upgrades.detector})`;
+    
+    document.getElementById('upgradeMiningPowerBtn').disabled = player.mining.upgrades.power >= 100;
+    document.getElementById('upgradeMiningStaminaBtn').disabled = player.mining.staminaUpgradeLevel >= 10;
+    document.getElementById('upgradeMiningDetectorBtn').disabled = player.mining.upgrades.detector >= 10;
+    
+    // 更新挖矿按钮
+    const miningBtn = document.getElementById('miningToggleBtn');
+    miningBtn.textContent = player.mining.isMining ? '停止自动挖矿' : '开始自动挖矿';
+    miningBtn.style.background = player.mining.isMining ? 
+        'linear-gradient(135deg, #ff4757 0%, #ff3742 100%)' : 
+        'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+    
+    // 更新自动药水按钮
+    const autoPotionBtn = document.getElementById('autoPotionToggleBtn');
+    autoPotionBtn.textContent = player.mining.autoPotion ? '关闭自动药水' : '开启自动药水';
+    autoPotionBtn.style.background = player.mining.autoPotion ? 
+        'linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%)' : 
+        'linear-gradient(135deg, #48cae4 0%, #0096c7 100%)';
+    
+    // 更新通知显示
+    updateMiningNotifications();
+}
+      function toggleAutoPotion() {
+    player.mining.autoPotion = !player.mining.autoPotion;
+    
+    // 确保阈值已正确初始化
+    if (player.mining.autoPotionThreshold === undefined) {
+        player.mining.autoPotionThreshold = 5;
+    }
+    
+    if (player.mining.autoPotion) {
+        addMiningNotification('已开启自动药水，体力低于' + player.mining.autoPotionThreshold + '时自动使用药水');
+    } else {
+        addMiningNotification('已关闭自动药水');
+    }
+    
+    updateMiningUI();
+    saveGame();
+}
+  function checkAutoPotion() {
+    if (!player.mining.autoPotion || player.mining.potions === 0) {
+        return false;
+    }
+    
+    const maxStamina = getMiningMaxStamina();
+    
+    // 确保阈值已初始化
+    const threshold = player.mining.autoPotionThreshold || 5;
+    
+    // 检查体力是否低于阈值
+    if (player.mining.stamina <= threshold && 
+        player.mining.stamina < maxStamina) {
         
-
+        // 使用药水
+        player.mining.potions -= 1;
+        player.mining.stamina = maxStamina;
+        
+        addMiningNotification('自动使用体力药水，恢复全部体力！', 'gem');
+        return true;
+    }
+    
+    return false;
+}
+function setAutoPotionThreshold(threshold) {
+    if (threshold >= 1 && threshold <= 50) { // 限制阈值范围
+        player.mining.autoPotionThreshold = threshold;
+        if (player.mining.autoPotion) {
+            addMiningNotification(`已设置自动药水阈值为${threshold}点体力`);
+        }
+        updateMiningUI();
+        saveGame();
+    }
+}
+function adjustPotionThreshold() {
+    const currentThreshold = player.mining.autoPotionThreshold || 5;
+    const newThreshold = prompt(`请输入自动使用药水的体力阈值(1-50)`, currentThreshold);
+    
+    if (newThreshold !== null) {
+        const num = parseInt(newThreshold);
+        if (!isNaN(num) && num >= 1 && num <= 50) {
+            setAutoPotionThreshold(num);
+        } else {
+            alert('请输入1到50之间的数字！');
+        }
+    }
+}
         function addMiningNotification(message, type = 'info') {
             const now = new Date();
             const timestamp = now.toLocaleTimeString();
@@ -43639,44 +44056,57 @@ function isFruitEligibleForLottery(fruit) {
     }
 
 
-       function mine() {
-        if (!player.mining.isMining) return;
-        
-        // 检查体力
-        if (player.mining.stamina < 1) {
-            player.mining.isMining = false;
-            addMiningNotification('体力不足，自动挖矿停止！请使用体力药水恢复体力。', 'warning');
-            updateMiningUI();
-            return;
-        }
-        
-        // 消耗体力
-        player.mining.stamina -= 1;
-        
-        // 增加深度
-        const depthGain = player.mining.power;
-        player.mining.depth += depthGain;
-        
-        // 获得矿石
-        const oreGain = Math.floor(player.mining.power * (0.2 + Math.random() * 0.5));
-        player.mining.ore += oreGain;
-        
-        // 宝石发现逻辑
-        const gemFound = findGem(player.mining.depth, player.mining.upgrades.detector, false);
-        checkTreasureDrop();
-        // 每挖掘100次自动保存
-        if (player.mining.depth % 100 === 0) {
-            saveGame();
-        }
-        
+      function mine() {
+    if (!player.mining.isMining) return;
+    
+    // 先检查是否需要自动使用药水
+    if (checkAutoPotion()) {
         updateMiningUI();
+        saveGame();
     }
+    
+    // 检查体力
+    if (player.mining.stamina < 1) {
+        player.mining.isMining = false;
+        addMiningNotification('体力不足，自动挖矿停止！请使用体力药水恢复体力。', 'warning');
+        updateMiningUI();
+        return;
+    }
+    
+    // 消耗体力
+    player.mining.stamina -= 1;
+    
+    // 增加深度
+    const depthGain = player.mining.power;
+    player.mining.depth += depthGain;
+    
+    // 获得矿石
+    const oreGain = Math.floor(player.mining.power * (0.2 + Math.random() * 0.5));
+    player.mining.ore += oreGain;
+    
+    // 宝石发现逻辑
+    const gemFound = findGem(player.mining.depth, player.mining.upgrades.detector, false);
+    checkTreasureDrop();
+        if (Math.random() < 0.5) {
+           dropMagicMaterial();
+        }
+    // 每挖掘100次自动保存
+    if (player.mining.depth % 100 === 0) {
+        saveGame();
+    }
+    
+    updateMiningUI();
+}
 
         function useMiningPotion() {
             if (player.mining.potions > 0 && player.mining.stamina < getMiningMaxStamina()) {
                 player.mining.potions -= 1;
                 player.mining.stamina = getMiningMaxStamina();
                 addMiningNotification('使用体力药水，恢复全部体力！');
+          if (player.mining.autoPotion) {
+             addMiningNotification('已自动关闭自动药水功能');
+             player.mining.autoPotion = false;
+         }
                 updateMiningUI();
                 saveGame();
             }
@@ -43761,51 +44191,75 @@ function isFruitEligibleForLottery(fruit) {
             }
         }
 
-     function calculateOfflineMining() {
-        const now = Date.now();
-        const elapsed = Math.min(now - player.mining.lastUpdate, 86400000); // 最多24小时
+    function calculateOfflineMining() {
+    const now = Date.now();
+    const elapsed = Math.min(now - player.mining.lastUpdate, 86400000); // 最多24小时
+    
+    if (elapsed > 1000 && player.mining.isMining) {
+        const seconds = Math.floor(elapsed / 1000);
+        const maxStamina = getMiningMaxStamina();
         
-        if (elapsed > 1000 && player.mining.isMining) {
-            const seconds = Math.floor(elapsed / 1000);
-            const maxStamina = getMiningMaxStamina();
+        // 计算离线期间可以挖掘的次数
+        const possibleMines = Math.min(seconds, player.mining.stamina);
+        
+        if (possibleMines > 0) {
+            let gemsFound = 0;
+            let potionsUsed = 0;
             
-            // 计算离线期间可以挖掘的次数
-            const possibleMines = Math.min(seconds, player.mining.stamina);
+            console.log(`开始离线挖矿: ${possibleMines}次, 当前深度: ${player.mining.depth}`);
             
-            if (possibleMines > 0) {
-                let gemsFound = 0;
-                
-                console.log(`开始离线挖矿: ${possibleMines}次, 当前深度: ${player.mining.depth}`);
-                
-                // 模拟离线挖掘
-                for (let i = 0; i < possibleMines; i++) {
-                    // 消耗体力
-                    player.mining.stamina -= 1;
+            // 模拟离线挖掘
+            for (let i = 0; i < possibleMines; i++) {
+                // 检查是否需要自动使用药水
+                if (player.mining.autoPotion && 
+                    player.mining.potions > 0 && 
+                    player.mining.stamina <= player.mining.autoPotionThreshold && 
+                    player.mining.stamina < maxStamina) {
                     
-                    // 增加深度
-                    player.mining.depth += player.mining.power;
-                    
-                    // 获得矿石
-                    const oreGain = Math.floor(player.mining.power * (0.2 + Math.random() * 0.5));
-                    player.mining.ore += oreGain;
-                    
-                    // 宝石发现逻辑
-                    if (findGem(player.mining.depth, player.mining.upgrades.detector, true)) {
-                        gemsFound++;
-                    }
+                    player.mining.potions -= 1;
+                    player.mining.stamina = maxStamina;
+                    potionsUsed++;
                 }
-                checkTreasureDrop();
-                console.log(`离线挖矿完成: 发现${gemsFound}个宝石`);
                 
-                if (possibleMines > 0) {
-                    addMiningNotification(`离线期间挖掘了 ${possibleMines} 次，发现 ${gemsFound} 个宝石！`);
+                // 检查体力
+                if (player.mining.stamina < 1) {
+                    break;
+                }
+                
+                // 消耗体力
+                player.mining.stamina -= 1;
+                
+                // 增加深度
+                player.mining.depth += player.mining.power;
+                
+                // 获得矿石
+                const oreGain = Math.floor(player.mining.power * (0.2 + Math.random() * 0.5));
+                player.mining.ore += oreGain;
+                
+                // 宝石发现逻辑
+                if (findGem(player.mining.depth, player.mining.upgrades.detector, true)) {
+                    gemsFound++;
                 }
             }
+            checkTreasureDrop();
+            if (Math.random() < 0.5) {
+           dropMagicMaterial();
         }
-        
-        player.mining.lastUpdate = now;
-        updateMiningUI();
+            console.log(`离线挖矿完成: 发现${gemsFound}个宝石, 使用${potionsUsed}个药水`);
+            
+            if (possibleMines > 0) {
+                let message = `离线期间挖掘了 ${possibleMines} 次，发现 ${gemsFound} 个宝石`;
+                if (potionsUsed > 0) {
+                    message += `，自动使用了 ${potionsUsed} 个体力药水`;
+                }
+                addMiningNotification(message);
+            }
+        }
     }
+    
+    player.mining.lastUpdate = now;
+    updateMiningUI();
+}
 
 
         // 初始化无尽挖矿系统
@@ -43828,41 +44282,52 @@ function isFruitEligibleForLottery(fruit) {
 
         setTimeout(initMiningSystem, 1000);
 function initMiningData() {
-        if (!player.mining) {
-            player.mining = {
-                depth: 0,
+    if (!player.mining) {
+        player.mining = {
+            depth: 0,
+            power: 1,
+            isMining: false,
+            ore: 100,
+            stamina: 100,
+            baseMaxStamina: 100,
+            staminaUpgradeLevel: 1,
+            potions: 3,
+            gems: {
+                ruby: 0,
+                sapphire: 0,
+                emerald: 0,
+                amethyst: 0,
+                diamond: 0
+            },
+            upgrades: {
                 power: 1,
-                isMining: false,
-                ore: 100,
-                stamina: 100,
-                baseMaxStamina: 100,
-                staminaUpgradeLevel: 1,
-                potions: 3,
-                gems: {
-                    ruby: 0,
-                    sapphire: 0,
-                    emerald: 0,
-                    amethyst: 0,
-                    diamond: 0
-                },
-                upgrades: {
-                    power: 1,
-                    detector: 1
-                },
-                notifications: [],
-                lastUpdate: Date.now()
-            };
-        }
-        
-        // 确保所有宝石属性都存在
-        for (let i = 0; i < miningGemsConfig.length; i++) {
-            const gem = miningGemsConfig[i];
-            if (player.mining.gems[gem.key] === undefined) {
-                console.log(`初始化宝石属性: ${gem.key}`);
-                player.mining.gems[gem.key] = 0;
-            }
+                detector: 1
+            },
+            notifications: [],
+            lastUpdate: Date.now(),
+            // 添加自动药水开关
+            autoPotion: false,
+            autoPotionThreshold: 5 // 自动使用药水的体力阈值
+        };
+    }
+    
+    // 确保所有宝石属性都存在
+    for (let i = 0; i < miningGemsConfig.length; i++) {
+        const gem = miningGemsConfig[i];
+        if (player.mining.gems[gem.key] === undefined) {
+            console.log(`初始化宝石属性: ${gem.key}`);
+            player.mining.gems[gem.key] = 0;
         }
     }
+    
+    // 确保自动药水属性存在
+    if (player.mining.autoPotion === undefined) {
+        player.mining.autoPotion = false;
+    }
+    if (player.mining.autoPotionThreshold === undefined) {
+        player.mining.autoPotionThreshold = 5;
+    }
+}
 
 
 // 检查并修复价格合理性
@@ -45470,7 +45935,7 @@ function calculateInvestmentMaxQuantity() {
     if (game.tradeData.type === 'buy') {
         // 根据可用资金计算最大可买入数量
         const maxByFunds = Math.floor(game.userData.availableFunds / (currentStock.price * (1 + game.tradeData.feeRate)));
-        return Math.min(maxByFunds, 1000000000000000); // 限制最大1000万亿股
+         return Math.min(maxByFunds, 100000000000000000000); // 限制最大1000亿亿股
     } else {
         // 卖出时最多可卖出持有数量
         return currentStock.holdings;
@@ -46627,7 +47092,16 @@ function loadInvestmentGameData() {
             { id: 12, name: "时间之屋", rarity: 12, baseCost: 5000000000, income: 5000000, description: "能操控时间的奇异房屋" },
             { id: 13, name: "维度别墅", rarity: 13, baseCost: 10000000000, income: 10000000, description: "存在于多个维度的别墅" },
             { id: 14, name: "创世神殿", rarity: 14, baseCost: 50000000000, income: 50000000, description: "创世神居住的神圣殿堂" },
-            { id: 15, name: "永恒居所", rarity: 15, baseCost: 100000000000, income: 100000000, description: "超越时间与空间的永恒住所" }
+            { id: 15, name: "永恒居所", rarity: 15, baseCost: 100000000000, income: 100000000, description: "超越时间与空间的永恒住所" },
+            { id: 16, name: "宇宙宫殿", rarity: 16, baseCost: 1000000000000, income: 250000000, description: "连接多个宇宙的神秘圣殿" },
+            { id: 17, name: "星系府邸", rarity: 17, baseCost: 10000000000000, income: 500000000, description: "统领整个星系的宏伟宫殿" },
+            { id: 18, name: "无限领域", rarity: 18, baseCost: 100000000000000, income: 750000000, description: "涵盖无限可能性的领域" },
+            { id: 19, name: "终极天堂", rarity: 19, baseCost: 1000000000000000, income: 1000000000, description: "超越一切存在的终极居所" },
+            { id: 20, name: "起源圣所", rarity: 20, baseCost: 10000000000000000, income: 1250000000, description: "宇宙基本法则的具现化殿堂" },
+            { id: 21, name: "法则圣殿", rarity: 21, baseCost: 100000000000000000, income: 1500000000, description: "涵盖无限可能性的领域" },   
+            { id: 22, name: "概念之居", rarity: 22, baseCost: 1000000000000000000, income: 1750000000, description: "超越现实与想象的概念住所" },
+            { id: 23, name: "真理圣域", rarity: 23, baseCost: 10000000000000000000, income: 2000000000, description: "容纳宇宙终极真理的绝对领域" },
+            { id: 24, name: "存在之源", rarity: 24, baseCost: 100000000000000000000, income: 5000000000, description: "一切存在与非存在的最终源头" }          
         ];
 
         // 初始化房屋系统数据
@@ -55592,18 +56066,20 @@ function updateMagicToolInventory() {
     });
 }
 // 选择材料（用于合成预览）
-let selectedMaterials = {};
-function selectMaterial(materialId) {
+let selectedMagicMaterials = {};
+
+function selectMagicMaterial(materialId) {
     const material = magicToolConfig.materials.find(m => m.id === materialId);
     if (!material) return;
     
-    if (!selectedMaterials[materialId]) {
-        selectedMaterials[materialId] = 0;
+    if (!selectedMagicMaterials[materialId]) {
+        selectedMagicMaterials[materialId] = 0;
     }
-    selectedMaterials[materialId]++;
+    selectedMagicMaterials[materialId]++;
     
     updateMagicToolPreview();
 }
+
 
 // 更新合成预览
 function updateMagicToolPreview() {
@@ -55618,14 +56094,14 @@ function updateMagicToolPreview() {
     craftButton.style.color = '#888';
     craftButton.textContent = '选择材料';
     
-    if (Object.keys(selectedMaterials).length === 0) {
+    if (Object.keys(selectedMagicMaterials).length === 0) {
         materialsInfo.textContent = "未选择材料";
         return;
     }
     
     // 显示已选择的材料
     let materialsText = "已选择材料: ";
-    for (const [materialId, count] of Object.entries(selectedMaterials)) {
+    for (const [materialId, count] of Object.entries(selectedMagicMaterials)) {
         const material = magicToolConfig.materials.find(m => m.id === materialId);
         if (material) {
             const tierColor = getTierColor(material.tier);
@@ -55640,7 +56116,7 @@ function updateMagicToolPreview() {
         
         // 检查材料是否足够
         for (const [materialId, required] of Object.entries(tool.materials)) {
-            const have = selectedMaterials[materialId] || 0;
+            const have = selectedMagicMaterials[materialId] || 0;
             if (have < required) {
                 canCraft = false;
                 break;
@@ -55673,7 +56149,7 @@ function updateMagicToolPreview() {
                         <div style="display: flex; flex-wrap: wrap; gap: 5px;">${Object.entries(tool.materials).map(([id, required]) => {
                             const material = magicToolConfig.materials.find(m => m.id === id);
                             const hasMaterial = (player.magicTools.materials[id] || 0) >= required;
-                            const isSelected = (selectedMaterials[id] || 0) >= required;
+                            const isSelected = (selectedMagicMaterials[id] || 0) >= required;
                             return `<div style="background: ${isSelected ? (hasMaterial ? '#4CAF5040' : '#f4433640') : '#555'}; 
                                     color: ${isSelected ? (hasMaterial ? '#4CAF50' : '#f44336') : '#888'}; 
                                     padding: 3px 8px; border-radius: 5px; font-size: 11px;">
@@ -55921,6 +56397,7 @@ function equipMagicTool(toolId) {
     updateMagicToolUI();
     updateCultivationExpUI(0, 1, 1); // 更新加成显示
 }
+
 
 
 // 卸下法宝
@@ -56821,5 +57298,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
+
 </body>
 </html>
