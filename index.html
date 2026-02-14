@@ -3956,6 +3956,16 @@ select:focus {
     50% { box-shadow: 0 0 30px rgba(255,69,0,0.8); }
     100% { box-shadow: 0 0 10px rgba(255,69,0,0.5); }
 }
+@keyframes pop-up {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -4033,9 +4043,9 @@ select:focus {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.87更新日志</h4>
+            <h4>1.873更新日志</h4>
             <h4>QQ群：902481027  ，864788026，  有问题可以进群问（存档异常联系群管理修复）</h4>
-            <p>2026/02/14:  增加修仙副本(修仙2级开启）：新年修仙副本20级开启，掉落修仙经验，道具。</p>
+            <p>2026/02/14:  增加修仙副本(修仙2级开启）：新年修仙副本20级开启， 掉落修仙经验，道具。 开启血脉和灵根修改成保存替换，高品质会有提升保存还是取消</p>
             <p>2026/02/04:  加入赌石系统（前期）：一刀穷，一刀富，一刀穿麻布。</p>
             <p>2026/02/03: 修复符文无法合成，宗门玩家不能派遣</p>
            <p>2026/02/03: 挖矿增加自动使用药水，法宝材料挖矿也有几率掉落。增加股票购买上限， 增加房子，宗门任务增加一键派遣。</p>
@@ -8915,7 +8925,7 @@ select:focus {
 </div>
 </div>
 </div>
-<div id="footer">版本号: v1.8.7</div>
+<div id="footer">版本号: v1.8.73</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -11794,6 +11804,21 @@ case "LINGQI1":
         player.magicTools.equipped = "yin_yang_mirrorbaab";
     }
     break;
+   case "XIUXIANA":
+            player.items.rootDetector = (player.items.rootDetector || 0) + 17;
+            rewardMsg = "获得17个灵根检测器";
+            success = true;
+            break;
+            case "XIUXIANB":
+            player.items.bloodlineDetector = (player.items.bloodlineDetector || 0) + 17;
+            rewardMsg = "获得17个血脉检测剂";
+            success = true;
+            break;
+       case "XIANNIANHONGBAO":
+            player.investmentGame.userData.availableFunds += 1000000;
+            rewardMsg = "获得1000000元资金";
+            success = true;
+            break;
         case "XIUXIANFUBEN":
         player.nianBeast.dungeonToken = (player.nianBeast.dungeonToken || 0) + 10;
         rewardMsg = "获得10个修仙令牌";
@@ -26835,8 +26860,8 @@ const treasureMapLevels = [
         { type: "superiorGem", amount: 3 },
         { type: "divineGem", amount: 3 },
         { type: "rebornDan", amount: 10 },
-        { type: "rootDetector", amount: 3 },
-        { type: "bloodlineDetector", amount: 3 },
+        { type: "rootDetector", amount: 1 },
+        { type: "bloodlineDetector", amount: 1 },
         { type: "advanceStone", amount: 2 },
         { type: "yuzhou1", amount: 10 },
         { type: "yuzhou2", amount: 10 },
@@ -26844,10 +26869,10 @@ const treasureMapLevels = [
         { type: "yuzhou4", amount: 10 },
         { type: "banlv1", amount: 10 },
         { type: "banlv2", amount: 10 }, 
-        { type: "banlv7", amount: 10 },
-       { type: "banlv8", amount: 2 },  
+        { type: "banlv7", amount: 1 },
+       { type: "banlv8", amount: 1 },  
        { type: "fuben1", amount: 1 },      
-      { type: "banlv9", amount: 2 }  
+      { type: "banlv9", amount: 1 }  
     ]},
     { level: 5, name: "五级藏宝图", monsterMinStage: 800, monsterMaxStage: 1000, expReward: 1000000, rewards: [
         { type: "baitCount", amount: 10 },
@@ -26857,8 +26882,8 @@ const treasureMapLevels = [
         { type: "superiorGem", amount: 5 },
         { type: "divineGem", amount: 5 },
         { type: "rebornDan", amount: 20 },
-        { type: "rootDetector", amount: 5 },
-        { type: "bloodlineDetector", amount: 5 },
+        { type: "rootDetector", amount: 2 },
+        { type: "bloodlineDetector", amount: 2 },
        { type: "advanceStone", amount: 3 },
        { type: "yuzhou1", amount: 30 },
        { type: "yuzhou2", amount: 30 },
@@ -26866,10 +26891,10 @@ const treasureMapLevels = [
        { type: "yuzhou4", amount: 30 },
        { type: "banlv1", amount: 20 },
        { type: "banlv2", amount: 20 },  
-         { type: "banlv7", amount: 3 },
-       { type: "banlv8", amount: 3 },
+         { type: "banlv7", amount: 2 },
+       { type: "banlv8", amount: 1 },
        { type: "fuben1", amount: 1 },      
-      { type: "banlv9", amount: 3 }  
+      { type: "banlv9", amount: 1 }  
     ]}
 ];
 
@@ -28173,38 +28198,382 @@ function drawRoot() {
     const rand = Math.random();
     let tier;
     
-   if (rand < 0.85) {
-    tier = "tier1"; // 85%
-} else if (rand < 0.97) {
-    tier = "tier2"; // 12%
-} else if (rand < 0.998) {
-    tier = "tier3"; // 2.8%
-} else if (rand < 0.9998) {
-    tier = "tier4"; // 0.18%
-} else if (rand < 0.99998) {
-    tier = "tier5"; // 0.018%
-} else if (rand < 0.999998) {
-    tier = "tier6"; // 0.0018%
-} else {
-    tier = "tier7"; // 0.0002%
-}
+    if (rand < 0.85) {
+        tier = "tier1"; // 85%
+    } else if (rand < 0.97) {
+        tier = "tier2"; // 12%
+    } else if (rand < 0.998) {
+        tier = "tier3"; // 2.8%
+    } else if (rand < 0.9998) {
+        tier = "tier4"; // 0.18%
+    } else if (rand < 0.99998) {
+        tier = "tier5"; // 0.018%
+    } else if (rand < 0.999998) {
+        tier = "tier6"; // 0.0018%
+    } else {
+        tier = "tier7"; // 0.0002%
+    }
     
     // 随机选择该品阶中的一个灵根
     const roots = rootConfig[tier];
     const root = roots[Math.floor(Math.random() * roots.length)];
     
-    // 更新玩家灵根
-    player.cultivation.root = root;
+    // 保存当前抽取的灵根到全局变量
+    window.tempNewRoot = root;
+    if (root.bonus >= 2.05) {
+        // 保存当前抽取的灵根到全局变量
+        window.tempRoot = root;
+        // 显示自定义弹窗
+        closeRootReplaceDialog();
+        showRootRefreshDialog();
+        
+    } 
+    // 检查是否有现有灵根
+    if (player.cultivation.root) {
+        // 有现有灵根，显示替换确认弹窗
+        showRootReplaceDialog();
+    } else {
+        // 没有现有灵根，直接使用
+        player.cultivation.root = root;
+        
+        // 显示结果
+        document.getElementById('rootResult').innerHTML = `
+            <div style="font-size: 20px; font-weight: bold; color: #FFD700;">获得${root.name}!</div>
+            <div>加成: ${(root.bonus * 100).toFixed(1)}%</div>
+        `;
+        
+        logAction(`获得灵根: ${root.name} (加成${(root.bonus * 100).toFixed(1)}%)`, "success");
+        updateCultivationUI();
+        updateDisplay();
+    }
+}
+function showRootReplaceDialog() {
+    if (!window.tempNewRoot) return;
     
-    // 显示结果
-    document.getElementById('rootResult').innerHTML = `
-        <div style="font-size: 20px; font-weight: bold; color: #FFD700;">获得${root.name}!</div>
-        <div>加成: ${root.bonus * 100}%</div>
+    const oldRoot = player.cultivation.root;
+    const newRoot = window.tempNewRoot;
+    
+    // 创建遮罩层
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.8)';
+    overlay.style.zIndex = '10000';
+    overlay.id = 'rootReplaceOverlay';
+    overlay.onclick = function(e) {
+        if (e.target === this) closeRootReplaceDialog();
+    };
+    document.body.appendChild(overlay);
+    
+    // 创建弹窗
+    const dialog = document.createElement('div');
+    dialog.style.position = 'fixed';
+    dialog.style.top = '50%';
+    dialog.style.left = '50%';
+    dialog.style.transform = 'translate(-50%, -50%)';
+    dialog.style.background = 'linear-gradient(145deg, #2c2c54, #40407a)';
+    dialog.style.color = 'white';
+    dialog.style.padding = '30px';
+    dialog.style.border = '3px solid #FFD700';
+    dialog.style.borderRadius = '20px';
+    dialog.style.zIndex = '10001';
+    dialog.style.width = '550px';
+    dialog.style.textAlign = 'center';
+    dialog.style.boxShadow = '0 10px 40px rgba(255,215,0,0.3)';
+    dialog.style.animation = 'pop-up 0.3s';
+    dialog.id = 'rootReplaceDialog';
+    
+    // 判断新旧灵根哪个更好
+    const isNewBetter = newRoot.bonus > oldRoot.bonus;
+    const compareColor = isNewBetter ? '#4CAF50' : '#f44336';
+    const compareText = isNewBetter ? '✨ 新灵根更好！' : '⚠️ 旧灵根更好';
+    
+    dialog.innerHTML = `
+        <div style="position: absolute; top: -15px; left: -15px; font-size: 30px;">✨</div>
+        <div style="position: absolute; top: -15px; right: -15px; font-size: 30px;">⚡</div>
+        
+        <h3 style="color: #FFD700; margin-top: 0; margin-bottom: 20px; font-size: 28px;">🌿 灵根选择</h3>
+        
+        <div style="display: flex; gap: 20px; margin-bottom: 25px;">
+            <!-- 旧灵根 -->
+            <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 2px solid #666;">
+                <div style="font-size: 24px; margin-bottom: 10px;">🔮</div>
+                <div style="font-size: 18px; font-weight: bold; color: #aaa; margin-bottom: 5px;">当前灵根</div>
+                <div style="font-size: 16px; color: #FFD700; margin-bottom: 10px;">${oldRoot.name}</div>
+                <div style="font-size: 20px; color: #4CAF50; font-weight: bold;">${(oldRoot.bonus * 100).toFixed(1)}%</div>
+            </div>
+            
+            <div style="display: flex; align-items: center; font-size: 24px; color: #FFD700;">VS</div>
+            
+            <!-- 新灵根 -->
+            <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 2px solid ${isNewBetter ? '#4CAF50' : '#FFD700'};">
+                <div style="font-size: 24px; margin-bottom: 10px;">✨</div>
+                <div style="font-size: 18px; font-weight: bold; color: #FFD700; margin-bottom: 5px;">新灵根</div>
+                <div style="font-size: 16px; color: #FFD700; margin-bottom: 10px;">${newRoot.name}</div>
+                <div style="font-size: 20px; color: ${isNewBetter ? '#4CAF50' : '#FFD700'}; font-weight: bold;">${(newRoot.bonus * 100).toFixed(1)}%</div>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 25px; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 10px;">
+            <span style="color: ${compareColor};">${compareText}</span>
+        </div>
+        
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button onclick="replaceRoot()" style="background: linear-gradient(45deg, #4CAF50, #2E7D32); color: white; border: none; padding: 15px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; flex: 1;">
+                ✨ 替换为新灵根
+            </button>
+            <button onclick="keepOldRoot()" style="background: linear-gradient(45deg, #f44336, #c62828); color: white; border: none; padding: 15px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; flex: 1;">
+                ❌ 保留旧灵根
+            </button>
+        </div>
+        
+        <button onclick="closeRootReplaceDialog()" style="background: rgba(255,255,255,0.1); color: #aaa; border: 2px solid #666; padding: 10px 25px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 14px; margin-top: 20px;">
+            取消 (不替换也不保留新灵根)
+        </button>
     `;
     
-    logAction(`获得灵根: ${root.name} (加成${root.bonus * 100}%)`, "success");
-    updateCultivationUI();
-    updateDisplay();
+    document.body.appendChild(dialog);
+}
+function replaceRoot() {
+    if (window.tempNewRoot) {
+        const newRoot = window.tempNewRoot;
+        player.cultivation.root = newRoot;
+        
+        // 关闭弹窗
+        closeRootReplaceDialog();
+        
+        // 显示结果
+        document.getElementById('rootResult').innerHTML = `
+            <div style="font-size: 20px; font-weight: bold; color: #FFD700;">替换为${newRoot.name}!</div>
+            <div>加成: ${(newRoot.bonus * 100).toFixed(1)}%</div>
+        `;
+        
+        logAction(`替换灵根为: ${newRoot.name} (加成${(newRoot.bonus * 100).toFixed(1)}%)`, "success");
+        updateCultivationUI();
+        updateDisplay();
+        
+        // 清除临时变量
+        window.tempNewRoot = null;
+    }
+}
+function keepOldRoot() {
+    const oldRoot = player.cultivation.root;
+    
+    // 关闭弹窗
+    closeRootReplaceDialog();
+    
+    // 显示结果（保留旧灵根）
+    document.getElementById('rootResult').innerHTML = `
+        <div style="font-size: 20px; font-weight: bold; color: #FFD700;">保留当前灵根</div>
+        <div style="font-size: 16px; color: #aaa; margin-top: 5px;">${oldRoot.name} (${(oldRoot.bonus * 100).toFixed(1)}%)</div>
+    `;
+    
+    logAction(`保留当前灵根: ${oldRoot.name}`, "info");
+    
+    // 清除临时变量
+    window.tempNewRoot = null;
+}
+
+// 关闭灵根替换弹窗
+function closeRootReplaceDialog() {
+    const overlay = document.getElementById('rootReplaceOverlay');
+    if (overlay && overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+    }
+    
+    const dialog = document.getElementById('rootReplaceDialog');
+    if (dialog && dialog.parentNode) {
+        dialog.parentNode.removeChild(dialog);
+    }
+    
+    // 清除临时变量
+    window.tempNewRoot = null;
+}
+
+function showRootRefreshDialog() {
+    // 检查是否有临时灵根
+    if (!window.tempRoot) return;
+    
+    const root = window.tempRoot;
+    
+    // 创建遮罩层
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.8)';
+    overlay.style.zIndex = '10000';
+    overlay.id = 'rootRefreshOverlay';
+    overlay.onclick = function(e) {
+        if (e.target === this) closeRootRefreshDialog();
+    };
+    document.body.appendChild(overlay);
+    
+    // 创建弹窗
+    const dialog = document.createElement('div');
+    dialog.style.position = 'fixed';
+    dialog.style.top = '50%';
+    dialog.style.left = '50%';
+    dialog.style.transform = 'translate(-50%, -50%)';
+    dialog.style.background = 'linear-gradient(145deg, #2c2c54, #40407a)';
+    dialog.style.color = 'white';
+    dialog.style.padding = '30px';
+    dialog.style.border = '3px solid #FFD700';
+    dialog.style.borderRadius = '20px';
+    dialog.style.zIndex = '1000111';
+    dialog.style.width = '450px';
+    dialog.style.textAlign = 'center';
+    dialog.style.boxShadow = '0 10px 40px rgba(255,215,0,0.3)';
+    dialog.style.animation = 'pop-up 0.3s';
+    dialog.id = 'rootRefreshDialog';
+    
+    // 根据加成确定颜色
+    let color = '#FFD700';
+    if (root.bonus >= 3.9) color = '#FF4500';
+    else if (root.bonus >= 2.9) color = '#FF69B4';
+    else if (root.bonus >= 2.05) color = '#9C27B0';
+    
+    dialog.innerHTML = `
+        <div style="position: absolute; top: -15px; left: -15px; font-size: 30px;">✨</div>
+        <div style="position: absolute; top: -15px; right: -15px; font-size: 30px;">⚡</div>
+        
+        <h3 style="color: ${color}; margin-top: 0; margin-bottom: 20px; font-size: 28px; text-shadow: 0 0 10px ${color};">🎉 极品灵根出现！</h3>
+        
+        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 2px solid ${color};">
+            <div style="font-size: 48px; margin-bottom: 10px;">✨</div>
+            <div style="font-size: 26px; font-weight: bold; color: ${color}; margin-bottom: 10px;">${root.name}</div>
+            <div style="font-size: 18px; color: #FFD700; margin-bottom: 5px;">加成: ${(root.bonus * 100).toFixed(1)}%</div>
+            <div style="font-size: 14px; color: #aaa; margin-top: 10px;">品阶: ${getTierNameFromBonus(root.bonus)}</div>
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+            <div style="color: #FFD700; font-size: 16px; margin-bottom: 10px;">是否保留这个灵根？</div>
+            <div style="color: #aaa; font-size: 14px;">如果选择刷新，将重新抽取一个新灵根</div>
+        </div>
+        
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button onclick="confirmKeepRoot()" style="background: linear-gradient(45deg, #4CAF50, #2E7D32); color: white; border: none; padding: 15px 30px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; flex: 1;">
+                ✨ 保留
+            </button>
+        </div>
+        
+        <button onclick="closeRootRefreshDialog()" style="background: rgba(244,67,54,0.2); color: #f44336; border: 2px solid #f44336; padding: 10px 25px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 14px; margin-top: 20px;">
+            取消 (不保留)
+        </button>
+    `;
+    
+    document.body.appendChild(dialog);
+}
+
+// 获取品阶名称
+function getTierNameFromBonus(bonus) {
+    if (bonus >= 9.0) return '传说级';
+    if (bonus >= 4.9) return '史诗级';
+    if (bonus >= 3.9) return '神话级';
+    if (bonus >= 2.9) return '极品';
+    if (bonus >= 2.4) return '稀有';
+    if (bonus >= 2.05) return '珍贵';
+    return '普通';
+}
+function confirmKeepRoot() {
+    if (window.tempRoot) {
+        const root = window.tempRoot;
+        player.cultivation.root = root;
+        
+        // 关闭弹窗
+        closeRootRefreshDialog();
+        
+        // 显示结果
+        const resultDiv = document.getElementById('rootResult');
+        if (resultDiv) {
+            resultDiv.innerHTML = `
+                <div style="font-size: 20px; font-weight: bold; color: #FFD700;">获得${root.name}!</div>
+                <div>加成: ${(root.bonus * 100).toFixed(1)}%</div>
+            `;
+        }
+        
+        logAction(`获得极品灵根: ${root.name} (加成${(root.bonus * 100).toFixed(1)}%)`, "success");
+        updateCultivationUI();
+        updateDisplay();
+        
+        // 清除临时变量
+        window.tempRoot = null;
+    } else {
+        closeRootRefreshDialog();
+    }
+}
+function refreshRoot() {
+    // 关闭当前弹窗
+    closeRootRefreshDialog();
+    
+    // 重新抽取
+    const rand = Math.random();
+    let tier;
+    
+    if (rand < 0.85) {
+        tier = "tier1";
+    } else if (rand < 0.97) {
+        tier = "tier2";
+    } else if (rand < 0.998) {
+        tier = "tier3";
+    } else if (rand < 0.9998) {
+        tier = "tier4";
+    } else if (rand < 0.99998) {
+        tier = "tier5";
+    } else if (rand < 0.999998) {
+        tier = "tier6";
+    } else {
+        tier = "tier7";
+    }
+    
+    const roots = rootConfig[tier];
+    const newRoot = roots[Math.floor(Math.random() * roots.length)];
+    
+    // 检查新抽取的是否也达到205%以上
+    if (newRoot.bonus >= 2.05) {
+        window.tempRoot = newRoot;
+        showRootRefreshDialog();
+    } else {
+        // 直接更新玩家灵根
+        player.cultivation.root = newRoot;
+        
+        // 显示结果
+        const resultDiv = document.getElementById('rootResult');
+        if (resultDiv) {
+            resultDiv.innerHTML = `
+                <div style="font-size: 20px; font-weight: bold; color: #FFD700;">刷新获得${newRoot.name}!</div>
+                <div>加成: ${(newRoot.bonus * 100).toFixed(1)}%</div>
+            `;
+        }
+        
+        logAction(`刷新获得灵根: ${newRoot.name} (加成${(newRoot.bonus * 100).toFixed(1)}%)`, "success");
+        updateCultivationUI();
+        updateDisplay();
+        
+        // 清除临时变量
+        window.tempRoot = null;
+    }
+}
+
+// 关闭灵根刷新弹窗（不保留也不刷新）
+function closeRootRefreshDialog() {
+    const overlay = document.getElementById('rootRefreshOverlay');
+    if (overlay && overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+    }
+    
+    const dialog = document.getElementById('rootRefreshDialog');
+    if (dialog && dialog.parentNode) {
+        dialog.parentNode.removeChild(dialog);
+    }
+    
+    // 清除临时变量（如果用户取消，不保留灵根）
+    window.tempRoot = null;
 }
 // 打开血脉宝箱
 function openBloodlineBox() {
@@ -28237,42 +28606,474 @@ function drawBloodline() {
     const rand = Math.random();
     let tier;
     
-  if (rand < 0.8) {
-    tier = "tier1"; // 80%
-} else if (rand < 0.96) {
-    tier = "tier2"; // 16%
-} else if (rand < 0.992) {
-    tier = "tier3"; // 3.2%
-} else if (rand < 0.9984) {
-    tier = "tier4"; // 0.64%
-} else if (rand < 0.99968) {
-    tier = "tier5"; // 0.128%
-} else if (rand < 0.999936) {
-    tier = "tier6"; // 0.0256%
-} else if (rand < 0.9999872) {
-    tier = "tier7"; // 0.00512%
-} else if (rand < 0.99999744) {
-    tier = "tier8"; // 0.001024%
-} else {
-    tier = "tier9"; // 0.000256%
-}
+    if (rand < 0.8) {
+        tier = "tier1"; // 80%
+    } else if (rand < 0.96) {
+        tier = "tier2"; // 16%
+    } else if (rand < 0.992) {
+        tier = "tier3"; // 3.2%
+    } else if (rand < 0.9984) {
+        tier = "tier4"; // 0.64%
+    } else if (rand < 0.99968) {
+        tier = "tier5"; // 0.128%
+    } else if (rand < 0.999936) {
+        tier = "tier6"; // 0.0256%
+    } else if (rand < 0.9999872) {
+        tier = "tier7"; // 0.00512%
+    } else if (rand < 0.99999744) {
+        tier = "tier8"; // 0.001024%
+    } else {
+        tier = "tier9"; // 0.000256%
+    }
     
     // 随机选择该品阶中的一个血脉
     const bloodlines = bloodlineConfig[tier];
     const bloodline = bloodlines[Math.floor(Math.random() * bloodlines.length)];
     
-    // 更新玩家血脉
-    player.cultivation.bloodline = bloodline;
+    // 保存当前抽取的血脉到全局变量
+    window.tempNewBloodline = bloodline;
+      if (bloodline.bonus >= 1.55) {
+        // 保存当前抽取的血脉到全局变量
+        window.tempBloodline = bloodline;
+        // 显示自定义弹窗
+        closeBloodlineReplaceDialog();
+        showBloodlineContinueDialog();
+      
+    }
+    // 检查是否有现有血脉
+    if (player.cultivation.bloodline) {
+        // 有现有血脉，显示替换确认弹窗
+        showBloodlineReplaceDialog();
+    } else {
+        // 没有现有血脉，直接使用
+        player.cultivation.bloodline = bloodline;
+        
+        // 显示结果
+        document.getElementById('bloodlineResult').innerHTML = `
+            <div style="font-size: 20px; font-weight: bold; color: #FFD700;">获得${bloodline.name}!</div>
+            <div>加成: ${(bloodline.bonus * 100).toFixed(1)}%</div>
+        `;
+        
+        logAction(`获得血脉: ${bloodline.name} (加成${(bloodline.bonus * 100).toFixed(1)}%)`, "success");
+        updateCultivationUI();
+        updateDisplay();
+    }
+}
+function showBloodlineReplaceDialog() {
+    if (!window.tempNewBloodline) return;
+    
+    const oldBloodline = player.cultivation.bloodline;
+    const newBloodline = window.tempNewBloodline;
+    
+    // 创建遮罩层
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.8)';
+    overlay.style.zIndex = '10000';
+    overlay.id = 'bloodlineReplaceOverlay';
+    overlay.onclick = function(e) {
+        if (e.target === this) closeBloodlineReplaceDialog();
+    };
+    document.body.appendChild(overlay);
+    
+    // 创建弹窗
+    const dialog = document.createElement('div');
+    dialog.style.position = 'fixed';
+    dialog.style.top = '50%';
+    dialog.style.left = '50%';
+    dialog.style.transform = 'translate(-50%, -50%)';
+    dialog.style.background = 'linear-gradient(145deg, #2c2c54, #40407a)';
+    dialog.style.color = 'white';
+    dialog.style.padding = '30px';
+    dialog.style.border = '3px solid #d4af37';
+    dialog.style.borderRadius = '20px';
+    dialog.style.zIndex = '10001';
+    dialog.style.width = '550px';
+    dialog.style.textAlign = 'center';
+    dialog.style.boxShadow = '0 10px 40px rgba(212,175,55,0.3)';
+    dialog.style.animation = 'pop-up 0.3s';
+    dialog.id = 'bloodlineReplaceDialog';
+    
+    // 判断新旧血脉哪个更好
+    const isNewBetter = newBloodline.bonus > oldBloodline.bonus;
+    const compareColor = isNewBetter ? '#4CAF50' : '#f44336';
+    const compareText = isNewBetter ? '✨ 新血脉更好！' : '⚠️ 旧血脉更好';
+    
+    // 检查是否达到170%以上（可以继续开启）
+    const canContinue = newBloodline.bonus >= 1.7;
+    
+    dialog.innerHTML = `
+        <div style="position: absolute; top: -15px; left: -15px; font-size: 30px;">💉</div>
+        <div style="position: absolute; top: -15px; right: -15px; font-size: 30px;">⚡</div>
+        
+        <h3 style="color: #d4af37; margin-top: 0; margin-bottom: 20px; font-size: 28px;">💫 血脉选择</h3>
+        
+        <div style="display: flex; gap: 20px; margin-bottom: 25px;">
+            <!-- 旧血脉 -->
+            <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 2px solid #666;">
+                <div style="font-size: 24px; margin-bottom: 10px;">🔮</div>
+                <div style="font-size: 18px; font-weight: bold; color: #aaa; margin-bottom: 5px;">当前血脉</div>
+                <div style="font-size: 14px; color: #FFD700; margin-bottom: 10px;">${oldBloodline.name}</div>
+                <div style="font-size: 20px; color: #4CAF50; font-weight: bold;">${(oldBloodline.bonus * 100).toFixed(1)}%</div>
+            </div>
+            
+            <div style="display: flex; align-items: center; font-size: 24px; color: #FFD700;">VS</div>
+            
+            <!-- 新血脉 -->
+            <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 2px solid ${isNewBetter ? '#4CAF50' : '#d4af37'};">
+                <div style="font-size: 24px; margin-bottom: 10px;">✨</div>
+                <div style="font-size: 18px; font-weight: bold; color: #d4af37; margin-bottom: 5px;">新血脉</div>
+                <div style="font-size: 14px; color: #FFD700; margin-bottom: 10px;">${newBloodline.name}</div>
+                <div style="font-size: 20px; color: ${isNewBetter ? '#4CAF50' : '#d4af37'}; font-weight: bold;">${(newBloodline.bonus * 100).toFixed(1)}%</div>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 25px; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 10px;">
+            <span style="color: ${compareColor};">${compareText}</span>
+        </div>
+        
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <button onclick="replaceBloodline()" style="background: linear-gradient(45deg, #4CAF50, #2E7D32); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px; flex: 1;">
+                ✨ 替换为新血脉
+            </button>
+            <button onclick="keepOldBloodline()" style="background: linear-gradient(45deg, #f44336, #c62828); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px; flex: 1;">
+                ❌ 保留旧血脉
+            </button>
+        </div>
+        
+        ${canContinue ? `
+            <div style="margin-top: 15px;">
+                <button onclick="continueBloodlineFromDialog()" style="background: linear-gradient(45deg, #d4af37, #b8941f); color: black; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px; width: 100%;">
+                    🔄 继续开启 (消耗1个检测剂)
+                </button>
+            </div>
+        ` : ''}
+        
+        <button onclick="closeBloodlineReplaceDialog()" style="background: rgba(255,255,255,0.1); color: #aaa; border: 2px solid #666; padding: 10px 25px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 14px; margin-top: 20px;">
+            取消
+        </button>
+    `;
+    
+    document.body.appendChild(dialog);
+}
+function replaceBloodline() {
+    if (window.tempNewBloodline) {
+        const newBloodline = window.tempNewBloodline;
+        player.cultivation.bloodline = newBloodline;
+        
+        // 关闭弹窗
+        closeBloodlineReplaceDialog();
+        
+        // 显示结果
+        document.getElementById('bloodlineResult').innerHTML = `
+            <div style="font-size: 20px; font-weight: bold; color: #FFD700;">替换为${newBloodline.name}!</div>
+            <div>加成: ${(newBloodline.bonus * 100).toFixed(1)}%</div>
+        `;
+        
+        logAction(`替换血脉为: ${newBloodline.name} (加成${(newBloodline.bonus * 100).toFixed(1)}%)`, "success");
+        updateCultivationUI();
+        updateDisplay();
+        
+        // 清除临时变量
+        window.tempNewBloodline = null;
+    }
+}
+
+// 保留旧血脉
+function keepOldBloodline() {
+    const oldBloodline = player.cultivation.bloodline;
+    
+    // 关闭弹窗
+    closeBloodlineReplaceDialog();
     
     // 显示结果
     document.getElementById('bloodlineResult').innerHTML = `
-        <div style="font-size: 20px; font-weight: bold; color: #FFD700;">获得${bloodline.name}!</div>
-        <div>加成: ${bloodline.bonus * 100}%</div>
+        <div style="font-size: 20px; font-weight: bold; color: #FFD700;">保留当前血脉</div>
+        <div style="font-size: 16px; color: #aaa; margin-top: 5px;">${oldBloodline.name} (${(oldBloodline.bonus * 100).toFixed(1)}%)</div>
     `;
     
-    logAction(`获得血脉: ${bloodline.name} (加成${bloodline.bonus * 100}%)`, "success");
-    updateCultivationUI();
-    updateDisplay();
+    logAction(`保留当前血脉: ${oldBloodline.name}`, "info");
+    
+    // 清除临时变量
+    window.tempNewBloodline = null;
+}
+function continueBloodlineFromDialog() {
+    if (!window.tempNewBloodline) return;
+    
+    // 关闭当前弹窗
+    closeBloodlineReplaceDialog();
+    
+    // 检查是否有检测剂
+    if (player.items.bloodlineDetector < 1) {
+        logAction("血脉检测剂不足，无法继续开启！", "error");
+        
+        // 如果没有检测剂，询问是否保留当前新血脉
+        if (confirm('检测剂不足！是否保留刚才抽到的血脉？')) {
+            replaceBloodline();
+        }
+        return;
+    }
+    
+    // 消耗检测剂
+    player.items.bloodlineDetector--;
+    
+    // 重新抽取
+    const rand = Math.random();
+    let tier;
+    
+    if (rand < 0.8) {
+        tier = "tier1";
+    } else if (rand < 0.96) {
+        tier = "tier2";
+    } else if (rand < 0.992) {
+        tier = "tier3";
+    } else if (rand < 0.9984) {
+        tier = "tier4";
+    } else if (rand < 0.99968) {
+        tier = "tier5";
+    } else if (rand < 0.999936) {
+        tier = "tier6";
+    } else if (rand < 0.9999872) {
+        tier = "tier7";
+    } else if (rand < 0.99999744) {
+        tier = "tier8";
+    } else {
+        tier = "tier9";
+    }
+    
+    const bloodlines = bloodlineConfig[tier];
+    const newBloodline = bloodlines[Math.floor(Math.random() * bloodlines.length)];
+    
+    // 保存新抽取的血脉
+    window.tempNewBloodline = newBloodline;
+    
+    // 再次显示替换弹窗
+    showBloodlineReplaceDialog();
+}
+function closeBloodlineReplaceDialog() {
+    const overlay = document.getElementById('bloodlineReplaceOverlay');
+    if (overlay && overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+    }
+    
+    const dialog = document.getElementById('bloodlineReplaceDialog');
+    if (dialog && dialog.parentNode) {
+        dialog.parentNode.removeChild(dialog);
+    }
+    
+    // 清除临时变量
+    window.tempNewBloodline = null;
+}
+function showBloodlineContinueDialog() {
+    // 检查是否有临时血脉
+    if (!window.tempBloodline) return;
+    
+    const bloodline = window.tempBloodline;
+    
+    // 创建遮罩层
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.8)';
+    overlay.style.zIndex = '10000';
+    overlay.id = 'bloodlineContinueOverlay';
+    overlay.onclick = function(e) {
+        if (e.target === this) closeBloodlineContinueDialog();
+    };
+    document.body.appendChild(overlay);
+    
+    // 创建弹窗
+    const dialog = document.createElement('div');
+    dialog.style.position = 'fixed';
+    dialog.style.top = '50%';
+    dialog.style.left = '50%';
+    dialog.style.transform = 'translate(-50%, -50%)';
+    dialog.style.background = 'linear-gradient(145deg, #2c2c54, #40407a)';
+    dialog.style.color = 'white';
+    dialog.style.padding = '30px';
+    dialog.style.border = '3px solid #d4af37';
+    dialog.style.borderRadius = '20px';
+    dialog.style.zIndex = '1000111';
+    dialog.style.width = '450px';
+    dialog.style.textAlign = 'center';
+    dialog.style.boxShadow = '0 10px 40px rgba(212,175,55,0.3)';
+    dialog.style.animation = 'pop-up 0.3s';
+    dialog.id = 'bloodlineContinueDialog';
+    
+    // 根据加成确定颜色
+    let color = '#d4af37';
+    if (bloodline.bonus >= 3.9) color = '#FF4500';
+    else if (bloodline.bonus >= 2.9) color = '#FF69B4';
+    else if (bloodline.bonus >= 1.9) color = '#9C27B0';
+    else if (bloodline.bonus >= 1.55) color = '#2196F3';
+    
+    dialog.innerHTML = `
+        <div style="position: absolute; top: -15px; left: -15px; font-size: 30px;">💉</div>
+        <div style="position: absolute; top: -15px; right: -15px; font-size: 30px;">⚡</div>
+        
+        <h3 style="color: ${color}; margin-top: 0; margin-bottom: 20px; font-size: 28px; text-shadow: 0 0 10px ${color};">💫 稀有血脉出现！</h3>
+        
+        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 2px solid ${color};">
+            <div style="font-size: 48px; margin-bottom: 10px;">💉</div>
+            <div style="font-size: 26px; font-weight: bold; color: ${color}; margin-bottom: 10px;">${bloodline.name}</div>
+            <div style="font-size: 18px; color: #FFD700; margin-bottom: 5px;">加成: ${(bloodline.bonus * 100).toFixed(1)}%</div>
+            <div style="font-size: 14px; color: #aaa; margin-top: 10px;">品阶: ${getBloodlineTierName(bloodline.bonus)}</div>
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+            <div style="color: #FFD700; font-size: 16px; margin-bottom: 10px;">是否继续开启宝箱？</div>
+            <div style="color: #aaa; font-size: 14px;">如果选择继续，将消耗1个检测剂再次抽取</div>
+        </div>
+        
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button onclick="keepBloodlineAndStop()" style="background: linear-gradient(45deg, #4CAF50, #2E7D32); color: white; border: none; padding: 15px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; flex: 1;">
+                ✨ 保留
+            </button>
+        </div>
+        
+        <button onclick="closeBloodlineContinueDialog()" style="background: rgba(244,67,54,0.2); color: #f44336; border: 2px solid #f44336; padding: 10px 25px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 14px; margin-top: 20px;">
+            取消 (不保留)
+        </button>
+    `;
+    
+    document.body.appendChild(dialog);
+}
+
+// 获取血脉品阶名称
+function getBloodlineTierName(bonus) {
+    if (bonus >= 9.9) return '神话级';
+    if (bonus >= 4.9) return '传说级';
+    if (bonus >= 3.9) return '史诗级';
+    if (bonus >= 2.9) return '极品';
+    if (bonus >= 1.9) return '稀有';
+    if (bonus >= 1.55) return '珍贵';
+    return '普通';
+}
+
+// 保留血脉并停止
+function keepBloodlineAndStop() {
+    if (window.tempBloodline) {
+        const bloodline = window.tempBloodline;
+        player.cultivation.bloodline = bloodline;
+        
+        // 关闭弹窗
+        closeBloodlineContinueDialog();
+        
+        // 显示结果
+        const resultDiv = document.getElementById('bloodlineResult');
+        if (resultDiv) {
+            resultDiv.innerHTML = `
+                <div style="font-size: 20px; font-weight: bold; color: #FFD700;">获得${bloodline.name}!</div>
+                <div>加成: ${(bloodline.bonus * 100).toFixed(1)}%</div>
+            `;
+        }
+        
+        logAction(`获得稀有血脉: ${bloodline.name} (加成${(bloodline.bonus * 100).toFixed(1)}%)`, "success");
+        updateCultivationUI();
+        updateDisplay();
+        
+        // 清除临时变量
+        window.tempBloodline = null;
+    } else {
+        closeBloodlineContinueDialog();
+    }
+}
+
+// 继续开启血脉宝箱
+function continueBloodline() {
+    // 关闭当前弹窗
+    closeBloodlineContinueDialog();
+    
+    // 检查是否有检测剂
+    if (player.items.bloodlineDetector < 1) {
+        logAction("血脉检测剂不足，无法继续开启！", "error");
+        
+        // 如果没有检测剂，可以保留当前血脉
+        if (window.tempBloodline) {
+            if (confirm('检测剂不足！是否保留当前血脉？')) {
+                keepBloodlineAndStop();
+            }
+        }
+        return;
+    }
+    
+    // 消耗检测剂
+    player.items.bloodlineDetector--;
+    
+    // 重新抽取
+    const rand = Math.random();
+    let tier;
+    
+    if (rand < 0.8) {
+        tier = "tier1";
+    } else if (rand < 0.96) {
+        tier = "tier2";
+    } else if (rand < 0.992) {
+        tier = "tier3";
+    } else if (rand < 0.9984) {
+        tier = "tier4";
+    } else if (rand < 0.99968) {
+        tier = "tier5";
+    } else if (rand < 0.999936) {
+        tier = "tier6";
+    } else if (rand < 0.9999872) {
+        tier = "tier7";
+    } else if (rand < 0.99999744) {
+        tier = "tier8";
+    } else {
+        tier = "tier9";
+    }
+    
+    const bloodlines = bloodlineConfig[tier];
+    const newBloodline = bloodlines[Math.floor(Math.random() * bloodlines.length)];
+    
+    // 检查新抽取的血脉是否达到155%以上
+    if (newBloodline.bonus >= 1.55) {
+        window.tempBloodline = newBloodline;
+        showBloodlineContinueDialog();
+    } else {
+        // 直接更新玩家血脉
+        player.cultivation.bloodline = newBloodline;
+        
+        // 显示结果
+        const resultDiv = document.getElementById('bloodlineResult');
+        if (resultDiv) {
+            resultDiv.innerHTML = `
+                <div style="font-size: 20px; font-weight: bold; color: #FFD700;">继续获得${newBloodline.name}!</div>
+                <div>加成: ${(newBloodline.bonus * 100).toFixed(1)}%</div>
+            `;
+        }
+        
+        logAction(`继续获得血脉: ${newBloodline.name} (加成${(newBloodline.bonus * 100).toFixed(1)}%)`, "success");
+        updateCultivationUI();
+        updateDisplay();
+    }
+    
+    // 清除临时变量
+    window.tempBloodline = null;
+}
+
+// 关闭血脉继续弹窗（不保留也不继续）
+function closeBloodlineContinueDialog() {
+    const overlay = document.getElementById('bloodlineContinueOverlay');
+    if (overlay && overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+    }
+    
+    const dialog = document.getElementById('bloodlineContinueDialog');
+    if (dialog && dialog.parentNode) {
+        dialog.parentNode.removeChild(dialog);
+    }
+    
+    // 清除临时变量（如果用户取消，不保留血脉）
+    window.tempBloodline = null;
 }
 // 升级修仙阶段
 function upgradeCultivation() {
@@ -60796,6 +61597,5 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
-
 </body>
 </html>
