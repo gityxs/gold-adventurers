@@ -3966,6 +3966,51 @@ select:focus {
         opacity: 1;
     }
 }
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 10px rgba(244,67,54,0.5);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(244,67,54,0.8);
+        transform: scale(1.05);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(244,67,54,0.5);
+        transform: scale(1);
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+@keyframes pulse-purple {
+    0% { box-shadow: 0 0 20px rgba(156,39,176,0.5); }
+    50% { box-shadow: 0 0 40px rgba(156,39,176,0.8); }
+    100% { box-shadow: 0 0 20px rgba(156,39,176,0.5); }
+}
+
+@keyframes glow-purple {
+    0% { box-shadow: 0 0 30px rgba(156,39,176,0.6); }
+    50% { box-shadow: 0 0 60px rgba(156,39,176,0.9); }
+    100% { box-shadow: 0 0 30px rgba(156,39,176,0.6); }
+}
+@keyframes healFloat {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -100%) scale(1.5);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -150%) scale(2);
+    }
+}
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -4030,7 +4075,7 @@ select:focus {
       <p>42. 房子系统:200转开启，新版股票资金购买，每秒GPS加成 ，收益点击加成（群里兑换码可以领取别墅）</p>
       <p>43. 结婚系统:(资金总额达到5W开启)，可以生孩子。各种加成</p>
       <p>44. 赌石系统:(资金总额达到5000开启)，一刀穷，一刀富，一刀穿麻布。</p>
-      <p>44. 修仙副本:（修仙2级开启），掉落修仙经验和材料.  新年年兽副本20级开启.</p>
+      <p>44. 修仙副本:（修仙2级开启），掉落修仙经验和材料.  新年年兽副本20级开启.试练塔10级开启</p>
         </div>
     </div>
 </div>
@@ -4043,9 +4088,10 @@ select:focus {
     <!-- 公告内容区域（默认隐藏） -->
     <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
         <div class="log">
-            <h4>1.873更新日志</h4>
+            <h4>1.883更新日志</h4>
             <h4>QQ群：902481027  ，864788026，  有问题可以进群问（存档异常联系群管理修复）</h4>
-            <p>2026/02/14:  增加修仙副本(修仙2级开启）：新年修仙副本20级开启， 掉落修仙经验，道具。 开启血脉和灵根修改成保存替换，高品质会有提升保存还是取消</p>
+            <p>2026/02/15:  修仙副本新增：试练塔修仙10级开启挑战成功有奖励，每层数增加每秒GPS和点击。增加新职业：探险家。修复离线修仙经验没生效BUG </p>
+            <p>2026/02/14:  增加修仙副本(修仙2级开启）：新年年兽修仙副本20级开启（进群领取专属打年兽神器）， 掉落修仙经验，道具。 开启血脉和灵根修改成保存替换，高品质会有提升保存还是取消,修复年兽每次挑战技能没重置</p>
             <p>2026/02/04:  加入赌石系统（前期）：一刀穷，一刀富，一刀穿麻布。</p>
             <p>2026/02/03: 修复符文无法合成，宗门玩家不能派遣</p>
            <p>2026/02/03: 挖矿增加自动使用药水，法宝材料挖矿也有几率掉落。增加股票购买上限， 增加房子，宗门任务增加一键派遣。</p>
@@ -4410,6 +4456,7 @@ select:focus {
     <div id="classSelection" style="margin: 15px 0; display: flex; gap: 10px; justify-content: center;">
         <button onclick="selectClass('warrior')">战士</button>
         <button onclick="selectClass('mage')">法师</button>
+        <button onclick="selectClass('explorer')">探险家</button>
         <button onclick="toggleClassSystem()">关闭页面</button>
     </div>
     
@@ -4683,7 +4730,7 @@ select:focus {
         当前经验: <span id="currentMysteryExp">0</span> / <span id="nextMysteryExp">1000</span>
     </div>
     <div style="margin-bottom: 15px;">
-        每分钟经验获取: <span id="expPerMinute">0</span> (通天塔层数 × VIP等级)
+        每分钟经验获取: <span id="expPerMinute">0</span> (通天塔层数 × 职业加成 × VIP等级)
     </div>
     
     <div style="margin: 15px 0;">
@@ -5552,7 +5599,7 @@ select:focus {
                 
                 <div style="background: rgba(76, 175, 80, 0.1); padding: 15px; border-radius: 8px;">
                     <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">经验计算公式</div>
-                    <div style="font-size: 16px; color: #4CAF50;">(灵根加成 × 血脉加成 × 法宝加成) × 转生次数</div>
+                    <div style="font-size: 16px; color: #4CAF50;">(灵根加成 × 血脉加成 × 法宝加成 × 职业加成) × 转生次数</div>
                     <div style="margin-top: 10px; font-size: 16px;">当前每分钟经验: <span id="currentExpPerMinute" style="color: #FFD700; font-weight: bold;">0</span></div>
                 </div>
             </div>
@@ -8516,6 +8563,12 @@ select:focus {
             <span style="font-size: 20px;">🧧</span>
             <span style="font-size: 13px; color: #FFD700;">年兽副本</span>
             <span style="font-size: 9px; color: #fff; background: rgba(255,0,0,0.7); padding: 2px 10px; border-radius: 10px; margin-top: 5px;">新春限定</span>
+   <div style="position: fixed; right: 20px; top: 320px; z-index: 100;">
+    <button onclick="openTrialTower()" style="background: linear-gradient(145deg, #4A2C4A, #2A1A2A); color: white; border: 2px solid #9C27B0; padding: 15px 20px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 18px; box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); animation: pulse-gold 2s infinite;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-size: 20px;">🗼</span>
+            <span style="font-size: 13px; color: #9C27B0;">试练塔</span>
+            <span style="font-size: 9px; color: #fff; background: rgba(156,39,176,0.7); padding: 2px 10px; border-radius: 10px; margin-top: 5px;">无限挑战</span>         
     </div>
     
     <button onclick="toggleAutoBuyShopb()" style="display: block; margin: 25px auto 10px; padding: 12px 36px; background: linear-gradient(145deg, #ff4d4d, #b22222); color: #fff9e6; border: 2px solid #ffd700; border-radius: 40px; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 6px 0 #8b0000, 0 8px 20px rgba(255,0,0,0.6); transition: 0.1s; font-family: '楷体', 'KaiTi', sans-serif; position: relative; z-index: 2147483647;">
@@ -8715,6 +8768,9 @@ select:focus {
                 <button onclick="nianBeastDefend()" id="nianDefendBtn" style="background: linear-gradient(145deg, #4CAF50, #2E7D32); color: white; border: none; padding: 15px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 18px;">
                     🛡️ 防御
                 </button>
+               <button onclick="nianBeastEscape()" id="nianEscapeBtn" style="background: linear-gradient(145deg, #f44336, #c62828); color: white; border: none; padding: 15px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 18px; border: 2px solid #FFD700; display: flex; align-items: center; justify-content: center; gap: 5px; animation: pulse-red 1.5s infinite;">
+        🏃 逃跑
+    </button>
             </div>
             
             <!-- 战斗日志 -->
@@ -8924,8 +8980,197 @@ select:focus {
 </div>
 </div>
 </div>
+<!-- 逃跑确认弹窗 -->
+<div id="escapeConfirmOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2147483647;"></div>
+<div id="escapeConfirmDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(145deg, #8B0000, #630000); color: white; padding: 30px; border: 5px solid #FFD700; border-radius: 20px; z-index: 2147483647; width: 450px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.8); animation: pop-up 0.3s;">
+    <div style="position: absolute; top: -20px; left: -20px; font-size: 40px;">⚠️</div>
+    <div style="position: absolute; top: -20px; right: -20px; font-size: 40px;">🏃</div>
+    
+    <div style="font-size: 64px; margin-bottom: 20px; animation: shake 0.5s infinite;">😱</div>
+    
+    <h3 style="color: #FFD700; margin-bottom: 20px; font-size: 28px; text-shadow: 0 0 10px #FFD700;">确认逃跑？</h3>
+    
+    <div style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 2px solid #FFD700;">
+        <div style="color: #FFD700; font-size: 18px; margin-bottom: 10px;">⚠️ 逃跑后果：</div>
+        <div style="color: #fff; font-size: 16px; margin-bottom: 5px;">• 立即战败死亡</div>
+        <div style="color: #fff; font-size: 16px; margin-bottom: 5px;">• 根据当前层数结算奖励</div>
+        <div style="color: #FFD700; font-size: 16px;">• 当前层数: Lv.<span id="escapeCurrentLevel">1</span></div>
+    </div>
+    
+    <div style="display: flex; gap: 15px; justify-content: center;">
+        <button onclick="confirmEscape()" style="background: linear-gradient(45deg, #f44336, #c62828); color: white; border: 3px solid #FFD700; padding: 15px 30px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 18px; flex: 1; animation: pulse-red 1s infinite;">
+            🏃 确认逃跑
+        </button>
+        <button onclick="cancelEscape()" style="background: linear-gradient(45deg, #4CAF50, #2E7D32); color: white; border: 3px solid #4CAF50; padding: 15px 30px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 18px; flex: 1;">
+            ✨ 继续战斗
+        </button>
+    </div>
 </div>
-<div id="footer">版本号: v1.8.73</div>
+</div>
+</div>
+<!-- 试练塔UI弹窗 -->
+<div id="trialTowerOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000;"></div>
+<div id="trialTowerUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(145deg, #2A1A2A, #1A0A1A); color: white; padding: 30px; border: 5px solid #9C27B0; border-radius: 30px; z-index: 2001; width: 900px; max-height: 85vh; overflow-y: auto; box-shadow: 0 0 50px rgba(156,39,176,0.6); animation: glow-purple 3s infinite;">
+    
+    <div style="position: absolute; top: -20px; left: -20px; font-size: 50px; transform: rotate(-15deg);">🗼</div>
+    <div style="position: absolute; top: -20px; right: -20px; font-size: 50px; transform: rotate(15deg);">⚔️</div>
+    
+    <!-- 标题区域 -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #9C27B0;">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <h2 style="color: #9C27B0; margin: 0; text-shadow: 0 0 20px #9C27B0; font-size: 36px; font-weight: bold;">🗼 无限试练塔</h2>
+            <div style="background: #4A2C4A; padding: 5px 15px; border-radius: 20px; border: 2px solid #9C27B0;">
+                <span style="color: #9C27B0; font-weight: bold;">当前层数: <span id="trialCurrentFloor">1</span>层</span>
+            </div>
+        </div>
+        <button onclick="closeTrialTower()" style="background: #4A2C4A; color: white; border: 2px solid #9C27B0; padding: 8px 25px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 18px;">关闭</button>
+    </div>
+    
+    <!-- 玩家和怪物信息区域 -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+        <!-- 玩家信息 -->
+        <div style="background: rgba(156,39,176,0.1); padding: 20px; border-radius: 20px; border: 2px solid #9C27B0;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <span style="font-size: 28px;">⚔️</span>
+                <span style="font-size: 20px; color: #9C27B0; font-weight: bold;">挑战者属性</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <div style="font-size: 14px; color: #aaa;">生命值</div>
+                    <div style="font-size: 24px; color: #FF6B6B; font-weight: bold;" id="trialPlayerHp">0</div>
+                </div>
+                <div>
+                    <div style="font-size: 14px; color: #aaa;">攻击力</div>
+                    <div style="font-size: 24px; color: #FF6B6B; font-weight: bold;" id="trialPlayerAtk">0</div>
+                </div>
+                <div>
+                    <div style="font-size: 14px; color: #aaa;">暴击伤害</div>
+                    <div style="font-size: 20px; color: #FFD700; font-weight: bold;" id="trialPlayerCrit">0%</div>
+                </div>
+                <div>
+                    <div style="font-size: 14px; color: #aaa;">暴击几率</div>
+                    <div style="font-size: 20px; color: #FFD700; font-weight: bold;">30%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 怪物信息 -->
+        <div style="background: rgba(156,39,176,0.1); padding: 20px; border-radius: 20px; border: 2px solid #FF6B6B;" id="trialMonsterInfo">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <span style="font-size: 28px;">👾</span>
+                <span style="font-size: 20px; color: #FF6B6B; font-weight: bold;" id="trialMonsterName">试练怪物</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <div style="font-size: 14px; color: #aaa;">生命值</div>
+                    <div style="font-size: 24px; color: #FF6B6B; font-weight: bold;" id="trialMonsterHp">0</div>
+                </div>
+                <div>
+                    <div style="font-size: 14px; color: #aaa;">攻击力</div>
+                    <div style="font-size: 24px; color: #FF6B6B; font-weight: bold;" id="trialMonsterAtk">0</div>
+                </div>
+            </div>
+            <!-- 怪物血条 -->
+            <div style="margin-top: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="color: #aaa;">怪物血量</span>
+                    <span style="color: #FFD700;" id="trialMonsterHpText">0/0</span>
+                </div>
+                <div style="width: 100%; height: 15px; background: #4A2C4A; border-radius: 8px; overflow: hidden; border: 1px solid #FF6B6B;">
+                    <div id="trialMonsterHpBar" style="width: 100%; height: 100%; background: linear-gradient(90deg, #FF6B6B, #FFD700); border-radius: 8px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 战斗操作区域 -->
+    <div style="background: rgba(156,39,176,0.1); padding: 20px; border-radius: 20px; border: 2px solid #9C27B0; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+            <span style="font-size: 24px;">⚔️</span>
+            <span style="font-size: 18px; color: #9C27B0; font-weight: bold;">战斗操作</span>
+        </div>
+        
+        <!-- 玩家状态 -->
+        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #FFD700;">❤️ 你的生命值</span>
+                <span style="color: #FF6B6B; font-weight: bold;" id="trialBattlePlayerHp">0</span>
+            </div>
+            <div style="width: 100%; height: 10px; background: #4A2C4A; border-radius: 5px; margin-top: 5px; overflow: hidden;">
+                <div id="trialBattlePlayerHpBar" style="width: 100%; height: 100%; background: linear-gradient(90deg, #4CAF50, #FFD700); border-radius: 5px;"></div>
+            </div>
+        </div>
+        
+        <!-- 战斗按钮 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <button onclick="trialTowerAttack()" id="trialAttackBtn" style="background: linear-gradient(145deg, #FFD700, #FFA500); color: #8B0000; border: none; padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 18px; border: 2px solid #FFD700;">
+                ⚔️ 攻击
+            </button>
+            <button onclick="trialTowerDefend()" id="trialDefendBtn" style="background: linear-gradient(145deg, #4CAF50, #2E7D32); color: white; border: none; padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 18px; border: 2px solid #4CAF50;">
+                🛡️ 防御
+            </button>
+            <button onclick="trialTowerRestart()" id="trialRestartBtn" style="background: linear-gradient(145deg, #9C27B0, #6A1B9A); color: white; border: none; padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 18px; border: 2px solid #9C27B0;">
+                🔄 重新挑战
+            </button>
+        </div>
+        
+        <!-- 战斗日志 -->
+        <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; max-height: 150px; overflow-y: auto; border: 1px solid #9C27B0; display: flex; flex-direction: column-reverse;" id="trialBattleLog">
+            <div style="color: #666; text-align: center;">点击攻击按钮开始挑战</div>
+        </div>
+    </div>
+    
+    <!-- 层数信息和奖励预览 -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="background: rgba(156,39,176,0.1); padding: 15px; border-radius: 15px; border: 2px solid #9C27B0;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <span style="font-size: 20px;">📊</span>
+                <span style="color: #9C27B0; font-weight: bold;">层数信息</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <div style="color: #aaa; font-size: 12px;">当前层数</div>
+                    <div style="color: #FFD700; font-size: 24px; font-weight: bold;" id="trialFloorDisplay">1</div>
+                </div>
+                <div>
+                    <div style="color: #aaa; font-size: 12px;">最高层数</div>
+                    <div style="color: #4CAF50; font-size: 24px; font-weight: bold;" id="trialHighestFloor">0</div>
+                </div>
+                <div>
+                    <div style="color: #aaa; font-size: 12px;">总挑战次数</div>
+                    <div style="color: #9C27B0; font-size: 20px; font-weight: bold;" id="trialTotalChallenges">0</div>
+                </div>
+                <div>
+                    <div style="color: #aaa; font-size: 12px;">总胜利次数</div>
+                    <div style="color: #4CAF50; font-size: 20px; font-weight: bold;" id="trialTotalWins">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="background: rgba(156,39,176,0.1); padding: 15px; border-radius: 15px; border: 2px solid #9C27B0;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+        <span style="font-size: 20px;">🎁</span>
+        <span style="color: #9C27B0; font-weight: bold;">层数奖励预览</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; text-align: center;">
+            <div style="color: #FFD700; font-size: 20px; font-weight: bold;" id="trialNextRewardFloor">10</div>
+            <div style="color: #aaa; font-size: 12px;">下一10层奖励</div>
+            <div style="color: #4CAF50; font-size: 14px;" id="trialNextRewardDesc1">洗髓丹×10</div>
+        </div>
+        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; text-align: center;">
+            <div style="color: #FFD700; font-size: 20px; font-weight: bold;" id="trialNextRewardFloor2">20</div>
+            <div style="color: #aaa; font-size: 12px;">再下一层奖励</div>
+            <div style="color: #4CAF50; font-size: 14px;" id="trialNextRewardDesc2">初级宝石×20</div>
+        </div>
+    </div>
+    <div id="trialRewardDetail"></div>
+</div>
+    </div>
+</div>
+</div>
+</div>
+<div id="footer">版本号: v1.8.83</div>
     <script>
         // 初始化玩家数据
     let player = {
@@ -8959,6 +9204,12 @@ select:focus {
     soulRingMultiplier: 1,    // 魂环总加成乘数（默认1倍）
     dungeonEquipMultiplier: 1 // 副本装备总加成乘数（默认1倍）
   },
+trialTower: {
+            currentFloor: 1,
+            highestFloor: 0,
+            totalChallenges: 0,
+            totalWins: 0
+        },
 nianBeast: {
             dungeonToken: 0, // 副本令牌
             highestLevel: 0, // 最高通关层数
@@ -12133,6 +12384,7 @@ if (speedBoostBtn) {
                 // 计算离线期间的银行利息
                 calculateBankInterest();
             }
+           
           initSlotMachine();
           initMountData();
           initFarmData();
@@ -12144,6 +12396,7 @@ if (speedBoostBtn) {
     // 计算离线探险奖励
     calculateOfflineExpeditionRewards();
    initHouseSystemOnLoad();
+  
         if (save.exploration) {
                 Object.assign(explorationData, save.exploration);
             }
@@ -12416,6 +12669,7 @@ const farmGPSEnhancements  = gpsEnhancementss[player.parking.level - 1] || gpsEn
 const gpsEnhancemenzss =  [1, 3, 6, 8, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 350, 400, 1];
 const farmGPSEnhancemezts  = gpsEnhancemenzss[player.houses.level - 1] || gpsEnhancemenzss[gpsEnhancemenzss.length - 1];
     const gpsBonuqqqq = 1+player.fiveElements.metal.level * 3.00;  
+   const gpsBonuqqqa = player.trialTower.currentFloor * 1.00; 
     const gpsBonuss = player.level.gpsBonus * 1.00;   
    const gpsBonusssq = player.liveStream.totalEarnings * 0.00001;  
 const gpsBonusssqaa = player.landlord.stats.totalCoinsEarned * 0.0001;  
@@ -12428,7 +12682,7 @@ const farmGPSEnhancementp  = gpsEnhancementsp[player.sect.level - 1] || gpsEnhan
     return (1 + player.equipment.reduce((sum, eq) => sum + eq.gps * (1+eq.gemMultiplier + eq.collectionMultiplier), 0)) 
         * player.gpsMultiplier 
         * (1 + gpsBonus) 
-        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * (1 + gpsBonusssq) * farmGPSEnhancementp * (1 + gpsBonusssqaa) * (1 + gpsBonussbb)*farmGPSEnhancemezts * marriageBonus * childBonus * gpsBonuqqqq;
+        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements  * cultivationBonus * gpsBonuss * (1 + gpsBonusssq) * farmGPSEnhancementp * (1 + gpsBonusssqaa) * (1 + gpsBonussbb)*farmGPSEnhancemezts * marriageBonus * childBonus * gpsBonuqqqq * gpsBonuqqqa;
 }
 
 function getTotalClickValue() {
@@ -12449,7 +12703,8 @@ const farmClickMultipliersss = [1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 1
      const gpsBonuvvs = player.houses.totalIncome *  0.0001;
     const gpsBonubbs = player.parking.totalIncome *  0.0001;
     const gpsBonusss = player.level.clickBonus * 1.00; 
-    const gpsBonuqregg = 1+player.fiveElements.wood.level * 3.00 
+    const gpsBonuqregg = 1+player.fiveElements.wood.level * 3.00; 
+    const gpsBonuqregga = 1+player.trialTower.currentFloor * 0.10; 
 const farmClickMultiplierssa = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 1];
     const farmClickBonussa = farmClickMultiplierssa[player.liveStream.level - 1] || farmClickMultiplierssa[farmClickMultiplierssa.length - 1];
        const farmClickBonussw = player.landlord.stats.totalCoinsEarned * 0.0001;      
@@ -12459,7 +12714,7 @@ const farmClickMultiplierssa = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 3
         * player.clickMultiplier 
         * petMultiplier 
         * (1 + dungeonBonus)  // 应用副本装备总加成（含职业乘数）
-        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus * farmClickBonusss * gpsBonusss * farmClickBonussa* (1 + farmClickBonussw) * (1+gpsBonuvvs) * (1+gpsBonubbs) * marriageBonus * childBonus * gpsBonuqregg; 
+        * (1 + soulRingBonus) * fishingBonus * farmClickBonus * farmClickBonuss * cultivationBonus * farmClickBonusss * gpsBonusss * farmClickBonussa* (1 + farmClickBonussw) * (1+gpsBonuvvs) * (1+gpsBonubbs) * marriageBonus * childBonus * gpsBonuqregg * gpsBonuqregga; 
 }
 
 
@@ -17644,7 +17899,9 @@ function calculateOfflineMysteryExp() {
         const expGained = minutesPassed * towerFloor * vipLevel;
         
         if (expGained > 0) {
-            player.mystery.exp += expGained;
+          const classBonuses = calculateClassBonuses();
+            const mysteryExpMultiplier = classBonuses.mysteryExpMultiplier || 1;
+            player.mystery.exp += expGained * mysteryExpMultiplier;
             logAction(`离线获得 ${expGained} 奥秘经验`, 'success');
         }
     }
@@ -17652,16 +17909,22 @@ function calculateOfflineMysteryExp() {
     // 更新最后更新时间
     player.mystery.lastUpdateTime = now;
 }
-
 // 定时增加经验
 setInterval(() => {
     if (player.mystery) {
         const towerFloor = parseInt(document.getElementById('towerFloor').textContent) || 0;
         const vipLevel = parseInt(document.getElementById('vipLevel').textContent) || 1;
-        const expPerMinute = towerFloor * vipLevel;
+        let expPerMinute = towerFloor * vipLevel;
         
         if (expPerMinute > 0) {
-            // 每分钟增加一次，这里按秒计算
+            // 获取探险家职业的奥秘经验加成
+            const classBonuses = calculateClassBonuses();
+            const mysteryExpMultiplier = classBonuses.mysteryExpMultiplier || 1;
+            
+            // 应用加成
+            expPerMinute = expPerMinute * mysteryExpMultiplier;
+            
+            // 奥秘每分钟增加一次，这里按秒计算
             player.mystery.exp += expPerMinute / 60;
             player.mystery.lastUpdateTime = new Date().getTime();
             updateMysterySystemDisplay();
@@ -17711,11 +17974,12 @@ function updateMysterySystemDisplay() {
     // 更新经验显示
     document.getElementById('currentMysteryExp').textContent = Math.floor(player.mystery.exp);
     document.getElementById('nextMysteryExp').textContent = currentConfig.levelCost;
-    
+     const classBonuses = calculateClassBonuses();
+     const mysteryExpMultiplier = classBonuses.mysteryExpMultiplier || 1;
     // 更新每分钟经验
     const towerFloor = parseInt(document.getElementById('towerFloor').textContent) || 0;
     const vipLevel = parseInt(document.getElementById('vipLevel').textContent) || 1;
-    document.getElementById('expPerMinute').textContent = towerFloor * vipLevel;
+    document.getElementById('expPerMinute').textContent = (towerFloor * vipLevel * mysteryExpMultiplier).toFixed(0) ;
     
 
 
@@ -20815,7 +21079,18 @@ function monsterCounterAttack() {
     
     updateBattleUI();
 }
+let cachedClassBonuses = null;
+let lastClassUpdate = 0;
 
+function getCachedClassBonuses() {
+    // 每秒钟重新计算一次，或者当职业相关数据变化时更新
+    const now = Date.now();
+    if (!cachedClassBonuses || now - lastClassUpdate > 1000) {
+        cachedClassBonuses = calculateClassBonuses();
+        lastClassUpdate = now;
+    }
+    return cachedClassBonuses;
+}
 // 处理怪物被击败
 function handleMonsterDefeated() {
             const monster = player.battle.currentMonster;
@@ -20836,17 +21111,27 @@ function handleMonsterDefeated() {
                 // 怪物真正死亡
                 addBattleLog(`你击败了${monster.name}！`);
                 
-                // 计算经验奖励（应用次元难度倍数）
+                // 计算经验奖励（应用次元难度倍数）               
                 const expMin = zone.expRange[0];
-                const expMax = zone.expRange[1];
-                const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
-               const runeBonuses = calculateRuneBonuses();
-               const worldExpBonus = 1 + runeBonuses.worldExp;
-                const finalExp =  (exp+(1+player.mining.gems.ruby * 0.2)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus *(1+player.fiveElements.earth.level * 0.2) ;
-                
-                // 添加经验
-                addPlayerExp(finalExp);
-                addBattleLog(`获得${finalExp.toLocaleString()}经验！`);
+const expMax = zone.expRange[1];
+const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
+const runeBonuses = calculateRuneBonuses();
+const worldExpBonus = 1 + runeBonuses.worldExp;
+
+// 使用缓存的职业加成
+const classBonuses = getCachedClassBonuses();
+const explorerWorldExpBonus = classBonuses.worldExpMultiplier || 1; // 添加默认值1，避免undefined
+
+const finalExp = (exp + (1 + player.mining.gems.ruby * 0.2)) * 
+                 (player.vip.level * 10) * 
+                 dimension.expMultiplier * 
+                 worldExpBonus * 
+                 (1 + player.fiveElements.earth.level * 0.2) *
+                 explorerWorldExpBonus;  // 添加探险家职业加成
+
+// 添加经验
+addPlayerExp(finalExp);
+addBattleLog(`获得${finalExp.toLocaleString()}经验！`);
               
                dropRuneMaterials();
                dropMount();
@@ -21052,16 +21337,27 @@ function backgroundHandleMonsterDefeated() {
         backgroundMonsterCounterAttack();
     } else {
         // 怪物真正死亡
-        // 计算经验奖励（应用次元难度倍数）
-        const expMin = zone.expRange[0];
-        const expMax = zone.expRange[1];
-        const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
-         const runeBonuses = calculateRuneBonuses();
-        const worldExpBonus = 1 + runeBonuses.worldExp;
-        const finalExp = (exp+(1+player.mining.gems.ruby * 0.2)) * (player.vip.level * 10) * dimension.expMultiplier * worldExpBonus *(1+player.fiveElements.earth.level * 0.2);
-        
-        // 添加经验
-        addPlayerExp(finalExp);
+        // 计算经验奖励（应用次元难度倍数）        
+const expMin = zone.expRange[0];
+const expMax = zone.expRange[1];
+const exp = Math.floor(Math.random() * (expMax - expMin + 1)) + expMin;
+const runeBonuses = calculateRuneBonuses();
+const worldExpBonus = 1 + runeBonuses.worldExp;
+
+// 使用缓存的职业加成
+const classBonuses = getCachedClassBonuses();
+const explorerWorldExpBonus = classBonuses.worldExpMultiplier || 1; // 添加默认值1，避免undefined
+
+const finalExp = (exp + (1 + player.mining.gems.ruby * 0.2)) * 
+                 (player.vip.level * 10) * 
+                 dimension.expMultiplier * 
+                 worldExpBonus * 
+                 (1 + player.fiveElements.earth.level * 0.2) *
+                 explorerWorldExpBonus;  // 添加探险家职业加成
+
+// 添加经验
+addPlayerExp(finalExp);
+
        dropMagicMaterial();
         dropRuneMaterials();
         dropMount();
@@ -28166,6 +28462,33 @@ function updateCultivationUI() {
     
     // 更新加成信息
     document.getElementById('gpsMultiplier').textContent = stage.multiplier;
+   // 计算法宝总加成
+    let toolBonus = 1;
+    let toolName = '无';
+    if (player.magicTools && player.magicTools.equipped) {
+        const tool = magicToolConfig.tools.find(t => t.id === player.magicTools.equipped);
+        if (tool) {
+            toolBonus = tool.bonus;
+            toolName = tool.name;
+        }
+    }
+    
+    // 计算法宝收集加成
+    let collectionBonus = 1;
+    let ownedToolsCount = 0;
+    if (player.magicTools && player.magicTools.inventory) {
+        ownedToolsCount = player.magicTools.inventory.length;
+        collectionBonus = 1 + (ownedToolsCount * 0.01);
+    }
+    
+    // 总法宝加成 = 装备法宝加成 × 收集加成
+    const totalToolBonus = toolBonus * collectionBonus;
+    
+    // 更新法宝加成显示
+    const magicToolMultiplier = document.getElementById('magicToolMultiplier');
+    if (magicToolMultiplier) {
+        magicToolMultiplier.textContent = totalToolBonus.toFixed(2);
+    }
 }
 // 打开灵根宝箱界面
 function openRootBox() {
@@ -29137,18 +29460,27 @@ function updateCultivationExpUI(expGain, equippedBonus, collectionBonus) {
 }
 // 每分钟获取经验
 function gainCultivationExp() {
-   if (!player.cultivation || !player.cultivation.root || !player.cultivation.bloodline) return;
+    if (!player.cultivation) {
+        console.log("玩家没有修仙系统");
+        return;
+    }
+    
+    if (!player.cultivation.root || !player.cultivation.bloodline) {
+        console.log("玩家没有灵根或血脉");
+        document.getElementById('currentExpPerMinute').textContent = "0 (需要灵根和血脉)";
+        return;
+    }
     
     // 计算基础加成
     const rootBonus = player.cultivation.root.bonus;
     const bloodlineBonus = player.cultivation.bloodline.bonus;
     
-    // 计算装备法宝加成（如果有装备法宝）
-    let equippedToolBonus = 1;
+    // 计算法宝加成（如果有装备法宝）
+    let toolBonus = 1;
     if (player.magicTools && player.magicTools.equipped) {
         const tool = magicToolConfig.tools.find(t => t.id === player.magicTools.equipped);
         if (tool) {
-            equippedToolBonus = tool.bonus;
+            toolBonus = tool.bonus;
         }
     }
     
@@ -29156,47 +29488,172 @@ function gainCultivationExp() {
     let collectionBonus = 1;
     if (player.magicTools && player.magicTools.inventory) {
         const ownedToolsCount = player.magicTools.inventory.length;
-        collectionBonus = 1 + (ownedToolsCount * 0.01); // 每拥有一个法宝+1%
+        collectionBonus = 1 + (ownedToolsCount * 0.01);
+    }
+     // 获取探险家职业的修仙经验加成
+    const classBonuses = calculateClassBonuses();
+    const cultivationExpMultiplier = classBonuses.cultivationExpMultiplier || 1;
+    // 每分钟经验 = 转生次数 × 灵根加成 × 血脉加成 × 装备法宝加成 × 收集加成
+    const expPerMinute = (rootBonus * bloodlineBonus * toolBonus * collectionBonus * cultivationExpMultiplier) * player.reincarnationCount;
+    
+    // 每秒增加经验（除以60得到每秒经验）
+    const expPerSecond = expPerMinute / 60;
+    player.cultivation.exp += expPerSecond;
+    
+    // 更新阶段加成
+    const stage = cultivationStages[player.cultivation.stage];
+    if (stage) {
+        player.cultivation.bonus = stage.multiplier;
     }
     
-    // 每分钟经验 = 转生次数 × 灵根加成 × 血脉加成 × 装备法宝加成 × 收集加成
-    const expGain = (rootBonus * bloodlineBonus * equippedToolBonus * collectionBonus) * player.reincarnationCount;
-    player.cultivation.exp += expGain/60;
-    
-    const stage = cultivationStages[player.cultivation.stage];
-    player.cultivation.bonus = stage.multiplier;
-    
     // 更新UI显示
-    updateCultivationExpUI(expGain, equippedToolBonus, collectionBonus);
+    document.getElementById('currentExpPerMinute').textContent = formatNumber(expPerMinute);
+    
+    // 更新显示
     updateDisplay();
-    updateCultivationUI();
+    if (typeof updateCultivationUI === 'function') {
+        updateCultivationUI();
+    }
 }
-// 计算离线经验
-function calculateOfflineCultivationExp(offlineMinutes) {
-    if (!player.cultivation || !player.cultivation.root || !player.cultivation.bloodline) return;
-     const rootBonus = player.cultivation.root.bonus;
-    const bloodlineBonus = player.cultivation.bloodline.bonus;
-    // 计算装备法宝加成（如果有装备法宝）
-    let equippedToolBonus = 1;
-    if (player.magicTools && player.magicTools.equipped) {
-        const tool = magicToolConfig.tools.find(t => t.id === player.magicTools.equipped);
-        if (tool) {
-            equippedToolBonus = tool.bonus;
+let lastOnlineTime = Date.now();
+function checkOfflineTime() {
+    const now = Date.now();
+    const offlineMinutes = Math.floor((now - lastOnlineTime) / 60000); // 转换为分钟
+    
+    console.log(`上次在线: ${new Date(lastOnlineTime).toLocaleString()}`);
+    console.log(`当前时间: ${new Date(now).toLocaleString()}`);
+    console.log(`离线分钟: ${offlineMinutes}`);
+    
+    if (offlineMinutes > 0) {
+        
+        const maxOfflineMinutes = 3 * 24 * 60; // 3天
+        const actualOfflineMinutes = Math.min(offlineMinutes, maxOfflineMinutes);
+        
+        if (actualOfflineMinutes > 0) {
+            calculateOfflineCultivationExp(actualOfflineMinutes);
         }
     }
     
-    // 计算法宝收集加成：每拥有一个法宝额外提升2%
+    // 更新最后在线时间
+    lastOnlineTime = now;
+}
+window.addEventListener('load', function() {
+    // 从localStorage读取上次在线时间
+    const savedLastOnline = localStorage.getItem('lastOnlineTime');
+    if (savedLastOnline) {
+        lastOnlineTime = parseInt(savedLastOnline);
+    }
+    
+    // 检查离线时间
+    checkOfflineTime();
+    
+    // 开始定时更新
+    setInterval(function() {
+        // 每分钟更新一次最后在线时间
+        lastOnlineTime = Date.now();
+        localStorage.setItem('lastOnlineTime', lastOnlineTime.toString());
+    }, 60000);
+});
+
+// 在页面关闭前保存最后在线时间
+window.addEventListener('beforeunload', function() {
+    localStorage.setItem('lastOnlineTime', Date.now().toString());
+});
+// 计算离线经验
+function calculateOfflineCultivationExp(offlineMinutes) {
+    console.log("计算离线经验，离线分钟数:", offlineMinutes);
+    
+    // 检查玩家是否有修仙系统
+    if (!player.cultivation) {
+        console.log("玩家没有修仙系统");
+        return;
+    }
+    
+    // 检查是否有灵根和血脉
+    if (!player.cultivation.root || !player.cultivation.bloodline) {
+        console.log("玩家没有灵根或血脉，无法获得修仙经验");
+        logAction("需要先获取灵根和血脉才能获得离线修仙经验", "info");
+        return;
+    }
+    
+    // 计算基础加成
+    const rootBonus = player.cultivation.root.bonus;
+    const bloodlineBonus = player.cultivation.bloodline.bonus;
+    
+    // 计算法宝加成（如果有装备法宝）
+    let toolBonus = 1;
+    if (player.magicTools && player.magicTools.equipped) {
+        const tool = magicToolConfig.tools.find(t => t.id === player.magicTools.equipped);
+        if (tool) {
+            toolBonus = tool.bonus;
+        }
+    }
+    
+    // 计算法宝收集加成：每拥有一个法宝额外提升1%
     let collectionBonus = 1;
     if (player.magicTools && player.magicTools.inventory) {
         const ownedToolsCount = player.magicTools.inventory.length;
-        collectionBonus = 1 + (ownedToolsCount * 0.01); // 每拥有一个法宝+1%
+        collectionBonus = 1 + (ownedToolsCount * 0.01);
     }
-    const expGain = (rootBonus * bloodlineBonus * equippedToolBonus * collectionBonus) * player.reincarnationCount;
-    player.cultivation.exp += expGain;
+    // 获取探险家职业的修仙经验加成
+    const classBonuses = calculateClassBonuses();
+    const cultivationExpMultiplier = classBonuses.cultivationExpMultiplier || 1;
+    // 每分钟经验 = 转生次数 × 灵根加成 × 血脉加成 × 装备法宝加成 × 收集加成
+    const expPerMinute = (rootBonus * bloodlineBonus * toolBonus * collectionBonus * cultivationExpMultiplier) * player.reincarnationCount;
     
-    logAction(`离线获得${expGain}点修仙经验`, "info");
+    // 计算总离线经验
+    const totalExpGain = expPerMinute * offlineMinutes;
+    
+    console.log(`每分钟经验: ${expPerMinute}, 离线分钟: ${offlineMinutes}, 总经验: ${totalExpGain}`);
+    
+    if (totalExpGain > 0) {
+        // 增加修仙经验
+        player.cultivation.exp += totalExpGain;
+        
+        // 记录日志
+        logAction(`离线获得 ${formatNumber(totalExpGain)} 点修仙经验 (${offlineMinutes}分钟 × ${formatNumber(expPerMinute)}/分钟)`, "success");
+        
+        // 检查是否有境界突破
+        checkCultivationBreakthrough();
+        
+        // 更新显示
+        updateDisplay();
+        if (typeof updateCultivationUI === 'function') {
+            updateCultivationUI();
+        }
+    } else {
+        console.log("离线经验为0，可能是转生次数为0或加成倍率为0");
+        if (player.reincarnationCount === 0) {
+            logAction("转生次数为0，无法获得修仙经验", "info");
+        }
+    }
 }
-
+function checkCultivationBreakthrough() {
+    if (!player.cultivation) return;
+    
+    let breakthrough = false;
+    let currentStage = player.cultivation.stage;
+    
+    // 检查是否可以连续突破
+    while (true) {
+        const nextStageIndex = player.cultivation.stage + 1;
+        if (nextStageIndex >= cultivationStages.length) break;
+        
+        const nextStage = cultivationStages[nextStageIndex];
+        if (player.cultivation.exp >= nextStage.expRequired) {
+            // 突破境界
+            player.cultivation.exp -= nextStage.expRequired;
+            player.cultivation.stage = nextStageIndex;
+            breakthrough = true;
+            
+            logAction(`离线突破至 ${nextStage.name} 境界！`, "success");
+        } else {
+            break;
+        }
+    }
+    
+    return breakthrough;
+}
 // 称号配置（按分支分组）
 const titleConfig = {
      towerBranyy: [
@@ -38154,6 +38611,159 @@ const classConfig = {
                 bonus: { healthMultiplier: 30 }
             }
         }
+    },
+ explorer: {
+        name: "探险家",
+        branches: [
+            {
+                requiredStage: 20,
+                options: [
+                    {desc: "世界地图经验获取提升2.5%", type: "worldExpMultiplier", value: 0.025},
+                    {desc: "修仙系统经验获取提升2.5%", type: "cultivationExpMultiplier", value: 0.025},
+                    {desc: "奥秘系统经验获取提升2.5%", type: "mysteryExpMultiplier", value: 0.025}
+                ]
+            },
+            {
+                requiredStage: 200,
+                options: [
+                    {desc: "世界地图经验获取提升5%", type: "worldExpMultiplier", value: 0.05},
+                    {desc: "修仙系统经验获取提升5%", type: "cultivationExpMultiplier", value: 0.05},
+                    {desc: "奥秘系统经验获取提升5%", type: "mysteryExpMultiplier", value: 0.05}
+                ]
+            },
+            {
+                requiredStage: 500,
+                options: [
+                    {desc: "世界地图经验获取提升7.5%", type: "worldExpMultiplier", value: 0.075},
+                    {desc: "修仙系统经验获取提升7.5%", type: "cultivationExpMultiplier", value: 0.075},
+                    {desc: "奥秘系统经验获取提升7.5%", type: "mysteryExpMultiplier", value: 0.075}
+                ]
+            },
+            {
+                requiredStage: 1000,
+                options: [
+                    {desc: "世界地图经验获取提升10%", type: "worldExpMultiplier", value: 0.10},
+                    {desc: "修仙系统经验获取提升10%", type: "cultivationExpMultiplier", value: 0.10},
+                    {desc: "奥秘系统经验获取提升10%", type: "mysteryExpMultiplier", value: 0.10}
+                ]
+            },
+            {
+                requiredStage: 1500,
+                options: [
+                    {desc: "世界地图经验获取提升12.5%", type: "worldExpMultiplier", value: 0.125},
+                    {desc: "修仙系统经验获取提升12.5%", type: "cultivationExpMultiplier", value: 0.125},
+                    {desc: "奥秘系统经验获取提升12.5%", type: "mysteryExpMultiplier", value: 0.125}
+                ]
+            },
+            {
+                requiredStage: 2000,
+                options: [
+                    {desc: "世界地图经验获取提升15%", type: "worldExpMultiplier", value: 0.15},
+                    {desc: "修仙系统经验获取提升15%", type: "cultivationExpMultiplier", value: 0.15},
+                    {desc: "奥秘系统经验获取提升15%", type: "mysteryExpMultiplier", value: 0.15}
+                ]
+            },
+            {
+                requiredStage: 2500,
+                options: [
+                    {desc: "世界地图经验获取提升17.5%", type: "worldExpMultiplier", value: 0.175},
+                    {desc: "修仙系统经验获取提升17.5%", type: "cultivationExpMultiplier", value: 0.175},
+                    {desc: "奥秘系统经验获取提升17.5%", type: "mysteryExpMultiplier", value: 0.175}
+                ]
+            },
+            {
+                requiredStage: 3000,
+                options: [
+                    {desc: "世界地图经验获取提升20%", type: "worldExpMultiplier", value: 0.20},
+                    {desc: "修仙系统经验获取提升20%", type: "cultivationExpMultiplier", value: 0.20},
+                    {desc: "奥秘系统经验获取提升20%", type: "mysteryExpMultiplier", value: 0.20}
+                ]
+            },
+            {
+                requiredStage: 3500,
+                options: [
+                    {desc: "世界地图经验获取提升22.5%", type: "worldExpMultiplier", value: 0.225},
+                    {desc: "修仙系统经验获取提升22.5%", type: "cultivationExpMultiplier", value: 0.225},
+                    {desc: "奥秘系统经验获取提升22.5%", type: "mysteryExpMultiplier", value: 0.225}
+                ]
+            },
+            {
+                requiredStage: 4000,
+                options: [
+                    {desc: "世界地图经验获取提升25%", type: "worldExpMultiplier", value: 0.25},
+                    {desc: "修仙系统经验获取提升25%", type: "cultivationExpMultiplier", value: 0.25},
+                    {desc: "奥秘系统经验获取提升25%", type: "mysteryExpMultiplier", value: 0.25}
+                ]
+            },
+            {
+                requiredStage: 4500,
+                options: [
+                    {desc: "世界地图经验获取提升30%", type: "worldExpMultiplier", value: 0.30},
+                    {desc: "修仙系统经验获取提升30%", type: "cultivationExpMultiplier", value: 0.30},
+                    {desc: "奥秘系统经验获取提升30%", type: "mysteryExpMultiplier", value: 0.30}
+                ]
+            }
+        ],
+        // 二转职业配置
+        secondJobs: {
+            pathfinder: {
+                name: "堪舆师",
+                requiredTower: 100000,
+                bonus: { worldExpMultiplier: 1.1 }
+            },
+            adventurer: {
+                name: "问道客",
+                requiredTower: 100000,
+                bonus: { cultivationExpMultiplier: 1.1 }
+            },
+            scholar: {
+                name: "解律者",
+                requiredTower: 100000,
+                bonus: { mysteryExpMultiplier: 1.1 }
+            }
+        },
+        // 三转职业配置
+        thirdJobs: {
+            explorerKing: {
+                name: "山河司命",
+                requiredTower: 200000,
+                baseJob: "pathfinder",
+                bonus: { worldExpMultiplier: 1.2 }
+            },
+            legendAdventurer: {
+                name: "归墟引渡人",
+                requiredTower: 200000,
+                baseJob: "adventurer",
+                bonus: { cultivationExpMultiplier: 1.2 }
+            },
+            mysteryMaster: {
+                name: "御法真君",
+                requiredTower: 200000,
+                baseJob: "scholar",
+                bonus: { mysteryExpMultiplier: 1.2 }
+            }
+        },
+        // 四转职业配置
+        fourthJobs: {
+            worldWalker: {
+                name: "造化寰宇主",
+                requiredTower: 300000,
+                baseJob: "explorerKing",
+                bonus: { worldExpMultiplier: 1.3 }
+            },
+            immortalExplorer: {
+                name: "天命窥秘师",
+                requiredTower: 300000,
+                baseJob: "legendAdventurer",
+                bonus: { cultivationExpMultiplier: 1.3 }
+            },
+            mysteryGod: {
+                name: "万法道主",
+                requiredTower: 300000,
+                baseJob: "mysteryMaster",
+                bonus: { mysteryExpMultiplier: 1.3 }
+            }
+        }
     }
 };
 
@@ -38368,6 +38978,9 @@ function getJobBonusDescription(bonus) {
     if (bonus.healthMultiplier) descriptions.push(`生命加成${bonus.healthMultiplier}倍`);
     if (bonus.dungeonEquipMultiplier) descriptions.push(`副本装备加成${bonus.dungeonEquipMultiplier}倍`);
     if (bonus.soulRingMultiplier) descriptions.push(`魂环加成${bonus.soulRingMultiplier}倍`);
+    if (bonus.worldExpMultiplier) descriptions.push(`世界地图经验${bonus.worldExpMultiplier}倍`);
+    if (bonus.cultivationExpMultiplier) descriptions.push(`修仙经验${bonus.cultivationExpMultiplier}倍`);
+    if (bonus.mysteryExpMultiplier) descriptions.push(`奥秘经验${bonus.mysteryExpMultiplier}倍`);
     return descriptions.join('，');
 }
 // 选择二转职业
@@ -38502,7 +39115,10 @@ function calculateClassBonuses() {
         critMultiplier: 1,
         collectionMultiplier: 1,
         dungeonEquipMultiplier: 1,
-        soulRingMultiplier: 1
+        soulRingMultiplier: 1,
+        worldExpMultiplier: 1,
+        cultivationExpMultiplier: 1,
+        mysteryExpMultiplier: 1
     };
     
     if (!player.class) return bonuses;
@@ -38535,6 +39151,15 @@ function calculateClassBonuses() {
                 break;
             case 'soulRingMultiplier':
                 bonuses.soulRingMultiplier *= (1 + option.value);
+                break;
+          case 'worldExpMultiplier':
+                bonuses.worldExpMultiplier *= (1 + option.value);
+                break;
+            case 'cultivationExpMultiplier':
+                bonuses.cultivationExpMultiplier *= (1 + option.value);
+                break;
+            case 'mysteryExpMultiplier':
+                bonuses.mysteryExpMultiplier *= (1 + option.value);
                 break;
         }
     });
@@ -59161,7 +59786,7 @@ function getChaosCauldronBonus() {
     return hasChaosCauldron() ? 20 : 1; 
 }
 // 年兽技能配置
-const nianBeastSkills = [
+let nianBeastSkills = [
     {
         name: '普通爪击',
         description: '普通的攻击',
@@ -59209,6 +59834,55 @@ const nianBeastSkills = [
     }
 ];
 
+// 基础技能配置（用于重置）
+const baseNianBeastSkills = [
+    {
+        name: '普通爪击',
+        description: '普通的攻击',
+        multiplier: 1.0,
+        chance: 0.40,
+        message: '🐅 年兽挥爪攻击',
+        color: '#aaa',
+        icon: '🐾'
+    },
+    {
+        name: '愤怒咆哮',
+        description: '发出震耳欲聋的咆哮',
+        multiplier: 1.2,
+        chance: 0.25,
+        message: '😤 年兽愤怒咆哮！造成1.2倍伤害',
+        color: '#FF9800',
+        icon: '😤'
+    },
+    {
+        name: '猛虎扑击',
+        description: '全力扑向敌人',
+        multiplier: 1.5,
+        chance: 0.20,
+        message: '🐯 年兽猛虎扑击！造成1.5倍伤害',
+        color: '#FF5722',
+        icon: '🐯'
+    },
+    {
+        name: '年兽冲撞',
+        description: '以身体猛烈冲撞',
+        multiplier: 2.0,
+        chance: 0.10,
+        message: '💥 年兽冲撞！造成2倍伤害',
+        color: '#f44336',
+        icon: '💥'
+    },
+    {
+        name: '除夕灾厄',
+        description: '传说中的年兽最强技能',
+        multiplier: 5.0,
+        chance: 0.05,
+        message: '🌪️ 除夕灾厄！！！造成5倍毁灭性打击',
+        color: '#FFD700',
+        icon: '🌪️'
+    }
+];
+
 // 年兽特殊状态技能（低血量时触发）
 const nianBeastSpecialSkills = [
     {
@@ -59231,6 +59905,19 @@ const nianBeastSpecialSkills = [
         icon: '🧧'
     }
 ];
+function resetNianBeastSkills() {
+    // 深拷贝基础技能配置
+    nianBeastSkills = JSON.parse(JSON.stringify(baseNianBeastSkills));
+    
+    // 重置技能相关变量
+    nianBeastGame.skillTriggeredDeath = false;
+    nianBeastGame.lastComboSkill = '';
+    nianBeastGame.skillCombo = 0;
+    nianBeastGame.lastSkill = '';
+    
+    console.log('年兽技能已重置到初始状态');
+}
+
 // 初始化年兽副本系统
 function initNianBeastSystem() {
     if (!player.nianBeast) {
@@ -59246,19 +59933,19 @@ const artifactCritConfig = {
     // 法宝加成区间对应的触发几率和倍率
     thresholds: [
         { maxBonus: 1.1, chance: 0.05, multiplier: 1, message: '💫 法宝共鸣！造成1倍额外伤害' },
-        { maxBonus: 1.3, chance: 0.10, multiplier: 2, message: '⚡ 法宝觉醒！造成2倍暴伤' },
-        { maxBonus: 1.4, chance: 0.11, multiplier: 3, message: '✨ 法宝通灵！造成3倍毁灭打击' },
-        { maxBonus: 1.5, chance: 0.12, multiplier: 4, message: '🌟 法宝化形！造成4倍天道之力' },
-        { maxBonus: 1.6, chance: 0.13, multiplier: 5, message: '🌪️ 法宝混沌！造成5倍洪荒之力' },
-        { maxBonus: 1.8, chance: 0.14, multiplier: 6, message: '🔥 法宝焚天！造成6倍寂灭之威' },
-        { maxBonus: 2.0, chance: 0.15, multiplier: 7, message: '❄️ 法宝冰封！造成7倍时空冻结' },
-        { maxBonus: 2.5, chance: 0.16, multiplier: 8, message: '⚡ 法宝雷动！造成8倍天劫之力' },
-        { maxBonus: 3.0, chance: 0.17, multiplier: 9, message: '🌌 法宝虚空！造成9倍混沌之怒' },
-        { maxBonus: 3.5, chance: 0.18, multiplier: 10, message: '👑 法宝帝王！造成10倍君临天下' },
-        { maxBonus: 4.0, chance: 0.19, multiplier: 15, message: '🐉 法宝神龙！造成15倍龙威震天' },
-        { maxBonus: 4.5, chance: 0.20, multiplier: 20, message: '🌍 法宝创世！造成20倍开天辟地' },
-        { maxBonus: 5.0, chance: 0.25, multiplier: 25, message: '☯️ 法宝大道！造成25倍道法自然' },
-        { maxBonus: Infinity, chance: 0.30, multiplier: 30, message: '∞ 法宝永恒！造成30倍无尽轮回' }
+        { maxBonus: 1.3, chance: 0.05, multiplier: 2, message: '⚡ 法宝觉醒！造成2倍暴伤' },
+        { maxBonus: 1.4, chance: 0.05, multiplier: 3, message: '✨ 法宝通灵！造成3倍毁灭打击' },
+        { maxBonus: 1.5, chance: 0.05, multiplier: 4, message: '🌟 法宝化形！造成4倍天道之力' },
+        { maxBonus: 1.6, chance: 0.05, multiplier: 5, message: '🌪️ 法宝混沌！造成5倍洪荒之力' },
+        { maxBonus: 1.8, chance: 0.10, multiplier: 6, message: '🔥 法宝焚天！造成6倍寂灭之威' },
+        { maxBonus: 2.0, chance: 0.10, multiplier: 7, message: '❄️ 法宝冰封！造成7倍时空冻结' },
+        { maxBonus: 2.5, chance: 0.10, multiplier: 8, message: '⚡ 法宝雷动！造成8倍天劫之力' },
+        { maxBonus: 3.0, chance: 0.10, multiplier: 9, message: '🌌 法宝虚空！造成9倍混沌之怒' },
+        { maxBonus: 3.5, chance: 0.15, multiplier: 10, message: '👑 法宝帝王！造成10倍君临天下' },
+        { maxBonus: 4.0, chance: 0.15, multiplier: 15, message: '🐉 法宝神龙！造成15倍龙威震天' },
+        { maxBonus: 4.5, chance: 0.15, multiplier: 20, message: '🌍 法宝创世！造成20倍开天辟地' },
+        { maxBonus: 5.0, chance: 0.15, multiplier: 25, message: '☯️ 法宝大道！造成25倍道法自然' },
+        { maxBonus: Infinity, chance: 0.20, multiplier: 30, message: '∞ 法宝永恒！造成30倍无尽轮回' }
     ],
     
     // 霸气语录（根据不同倍数触发不同台词）
@@ -59417,45 +60104,38 @@ function updateArtifactCritPreview() {
 
 // 打开年兽副本
 function openNianBeastDungeon() {
-         if (player.cultivation.stage < 20) {
+   if (player.cultivation.stage < 20) {
         alert("需要达到修仙20级才能开启新年年兽副本！");
         return;
     }
+
     initNianBeastSystem();
-    toggleAutoBuyShopb()
+    toggleAutoBuyShopb();
     // 计算玩家属性
     updateNianPlayerStats();
+    
+    // 重置BOSS状态
+    resetNianBeastBattle();
     
     // 显示UI
     document.getElementById('nianBeastOverlay').style.display = 'block';
     document.getElementById('nianBeastUI').style.display = 'block';
     
-    // 根据战斗状态更新按钮
-    if (nianBeastGame.isInBattle && nianBeastGame.hasTokenCost) {
-        // 正在战斗中
-        document.getElementById('nianAttackBtn').disabled = false;
-        document.getElementById('nianAttackBtn').style.background = 'linear-gradient(145deg, #FFD700, #FFA500)';
-        document.getElementById('nianAttackBtn').style.cursor = 'pointer';
-        document.getElementById('nianDefendBtn').disabled = false;
-        document.getElementById('nianDefendBtn').style.background = 'linear-gradient(145deg, #4CAF50, #2E7D32)';
-        document.getElementById('nianDefendBtn').style.cursor = 'pointer';
-        document.getElementById('challengeNianBtn').disabled = true;
-        document.getElementById('challengeNianBtn').style.background = '#666';
-        document.getElementById('challengeNianBtn').style.cursor = 'not-allowed';
-    } else {
-        // 不在战斗中
-        nianBeastGame.isInBattle = false;
-        nianBeastGame.hasTokenCost = false;
-        
-        document.getElementById('nianAttackBtn').disabled = true;
-        document.getElementById('nianAttackBtn').style.background = '#666';
-        document.getElementById('nianAttackBtn').style.cursor = 'not-allowed';
-        document.getElementById('nianDefendBtn').disabled = true;
-        document.getElementById('nianDefendBtn').style.background = '#666';
-        document.getElementById('nianDefendBtn').style.cursor = 'not-allowed';
-        document.getElementById('challengeNianBtn').disabled = false;
-        document.getElementById('challengeNianBtn').style.background = 'linear-gradient(145deg, #FFD700, #FFA500)';
-        document.getElementById('challengeNianBtn').style.cursor = 'pointer';
+    // 禁用攻击、防御、逃跑按钮，直到消耗令牌
+    document.getElementById('nianAttackBtn').disabled = true;
+    document.getElementById('nianAttackBtn').style.background = '#666';
+    document.getElementById('nianAttackBtn').style.cursor = 'not-allowed';
+    document.getElementById('nianDefendBtn').disabled = true;
+    document.getElementById('nianDefendBtn').style.background = '#666';
+    document.getElementById('nianDefendBtn').style.cursor = 'not-allowed';
+    document.getElementById('nianEscapeBtn').disabled = true;
+    document.getElementById('nianEscapeBtn').style.background = '#666';
+    document.getElementById('nianEscapeBtn').style.cursor = 'not-allowed';
+    
+    // 启用挑战按钮
+    document.getElementById('challengeNianBtn').disabled = false;
+    document.getElementById('challengeNianBtn').style.background = 'linear-gradient(145deg, #FFD700, #FFA500)';
+    document.getElementById('challengeNianBtn').style.cursor = 'pointer';
   const hasChaos = hasChaosCauldron();
     if (hasChaos) {
         addNianBattleLog('🧨 检测到驱年爆竹！对年兽造成20倍克制伤害！', 'artifact', '#FF4500');
@@ -59466,7 +60146,17 @@ function openNianBeastDungeon() {
     addNianBattleLog('🎯 从第二层开始才有丰厚奖励！', 'warning');
     addNianBattleLog('🐅 年兽拥有多种强力技能', 'warning');
     addNianBattleLog('⚡ 击败年兽获得丰厚奖励', 'skill', '#FFD700');
-    }
+    addNianBattleLog('🏃 逃跑按钮可立即结束战斗并结算奖励', 'info', '#f44336');
+    addNianBattleLog('════════════ 年兽技能 ════════════', 'skill', '#FFD700');
+    
+    const sortedSkills = [...nianBeastSkills].sort((a, b) => b.chance - a.chance);
+    sortedSkills.forEach(skill => {
+        if (skill.chance > 0) {
+            addNianBattleLog(`${skill.icon} ${skill.name}: ${(skill.chance * 100).toFixed(0)}%几率 | ${skill.multiplier}倍伤害`, 'skill', skill.color);
+        }
+    });
+    
+    addNianBattleLog('══════════════════════════════', 'skill', '#FFD700');
     
     // 更新显示
     updateNianBeastUI();
@@ -59489,7 +60179,7 @@ function updateNianPlayerStats() {
         // 生命值 = (转生数 * 10000) * 灵根加成 * 血脉加成
         nianBeastGame.playerMaxHp = player.reincarnationCount * 10000 * 
                                     (player.cultivation.root.bonus || 1) * 
-                                    (player.cultivation.bloodline.bonus || 1);
+                                    (player.cultivation.bloodline.bonus || 1) * (1+player.fiveElements.metal.level * 0.2);
         nianBeastGame.playerHp = nianBeastGame.playerMaxHp;
         
         // 攻击力 = 阶段加成 * 装备法宝加成
@@ -59504,10 +60194,10 @@ function updateNianPlayerStats() {
             if (tool) toolBonus = tool.bonus;
         }
         
-        nianBeastGame.playerAtk = stageMultiplier * toolBonus * 1000;
+        nianBeastGame.playerAtk = stageMultiplier * toolBonus * 1000 * (1+player.fiveElements.wood.level * 0.05) * (1+player.fiveElements.earth.level * 0.05);
         
         // 爆伤 = 当前境界等级
-        nianBeastGame.playerCrit = (player.cultivation.stage || 0) * 0.5 + 1.5;
+        nianBeastGame.playerCrit = (player.cultivation.stage || 0) *  0.5 * (1+player.fiveElements.water.level * 0.05) * (1+player.fiveElements.fire.level * 0.05) + 1.5;
     }
  const chaosTipDiv = document.getElementById('yin_yang_mirrorbaab');
     if (chaosTipDiv) {
@@ -59550,7 +60240,7 @@ function resetNianBeastBattle() {
     nianBeastGame.lastComboSkill = '';
     nianBeastGame.skillTriggeredDeath = false;
     nianBeastGame.totalDamageDealt = 0;
-    
+     resetNianBeastSkills();
     // 清空战斗日志
     clearNianBattleLog();
 }
@@ -59790,6 +60480,9 @@ function challengeNianBeast() {
     document.getElementById('nianDefendBtn').disabled = false;
     document.getElementById('nianDefendBtn').style.background = 'linear-gradient(145deg, #4CAF50, #2E7D32)';
     document.getElementById('nianDefendBtn').style.cursor = 'pointer';
+    document.getElementById('nianEscapeBtn').disabled = false;
+    document.getElementById('nianEscapeBtn').style.background = 'linear-gradient(145deg, #f44336, #c62828)';
+    document.getElementById('nianEscapeBtn').style.cursor = 'pointer';
     
     // 禁用挑战按钮
     document.getElementById('challengeNianBtn').disabled = true;
@@ -59811,7 +60504,7 @@ function challengeNianBeast() {
     addNianBattleLog('📊 年兽拥有多种技能，小心它的强力攻击！', 'skill', '#9C27B0');
     
     // 显示技能列表
-    addNianBattleLog('════════════ 年兽技能 ════════════', 'skill', '#FFD700');
+     addNianBattleLog('════════════ 年兽技能 ════════════', 'skill', '#FFD700');
     
     const sortedSkills = [...nianBeastSkills].sort((a, b) => b.chance - a.chance);
     sortedSkills.forEach(skill => {
@@ -59946,7 +60639,69 @@ function nianBeastDefend() {
     nianBeastCounterAttack(true);
 }
 
+function nianBeastEscape() {
+    // 检查是否在战斗中
+    if (!nianBeastGame.isInBattle) {
+        addNianBattleLog('❌ 现在无法逃跑！', 'error');
+        return;
+    }
+    
+    if (!nianBeastGame.hasTokenCost) {
+        addNianBattleLog('❌ 请先消耗令牌挑战年兽！', 'error');
+        return;
+    }
+    
+    // 更新当前层数显示
+    document.getElementById('escapeCurrentLevel').innerHTML = nianBeastGame.beastLevel;
+    
+    // 显示确认弹窗
+    document.getElementById('escapeConfirmOverlay').style.display = 'block';
+    document.getElementById('escapeConfirmDialog').style.display = 'block';
+}
 
+// 确认逃跑
+function confirmEscape() {
+    // 关闭弹窗
+    closeEscapeDialog();
+    
+    // 添加逃跑日志
+    addNianBattleLog('🏃 你选择了逃跑！', 'warning');
+    addNianBattleLog('💀 逃跑导致战败...', 'error');
+    
+    // 记录当前层数用于奖励结算
+    const escapeLevel = nianBeastGame.beastLevel;
+    
+    // 设置玩家血量为0（死亡）
+    nianBeastGame.playerHp = 0;
+    
+    // 更新UI显示
+    updateNianBeastUI();
+    
+    // 结束战斗（死亡结算）
+    setTimeout(() => {
+        endNianBeastBattle(false);
+        
+        // 添加逃跑特殊提示
+        if (escapeLevel > 1) {
+            addNianBattleLog(`🏃 你在第 ${escapeLevel} 层选择了逃跑`, 'info');
+            addNianBattleLog(`💰 获得第 ${escapeLevel} 层奖励`, 'success');
+        } else {
+            addNianBattleLog('📢 第一层逃跑无奖励', 'info');
+        }
+    }, 500);
+}
+
+// 取消逃跑
+function cancelEscape() {
+    closeEscapeDialog();
+    addNianBattleLog('✨ 继续战斗！', 'success');
+}
+
+// 关闭逃跑弹窗
+function closeEscapeDialog() {
+    document.getElementById('escapeConfirmOverlay').style.display = 'none';
+    document.getElementById('escapeConfirmDialog').style.display = 'none';
+}
 // BOSS反击
 function nianBeastCounterAttack(isDefending = false) {
     if (nianBeastGame.beastCurrentHp <= 0) return;
@@ -60123,29 +60878,29 @@ function handleNianBeastDeath() {
 }
 function unlockNianBeastSkill(level) {
     const newSkills = [
-        { level: 2, name: '雷霆一击', multiplier: 5.0, message: '⚡ 年兽领悟雷霆一击！5倍伤害' },
-        { level: 4, name: '地震践踏', multiplier: 7.5, message: '🌋 年兽领悟地震践踏！7.5倍伤害' },
-        { level: 6, name: '冰霜吐息', multiplier: 10.0, message: '❄️ 年兽领悟冰霜吐息！10倍伤害' },
-        { level: 8, name: '烈火焚天', multiplier: 12.5, message: '🔥 年兽领悟烈火焚天！12.5倍伤害' },
-        { level: 10, name: '时空撕裂', multiplier: 15.0, message: '⏰ 年兽领悟时空撕裂！15倍伤害' },
-        { level: 12, name: '混沌灾厄', multiplier: 20.0, message: '🌪️ 年兽领悟混沌灾厄！20倍伤害' },
-        { level: 14, name: '神兽降临', multiplier: 30.0, message: '🐉 年兽领悟神兽降临！30倍伤害' },
-        { level: 16, name: '天道制裁', multiplier: 40.0, message: '⚖️ 年兽领悟天道制裁！40倍伤害' },
-        { level: 18, name: '洪荒之力', multiplier: 50.0, message: '🌍 年兽领悟洪荒之力！50倍伤害' },
-        { level: 20, name: '创世毁灭', multiplier: 100.0, message: '💫 年兽领悟创世毁灭！100倍毁灭打击' }
+        { level: 2, name: '雷霆一击', multiplier: 5.0, chance: 0.03, message: '⚡ 年兽领悟雷霆一击！5.0倍伤害', color: '#8A2BE2', icon: '⚡' },
+        { level: 4, name: '地震践踏', multiplier: 7.5, chance: 0.03, message: '🌋 年兽领悟地震践踏！7.5倍伤害', color: '#8A2BE2', icon: '🌋' },
+        { level: 6, name: '冰霜吐息', multiplier: 10.0, chance: 0.03, message: '❄️ 年兽领悟冰霜吐息！10倍伤害', color: '#8A2BE2', icon: '❄️' },
+        { level: 8, name: '烈火焚天', multiplier: 12.5, chance: 0.03, message: '🔥 年兽领悟烈火焚天！12.5倍伤害', color: '#8A2BE2', icon: '🔥' },
+        { level: 10, name: '时空撕裂', multiplier: 15.0, chance: 0.03, message: '⏰ 年兽领悟时空撕裂！15倍伤害', color: '#8A2BE2', icon: '⏰' },
+        { level: 12, name: '混沌灾厄', multiplier: 20.0, chance: 0.03, message: '🌪️ 年兽领悟混沌灾厄！20倍伤害', color: '#8A2BE2', icon: '🌪️' },
+        { level: 14, name: '神兽降临', multiplier: 30.0, chance: 0.03, message: '🐉 年兽领悟神兽降临！30倍伤害', color: '#8A2BE2', icon: '🐉' },
+        { level: 16, name: '天道制裁', multiplier: 40.0, chance: 0.03, message: '⚖️ 年兽领悟天道制裁！40倍伤害', color: '#8A2BE2', icon: '⚖️' },
+        { level: 18, name: '洪荒之力', multiplier: 50.0, chance: 0.03, message: '🌍 年兽领悟洪荒之力！50倍伤害', color: '#8A2BE2', icon: '🌍' },
+        { level: 20, name: '创世毁灭', multiplier: 100.0, chance: 0.03, message: '💫 年兽领悟创世毁灭！100倍毁灭打击', color: '#8A2BE2', icon: '💫' }
     ];
     
-    const unlockedSkill = newSkills.find(skill => skill.level === level);
+   const unlockedSkill = newSkills.find(skill => skill.level === level);
     if (unlockedSkill) {
-        // 添加新技能到技能池
+        // 添加到当前战斗的技能池（不修改基础配置）
         nianBeastSkills.push({
             name: unlockedSkill.name,
             description: `Lv.${level}解锁的强力技能`,
             multiplier: unlockedSkill.multiplier,
-            chance: 0.03, // 3%几率
+            chance: unlockedSkill.chance,
             message: unlockedSkill.message,
-            color: '#8A2BE2',
-            icon: '💫'
+            color: unlockedSkill.color,
+            icon: unlockedSkill.icon
         });
         
         addNianBattleLog(`🎯 年兽解锁新技能: ${unlockedSkill.name}！`, 'skill', '#8A2BE2');
@@ -60163,16 +60918,21 @@ function endNianBeastBattle(isVictory) {
     document.getElementById('challengeNianBtn').style.background = 'linear-gradient(145deg, #FFD700, #FFA500)';
     document.getElementById('challengeNianBtn').style.cursor = 'pointer';
     
-    // 禁用攻击按钮
+    // 禁用攻击、防御、逃跑按钮
     document.getElementById('nianAttackBtn').disabled = true;
     document.getElementById('nianAttackBtn').style.background = '#666';
     document.getElementById('nianAttackBtn').style.cursor = 'not-allowed';
     document.getElementById('nianDefendBtn').disabled = true;
     document.getElementById('nianDefendBtn').style.background = '#666';
     document.getElementById('nianDefendBtn').style.cursor = 'not-allowed';
+    document.getElementById('nianEscapeBtn').disabled = true;
+    document.getElementById('nianEscapeBtn').style.background = '#666';
+    document.getElementById('nianEscapeBtn').style.cursor = 'not-allowed';
+    
+    // 战斗结束后不立即重置技能，等待下次挑战时重置
     
     if (!isVictory) {
-        // 玩家死亡，结算奖励
+        // 玩家死亡或逃跑，结算奖励
         let defeatedLevel = nianBeastGame.beastLevel;
         
         // 更新最高记录
@@ -60803,7 +61563,1170 @@ function initCultivationSystem() {
         player.items = {};
     }
 }
+const trialMonsterSkills = [
+    {
+        name: '普通攻击',
+        multiplier: 1.0,
+        chance: 0.40, // 40%几率
+        message: '👾 怪物普通攻击',
+        color: '#aaa',
+        icon: '👾'
+    },
+    {
+        name: '重击',
+        multiplier: 1.5,
+        chance: 0.25, // 25%几率
+        message: '💪 怪物发动重击！造成1.5倍伤害',
+        color: '#FF9800',
+        icon: '💪'
+    },
+    {
+        name: '狂暴一击',
+        multiplier: 2.0,
+        chance: 0.15, // 15%几率
+        message: '⚡ 怪物狂暴一击！造成2倍伤害',
+        color: '#FF5722',
+        icon: '⚡'
+    },
+    {
+        name: '致命连击',
+        multiplier: 2.5,
+        chance: 0.10, // 10%几率
+        message: '💥 怪物致命连击！造成2.5倍伤害',
+        color: '#f44336',
+        icon: '💥'
+    },
+    {
+        name: '毁灭打击',
+        multiplier: 3.0,
+        chance: 0.05, // 5%几率
+        message: '🌋 怪物毁灭打击！造成3倍伤害',
+        color: '#9C27B0',
+        icon: '🌋'
+    },
+    {
+        name: '末日审判',
+        multiplier: 4.0,
+        chance: 0.03, // 3%几率
+        message: '🔥 末日审判！造成5倍毁灭性伤害',
+        color: '#FFD700',
+        icon: '🔥'
+    },
+    {
+        name: '时空撕裂',
+        multiplier: 5.0,
+        chance: 0.015, // 1.5%几率
+        message: '⏰ 时空撕裂！造成5倍伤害',
+        color: '#00BCD4',
+        icon: '⏰'
+    },
+    {
+        name: '混沌降临',
+        multiplier: 10.0,
+        chance: 0.005, // 0.5%几率
+        message: '🌌 混沌降临！造成10倍毁灭打击',
+        color: '#8A2BE2',
+        icon: '🌌'
+    }
+];
+let trialTowerGame = {
+    currentFloor: 1,
+    highestFloor: 0,
+    totalChallenges: 0,
+    totalWins: 0,
+    
+    playerHp: 0,
+    playerMaxHp: 0,
+    playerAtk: 0,
+    playerCrit: 0,
+    playerCritRate: 0.3,
+    
+    monsterHp: 0,
+    monsterMaxHp: 0,
+    monsterAtk: 0,
+    
+    isDefending: false,
+    isInBattle: false,
+   lastMonsterSkill: '',
+    monsterSkillCombo: 0,
+    lastComboSkill: '',
+    totalDamageTaken: 0,
+  defenseHealCount: 0, 
+    defenseTotalHeal: 0, 
+  artifactCritCount: 0,
+    artifactTotalBonus: 0  
+};
+const trialArtifactCritConfig = {
+    thresholds: [
+        { maxBonus: 1.1, chance: 0.05, multiplier: 1, message: '💫 法宝共鸣！造成1倍额外伤害' },
+        { maxBonus: 1.3, chance: 0.05, multiplier: 2, message: '⚡ 法宝觉醒！造成2倍暴伤' },
+        { maxBonus: 1.4, chance: 0.05, multiplier: 3, message: '✨ 法宝通灵！造成3倍毁灭打击' },
+        { maxBonus: 1.5, chance: 0.05, multiplier: 4, message: '🌟 法宝化形！造成4倍天道之力' },
+        { maxBonus: 1.6, chance: 0.06, multiplier: 5, message: '🌪️ 法宝混沌！造成5倍洪荒之力' },
+        { maxBonus: 1.8, chance: 0.07, multiplier: 6, message: '🔥 法宝焚天！造成6倍寂灭之威' },
+        { maxBonus: 2.0, chance: 0.08, multiplier: 7, message: '❄️ 法宝冰封！造成7倍时空冻结' },
+        { maxBonus: 2.5, chance: 0.09, multiplier: 8, message: '⚡ 法宝雷动！造成8倍天劫之力' },
+        { maxBonus: 3.0, chance: 0.10, multiplier: 9, message: '🌌 法宝虚空！造成9倍混沌之怒' },
+        { maxBonus: 3.5, chance: 0.11, multiplier: 10, message: '👑 法宝帝王！造成10倍君临天下' },
+        { maxBonus: 4.0, chance: 0.12, multiplier: 15, message: '🐉 法宝神龙！造成15倍龙威震天' },
+        { maxBonus: 4.5, chance: 0.13, multiplier: 20, message: '🌍 法宝创世！造成20倍开天辟地' },
+        { maxBonus: 5.0, chance: 0.14, multiplier: 25, message: '☯️ 法宝大道！造成25倍道法自然' },
+        { maxBonus: Infinity, chance: 0.15, multiplier: 30, message: '∞ 法宝永恒！造成30倍无尽轮回' }
+    ],
+    
+    quotes: {
+        1: [
+            '「区区怪物，也敢放肆！」',
+            '「看我的法宝神威！」',
+            '「这一击，只是开胃菜！」',
+            '「法宝初显，怪物受死！」'
+        ],
+        2: [
+            '「二倍之力，破你防御！」',
+            '「法宝觉醒，怪物颤栗！」',
+            '「这一击，让你知道厉害！」',
+            '「怪物，尝尝法宝的厉害！」'
+        ],
+        3: [
+            '「三界震动，法宝显圣！」',
+            '「怪物，还不伏诛！」',
+            '「法宝通灵，诛杀邪祟！」',
+            '「这一击，送你归西！」'
+        ],
+        4: [
+            '「四海之内，法宝为尊！」',
+            '「怪物，你的死期到了！」',
+            '「四倍暴击，荡平怪物！」',
+            '「法宝化形，毁天灭地！」'
+        ],
+        5: [
+            '「五雷轰顶，法宝天威！」',
+            '「怪物，还不束手就擒！」',
+            '「五倍之力，横扫千军！」',
+            '「法宝混沌，破碎虚空！」'
+        ],
+        6: [
+            '「六道轮回，法宝超度！」',
+            '「怪物，让你魂飞魄散！」',
+            '「六倍暴击，诛杀怪物！」',
+            '「法宝焚天，烧尽邪魔！」'
+        ],
+        7: [
+            '「七星伴月，法宝无敌！」',
+            '「怪物，这一击送你上路！」',
+            '「七倍之力，天地变色！」',
+            '「法宝冰封，冻结时空！」'
+        ],
+        8: [
+            '「八方来朝，法宝称尊！」',
+            '「怪物，受死吧！」',
+            '「八倍暴击，毁天灭地！」',
+            '「法宝雷动，天劫降临！」'
+        ],
+        9: [
+            '「九霄云外，法宝纵横！」',
+            '「怪物，让你永世不得超生！」',
+            '「九倍之力，破碎虚空！」',
+            '「法宝虚空，吞噬一切！」'
+        ],
+        10: [
+            '「十方俱灭，法宝无敌！」',
+            '「怪物，见识真正的力量！」',
+            '「十倍暴击，君临天下！」',
+            '「法宝帝王，统御万界！」'
+        ],
+        15: [
+            '「十五倍龙威，怪物颤栗！」',
+            '「神龙降世，诛杀怪物！」',
+            '「法宝神龙，毁天灭地！」',
+            '「龙威震天，怪物伏诛！」'
+        ],
+        20: [
+            '「二十倍创世，开天辟地！」',
+            '「法宝创世，重演混沌！」',
+            '「创世之力，怪物化为虚无！」',
+            '「开天辟地，怪物湮灭！」'
+        ],
+        25: [
+            '「二十五倍大道，道法自然！」',
+            '「大道至简，一击必杀！」',
+            '「法宝大道，怪物超度！」',
+            '「道法自然，怪物归西！」'
+        ],
+        30: [
+            '「三十倍永恒，无尽轮回！」',
+            '「永恒法宝，超越时空！」',
+            '「无尽轮回，怪物永世不得超生！」',
+            '「法宝永恒，与天地同寿！」'
+        ]
+    },
+    
+    specialQuotes: [
+        { chance: 0.001, quote: '👑 「吾之法宝，可破苍穹！」' },
+        { chance: 0.001, quote: '🌌 「这一击，蕴含宇宙真理！」' },
+        { chance: 0.001, quote: '⚡ 「天大地大，法宝最大！」' },
+        { chance: 0.001, quote: '🔥 「怪物，不过如此！」' },
+        { chance: 0.001, quote: '❄️ 「法宝一出，谁与争锋！」' },
+        { chance: 0.001, quote: '💫 「让你见识真正的法宝之力！」' }
+    ]
+};
+function getTrialEquippedArtifactBonus() {
+    if (!player.magicTools || !player.magicTools.equipped) {
+        return 1.0;
+    }
+    
+    const tool = magicToolConfig.tools.find(t => t.id === player.magicTools.equipped);
+    return tool ? tool.bonus : 1.0;
+}
+function triggerTrialArtifactCrit() {
+    const artifactBonus = getTrialEquippedArtifactBonus();
+    
+    // 找到对应的加成区间
+    let config = trialArtifactCritConfig.thresholds.find(t => artifactBonus <= t.maxBonus);
+    if (!config) {
+        config = trialArtifactCritConfig.thresholds[trialArtifactCritConfig.thresholds.length - 1];
+    }
+    
+    // 5%几率触发
+    if (Math.random() < config.chance) {
+        // 随机选择霸气语录
+        let quotes = trialArtifactCritConfig.quotes[config.multiplier] || trialArtifactCritConfig.quotes[1];
+        let quote = quotes[Math.floor(Math.random() * quotes.length)];
+        
+        // 极低概率触发特殊台词
+        for (let special of trialArtifactCritConfig.specialQuotes) {
+            if (Math.random() < special.chance) {
+                quote = special.quote;
+                break;
+            }
+        }
+        
+        return {
+            triggered: true,
+            multiplier: config.multiplier,
+            quote: quote,
+            message: config.message
+        };
+    }
+    
+    return { triggered: false };
+}
 
+function getMonsterSkillsForFloor(floor) {
+    let skills = JSON.parse(JSON.stringify(trialMonsterSkills));
+    
+    // 根据层数调整技能几率
+    if (floor >= 60) {
+        
+        skills[4].chance = 0.08; // 毁灭打击 8%
+        skills[5].chance = 0.05; // 末日审判 5%
+    }
+    if (floor >= 120) {
+        skills[5].chance = 0.07; // 末日审判 7%
+        skills[6].chance = 0.03; // 时空撕裂 3%
+    }
+    if (floor >= 200) {
+        skills[6].chance = 0.05; // 时空撕裂 5%
+        skills[7].chance = 0.02; // 混沌降临 2%
+    }
+    if (floor >= 300) {
+        skills[7].chance = 0.05; // 混沌降临 5%
+    }
+    if (floor >= 400) {        
+        skills.forEach(skill => {
+            if (skill.multiplier >= 3.0) {
+                skill.chance = Math.min(skill.chance * 1.5, 0.15);
+            }
+        });
+    }
+    
+    return skills;
+}
+// 初始化试练塔系统
+function initTrialTower() {
+    if (!player.trialTower) {
+        player.trialTower = {
+            currentFloor: 1,
+            highestFloor: 0,
+            totalChallenges: 0,
+            totalWins: 0
+        };
+    }
+    
+    // 同步玩家数据
+    trialTowerGame.currentFloor = player.trialTower.currentFloor || 1;
+    trialTowerGame.highestFloor = player.trialTower.highestFloor || 0;
+    trialTowerGame.totalChallenges = player.trialTower.totalChallenges || 0;
+    trialTowerGame.totalWins = player.trialTower.totalWins || 0;
+}
+
+// 计算怪物属性（每层提升）
+function calculateMonsterStats(floor) {
+    // 基础属性
+    let baseHp = 100000; // 10万基础血量
+    let baseAtk = 5000;   // 5000基础攻击
+    
+    // 每层提升：血量增加10%，攻击增加10%
+    let hpMultiplier = Math.pow(1.1, floor - 1);
+    let atkMultiplier = Math.pow(1.05, floor - 1);
+    
+    return {
+        hp: Math.floor(baseHp * hpMultiplier),
+        atk: Math.floor(baseAtk * atkMultiplier)
+    };
+}
+
+// 获取怪物名称
+function getMonsterName(floor) {
+    const names = [
+        '试练守卫', '暗影战士', '火焰魔像', '冰霜巨人', '雷霆使者',
+        '地狱守卫', '天使战士', '恶魔领主', '混沌魔龙', '虚空吞噬者',
+        '时空主宰', '命运编织者', '永恒守护者', '创世神使', '毁灭使者'
+    ];
+    
+    if (floor <= 15) {
+        return names[floor - 1] || `试练怪物·${floor}层`;
+    } else {
+        return `试练尊者·${floor}层`;
+    }
+}
+
+// 打开试练塔
+function openTrialTower() {
+     if (player.cultivation.stage < 10) {
+        alert("需要达到修仙10级才能开启试练塔！");
+        return;
+    }
+    initTrialTower();
+    toggleAutoBuyShopb();
+    // 计算玩家属性
+    updateTrialPlayerStats();
+    
+    // 重置当前怪物
+    resetTrialMonster();
+    
+    // 设置战斗状态
+    trialTowerGame.isInBattle = true;
+    trialTowerGame.isDefending = false;
+    
+    // 重置技能相关
+    trialTowerGame.monsterSkillCombo = 0;
+    trialTowerGame.lastComboSkill = '';
+    trialTowerGame.lastMonsterSkill = '';
+    
+    // 重置防御回复统计
+    trialTowerGame.defenseHealCount = 0;
+    trialTowerGame.defenseTotalHeal = 0;
+    
+    // 重置法宝暴伤统计
+    trialTowerGame.artifactCritCount = 0;
+    trialTowerGame.artifactTotalBonus = 0;
+    
+    // 显示UI
+    document.getElementById('trialTowerOverlay').style.display = 'block';
+    document.getElementById('trialTowerUI').style.display = 'block';
+    
+    // 启用攻击防御按钮
+    document.getElementById('trialAttackBtn').disabled = false;
+    document.getElementById('trialDefendBtn').disabled = false;
+    document.getElementById('trialRestartBtn').disabled = false;
+    
+    // 更新显示（会同时更新奖励预览）
+    updateTrialTowerUI();
+    
+    // 清空并添加欢迎日志
+    clearTrialBattleLog();
+    addTrialBattleLog('🗼 欢迎来到无限试练塔！', 'success');
+    addTrialBattleLog(`📊 当前第 ${trialTowerGame.currentFloor} 层`, 'info');
+    addTrialBattleLog(`👾 怪物: ${getMonsterName(trialTowerGame.currentFloor)}`, 'warning');
+    addTrialBattleLog('🛡️ 防御有20%几率回复25%生命值', 'info', '#4CAF50');
+    
+    // 检查是否有法宝
+    const artifactBonus = getTrialEquippedArtifactBonus();
+    if (artifactBonus > 1.0) {
+        const config = trialArtifactCritConfig.thresholds.find(t => artifactBonus <= t.maxBonus) || trialArtifactCritConfig.thresholds[0];
+        addTrialBattleLog(`🌟 法宝暴伤: ${(config.chance * 100).toFixed(0)}%几率触发${config.multiplier}倍伤害`, 'info', '#FF6B6B');
+    }
+    
+    // 显示怪物技能信息
+    const skills = getMonsterSkillsForFloor(trialTowerGame.currentFloor);
+    addTrialBattleLog('════════ 怪物技能 ════════', 'info', '#9C27B0');
+    skills.forEach(skill => {
+        if (skill.chance > 0.01) {
+            addTrialBattleLog(`${skill.icon} ${skill.name}: ${(skill.chance * 100).toFixed(1)}% | ${skill.multiplier}倍`, 'info', skill.color);
+        }
+    });
+    addTrialBattleLog('════════════════════════', 'info', '#9C27B0');
+    
+    // 显示当前层奖励信息
+    let currentReward = getRewardForFloor(trialTowerGame.currentFloor);
+    if (currentReward.amount > 0) {
+        addTrialBattleLog(`🎁 当前层奖励: ${currentReward.name}×${currentReward.amount}`, 'success');
+    }
+}
+function updateRewardDescriptions() {
+    let floor1 = parseInt(document.getElementById('trialNextRewardFloor').innerHTML);
+    let floor2 = parseInt(document.getElementById('trialNextRewardFloor2').innerHTML);
+    
+    let reward1 = getRewardForFloor(floor1);
+    let reward2 = getRewardForFloor(floor2);
+    
+    document.getElementById('trialNextRewardDesc1').innerHTML = reward1.amount > 0 ? `${reward1.name}×${reward1.amount}` : '无奖励';
+    document.getElementById('trialNextRewardDesc2').innerHTML = reward2.amount > 0 ? `${reward2.name}×${reward2.amount}` : '无奖励';
+}
+// 关闭试练塔
+function closeTrialTower() {
+    document.getElementById('trialTowerOverlay').style.display = 'none';
+    document.getElementById('trialTowerUI').style.display = 'none';
+}
+
+// 计算玩家属性
+function updateTrialPlayerStats() {
+    if (!player.cultivation || !player.cultivation.root || !player.cultivation.bloodline) {
+        trialTowerGame.playerMaxHp = player.reincarnationCount * 10000;
+        trialTowerGame.playerHp = trialTowerGame.playerMaxHp;
+        trialTowerGame.playerAtk = player.reincarnationCount * 1000;
+    } else {
+        // 生命值 = (转生数 * 10000) * 灵根加成 * 血脉加成
+        trialTowerGame.playerMaxHp = player.reincarnationCount * 10000 * 
+                                    (player.cultivation.root.bonus || 1) * 
+                                    (player.cultivation.bloodline.bonus || 1) * (1+player.fiveElements.metal.level * 0.2);
+        trialTowerGame.playerHp = trialTowerGame.playerMaxHp;
+        
+        // 攻击力 = 阶段加成 * 装备法宝加成
+        let stageMultiplier = 1;
+        if (player.cultivation && player.cultivation.bonus) {
+            stageMultiplier = player.cultivation.bonus;
+        }
+        
+        let toolBonus = 1;
+        if (player.magicTools && player.magicTools.equipped) {
+            const tool = magicToolConfig.tools.find(t => t.id === player.magicTools.equipped);
+            if (tool) toolBonus = tool.bonus;
+        }
+        
+        trialTowerGame.playerAtk = stageMultiplier * toolBonus * 1000 * (1+player.fiveElements.wood.level * 0.05) * (1+player.fiveElements.earth.level * 0.05);
+        
+        // 爆伤 = 当前境界等级
+        trialTowerGame.playerCrit = (player.cultivation.stage || 0) * 0.5 * (1+player.fiveElements.water.level * 0.05) * (1+player.fiveElements.fire.level * 0.05) + 1.5;
+    }
+}
+
+// 重置当前层怪物
+function resetTrialMonster() {
+    const stats = calculateMonsterStats(trialTowerGame.currentFloor);
+    trialTowerGame.monsterMaxHp = stats.hp;
+    trialTowerGame.monsterHp = stats.hp;
+    trialTowerGame.monsterAtk = stats.atk;
+}
+
+// 更新试练塔UI
+function updateTrialTowerUI() {
+    // 更新玩家信息
+    document.getElementById('trialPlayerHp').innerHTML = formatNumber(trialTowerGame.playerMaxHp);
+    document.getElementById('trialPlayerAtk').innerHTML = formatNumber(trialTowerGame.playerAtk);
+    document.getElementById('trialPlayerCrit').innerHTML = ((trialTowerGame.playerCrit - 1) * 100).toFixed(0) + '%';
+    
+    // 更新怪物信息
+    document.getElementById('trialMonsterName').innerHTML = getMonsterName(trialTowerGame.currentFloor);
+    document.getElementById('trialMonsterHp').innerHTML = formatNumber(trialTowerGame.monsterMaxHp);
+    document.getElementById('trialMonsterAtk').innerHTML = formatNumber(trialTowerGame.monsterAtk);
+    document.getElementById('trialMonsterHpText').innerHTML = `${formatNumber(trialTowerGame.monsterHp)} / ${formatNumber(trialTowerGame.monsterMaxHp)}`;
+    
+    // 更新血条
+    let hpPercent = (trialTowerGame.monsterHp / trialTowerGame.monsterMaxHp) * 100;
+    document.getElementById('trialMonsterHpBar').style.width = hpPercent + '%';
+    
+    // 更新战斗中的玩家血条
+    document.getElementById('trialBattlePlayerHp').innerHTML = `${formatNumber(trialTowerGame.playerHp)} / ${formatNumber(trialTowerGame.playerMaxHp)}`;
+    let playerHpPercent = (trialTowerGame.playerHp / trialTowerGame.playerMaxHp) * 100;
+    document.getElementById('trialBattlePlayerHpBar').style.width = playerHpPercent + '%';
+    
+    // 更新层数信息
+    document.getElementById('trialCurrentFloor').innerHTML = trialTowerGame.currentFloor;
+    document.getElementById('trialFloorDisplay').innerHTML = trialTowerGame.currentFloor;
+    document.getElementById('trialHighestFloor').innerHTML = trialTowerGame.highestFloor;
+    document.getElementById('trialTotalChallenges').innerHTML = trialTowerGame.totalChallenges;
+    document.getElementById('trialTotalWins').innerHTML = trialTowerGame.totalWins;
+    
+   updateTrialRewardPreview();
+    let nextReward = Math.ceil(trialTowerGame.currentFloor / 10) * 10;
+    document.getElementById('trialNextRewardFloor').innerHTML = nextReward;
+    document.getElementById('trialNextRewardFloor2').innerHTML = nextReward + 10;
+  let skillInfoDiv = document.getElementById('trialMonsterSkillInfo');
+    if (!skillInfoDiv) {
+        const monsterInfoDiv = document.getElementById('trialMonsterInfo');
+        if (monsterInfoDiv) {
+            skillInfoDiv = document.createElement('div');
+            skillInfoDiv.id = 'trialMonsterSkillInfo';
+            skillInfoDiv.style.marginTop = '15px';
+            skillInfoDiv.style.padding = '10px';
+            skillInfoDiv.style.background = 'rgba(0,0,0,0.3)';
+            skillInfoDiv.style.borderRadius = '10px';
+            skillInfoDiv.style.border = '1px solid #9C27B0';
+            monsterInfoDiv.appendChild(skillInfoDiv);
+        }
+    }
+    if (skillInfoDiv) {
+        const skills = getMonsterSkillsForFloor(trialTowerGame.currentFloor);
+        const lastSkill = trialTowerGame.lastMonsterSkill || '无';
+        const combo = trialTowerGame.monsterSkillCombo || 0;
+        
+        // 获取最高倍率技能
+        const maxSkill = skills.reduce((max, skill) => skill.multiplier > max.multiplier ? skill : max, skills[0]);
+        
+        skillInfoDiv.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <span style="color: #9C27B0; font-size: 14px; font-weight: bold;">🎯 怪物技能</span>
+                <span style="color: #aaa; font-size: 12px;">连击: ${combo}x</span>
+            </div>
+            <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px;">
+                <div style="background: rgba(156,39,176,0.2); padding: 3px 8px; border-radius: 12px; font-size: 11px; color: #FFD700;">
+                    上次: ${lastSkill}
+                </div>
+                <div style="background: rgba(244,67,54,0.2); padding: 3px 8px; border-radius: 12px; font-size: 11px; color: #f44336;">
+                    最高: ${maxSkill.name} (${maxSkill.multiplier}x)
+                </div>
+            </div>
+            <div style="font-size: 11px; color: #aaa; margin-top: 5px;">
+                技能几率: ${skills.map(s => `${s.icon} ${(s.chance * 100).toFixed(0)}%`).join(' ')}
+            </div>
+        `;
+    }
+ let defenseStatsDiv = document.getElementById('trialDefenseStats');
+    if (!defenseStatsDiv) {
+        const playerInfoDiv = document.querySelector('#trialTowerUI [style*="background: rgba(156,39,176,0.1)"]');
+        if (playerInfoDiv) {
+            defenseStatsDiv = document.createElement('div');
+            defenseStatsDiv.id = 'trialDefenseStats';
+            defenseStatsDiv.style.marginTop = '15px';
+            defenseStatsDiv.style.padding = '10px';
+            defenseStatsDiv.style.background = 'rgba(76,175,80,0.1)';
+            defenseStatsDiv.style.borderRadius = '10px';
+            defenseStatsDiv.style.border = '1px solid #4CAF50';
+            playerInfoDiv.appendChild(defenseStatsDiv);
+        }
+    }
+    
+    if (defenseStatsDiv) {
+        defenseStatsDiv.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                <span style="font-size: 18px;">🛡️</span>
+                <span style="color: #4CAF50; font-weight: bold;">防御回复效果</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+                <div>
+                    <div style="color: #aaa;">触发几率</div>
+                    <div style="color: #FFD700; font-weight: bold;">20%</div>
+                </div>
+                <div>
+                    <div style="color: #aaa;">回复量</div>
+                    <div style="color: #4CAF50; font-weight: bold;">15%</div>
+                </div>
+                <div>
+                    <div style="color: #aaa;">触发次数</div>
+                    <div style="color: #FFD700; font-weight: bold;">${trialTowerGame.defenseHealCount}</div>
+                </div>
+                <div>
+                    <div style="color: #aaa;">总回复量</div>
+                    <div style="color: #4CAF50; font-weight: bold;">${formatNumber(trialTowerGame.defenseTotalHeal)}</div>
+                </div>
+            </div>
+        `;
+    }
+ let artifactStatsDiv = document.getElementById('trialArtifactStats');
+    if (!artifactStatsDiv) {
+        const playerInfoDiv = document.querySelector('#trialTowerUI [style*="background: rgba(156,39,176,0.1)"]');
+        if (playerInfoDiv) {
+            artifactStatsDiv = document.createElement('div');
+            artifactStatsDiv.id = 'trialArtifactStats';
+            artifactStatsDiv.style.marginTop = '15px';
+            artifactStatsDiv.style.padding = '10px';
+            artifactStatsDiv.style.background = 'rgba(255,107,107,0.1)';
+            artifactStatsDiv.style.borderRadius = '10px';
+            artifactStatsDiv.style.border = '1px solid #FF6B6B';
+            playerInfoDiv.appendChild(artifactStatsDiv);
+        }
+    }
+    
+    if (artifactStatsDiv) {
+        const artifactBonus = getTrialEquippedArtifactBonus();
+        const config = trialArtifactCritConfig.thresholds.find(t => artifactBonus <= t.maxBonus) || trialArtifactCritConfig.thresholds[0];
+        
+        artifactStatsDiv.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                <span style="font-size: 18px;">🌟</span>
+                <span style="color: #FF6B6B; font-weight: bold;">法宝暴伤效果</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+                <div>
+                    <div style="color: #aaa;">当前法宝加成</div>
+                    <div style="color: #FFD700; font-weight: bold;">${artifactBonus.toFixed(2)}倍</div>
+                </div>
+                <div>
+                    <div style="color: #aaa;">触发倍率</div>
+                    <div style="color: #4CAF50; font-weight: bold;">${config.multiplier}倍</div>
+                </div>
+                <div>
+                    <div style="color: #aaa;">触发几率</div>
+                    <div style="color: #FFD700; font-weight: bold;">${(config.chance * 100).toFixed(0)}%</div>
+                </div>
+                <div>
+                    <div style="color: #aaa;">触发次数</div>
+                    <div style="color: #FF6B6B; font-weight: bold;">${trialTowerGame.artifactCritCount}</div>
+                </div>
+            </div>
+        `;
+    }
+}
+function updateTrialRewardPreview() {
+    let currentFloor = trialTowerGame.currentFloor;
+    
+    // 计算下一个10层奖励
+    let nextReward10 = Math.ceil(currentFloor / 10) * 10;
+    let nextReward20 = nextReward10 + 10;
+    
+    // 根据层数显示不同的奖励内容
+    let reward10 = getRewardForFloor(nextReward10);
+    let reward20 = getRewardForFloor(nextReward20);
+    
+    // 更新显示
+    document.getElementById('trialNextRewardFloor').innerHTML = nextReward10;
+    document.getElementById('trialNextRewardFloor2').innerHTML = nextReward20;
+    document.getElementById('trialNextRewardDesc1').innerHTML = reward10.amount > 0 ? `${reward10.name}×${reward10.amount}` : '无奖励';
+    document.getElementById('trialNextRewardDesc2').innerHTML = reward20.amount > 0 ? `${reward20.name}×${reward20.amount}` : '无奖励';
+    
+    // 更新详细奖励预览
+    let detailDiv = document.getElementById('trialRewardDetail');
+    if (detailDiv) {
+        let detailHtml = '<div style="font-size: 13px; color: #FFD700; margin-bottom: 8px;">📋 详细奖励预览</div>';
+        
+        // 显示最近3个10层奖励
+        for (let i = 1; i <= 50; i++) {
+            let floor = i * 10;
+            if (floor >= currentFloor - 10 && floor <= currentFloor + 20) {
+                let reward = getRewardForFloor(floor);
+                let status = floor < currentFloor ? '✅' : (floor === currentFloor ? '🎯 当前' : '🔜');
+                let color = floor <= currentFloor ? '#4CAF50' : '#FFD700';
+                
+                if (reward.amount > 0) {
+                    detailHtml += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; padding: 5px; background: rgba(255,255,255,0.05); border-radius: 5px;">
+                            <div>
+                                <span style="color: ${color};">第${floor}层</span>
+                                <span style="color: #aaa; margin-left: 10px;">${reward.name}×${reward.amount}</span>
+                            </div>
+                            <span style="color: ${color};">${status}</span>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        detailDiv.innerHTML = detailHtml;
+    }
+}
+function getRewardForFloor(floor) {
+    let reward = { name: '', amount: 0 };
+    
+    if (floor === 10) {
+        reward = { name: '伴侣钥匙', amount: 10, itemKey: 'companionKey' };
+    } else if (floor === 20) {
+        reward = { name: '鱼饵', amount: 100, itemKey: 'baitCount' };
+    } else if (floor === 30) {
+        reward = { name: '宇宙晶体发票', amount: 1000, itemKey: 'yuzhou3' };
+    } else if (floor === 40) {
+        reward = { name: '神器碎片发票', amount: 200, itemKey: 'yuzhou4' };
+    } else if (floor === 50) {
+        reward = { name: '普通伴侣灵魂', amount: 1000, itemKey: 'banlv1' };
+    } else if (floor === 60) {
+        reward = { name: '蕴灵筑基丹', amount: 1000, itemKey: 'danyao1' };
+    } else if (floor === 70) {
+        reward = { name: '宝藏金币', amount: 10, itemKey: 'primaryGemq' };
+    } else if (floor === 80) {
+        reward = { name: '灵根检测器', amount: 100, itemKey: 'rootDetector' };
+    } else if (floor === 90) {
+        reward = { name: '血脉检测剂', amount: 100, itemKey: 'bloodlineDetector' };
+    } else if (floor === 100) {
+        reward = { name: '进阶神石', amount: 20, itemKey: 'advanceStone' };
+    } else if (floor === 110) {
+        reward = { name: '神器碎片发票', amount: 1000, itemKey: 'yuzhou4' };
+    } else if (floor === 120) {
+        reward = { name: '黑龙王翅膀', amount: 100, itemKey: 'chiban1' };
+    } else if (floor === 130) {
+        reward = { name: '远古圣兽精魄', amount: 100, itemKey: 'zuoqi1' };
+    } else if (floor === 140) {
+        reward = { name: '宝藏金币', amount: 20, itemKey: 'primaryGemq' };
+    } else if (floor === 150) {
+        reward = { name: '秘法符文', amount: 100, itemKey: 'fuwen1' };
+    } else if (floor === 160) {
+        reward = { name: '神兽蛋', amount: 100, itemKey: 'shenshou1' };
+    } else if (floor === 170) {
+        reward = { name: 'VIP能力值', amount: 50000, itemKey: 'vipPower' };
+    } else if (floor === 180) {
+        reward = { name: '普通伴侣灵魂', amount: 5000, itemKey: 'banlv1' };
+    } else if (floor === 190) {
+        reward = { name: '凝元固窍丹', amount: 10000, itemKey: 'danyao2' };
+    } else if (floor === 200) {
+        reward = { name: '灵根检测器', amount: 200, itemKey: 'rootDetector' };
+    } else if (floor === 210) {
+        reward = { name: '血脉检测剂', amount: 200, itemKey: 'bloodlineDetector' };
+    } else if (floor === 220) {
+        reward = { name: '进阶神石', amount: 30, itemKey: 'advanceStone' };
+    } else if (floor === 230) {
+        reward = { name: '宝藏金币', amount: 50, itemKey: 'primaryGemq' };
+    } else if (floor === 240) {
+        reward = { name: '鱼饵', amount: 1000, itemKey: 'baitCount' };
+    } else if (floor === 250) {
+        reward = { name: '宇宙晶体发票', amount: 10000, itemKey: 'yuzhou3' };
+    } else if (floor === 260) {
+        reward = { name: '神器碎片发票', amount: 2000, itemKey: 'yuzhou4' };
+    } else if (floor === 270) {
+        reward = { name: '普通伴侣灵魂', amount: 10000, itemKey: 'banlv1' };
+    } else if (floor === 280) {
+        reward = { name: '黑龙王翅膀', amount: 200, itemKey: 'chiban1' };
+    } else if (floor === 290) {
+        reward = { name: '远古圣兽精魄', amount: 200, itemKey: 'zuoqi1' };
+    } else if (floor === 300) {
+        reward = { name: '神兽蛋', amount: 200, itemKey: 'shenshou1' };
+    } else if (floor === 310) {
+        reward = { name: '秘法符文', amount: 200, itemKey: 'fuwen1' };
+    } else if (floor === 320) {
+        reward = { name: '宝藏金币', amount: 100, itemKey: 'primaryGemq' };
+    } else if (floor === 330) {
+        reward = { name: '灵根检测器', amount: 300, itemKey: 'rootDetector' };
+    } else if (floor === 340) {
+        reward = { name: '血脉检测剂', amount: 300, itemKey: 'bloodlineDetector' };
+    } else if (floor === 350) {
+        reward = { name: '进阶神石', amount: 50, itemKey: 'advanceStone' };
+    } else if (floor === 360) {
+        reward = { name: '渡厄金还丹', amount: 10000, itemKey: 'danyao3' };
+    } else if (floor === 370) {
+        reward = { name: '副本令牌', amount: 50, itemKey: 'fuben1' };
+    } else if (floor === 380) {
+        reward = { name: '黑龙王翅膀', amount: 300, itemKey: 'chiban1' };
+    } else if (floor === 390) {
+        reward = { name: '远古圣兽精魄', amount: 300, itemKey: 'zuoqi1' };
+    } else if (floor === 400) {
+        reward = { name: '神兽蛋', amount: 300, itemKey: 'shenshou1' };
+    } else if (floor === 410) {
+        reward = { name: '秘法符文', amount: 300, itemKey: 'fuwen1' };
+    } else if (floor === 420) {
+        reward = { name: '宝藏金币', amount: 100, itemKey: 'primaryGemq' };
+    } else if (floor === 430) {
+        reward = { name: '普通伴侣灵魂', amount: 20000, itemKey: 'banlv1' };
+    } else if (floor === 440) {
+        reward = { name: '宇宙晶体发票', amount: 100000, itemKey: 'yuzhou3' };
+    } else if (floor === 450) {
+        reward = { name: '神器碎片发票', amount: 10000, itemKey: 'yuzhou4' };
+    } else if (floor === 460) {
+        reward = { name: '灵根检测器', amount: 400, itemKey: 'rootDetector' };
+    } else if (floor === 470) {
+        reward = { name: '血脉检测剂', amount: 400, itemKey: 'bloodlineDetector' };
+    } else if (floor === 480) {
+        reward = { name: '宝藏金币', amount: 200, itemKey: 'primaryGemq' };
+    } else if (floor === 490) {
+        reward = { name: '进阶神石', amount: 100, itemKey: 'advanceStone' };
+    } else if (floor === 500) {
+        reward = { name: '九转轮回丹', amount: 10000, itemKey: 'danyao4' };
+    } else if (floor % 10 === 0) {
+        // 其他10的倍数层给递增奖励
+        let multiplier = Math.floor(floor / 10);
+        reward = { name: '蕴灵筑基丹', amount: 10 * multiplier, itemKey: 'danyao1' };
+    }
+    
+    return reward;
+}
+function resetTrialTowerState() {
+    trialTowerGame.playerHp = trialTowerGame.playerMaxHp;
+    trialTowerGame.isDefending = false;
+    trialTowerGame.monsterSkillCombo = 0;
+    trialTowerGame.lastComboSkill = '';
+    trialTowerGame.lastMonsterSkill = '';
+    trialTowerGame.defenseHealCount = 0;
+    trialTowerGame.defenseTotalHeal = 0;
+    trialTowerGame.artifactCritCount = 0;
+    trialTowerGame.artifactTotalBonus = 0;
+}
+// 攻击怪物
+function trialTowerAttack() {
+    if (!trialTowerGame.isInBattle) {
+        addTrialBattleLog('❌ 战斗已结束，请重新挑战', 'error');
+        return;
+    }
+    
+    if (trialTowerGame.playerHp <= 0) {
+        addTrialBattleLog('💀 你已经死亡，请重新挑战', 'error');
+        return;
+    }
+    
+    // 计算玩家基础伤害
+    let damage = trialTowerGame.playerAtk;
+    let isCrit = Math.random() < trialTowerGame.playerCritRate;
+    let critMultiplier = 1;
+    let artifactEffect = null;
+    
+    // 暴击判定
+    if (isCrit) {
+        critMultiplier = trialTowerGame.playerCrit;
+        addTrialBattleLog(`⚡ 基础暴击！造成 ${(critMultiplier * 100 - 100).toFixed(0)}% 伤害`, 'crit');
+    }
+    
+    // 触发法宝暴伤效果（5%几率）
+    artifactEffect = triggerTrialArtifactCrit();
+    
+    if (artifactEffect.triggered) {
+        // 应用法宝暴伤倍率
+        let totalMultiplier = critMultiplier * artifactEffect.multiplier;
+        damage = Math.floor(damage * totalMultiplier);
+        
+        // 霸气语录显示
+        addTrialBattleLog(`🌟 ${artifactEffect.quote}`, 'skill', '#FFD700');
+        addTrialBattleLog(`💫 ${artifactEffect.message} (${artifactEffect.multiplier}倍)`, 'artifact', '#FF6B6B');
+        addTrialBattleLog(`⚔️ 总伤害倍率: ${critMultiplier.toFixed(1)} × ${artifactEffect.multiplier} = ${totalMultiplier.toFixed(1)}倍`, 'info', '#4CAF50');
+        
+        // 统计
+        trialTowerGame.artifactCritCount++;
+        trialTowerGame.artifactTotalBonus += artifactEffect.multiplier;
+    } else {
+        // 只有基础暴击
+        damage = Math.floor(damage * critMultiplier);
+    }
+    
+    // 显示最终伤害
+    if (artifactEffect.triggered) {
+        addTrialBattleLog(`💥 法宝神威！造成 ${formatNumber(damage)} 点伤害！`, 'crit');
+    } else if (isCrit) {
+        addTrialBattleLog(`⚔️ 暴击造成 ${formatNumber(damage)} 点伤害`, 'crit');
+    } else {
+        addTrialBattleLog(`⚔️ 造成 ${formatNumber(damage)} 点伤害`, 'normal');
+    }
+    
+    // 减少怪物血量
+    trialTowerGame.monsterHp -= damage;
+    
+    // 检查怪物是否死亡
+    if (trialTowerGame.monsterHp <= 0) {
+        handleTrialMonsterDeath();
+    } else {
+        // 怪物反击
+        trialTowerCounterAttack();
+    }
+    
+    updateTrialTowerUI();
+}
+
+// 防御
+function trialTowerDefend() {
+    if (!trialTowerGame.isInBattle) {
+        addTrialBattleLog('❌ 战斗已结束，请重新挑战', 'error');
+        return;
+    }
+    
+    if (trialTowerGame.playerHp <= 0) {
+        addTrialBattleLog('💀 你已经死亡，请重新挑战', 'error');
+        return;
+    }
+    
+    // 进入防御状态
+    trialTowerGame.isDefending = true;
+    addTrialBattleLog('🛡️ 进入防御状态，受到的伤害减半', 'defend');
+    
+    // 20%几率触发回复效果
+    if (Math.random() < 0.2) {
+        let healAmount = Math.floor(trialTowerGame.playerMaxHp * 0.15);
+        let oldHp = trialTowerGame.playerHp;
+        trialTowerGame.playerHp = Math.min(trialTowerGame.playerHp + healAmount, trialTowerGame.playerMaxHp);
+        let actualHeal = trialTowerGame.playerHp - oldHp;
+        
+        // 记录统计
+        trialTowerGame.defenseHealCount++;
+        trialTowerGame.defenseTotalHeal += actualHeal;
+        
+        // 显示回复效果
+        addTrialBattleLog(`✨ 防御触发回复效果！恢复15%生命值 (+${formatNumber(actualHeal)})`, 'heal');
+        addTrialBattleLog(`❤️ 当前生命值: ${formatNumber(trialTowerGame.playerHp)}/${formatNumber(trialTowerGame.playerMaxHp)}`, 'heal');
+        
+        // 添加特效提示
+        showDefenseHealEffect(actualHeal);
+    }
+    
+    // 怪物反击（带技能，但防御减伤）
+    trialTowerCounterAttack(true);
+    
+    updateTrialTowerUI();
+}
+function showDefenseHealEffect(healAmount) {
+    // 创建浮动文字效果
+    const effect = document.createElement('div');
+    effect.style.position = 'fixed';
+    effect.style.top = '50%';
+    effect.style.left = '50%';
+    effect.style.transform = 'translate(-50%, -50%)';
+    effect.style.color = '#4CAF50';
+    effect.style.fontSize = '48px';
+    effect.style.fontWeight = 'bold';
+    effect.style.textShadow = '0 0 20px #4CAF50';
+    effect.style.zIndex = '10000';
+    effect.style.animation = 'healFloat 1.5s ease-out';
+    effect.style.pointerEvents = 'none';
+    effect.innerHTML = `❤️ +${formatNumber(healAmount)}`;
+    
+    document.body.appendChild(effect);
+    
+    setTimeout(() => {
+        if (effect.parentNode) {
+            effect.parentNode.removeChild(effect);
+        }
+    }, 1500);
+}
+// 怪物反击
+function trialTowerCounterAttack(isDefending = false) {
+    if (trialTowerGame.monsterHp <= 0) return;
+    
+    // 获取当前层数的技能配置
+    const skills = getMonsterSkillsForFloor(trialTowerGame.currentFloor);
+    
+    // 随机选择技能
+    const rand = Math.random();
+    let cumulativeChance = 0;
+    let selectedSkill = skills[0]; // 默认普通攻击
+    
+    for (const skill of skills) {
+        cumulativeChance += skill.chance;
+        if (rand < cumulativeChance) {
+            selectedSkill = skill;
+            break;
+        }
+    }
+    
+    // 计算伤害（基础攻击 × 技能倍率）
+    let damage = Math.floor(trialTowerGame.monsterAtk * selectedSkill.multiplier);
+    
+    // 连击系统 - 连续使用相同技能增加伤害
+    if (trialTowerGame.lastComboSkill === selectedSkill.name) {
+        trialTowerGame.monsterSkillCombo++;
+        let comboBonus = 1 + (trialTowerGame.monsterSkillCombo * 0.1); // 每连击一次增加10%伤害
+        damage = Math.floor(damage * comboBonus);
+    } else {
+        trialTowerGame.lastComboSkill = selectedSkill.name;
+        trialTowerGame.monsterSkillCombo = 1;
+    }
+    
+    // 记录本次技能
+    trialTowerGame.lastMonsterSkill = selectedSkill.name;
+    
+    // 防御减伤
+    if (isDefending || trialTowerGame.isDefending) {
+        damage = Math.floor(damage / 2);
+        trialTowerGame.isDefending = false;
+        addTrialBattleLog(`🛡️ 防御成功！`, 'defend');
+    }
+    
+    // 显示技能信息
+    let skillMessage = selectedSkill.message;
+    if (trialTowerGame.monsterSkillCombo > 1) {
+        skillMessage += ` 🔥 连击x${trialTowerGame.monsterSkillCombo}！`;
+    }
+    addTrialBattleLog(`${selectedSkill.icon} ${skillMessage}`, 'skill', selectedSkill.color);
+    addTrialBattleLog(`💢 受到 ${formatNumber(damage)} 点伤害`, 'damage');
+    
+    // 减少玩家血量
+    trialTowerGame.playerHp -= damage;
+    trialTowerGame.totalDamageTaken += damage;
+    
+    // 检查玩家是否死亡
+    if (trialTowerGame.playerHp <= 0) {
+        trialTowerGame.playerHp = 0;
+        addTrialBattleLog('💀 你被击败了...', 'error');
+        handleTrialPlayerDeath();
+    }
+}
+
+
+// 处理怪物死亡
+function handleTrialMonsterDeath() {
+    trialTowerGame.totalWins++;
+    trialTowerGame.totalChallenges++;
+    
+    // 更新最高层数
+    if (trialTowerGame.currentFloor > trialTowerGame.highestFloor) {
+        trialTowerGame.highestFloor = trialTowerGame.currentFloor;
+    }
+    
+    // 显示击败信息
+    addTrialBattleLog(`🎉 恭喜！击败第 ${trialTowerGame.currentFloor} 层怪物！`, 'success');
+    
+    // 根据层数显示特殊信息
+    if (trialTowerGame.currentFloor % 10 === 0) {
+        addTrialBattleLog(`🌟 达到第 ${trialTowerGame.currentFloor} 层！获得特殊奖励！`, 'skill', '#FFD700');
+        giveTrialTowerReward(trialTowerGame.currentFloor);
+    }
+    
+    // 进入下一层
+    trialTowerGame.currentFloor++;
+    
+    // 重置怪物
+    resetTrialMonster();
+    
+    // 重置技能连击
+    trialTowerGame.monsterSkillCombo = 0;
+    trialTowerGame.lastComboSkill = '';
+    
+    // 恢复部分生命值（胜利奖励）
+    let healAmount = Math.floor(trialTowerGame.playerMaxHp * 0.3);
+    trialTowerGame.playerHp = Math.min(trialTowerGame.playerHp + healAmount, trialTowerGame.playerMaxHp);
+    addTrialBattleLog(`❤️ 进入第 ${trialTowerGame.currentFloor} 层，恢复30%生命值 (+${formatNumber(healAmount)})`, 'heal');
+    
+    // 显示下一层怪物信息
+    const nextMonsterSkills = getMonsterSkillsForFloor(trialTowerGame.currentFloor);
+    const highSkills = nextMonsterSkills.filter(s => s.multiplier >= 3.0);
+    if (highSkills.length > 0) {
+        addTrialBattleLog(`⚠️ 第 ${trialTowerGame.currentFloor} 层怪物拥有 ${highSkills.length} 种强力技能！`, 'warning');
+    }
+    
+    // 保存进度
+    saveTrialTowerProgress();
+    
+    updateTrialTowerUI();
+}
+
+// 处理玩家死亡
+function handleTrialPlayerDeath() {
+    trialTowerGame.isInBattle = false;
+    trialTowerGame.totalChallenges++;
+    
+    addTrialBattleLog('💀 挑战失败！', 'error');
+    addTrialBattleLog(`📊 当前停留在第 ${trialTowerGame.currentFloor} 层`, 'info');
+    
+    // 禁用攻击防御按钮
+    document.getElementById('trialAttackBtn').disabled = true;
+    document.getElementById('trialDefendBtn').disabled = true;
+    
+    // 保存进度
+    saveTrialTowerProgress();
+    
+    updateTrialTowerUI();
+}
+
+// 重新挑战当前层
+function trialTowerRestart() {
+    // 重置玩家血量
+    trialTowerGame.playerHp = trialTowerGame.playerMaxHp;
+    
+    // 重置当前层怪物
+    resetTrialMonster();
+    
+    // 重置战斗状态
+    trialTowerGame.isInBattle = true;
+    trialTowerGame.isDefending = false;
+    
+    // 重置技能相关
+    trialTowerGame.monsterSkillCombo = 0;
+    trialTowerGame.lastComboSkill = '';
+    trialTowerGame.lastMonsterSkill = '';
+    trialTowerGame.defenseHealCount = 0;
+    trialTowerGame.defenseTotalHeal = 0;
+    trialTowerGame.artifactCritCount = 0;
+    trialTowerGame.artifactTotalBonus = 0;
+    // 启用攻击防御按钮
+    document.getElementById('trialAttackBtn').disabled = false;
+    document.getElementById('trialDefendBtn').disabled = false;
+    
+    // 清空日志
+    clearTrialBattleLog();
+    
+    addTrialBattleLog('🔄 重新挑战当前层！', 'warning');
+    addTrialBattleLog(`👾 第 ${trialTowerGame.currentFloor} 层怪物重生`, 'info');
+     addTrialBattleLog('🛡️ 防御有20%几率回复15%生命值', 'info', '#4CAF50');
+    // 显示当前层怪物技能信息
+    const skills = getMonsterSkillsForFloor(trialTowerGame.currentFloor);
+    const powerfulSkills = skills.filter(s => s.multiplier >= 2.0);
+    addTrialBattleLog(`📊 怪物拥有 ${powerfulSkills.length} 种强力技能`, 'info', '#9C27B0');
+    
+    updateTrialTowerUI();
+}
+
+// 给予试练塔奖励
+function giveTrialTowerReward(floor) {
+    let reward = getRewardForFloor(floor);
+    
+    if (reward.amount > 0) {
+        // 添加奖励到玩家背包
+        if (!player.items) player.items = {};
+        player.items[reward.itemKey] = (player.items[reward.itemKey] || 0) + reward.amount;
+        
+        addTrialBattleLog(`🎁 第${floor}层奖励: ${reward.name}×${reward.amount}`, 'success');
+    } else {
+        // 其他层数给少量随机奖励
+        let randomReward = Math.floor(floor / 5);
+        if (randomReward > 0) {
+            player.items['danyao1'] = (player.items['danyao1'] || 0) + randomReward;
+            addTrialBattleLog(`🎁 第${floor}层奖励: 蕴灵筑基丹×${randomReward}`, 'success');
+        }
+    }
+}
+
+// 保存试练塔进度
+function saveTrialTowerProgress() {
+    if (!player.trialTower) {
+        player.trialTower = {};
+    }
+    
+    player.trialTower.currentFloor = trialTowerGame.currentFloor;
+    player.trialTower.highestFloor = trialTowerGame.highestFloor;
+    player.trialTower.totalChallenges = trialTowerGame.totalChallenges;
+    player.trialTower.totalWins = trialTowerGame.totalWins;
+}
+
+// 添加试练塔战斗日志
+function addTrialBattleLog(message, type = 'normal', color = null) {
+    let logDiv = document.getElementById('trialBattleLog');
+    let newLog = document.createElement('div');
+    
+    let textColor = '#aaa';
+    let prefix = '•';
+    
+    switch(type) {
+        case 'success': textColor = '#4CAF50'; prefix = '✅'; break;
+        case 'error': textColor = '#f44336'; prefix = '❌'; break;
+        case 'warning': textColor = '#FFD700'; prefix = '⚠️'; break;
+        case 'crit': textColor = '#FFD700'; prefix = '⚡'; break;
+        case 'damage': textColor = '#FF6B6B'; prefix = '💢'; break;
+        case 'defend': textColor = '#4CAF50'; prefix = '🛡️'; break;
+        case 'heal': textColor = '#4CAF50'; prefix = '❤️'; break;
+        case 'skill': textColor = color || '#9C27B0'; prefix = '🎯'; break;
+        case 'info': textColor = '#9C27B0'; prefix = '📌'; break;
+    }
+    
+    let timestamp = new Date().toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    
+    newLog.style.marginBottom = '4px';
+    newLog.style.padding = '4px 0';
+    newLog.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+    newLog.style.fontSize = '12px';
+    newLog.style.display = 'flex';
+    newLog.style.alignItems = 'center';
+    newLog.style.gap = '5px';
+    newLog.style.animation = 'fadeIn 0.3s';
+    
+    newLog.innerHTML = `
+        <span style="color: #666; font-size: 10px;">[${timestamp}]</span>
+        <span style="color: ${textColor}; font-weight: ${type === 'skill' ? 'bold' : 'normal'};">${prefix}</span>
+        <span style="color: ${textColor};">${message}</span>
+    `;
+    
+    logDiv.insertBefore(newLog, logDiv.firstChild);
+    
+    while (logDiv.children.length > 50) {
+        logDiv.removeChild(logDiv.lastChild);
+    }
+}
+
+// 清空试练塔战斗日志
+function clearTrialBattleLog() {
+    document.getElementById('trialBattleLog').innerHTML = '';
+}
 
 
 
