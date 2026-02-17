@@ -1,11 +1,128 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta id="viewportMeta" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script>
+        (function() {
+            var w = window.screen.width;
+            if (w <= 1024 && w > 0) {
+                var meta = document.getElementById('viewportMeta');
+                var scale = Math.max(0.3, Math.min(1, w / 1280));
+                if (meta) meta.setAttribute('content', 'width=1280, initial-scale=' + scale + ', maximum-scale=2, user-scalable=yes');
+            }
+        })();
+    </script>
     <title>金币冒险者 - 完整版</title>
     <style>
-        /* 样式保持不变 */
-        body { font-family: Arial, sans-serif; padding: 20pxf; background-color: #ffffff; }
+        /* ========== 设计系统 (与 1.html 一致) ========== */
+:root {
+  --color-primary: #4A6CF7;
+  --color-primary-light: #6B8AFF;
+  --color-primary-dark: #3451D1;
+  --color-primary-bg: rgba(74,108,247,0.08);
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+  --color-gold: #D4AF37;
+  --color-gold-light: #F1E5AC;
+  --color-bg: #F0F2F5;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F8FAFC;
+  --color-border: #E2E8F0;
+  --color-border-light: #F1F5F9;
+  --color-text: #1E293B;
+  --color-text-secondary: #64748B;
+  --color-text-muted: #94A3B8;
+  --color-text-inverse: #FFFFFF;
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07);
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-xl: 20px;
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --z-sidebar: 250;
+  --z-fixed: 300;
+  --z-overlay: 400;
+  --z-modal: 500;
+  --sidebar-width: 220px;
+  --topbar-height: 56px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+.card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-md); box-shadow: var(--shadow-xs); }
+.card-header { padding-bottom: var(--space-sm); margin-bottom: var(--space-md); border-bottom: 1px solid var(--color-border-light); font-weight: 700; font-size: var(--text-base); color: var(--color-text); }
+.currency-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-sm); }
+.currency-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: var(--space-sm) var(--space-md); display: flex; flex-direction: column; font-size: var(--text-sm); }
+.currency-card .currency-label { color: var(--color-text-muted); font-size: var(--text-xs); }
+.currency-card .currency-value { color: var(--color-text); font-weight: 700; font-size: var(--text-base); }
+.game-sidebar { position: fixed; left: 0; top: var(--topbar-height); width: var(--sidebar-width); height: calc(100vh - var(--topbar-height)); background: var(--color-surface); border-right: 1px solid var(--color-border); overflow-y: auto; z-index: var(--z-sidebar); padding: var(--space-sm) 0; transition: transform var(--transition-normal); }
+.game-sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar-group { margin-bottom: var(--space-xs); }
+.sidebar-group-title { padding: var(--space-sm) var(--space-md); font-size: var(--text-xs); font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+.sidebar-group-title:hover { color: var(--color-text-secondary); }
+.sidebar-group-title .arrow { transition: transform var(--transition-fast); font-size: 10px; }
+.sidebar-group.collapsed .arrow { transform: rotate(-90deg); }
+.sidebar-group.collapsed .sidebar-group-items { display: none; }
+.sidebar-item { display: flex; align-items: center; gap: var(--space-sm); padding: 7px var(--space-md) 7px var(--space-lg); font-size: var(--text-sm); color: var(--color-text-secondary); cursor: pointer; transition: all var(--transition-fast); border: none; background: none; width: 100%; text-align: left; }
+.sidebar-item:hover { background: var(--color-primary-bg); color: var(--color-primary); }
+.sidebar-item .sidebar-icon { width: 18px; text-align: center; font-size: 14px; }
+.sidebar-item .sidebar-lock { margin-left: auto; font-size: var(--text-xs); color: var(--color-text-muted); background: var(--color-bg); padding: 1px 6px; border-radius: var(--radius-full); }
+.game-topbar { position: fixed; top: 0; left: 0; right: 0; height: var(--topbar-height); background: var(--color-surface); border-bottom: 1px solid var(--color-border); box-shadow: var(--shadow-xs); z-index: var(--z-fixed); display: flex; align-items: center; padding: 0 var(--space-lg); gap: var(--space-lg); }
+.topbar-brand { font-size: var(--text-xl); font-weight: 800; background: linear-gradient(135deg, var(--color-primary), #8B5CF6); -webkit-background-clip: text; background-clip: text; color: transparent; white-space: nowrap; }
+.topbar-player { display: flex; align-items: center; gap: var(--space-sm); font-size: var(--text-sm); }
+.topbar-player .player-class-display { color: var(--color-primary); font-size: var(--text-xs); background: var(--color-primary-bg); padding: 2px 8px; border-radius: var(--radius-full); }
+.topbar-player .player-title-display { color: var(--color-gold); font-size: var(--text-xs); }
+.topbar-vip { display: flex; align-items: center; gap: var(--space-sm); font-size: var(--text-xs); }
+.topbar-vip .vip-badge { background: linear-gradient(135deg, #FFD700, #FFA500); color: #1a1a1a; padding: 2px 10px; border-radius: var(--radius-full); font-weight: 800; font-size: 11px; }
+.topbar-vip .vip-bar-wrapper { width: 80px; height: 6px; background: var(--color-bg); border-radius: 3px; overflow: hidden; }
+.topbar-vip .vip-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #FFD700, #FFA500); transition: width var(--transition-normal); }
+.topbar-actions { margin-left: auto; display: flex; gap: var(--space-sm); align-items: center; }
+.topbar-actions .topbar-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-text-secondary); cursor: pointer; font-size: 16px; transition: all var(--transition-fast); }
+.topbar-actions .topbar-btn:hover { background: var(--color-primary-bg); color: var(--color-primary); border-color: var(--color-primary); }
+.game-main { margin-left: var(--sidebar-width); margin-top: var(--topbar-height); padding: var(--space-lg); min-height: calc(100vh - var(--topbar-height)); background: var(--color-bg); }
+.sidebar-toggle { display: none; width: 36px; height: 36px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-text-secondary); cursor: pointer; font-size: 18px; align-items: center; justify-content: center; }
+.game-log-section .log-content { max-height: 200px; overflow-y: auto; font-size: var(--text-xs); line-height: 1.6; }
+@media (max-width: 900px) { .game-sidebar { transform: translateX(-100%); } .game-sidebar.open { transform: translateX(0); box-shadow: var(--shadow-xl); } .game-main { margin-left: 0; } .sidebar-toggle { display: flex; } }
+        /* 手机端：与电脑相同排版，固定宽度 + 字体略小（仅用设备宽度判断，不受 viewport 影响） */
+        @media (max-device-width: 1024px) {
+            :root {
+                --text-xs: 12px;
+                --text-sm: 13px;
+                --text-base: 15px;
+                --text-xl: 19px;
+            }
+            body { font-size: 15px !important; }
+            /* 手机版页面长度缩短，主内容内部滚动，减少成就下方空白 */
+            html, body { height: 100%; max-height: 78vh; overflow: hidden; position: fixed; left: 0; right: 0; top: 0; bottom: 0; }
+            .game-main { min-height: 0; max-height: calc(78vh - var(--topbar-height)); height: calc(78vh - var(--topbar-height)); overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: var(--space-sm) !important; }
+            .game-sidebar { max-height: calc(78vh - var(--topbar-height)); }
+            .game-main .card:last-child { margin-bottom: 0 !important; }
+            .game-main .game-log-section { margin-bottom: var(--space-sm) !important; }
+            /* 手机版版本号随主内容滚动 */
+            #footer { position: static !important; text-align: center; padding: var(--space-sm) 0; margin-top: var(--space-xs); }
+        }
+.tabs-new { display: flex; gap: 2px; border-bottom: 2px solid var(--color-border); overflow-x: auto; flex-shrink: 0; scrollbar-width: none; }
+.tabs-new::-webkit-scrollbar { display: none; }
+.tab-item-new { padding: 10px 18px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; color: var(--color-text-secondary); font-size: var(--text-sm); font-weight: 500; white-space: nowrap; transition: all var(--transition-fast); background: none; border-top: none; border-left: none; border-right: none; }
+.tab-item-new:hover { color: var(--color-primary); background: var(--color-primary-bg); }
+.tab-item-new.active { color: var(--color-primary); border-bottom-color: var(--color-primary); font-weight: 700; }
+body { margin: 0 !important; padding: 0 !important; background: var(--color-bg) !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif !important; color: var(--color-text); font-size: var(--text-base); line-height: 1.6; overflow-x: hidden; }
+        /* 以下为原有样式 */
         button { padding: 10px; margin: 5px; cursor: pointer; }
         #equipmentList, #itemList, #collectionList, #reincarnationList, #petList, #stockList, #lotteryList, #bankList, #dungeonEquipmentList, #soulRingList { margin-top: 20px; max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; }
         .log { color: #666; font-size: 0.9em; }
@@ -3869,6 +3986,15 @@ select:focus {
     font-weight: 600;
     color: #334155;
 }
+
+/* 模拟投资分页：覆盖全局 .tab { display:none }，保证三个分页可见 */
+.investment-game .tabs {
+    display: flex !important;
+}
+.investment-game .tabs .tab {
+    display: flex !important;
+}
+
 @keyframes pulse-gold {
     0% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
     50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.8); }
@@ -4011,19 +4137,36 @@ select:focus {
         transform: translate(-50%, -150%) scale(2);
     }
 }
+
+.tab { display: none !important; }
+.tab.tab-item-new { display: block !important; }
+#gameLogPage1, #gameLogPage2, #gameLogPage3, #gameLogPage4 { display: none; }
+#gameLogPage1.active, #gameLogPage2.active, #gameLogPage3.active, #gameLogPage4.active { display: block; }
+/* 攻略/日志弹层：居中 + 遮罩 + 顶部关闭 */
+.guide-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; display: none; }
+.guide-modal-overlay.show { display: block; }
+.guide-modal-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; background: #fff; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); max-width: 90vw; width: 420px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; min-height: 200px; }
+.guide-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; flex-shrink: 0; }
+.guide-modal-title { font-size: 16px; font-weight: 700; color: #1e293b; margin: 0; }
+.guide-modal-close { padding: 6px 14px; border: 1px solid #cbd5e1; background: #fff; color: #475569; border-radius: 6px; cursor: pointer; font-size: 13px; }
+.guide-modal-close:hover { background: #f1f5f9; border-color: #94a3b8; }
+.guide-modal-body { padding: 12px 16px; overflow-y: scroll; overflow-x: hidden; flex: 1; min-height: 0; max-height: 70vh; font-size: 13px; line-height: 1.6; -webkit-overflow-scrolling: touch; }
+.guide-modal-body::-webkit-scrollbar { width: 8px; }
+.guide-modal-body::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+.guide-modal-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.guide-modal-body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 <body onload="resetItemDisplay(); resetPetDisplay()">
-<body>
-<div style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end;">
-    <!-- 公告切换按钮 -->
-    <button id="announcementToggle" style="background: #3498db; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px 3px 0 0;">
-        点击呼出新手必看↓
-    </button>
-    
-    <!-- 公告内容区域（默认隐藏） -->
-    <div id="gameLogPage5" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
+<!-- 新手必看：由顶栏「攻略」呼出，居中显示 -->
+<div id="guideOverlay" class="guide-modal-overlay" onclick="document.getElementById('gameLogPage5').style.display='none'; this.classList.remove('show');"></div>
+<div id="gameLogPage5" class="guide-modal-box" style="display: none;">
+    <div class="guide-modal-header">
+        <span class="guide-modal-title">新手必看</span>
+        <button type="button" class="guide-modal-close" onclick="document.getElementById('gameLogPage5').style.display='none'; document.getElementById('guideOverlay').classList.remove('show');">关闭</button>
+    </div>
+    <div class="guide-modal-body">
         <div class="log">
             <h4>游戏公告介绍</h4>
             <p>QQ群：902481027  ，864788026，  有问题可以进群问（存档异常联系群管理修复）</p>
@@ -4079,17 +4222,19 @@ select:focus {
         </div>
     </div>
 </div>
-   <div style="position: fixed; top: 10px; right: 510px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end;">
-    <!-- 公告切换按钮 -->
-    <button id="announcementToggle1" style="background: #3498db; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px 3px 0 0;">
-        点击呼出更新日志↓
-    </button>
-    
-    <!-- 公告内容区域（默认隐藏） -->
-    <div id="gameLogPage4" style="display: none; background: white; border: 1px solid #ddd; padding: 10px; max-height: 400px; width: 300px; overflow-y: auto; border-radius: 0 0 3px 3px;">
+
+<!-- 更新日志：由顶栏「日志」呼出，居中显示 -->
+<div id="changelogOverlay" class="guide-modal-overlay" onclick="document.getElementById('changelogPanel').style.display='none'; this.classList.remove('show');"></div>
+<div id="changelogPanel" class="guide-modal-box" style="display: none;">
+    <div class="guide-modal-header">
+        <span class="guide-modal-title">更新日志</span>
+        <button type="button" class="guide-modal-close" onclick="document.getElementById('changelogPanel').style.display='none'; document.getElementById('changelogOverlay').classList.remove('show');">关闭</button>
+    </div>
+    <div class="guide-modal-body">
         <div class="log">
-            <h4>1.883更新日志</h4>
+            <h4>1.884更新日志</h4>
             <h4>QQ群：902481027  ，864788026，  有问题可以进群问（存档异常联系群管理修复）</h4>
+            <p>2026/02/16:  修改界面UI </p>
             <p>2026/02/15:  修仙副本新增：试练塔修仙10级开启挑战成功有奖励，每层数增加每秒GPS和点击。增加新职业：探险家。修复离线修仙经验没生效BUG </p>
             <p>2026/02/14:  增加修仙副本(修仙2级开启）：新年年兽修仙副本20级开启（进群领取专属打年兽神器）， 掉落修仙经验，道具。 开启血脉和灵根修改成保存替换，高品质会有提升保存还是取消,修复年兽每次挑战技能没重置</p>
             <p>2026/02/04:  加入赌石系统（前期）：一刀穷，一刀富，一刀穿麻布。</p>
@@ -4141,120 +4286,182 @@ select:focus {
 
         </div>
     </div>
-</div>
-    <h1>金币冒险者</h1>
- <div class="player-name">
-    <span id="playerName">勇者</span> <span id="playerClassName" style="color: #00f;"></span><span id="currentTitle" style="margin-left: 10px; color: #ffd700;"></span>
-    <div class="vip-container" style="text-align: center; margin: 10px 0;">
-     <span id="ascentionCountqa" style="margin-left: 10px; color: #4CAF50;">0</span>
-     <span id="ascentionCountq" style="margin-left: 10px; color: #4CAF50;">0</span>
-    <span id="playerLevelDisplay" style="margin-left: 10px; color: #4CAF50;">Lv.1</span>
-  <div class="vip-level-display" style="font-size: 18px; font-weight: bold; background: linear-gradient(to right, #ffd700, #ffA500); -webkit-background-clip: text; color: transparent;">
-    VIP等级: <span id="vipLevel">1</span>
-  </div>
-  <div class="vip-progress" style="height: 10px; background-color: #eee; border-radius: 5px; margin: 5px 0;">
-    <div id="vipProgressBar" style="height: 100%; background: linear-gradient(to right, #ffd700, #ffA500); width: 0%;"></div>
-  </div>
-  <div class="vip-next-level" style="font-size: 12px; color: #666;">
-    距离下一级: <span id="vipProgressText">0/1</span>
-  </div>
-</div>
- <div class="vip-power-use">
-    <button onclick="useAllVipPower()">使用全部VIP能力值 (当前: <span id="vipPowerCount">0</span>)</button>
-</div>
-</div>
-   <div class="currency">金币: <span id="gold">0</span></div>
-    <div class="currency">钻石: <span id="diamond">0</span></div>
-    <div class="currency">钛晶石: <span id="titanium">0</span></div>
-    <div class="currency">星耀石: <span id="starstone">0</span></div>
-    <div class="currency">宇宙石: <span id="cosmicstone">0</span></div>
-    <div class="currency">超能石: <span id="superstone">0</span></div>
-    <div class="currency">异界石: <span id="otherworldstone">0</span></div>
-    <div class="currency">星界石: <span id="xingjiestone">0</span></div>
-    <div class="currency">混沌石: <span id="hundunstone">0</span></div>
-    <div class="currency">灵髓石: <span id="lingtone">0</span></div>
-    <div class="currency">幻空石: <span id="huangtone">0</span></div>
-    <div class="currency">冥源石: <span id="mingtone">0</span></div>
-    <div class="currency">虚空石: <span id="xutong">0</span></div>
-    <div class="currency">时空石: <span id="shitone">0</span></div>
-    <div class="currency">未来石: <span id="weitone">0</span></div>
-    <div class="currency">转生币: <span id="reincarnationCoin">0</span></div>
-    <div>每秒金币（GPS）: <span id="gps">1</span></div>
-    <div>点击收益: <span id="clickValue">1</span></div>
-    <div>资金总额: <span id="zijze">1</span></div>
-    <div>转生次数: <span id="reincarnationCount">0</span></div>
-    <div>最高关卡: <span id="maxStage">0</span></div>
-    <div>通天塔层数: <span id="towerFloor">0</span></div>
-    <div>当前官职: <span id="currentOfficialTitle">无</span></div>
-    <div>当前奥秘: <span id="currentMysteryTitle">初级秘法师 1阶1级</span></div>
-    <div>修仙境界: <span id="currentStageq">凡人</span></div>
-     <div id="sectNameDisplay" style="color: #8B4513; font-weight: bold; margin-top: 5px;">
-        <!-- 宗门名称将在这里显示 -->
     </div>
+</div>
 
-    <button onclick="clickGold()">点击获取金币</button>
-    <button onclick="reincarnate()">转生</button>
-    <button onclick="toggleAutoReincarnation()" style="margin-left: 10px;">自动转生: <span id="autoReincarnationStatus">关闭</span></button>
-    <button onclick="toggleLevelSystem()">玩家等级</button>
-    <button onclick="toggleShopUI()">打开宝箱商店</button>
-    <button onclick="toggleGroceriesUI()" style="margin-left: 10px;">杂货铺</button> 
-    <button onclick="toggleMonsterUI()">打怪模式(优先打!)</button> 
-    <button onclick="toggleWorldMap()">世界地图</button>
-    <button onclick="toggleTowerUI()">通天塔</button>
-     <button onclick="toggleAutoBuyShopa()">轮回BOSS副本</button>
-    <button onclick="toggleWorldBossUI()" style="background: linear-gradient(to bottom, #d4af37, #a67c00); color: #000; font-weight: bold; padding: 6px 12px; font-size: 12px;">世界BOSS</button>
-     <button onclick="toggleLandlordGame()" style="background: #8e44ad; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px;">疯狂地主</button>
-     <button onclick="toggleInvestmentGame()" style="background: linear-gradient(45deg, #4CAF50, #2196F3); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">
-    <i class="fas fa-chart-line"></i> 模拟投资</button>
-    <button onclick="toggleGambleStone()" style="background: linear-gradient(45deg, #4CAF50, #2196F3); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">
-    <i class="fas fa-chart-line"></i> 赌石系统</button>
-    <button onclick="toggleSlotMachine()">老虎机</button>
-    <button onclick="toggleFundSystem()">基金系统</button>
-    <button onclick="showTitleDialog()">称号系统</button>
-    <button onclick="toggleOfficialSystem()">官职系统</button>
-    <button onclick="toggleClassSystem()">职业系统</button>
-    <button onclick="openCompanionSystem()">伴侣系统</button>
-    <button onclick="toggleMysterySystem()">奥秘系统</button>
-    <button onclick="toggleFishingSystem()" style="margin-left: 10px;">钓鱼系统</button>
-    <button onclick="toggleFarmSystem()" style="margin-left: 10px;">农场系统</button>
-    <button onclick="toggleParkingSystem()">停车位系统</button>
-    <button onclick="toggleHouseSystem()">房屋系统</button>
-    <button onclick="toggleMarriageSystem()" style="margin: 5px; padding: 8px 15px; background: linear-gradient(45deg, #FF69B4, #FF1493); color: white; border: none; border-radius: 5px; cursor: pointer;">结婚系统</button>
-    <button onclick="toggleExplorationSystem()" style="margin-left: 10px;">星域探索</button>
-    <button onclick="toggleArtifactSystem()" style="margin-left: 10px;">神器锻造系统</button>
-    <button onclick="toggleCultivationSystem()" style="margin-left: 10px;">修仙系统</button>
-    <button onclick="toggleGemSystem()" style="margin-left: 10px;">宝石系统</button>
-    <button onclick="toggleTreasureMapSystem()">藏宝图系统</button>
-    <button onclick="toggleNightClubSystem()" style="margin-left: 10px;">夜店系统</button>
-    <button onclick="toggleLiveStreamSystem()" class="tab-button">直播系统</button>
-    <button onclick="toggleSectSystem()" class="system-btn">宗门系统</button>
-   <button onclick="toggleTradingSystem()" style="margin: 5px; padding: 8px 15px; background: linear-gradient(45deg, #FFD700, #FFA500); color: black; border: none; border-radius: 5px; cursor: pointer;">跑商系统</button>  
-   <button onclick="toggleMiningUI()" style="margin: 5px; padding: 8px 15px; background: linear-gradient(45deg, #FFD700, #FFA500); color: black; border: none; border-radius: 5px; cursor: pointer;">无尽挖矿</button>
-<button onclick="toggleTimeSecretRealm()" style="background: linear-gradient(to bottom, #00bfff, #006994); color: #e6f7ff; border: 2px solid #00bfff; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; text-shadow: 0 0 5px #00bfff; box-shadow: 0 0 10px #00bfff; margin-left: 10px;">时光秘境</button>     
-    <button onclick="toggleSettingsUI()">设置</button>
+<!-- ========== 顶栏 (与 1.html 一致) ========== -->
+<div class="game-topbar">
+  <button class="sidebar-toggle" onclick="document.querySelector('.game-sidebar').classList.toggle('open')">&#9776;</button>
+  <div class="topbar-brand">金币冒险者</div>
+  <div class="topbar-player">
+    <span class="player-name-display" id="playerName">勇者</span>
+    <span class="player-class-display" id="playerClassName"></span>
+    <span class="player-title-display" id="currentTitle"></span>
+    <span id="ascentionCountqa" style="color: var(--color-success); font-size: var(--text-xs);">0</span>
+    <span id="ascentionCountq" style="color: var(--color-success); font-size: var(--text-xs);">0</span>
+    <span id="playerLevelDisplay" style="color: var(--color-success); font-size: var(--text-xs);">Lv.1</span>
+  </div>
+  <div class="topbar-vip">
+    <span class="vip-badge">VIP <span id="vipLevel">1</span></span>
+    <div class="vip-bar-wrapper"><div class="vip-bar-fill" id="vipProgressBar" style="width:0%"></div></div>
+    <span style="font-size:11px;color:var(--color-text-muted)"><span id="vipProgressText">0/1</span></span>
+  </div>
+  <div class="topbar-actions">
+    <button class="topbar-btn" onclick="useAllVipPower()" title="使用VIP能力值">&#9733;<span id="vipPowerCount" style="font-size:10px;margin-left:2px">0</span></button>
+    <button class="topbar-btn" style="width:auto;padding:0 10px;font-size:var(--text-xs);font-weight:600" onclick="var p=document.getElementById('changelogPanel'); var o=document.getElementById('changelogOverlay'); if(p.style.display==='block'){ p.style.display='none'; o.classList.remove('show'); }else{ p.style.display='block'; o.classList.add('show'); }" title="更新日志">更新日志</button>
+    <button class="topbar-btn" style="width:auto;padding:0 10px;font-size:var(--text-xs);font-weight:600" onclick="var p=document.getElementById('gameLogPage5'); var o=document.getElementById('guideOverlay'); if(p.style.display==='block'){ p.style.display='none'; o.classList.remove('show'); }else{ p.style.display='block'; o.classList.add('show'); }" title="新手必看">新手必看</button>
+    <button class="topbar-btn" style="width:auto;padding:0 10px;font-size:var(--text-xs);font-weight:600" onclick="toggleSettingsUI()" title="设置">设置</button>
+  </div>
+</div>
 
-<h3>自动购买设置</h3>
-    <div class="auto-buy-container">
-      <button onclick="toggleAutoBuyShop()">自动购买商店</button>
-      <button onclick="toggleAutoConvertUI()">自动兑换货币</button>
-        <button id="autoBuySpeedBoost" class="auto-buy-btn" onclick="toggleAutoBuySpeedBoost()">在线自动购买100倍数量：关闭</button>
-        <button id="toggleOnlineBoost" onclick="toggleOnlineBoost()">在线金币加速100倍: 关闭</button>
+<!-- ========== 侧边栏 (与 1.html 一致) ========== -->
+<nav class="game-sidebar" id="gameSidebar">
+  <div class="sidebar-group collapsed">
+    <div class="sidebar-group-title" onclick="this.parentElement.classList.toggle('collapsed')">基础操作 <span class="arrow">&#9660;</span></div>
+    <div class="sidebar-group-items">
+      <button class="sidebar-item" onclick="clickGold()"><span class="sidebar-icon">&#128176;</span> 点金</button>
+      <button class="sidebar-item" onclick="reincarnate()"><span class="sidebar-icon">&#128260;</span> 转生</button>
+      <button class="sidebar-item" onclick="toggleShopUI()"><span class="sidebar-icon">&#128230;</span> 宝箱商店</button>       
+      <button class="sidebar-item" onclick="toggleExchangeShop()"><span class="sidebar-icon">&#127979;</span> 发票商店<span class="sidebar-lock">300转</span></button>     
+      <button class="sidebar-item" onclick="toggleGroceriesUI()"><span class="sidebar-icon">&#127978;</span> 杂货铺<span class="sidebar-lock">400转</span></button>
+      <button class="sidebar-item" onclick="openTreasureShop()"><span class="sidebar-icon">&#127977;</span> 藏宝图商店<span class="sidebar-lock">600转</span></button>
     </div>
+  </div>
+<div class="sidebar-group collapsed">
+    <div class="sidebar-group-title" onclick="this.parentElement.classList.toggle('collapsed')">修炼系统 <span class="arrow">&#9660;</span></div>
+    <div class="sidebar-group-items">      
+       <button class="sidebar-item" onclick="showTitleDialog()"><span class="sidebar-icon">&#127942;</span> 称号 <span class="sidebar-lock">10转</span></button>
+       <button class="sidebar-item" onclick="toggleOfficialSystem()"><span class="sidebar-icon">&#128081;</span> 官职 <span class="sidebar-lock">10转</span></button>
+       <button class="sidebar-item" onclick="toggleClassSystem()"><span class="sidebar-icon">&#9878;</span> 职业 <span class="sidebar-lock">20转</span></button>
+       <button class="sidebar-item" onclick="openCompanionSystem()"><span class="sidebar-icon">&#128149;</span> 伴侣 <span class="sidebar-lock">30转</span></button>
+       <button class="sidebar-item" onclick="toggleLevelSystem()"><span class="sidebar-icon">&#11088;</span> 等级<span class="sidebar-lock">50转</span></button>
+        <button class="sidebar-item" onclick="toggleMysterySystem()"><span class="sidebar-icon">&#128302;</span> 奥秘 <span class="sidebar-lock">100转</span></button>
+       <button class="sidebar-item" onclick="toggleCultivationSystem()"><span class="sidebar-icon">&#9775;</span> 修仙 <span class="sidebar-lock">500转</span></button>
+      <button class="sidebar-item" onclick="toggleArtifactSystem()"><span class="sidebar-icon">&#128481;</span> 神器 <span class="sidebar-lock">500转</span></button>
+     <button class="sidebar-item" onclick="toggleGemSystem()"><span class="sidebar-icon">&#128142;</span> 宝石 <span class="sidebar-lock">800转</span></button>
+      <button class="sidebar-item" onclick="toggleSectSystem()"><span class="sidebar-icon">&#9961;</span> 宗门 <span class="sidebar-lock">1000转</span></button>      
+    </div>
+  </div>
+  <div class="sidebar-group collapsed">
+    <div class="sidebar-group-title" onclick="this.parentElement.classList.toggle('collapsed')">战斗系统 <span class="arrow">&#9660;</span></div>
+    <div class="sidebar-group-items">
+      <button class="sidebar-item" onclick="toggleMonsterUI()"><span class="sidebar-icon">&#9876;</span> 打怪 <span class="sidebar-lock">1转</span></button>
+      <button class="sidebar-item" onclick="toggleWorldMap()"><span class="sidebar-icon">&#127758;</span> 世界地图 <span class="sidebar-lock">50转</span></button>
+      <button class="sidebar-item" onclick="toggleWorldBossUI()"><span class="sidebar-icon">&#128121;</span> 世界BOSS <span class="sidebar-lock">50转</span></button>
+      <button class="sidebar-item" onclick="toggleTowerUI()"><span class="sidebar-icon">&#127960;</span> 通天塔 <span class="sidebar-lock">100转</span></button>
+      <button class="sidebar-item" onclick="toggleAutoBuyShopa()"><span class="sidebar-icon">&#128128;</span> 轮回副本<span class="sidebar-lock">轮回1转</span></button>
+     <button class="sidebar-item" onclick="toggleAutoBuyShopb()"><span class="sidebar-icon">&#9775;</span> 修仙副本 <span class="sidebar-lock">修仙2级</span></button>      
+    </div>
+  </div>
+  <div class="sidebar-group collapsed">
+    <div class="sidebar-group-title" onclick="this.parentElement.classList.toggle('collapsed')">经济系统 <span class="arrow">&#9660;</span></div>
+    <div class="sidebar-group-items">
+       <button class="sidebar-item" onclick="toggleLandlordGame()"><span class="sidebar-icon">&#127183;</span> 疯狂地主<span class="sidebar-lock">第3关</span></button>      
+      <button class="sidebar-item" onclick="toggleInvestmentGame()"><span class="sidebar-icon">&#128200;</span> 模拟投资<span class="sidebar-lock">第3关</span></button>      
+      <button class="sidebar-item" onclick="toggleNightClubSystem()"><span class="sidebar-icon">&#127863;</span> 夜店 <span class="sidebar-lock">600转</span></button>
+      <button class="sidebar-item" onclick="toggleTradingSystem()"><span class="sidebar-icon">&#128666;</span> 跑商 <span class="sidebar-lock">1000转</span></button>
+      <button class="sidebar-item" onclick="toggleGambleStone()"><span class="sidebar-icon">&#128142;</span> 赌石<span class="sidebar-lock">5000资产</span></button>
+      <button class="sidebar-item" onclick="toggleFundSystem()"><span class="sidebar-icon">&#128181;</span> 基金<span class="sidebar-lock">高风险</span></button>
+      <button class="sidebar-item" onclick="toggleSlotMachine()"><span class="sidebar-icon">&#127920;</span> 老虎机<span class="sidebar-lock">高风险</span></button>      
+    </div>
+  </div>
+  <div class="sidebar-group collapsed">
+    <div class="sidebar-group-title" onclick="this.parentElement.classList.toggle('collapsed')">生活系统 <span class="arrow">&#9660;</span></div>
+    <div class="sidebar-group-items">
 
-  
+      <button class="sidebar-item" onclick="toggleFishingSystem()"><span class="sidebar-icon">&#127907;</span> 钓鱼 <span class="sidebar-lock">20转</span></button>
+      <button class="sidebar-item" onclick="toggleFarmSystem()"><span class="sidebar-icon">&#127793;</span> 农场 <span class="sidebar-lock">50转</span></button>
+      <button class="sidebar-item" onclick="toggleParkingSystem()"><span class="sidebar-icon">&#128663;</span> 停车场 <span class="sidebar-lock">200转</span></button>
+      <button class="sidebar-item" onclick="toggleHouseSystem()"><span class="sidebar-icon">&#127968;</span> 房屋 <span class="sidebar-lock">200转</span></button>
+      <button class="sidebar-item" onclick="toggleLiveStreamSystem()"><span class="sidebar-icon">&#127909;</span> 直播 <span class="sidebar-lock">500转</span></button>
+      <button class="sidebar-item" onclick="toggleMarriageSystem()"><span class="sidebar-icon">&#128141;</span> 结婚<span class="sidebar-lock">5W资产</span></button>      
+    </div>
+  </div>  
+  <div class="sidebar-group collapsed">
+    <div class="sidebar-group-title" onclick="this.parentElement.classList.toggle('collapsed')">冒险探索 <span class="arrow">&#9660;</span></div>
+    <div class="sidebar-group-items">
+       <button class="sidebar-item" onclick="toggleExpeditionSystem()"><span class="sidebar-icon">&#128611;</span> 伴侣探险 <span class="sidebar-lock">30转</span></button>
+      <button class="sidebar-item" onclick="toggleExplorationSystem()"><span class="sidebar-icon">&#128640;</span> 星域探索 <span class="sidebar-lock">300转</span></button>
+      <button class="sidebar-item" onclick="toggleTreasureMapSystem()"><span class="sidebar-icon">&#128506;</span> 藏宝图 <span class="sidebar-lock">600转</span></button>
+      <button class="sidebar-item" onclick="toggleMiningUI()"><span class="sidebar-icon">&#9935;</span> 挖矿 <span class="sidebar-lock">1500转</span></button>      
+      <button class="sidebar-item" onclick="toggleTimeSecretRealm()"><span class="sidebar-icon">&#9202;</span> 时光秘境 <span class="sidebar-lock">2000转</span></button>
+    </div>
+  </div>
+  <div class="sidebar-group collapsed">
+    <div class="sidebar-group-title" onclick="this.parentElement.classList.toggle('collapsed')">自动设置 <span class="arrow">&#9660;</span></div>
+    <div class="sidebar-group-items">
+      <button class="sidebar-item" onclick="toggleAutoBuyShop()"><span class="sidebar-icon">&#128722;</span> 在线自动购买</button>
+      <button class="sidebar-item" onclick="toggleAutoConvertUI()"><span class="sidebar-icon">&#128257;</span> 在线自动兑换</button>
+      <button class="sidebar-item" onclick="toggleAutoBuySettings()"><span class="sidebar-icon">&#128203;</span> 功法价格设置</button>
+      <button class="sidebar-item" onclick="toggleAutoBuySpeedBoost()"><span class="sidebar-icon">&#9889;</span> 在线百倍购买 <span class="sidebar-lock" id="autoBuySpeedLabel">关</span></button>
+      <button class="sidebar-item" onclick="toggleOnlineBoost()"><span class="sidebar-icon">&#128293;</span> 在线百倍加速 <span class="sidebar-lock" id="onlineBoostLabel">关</span></button>
+      <button class="sidebar-item" onclick="toggleAutoReincarnation()"><span class="sidebar-icon">&#9203;</span> 自动转生 <span class="sidebar-lock" id="autoReincarnationStatus">关</span></button>
+      
+    </div>
+  </div>
+</nav>
 
-    <div class="tab active" onclick="switchTab('equipment')">装备</div>
-    <div class="tab" onclick="switchTab('items')">道具</div>
-    <div class="tab" onclick="switchTab('collections')">收藏物</div>
-    <div class="tab" onclick="switchTab('reincarnation')">转生属性</div>
-    <div class="tab" onclick="switchTab('pets')">宠物</div>
-    <div class="tab" onclick="switchTab('stocks')">股票</div>
-    <div class="tab" onclick="switchTab('lottery')">彩票</div>
-    <div class="tab" onclick="switchTab('bank')">银行系统</div>
-    <div class="tab" onclick="switchTab('dungeonEquipment')">副本装备</div>
-    <div class="tab" onclick="switchTab('soulRings')">魂环</div> <!-- 新增魂环标签 -->
-    <div class="tab" onclick="switchTab('playerAttributes')">玩家属性</div>
-    <div class="tab" onclick="switchTab('techniques')">功法秘籍</div>
+<!-- ========== 主内容区 (与 1.html 一致) ========== -->
+<div class="game-main">
+
+  <!-- 货币栏 -->
+  <div class="card" style="margin-bottom: var(--space-md);">
+    <div class="currency-grid">
+      <div class="currency-card"><span class="currency-label">金币</span><span class="currency-value" id="gold">0</span></div>
+      <div class="currency-card"><span class="currency-label">钻石</span><span class="currency-value" id="diamond">0</span></div>
+      <div class="currency-card"><span class="currency-label">钛晶石</span><span class="currency-value" id="titanium">0</span></div>
+      <div class="currency-card"><span class="currency-label">星耀石</span><span class="currency-value" id="starstone">0</span></div>
+      <div class="currency-card"><span class="currency-label">宇宙石</span><span class="currency-value" id="cosmicstone">0</span></div>
+      <div class="currency-card"><span class="currency-label">超能石</span><span class="currency-value" id="superstone">0</span></div>
+      <div class="currency-card"><span class="currency-label">异界石</span><span class="currency-value" id="otherworldstone">0</span></div>
+      <div class="currency-card"><span class="currency-label">星界石</span><span class="currency-value" id="xingjiestone">0</span></div>
+      <div class="currency-card"><span class="currency-label">混沌石</span><span class="currency-value" id="hundunstone">0</span></div>
+      <div class="currency-card"><span class="currency-label">灵髓石</span><span class="currency-value" id="lingtone">0</span></div>
+      <div class="currency-card"><span class="currency-label">幻空石</span><span class="currency-value" id="huangtone">0</span></div>
+      <div class="currency-card"><span class="currency-label">冥源石</span><span class="currency-value" id="mingtone">0</span></div>
+      <div class="currency-card"><span class="currency-label">虚空石</span><span class="currency-value" id="xutong">0</span></div>
+      <div class="currency-card"><span class="currency-label">时空石</span><span class="currency-value" id="shitone">0</span></div>
+      <div class="currency-card"><span class="currency-label">未来石</span><span class="currency-value" id="weitone">0</span></div>
+      <div class="currency-card" style="border-color: var(--color-gold);"><span class="currency-label" style="color:var(--color-gold)">转生币</span><span class="currency-value" id="reincarnationCoin" style="color:var(--color-gold)">0</span></div>
+    </div>
+  </div>
+
+  <!-- 状态数据条 -->
+  <div class="card" style="margin-bottom: var(--space-md); padding: var(--space-sm) var(--space-md);">
+    <div style="display: flex; flex-wrap: wrap; gap: var(--space-md) var(--space-xl); font-size: var(--text-sm); color: var(--color-text-secondary);">
+      <span>GPS <b style="color:var(--color-text)" id="gps">1</b>/秒</span>
+      <span>点击 <b style="color:var(--color-text)" id="clickValue">1</b></span>
+      <span>资金 <b style="color:var(--color-text)" id="zijze">1</b></span>
+      <span>转生 <b style="color:var(--color-primary)" id="reincarnationCount">0</b> 次</span>
+      <span>关卡 <b style="color:var(--color-text)" id="maxStage">0</b></span>
+      <span>塔层 <b style="color:var(--color-text)" id="towerFloor">0</b></span>
+      <span>官职 <b style="color:var(--color-text)" id="currentOfficialTitle">无</b></span>
+      <span>奥秘 <b style="color:var(--color-info)" id="currentMysteryTitle">初级秘法师 1阶1级</b></span>
+      <span>境界 <b style="color:var(--color-success)" id="currentStageq">凡人</b></span>
+      <span id="sectNameDisplay" style="color: var(--color-gold); font-weight: 700;"></span>
+    </div>
+   </div>
+
+
+
+
+  <!-- 标签页 -->
+  <div class="card" style="margin-bottom: var(--space-md); padding: 0; overflow: hidden;">
+    <div class="tabs-new">
+      <div class="tab tab-item-new active" onclick="switchTab('equipment')">装备</div>
+      <div class="tab tab-item-new" onclick="switchTab('items')">道具</div>
+      <div class="tab tab-item-new" onclick="switchTab('collections')">收藏物</div>
+      <div class="tab tab-item-new" onclick="switchTab('reincarnation')">转生属性</div>
+      <div class="tab tab-item-new" onclick="switchTab('pets')">宠物</div>
+      <div class="tab tab-item-new" onclick="switchTab('stocks')">股票</div>
+      <div class="tab tab-item-new" onclick="switchTab('lottery')">彩票</div>
+      <div class="tab tab-item-new" onclick="switchTab('bank')">银行系统</div>
+      <div class="tab tab-item-new" onclick="switchTab('dungeonEquipment')">副本装备</div>
+      <div class="tab tab-item-new" onclick="switchTab('soulRings')">魂环</div>
+      <div class="tab tab-item-new" onclick="switchTab('playerAttributes')">玩家属性</div>
+      <div class="tab tab-item-new" onclick="switchTab('techniques')">功法秘籍</div>
+    </div>
+    <div style="padding: var(--space-md);">
 
     <h3></h3>
     <div id="equipmentList"></div>
@@ -4397,27 +4604,41 @@ select:focus {
     <div id="techniquesContainer" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;"></div>
  </div>
 
-        <!-- 新增：游戏日志分页 -->
-    <h3>游戏日志</h3>
-    <div class="log-tab active" onclick="switchLogTab(1)">游戏记录</div>
-    <div class="log-tab" onclick="switchLogTab(2)">公告右上角</div>
-    <div class="log-tab" onclick="switchLogTab(3)">开奖结果</div>    
+    </div><!-- 关闭 tab 内容 padding -->
+  </div><!-- 关闭 tabs card -->
+
+  <!-- 游戏日志 (与 1 样式一致) -->
+  <div class="card game-log-section" style="margin-bottom: var(--space-md);">
+    <div class="card-header" style="display:flex; align-items:center; gap:var(--space-sm);">
+      游戏日志
+      <div style="display:flex; gap:2px; margin-left:auto;">
+        <button class="log-tab active" style="padding:4px 8px;font-size:11px;border:1px solid var(--color-border);border-radius:4px;background:transparent;cursor:pointer;" onclick="switchLogTab(1)">记录</button>
+        <button class="log-tab" style="padding:4px 8px;font-size:11px;border:1px solid var(--color-border);border-radius:4px;background:transparent;cursor:pointer;" onclick="switchLogTab(2)">公告</button>
+        <button class="log-tab" style="padding:4px 8px;font-size:11px;border:1px solid var(--color-border);border-radius:4px;background:transparent;cursor:pointer;" onclick="switchLogTab(3)">开奖</button>
+      </div>
+    </div>
     <div id="gameLogPage1" class="active">
-        <div id="actionLog" class="log"></div>
+        <div id="actionLog" class="log log-content"></div>
     </div>
     <div id="gameLogPage2">
-        <div class="log">  
+        <div class="log log-content"></div>
     </div>
-</div>
     <div id="gameLogPage3">
-        <div id="lotteryResults" class="log"></div>
+        <div id="lotteryResults" class="log log-content"></div>
     </div>
     <div id="gameLogPage4">
-        <div id="battleLog" class="log"></div>
+        <div id="battleLog" class="log log-content"></div>
     </div>
+  </div>
 
-    <h3>成就系统</h3>
-    <div id="achievements" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;"></div>
+  <!-- 成就系统 -->
+  <div class="card" style="margin-bottom: var(--space-md);">
+    <div class="card-header">成就系统</div>
+    <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
+  </div>
+
+  <div id="footer">版本号: v1.8.84</div>
+</div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
     <div id="customDialog">
@@ -4436,12 +4657,12 @@ select:focus {
     </div>
 </div>
 <div id="gemUseOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;"></div>
-  <div id="renameDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ccc; z-index: 1001;">
-    <div>输入新名字:</div>
-    <input type="text" id="newNameInput" style="margin: 10px 0;" maxlength="10">
-    <div>
-        <button onclick="confirmRename()">确定</button>
-        <button onclick="cancelRename()">取消</button>
+  <div id="renameDialog" class="settings-subdialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 28px 36px; border: 1px solid #ccc; border-radius: 10px; z-index: 1001; min-width: 380px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+    <div id="renameDialogTitle" style="font-size: 18px; margin-bottom: 14px;">输入新名字:</div>
+    <input type="text" id="newNameInput" style="margin: 12px 0; padding: 10px 14px; font-size: 16px; width: 100%; max-width: 320px; box-sizing: border-box;" maxlength="10">
+    <div style="margin-top: 18px;">
+        <button onclick="confirmRename()" style="padding: 10px 24px; font-size: 15px; margin-right: 10px;">确定</button>
+        <button onclick="cancelRename()" style="padding: 10px 24px; font-size: 15px;">取消</button>
     </div>
 </div>
 <div id="classSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
@@ -4471,12 +4692,22 @@ select:focus {
     </div>
 </div>
 <div id="renameOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;"></div>
- <div id="activationCodeDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid #333; z-index: 1001;">
-    <h3>激活码兑换</h3>
-    <input type="text" id="activationCodeInput" placeholder="请输入激活码" style="width: 200px; margin: 10px 0;">
-    <div>
-        <button onclick="confirmActivationCode()">确认兑换</button>
-        <button onclick="cancelActivationCode()">取消</button>
+
+<!-- 版本不匹配提示弹窗 -->
+<div id="versionErrorDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 32px 40px; border: 3px solid #ff4444; z-index: 10000; min-width: 400px; max-width: 500px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+    <div style="font-size: 24px; font-weight: bold; color: #ff4444; margin-bottom: 16px;">⚠️ 版本不匹配</div>
+    <div id="versionErrorMessage" style="font-size: 16px; line-height: 1.6; margin-bottom: 24px; color: #333;"></div>
+    <div style="font-size: 14px; color: #666; margin-bottom: 20px;">请使用新版本游戏进行游玩。您的存档已保留在本地，不会丢失。更新到新版本后请手动刷新浏览器页面。</div>
+    <button type="button" onclick="document.getElementById('versionErrorDialog').style.display='none'; document.getElementById('versionErrorOverlay').style.display='none';" style="padding: 12px 32px; font-size: 16px; background: #ff4444; color: white; border: none; border-radius: 4px; cursor: pointer;">确定</button>
+</div>
+<div id="versionErrorOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999;"></div>
+
+ <div id="activationCodeDialog" class="settings-subdialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 28px 36px; border: 2px solid #333; border-radius: 10px; z-index: 1001; min-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+    <h3 style="font-size: 20px; margin: 0 0 18px 0;">激活码兑换</h3>
+    <input type="text" id="activationCodeInput" placeholder="请输入激活码" style="width: 100%; max-width: 360px; padding: 12px 14px; font-size: 16px; margin: 12px 0; box-sizing: border-box;">
+    <div style="margin-top: 18px;">
+        <button onclick="confirmActivationCode()" style="padding: 10px 24px; font-size: 15px; margin-right: 10px;">确认兑换</button>
+        <button onclick="cancelActivationCode()" style="padding: 10px 24px; font-size: 15px;">取消</button>
     </div>
 </div>
 <div id="activationCodeOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;"></div>
@@ -4792,20 +5023,20 @@ select:focus {
 <!-- 半透明背景遮罩 (添加到body标签内) -->
 <div id="shopOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
 <!-- 设置界面对话框 -->
-<div id="settingsDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ccc; z-index: 1000; text-align: center;">
-    <h3>游戏设置</h3>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <button onclick="showRenameDialog()">名字修改</button>
-        <button onclick="showActivationCodeDialog()">激活码兑换</button>
-        <button onclick="saveGame()">保存游戏</button>
-        <button onclick="loadGame()">加载游戏</button>
-        <button onclick="exportSave()">导出存档（自动复制）</button>        
-        <button onclick="importSave()">导入存档</button>
-        <button onclick="downloadSave()">下载TXT存档</button>
-         <button onclick="importEncryptedSave()">导入TXT存档</button>
-        <button onclick="resetGame()" style="background-color: #ff4444; color: white; border: none;">重置游戏</button>
+<div id="settingsDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 28px 36px; border: 1px solid #ccc; border-radius: 10px; z-index: 1000; text-align: center; min-width: 420px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);">
+    <h3 style="font-size: 22px; margin: 0 0 20px 0;">游戏设置</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <button onclick="showRenameDialog()" style="padding: 12px 20px; font-size: 16px;">名字修改</button>
+        <button onclick="showActivationCodeDialog()" style="padding: 12px 20px; font-size: 16px;">激活码兑换</button>
+        <button onclick="saveGame()" style="padding: 12px 20px; font-size: 16px;">保存游戏</button>
+        <button onclick="loadGame()" style="padding: 12px 20px; font-size: 16px;">加载游戏</button>
+        <button onclick="exportSave()" style="padding: 12px 20px; font-size: 16px;">导出存档（自动复制）</button>        
+        <button onclick="importSave()" style="padding: 12px 20px; font-size: 16px;">导入存档</button>
+        <button onclick="downloadSave()" style="padding: 12px 20px; font-size: 16px;">下载TXT存档</button>
+         <button onclick="importEncryptedSave()" style="padding: 12px 20px; font-size: 16px;">导入TXT存档</button>
+        <button onclick="resetGame()" style="padding: 12px 20px; font-size: 16px; background-color: #ff4444; color: white; border: none;">重置游戏</button>
     </div>
-    <button onclick="toggleSettingsUI()">关闭设置</button>
+    <button onclick="toggleSettingsUI()" style="margin-top: 20px; padding: 10px 28px; font-size: 15px;">关闭设置</button>
 </div>
 <input type="file" id="fileInput" accept=".txt" style="display: none;">
 
@@ -5333,10 +5564,10 @@ select:focus {
 
     <div style="display: flex; gap: 10px; margin: 15px 0;">
     <!-- 锻造区域 -->
-    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
+    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px; width: 35%;">
         <h3 style="color: #d4af37; margin-top: 0;">锻造神器</h3>
         <p>消耗10神器碎片随机锻造一件神器</p>
-        <button onclick="forgeArtifact()" style="background: #d4af37; color: black; border: none; padding: 8px 20px; border-radius: 5px; cursor: font-weight: bold; margin-top: 10px;">锻造1次</button>
+        <button onclick="forgeArtifact()" style="background: #d4af37; color: black; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px;">锻造1次</button>
                        <button onclick="forgeArtifact(10)" style="background: #d4af37; color: black; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">锻造10次</button>
                 <button onclick="forgeArtifact(20)" style="background: #d4af37; color: black; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">锻造20次</button>
                 <button onclick="forgeArtifact(50)" style="background: #d4af37; color: black; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">锻造50次</button>
@@ -5351,7 +5582,7 @@ select:focus {
         <button id="advanceArtifactBtn" onclick="advanceArtifact()" style="margin-top: 10px; background: #9C27B0; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 14px;">进阶神器</button>
     </div>
 
-     <div style="margin-top: 0px; background: #444; padding: 15px; border-radius: 8px; width: 28%;">
+     <div style="margin-top: 0px; background: #444; padding: 15px; border-radius: 8px; width: 35%;">
         <h7 style="color: #d4af37; margin-top: 0;"></h7>
         <h8 style="color: #d4af37; margin-top: 0;"></h8>
         </div> 
@@ -5825,7 +6056,7 @@ select:focus {
     <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
         <h3 style="color: #d4af37; margin-top: 0;">开启藏宝图宝箱</h3>
         <p>消耗1个藏宝图钥匙随机获得一张藏宝图</p>
-        <button onclick="openTreasureChest()" style="background: #2196F3; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: font-weight: bold; margin-top: 10px;">开启宝箱</button>
+        <button onclick="openTreasureChest()" style="background: #2196F3; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px;">开启宝箱</button>
           <button onclick="openTreasureChestBatch(10)" style="background: #4CAF50; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px;">开启10次</button>
     <button onclick="openTreasureChestBatch(20)" style="background: #FF9800; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px;">开启20次</button>
     <button onclick="openTreasureChestBatch(50)" style="background: #F44336; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px;">开启50次</button>
@@ -9170,8 +9401,46 @@ select:focus {
 </div>
 </div>
 </div>
-<div id="footer">版本号: v1.8.83</div>
     <script>
+        
+        const GAME_VERSION = "1.8.84";
+        let versionErrorBlocked = false;
+
+        
+        function isCurrentVersionOlderThan(saveVersion) {
+            if (!saveVersion) return false;
+            var cur = (GAME_VERSION + "").split(".").map(Number);
+            var sav = (saveVersion + "").split(".").map(Number);
+            for (var i = 0; i < Math.max(cur.length, sav.length); i++) {
+                var c = cur[i] || 0, s = sav[i] || 0;
+                if (c < s) return true;
+                if (c > s) return false;
+            }
+            return false;
+        }
+
+        
+        function showVersionError(saveVersion) {
+            versionErrorBlocked = true;
+            setTimeout(function() {
+                var dialog = document.getElementById('versionErrorDialog');
+                var overlay = document.getElementById('versionErrorOverlay');
+                var messageEl = document.getElementById('versionErrorMessage');
+                if (dialog && overlay && messageEl) {
+                    messageEl.textContent = "该存档是在更新版本（v" + saveVersion + "）中保存的，当前游戏版本为 v" + GAME_VERSION + "。";
+                    dialog.style.display = 'block';
+                    overlay.style.display = 'block';
+                } else {
+                    alert("该存档是在更新版本（v" + saveVersion + "）中保存的，当前游戏版本为 v" + GAME_VERSION + "。\n请使用新版本游戏进行游玩。");
+                }
+            }, 100);
+        }
+
+        
+        function checkVersionBlocked() {
+            return versionErrorBlocked;
+        }
+
         // 初始化玩家数据
     let player = {
     name: "勇者",
@@ -11374,13 +11643,6 @@ function toggleAutoReincarnation() {
     logAction(`自动转生已${player.autoReincarnation ? '开启' : '关闭'}`, 'info');
 }
 
-// 切换自动转生状态
-function toggleAutoReincarnation() {
-    player.autoReincarnation = !player.autoReincarnation;
-    document.getElementById('autoReincarnationStatus').textContent = player.autoReincarnation ? '开启' : '关闭';
-    logAction(`自动转生已${player.autoReincarnation ? '开启' : '关闭'}`, 'info');
-}
-
 // 检查自动转生条件
 function checkAutoReincarnation() {
     if (!player.autoReincarnation) return;
@@ -11823,6 +12085,10 @@ function autoReincarnate() {
             });
         }
       function showActivationCodeDialog() {
+        if (player.battle.maxStage < 2) {
+        alert("需要打怪模式达到第3层才能开启激活码兑换！");
+        return;
+    }
     document.getElementById("activationCodeDialog").style.display = "block";
     document.getElementById("activationCodeOverlay").style.display = "block";
     document.getElementById("activationCodeInput").focus();
@@ -12222,6 +12488,10 @@ function setTechniqueMaxCost() {
     try {
         const save = JSON.parse(localStorage.getItem('goldGameSave'));
         if (save) {
+            if (save.gameVersion && isCurrentVersionOlderThan(save.gameVersion)) {
+                showVersionError(save.gameVersion);
+                return;
+            }
             if (save.lastUpdate && save.lastUpdate > Date.now()) {
                 throw new Error("检测到时间回退，强制重置游戏");
             }
@@ -12331,11 +12601,15 @@ function setTechniqueMaxCost() {
 const speedBoostBtn = document.getElementById('autoBuySpeedBoost');
 if (speedBoostBtn) {
     speedBoostBtn.textContent = `在线自动购买100倍数量：${player.autoBuySpeedBoost ? '开启' : '关闭'}`;
+    var autoBuyLabel = document.getElementById('autoBuySpeedLabel');
+    if (autoBuyLabel) autoBuyLabel.textContent = player.autoBuySpeedBoost ? '开' : '关';
 }
       const onlineBoostBtn = document.getElementById('toggleOnlineBoost');
     if (onlineBoostBtn) {
         onlineBoostBtn.textContent = `在线金币加速100倍: ${player.onlineBoostEnabled ? '开启' : '关闭'}`;
     }
+    var olbl = document.getElementById('autoBuySpeedLabel');
+    if (olbl) olbl.textContent = player.onlineBoostEnabled ? '开' : '关';
       
             // 确保日志不超过 20 条
             player.actionLogs = player.actionLogs.slice(0, 20);
@@ -13096,13 +13370,17 @@ if (player.autoBuyTechniqueChest && player.reincarnationCoin >= player.technique
      function toggleOnlineBoost() {
     player.onlineBoostEnabled = !player.onlineBoostEnabled;
     const btn = document.getElementById('toggleOnlineBoost');
-    btn.textContent = `在线金币加速100倍: ${player.onlineBoostEnabled ? '开启' : '关闭'}`;
+    if (btn) btn.textContent = `在线金币加速100倍: ${player.onlineBoostEnabled ? '开启' : '关闭'}`;
+    var olbl = document.getElementById('onlineBoostLabel');
+    if (olbl) olbl.textContent = player.onlineBoostEnabled ? '开' : '关';
     logAction(`${player.onlineBoostEnabled ? '开启' : '关闭'}在线金币100倍加速`, 'info');
 }
      function toggleAutoBuySpeedBoost() {
     player.autoBuySpeedBoost = !player.autoBuySpeedBoost;
     const btn = document.getElementById('autoBuySpeedBoost');
-    btn.textContent = `在线自动购买100倍数量：${player.autoBuySpeedBoost ? '开启' : '关闭'}`;
+     if (btn) btn.textContent = `在线自动购买100倍数量：${player.autoBuySpeedBoost ? '开启' : '关闭'}`;
+    var olbl = document.getElementById('autoBuySpeedLabel');
+     if (olbl) olbl.textContent = player.autoBuySpeedBoost ? '开' : '关';
     logAction(`${player.autoBuySpeedBoost ? '开启' : '关闭'}在线自动购买100倍数量`, 'info');
 }
 
@@ -13517,7 +13795,11 @@ function toggleAutoConvertCurrency(currency) {
             document.getElementById('playerAttributesList').style.display = tab === 'playerAttributes' ? 'block' : 'none';
             document.getElementById('techniquesList').style.display = tab === 'techniques' ? 'block' : 'none';
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+            var oldTab = document.querySelector(`.tab[onclick="switchTab('${tab}')"]`);
+            if (oldTab) oldTab.classList.add('active');
+            document.querySelectorAll('.tab-item-new').forEach(t => t.classList.remove('active'));
+            var newTab = document.querySelector(`.tab-item-new[onclick="switchTab('${tab}')"]`);
+            if (newTab) newTab.classList.add('active');
             if (tab === 'items') updateItemDisplay();
             if (tab === 'collections') updateCollectionDisplay();
             if (tab === 'reincarnation') updateReincarnationDisplay();
@@ -13891,20 +14173,7 @@ function updateItemDisplay() {
         </div>
     `).join('');
 }
-document.getElementById('announcementToggle').addEventListener('click', function() {
-    const announcementPanel = document.getElementById('gameLogPage5');
-    // 切换显示状态
-    announcementPanel.style.display = announcementPanel.style.display === 'none' ? 'block' : 'none';
-    // 切换按钮文本箭头方向
-    this.textContent = announcementPanel.style.display === 'block' ? '点击关闭新手必看↑' : '点击呼出新手必看↓';
-});
-document.getElementById('announcementToggle1').addEventListener('click', function() {
-    const announcementPanel = document.getElementById('gameLogPage4');
-    // 切换显示状态
-    announcementPanel.style.display = announcementPanel.style.display === 'none' ? 'block' : 'none';
-    // 切换按钮文本箭头方向
-    this.textContent = announcementPanel.style.display === 'block' ? '点击关闭更新日志↑' : '点击呼出更新日志↓';
-});
+/* 新手必看由顶栏「攻略」、更新日志由顶栏「日志」呼出，已移除原浮动按钮 */
         // 升级宠物
         function upgradePet(petKey) {
     const pet = player.pets[petKey];
@@ -14677,6 +14946,7 @@ function checkSoulRingAchievements(type, level) {
       function showRenameDialog() {
     document.getElementById("renameDialog").style.display = "block";
     document.getElementById("renameOverlay").style.display = "block";
+    document.getElementById("renameDialogTitle").textContent = "输入新名字:";
     document.getElementById("newNameInput").value = player.name;
     document.getElementById("newNameInput").focus();
 }
@@ -14764,6 +15034,15 @@ function confirmRename() {
             element.textContent = display(player[currency]);
         }
     });
+    // 钻石/钛晶石/星耀石等数量为0时隐藏对应货币卡片（金币、转生币始终显示）
+    const hideWhenZero = ['diamond', 'titanium', 'starstone', 'cosmicstone', 'superstone', 'otherworldstone', 'xingjiestone', 'hundunstone', 'lingtone', 'huangtone', 'mingtone', 'xutong', 'shitone', 'weitone'];
+    hideWhenZero.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const card = el.closest('.currency-card');
+        if (!card) return;
+        card.style.display = player[id] === 0 ? 'none' : '';
+    });
     document.getElementById("reincarnationCoin").textContent = display(player.reincarnationCoin);
     document.getElementById("zijze").textContent = `${player.investmentGame.userData.totalAssets.toFixed(0)}元`;
     document.getElementById("reincarnationCount").textContent = player.reincarnationCount;
@@ -14822,7 +15101,7 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
 
             // 成就
             updateAchievementsDisplay();
-            localStorage.setItem("goldGameSave", JSON.stringify(player));
+            if (!versionErrorBlocked) localStorage.setItem("goldGameSave", JSON.stringify(player));
         }
 
         // 辅助函数
@@ -14911,6 +15190,8 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
 
         // 保存游戏
         function saveGame() {
+    if (versionErrorBlocked) return; // 版本被阻止时不写入，避免覆盖新版本存档
+    player.gameVersion = GAME_VERSION;
     player.lastUpdate = Date.now(); // 确保保存时更新最后更新时间   
     player.actionLogs = player.actionLogs.slice(0, 5);
     player.lotteryResults = player.lotteryResults.slice(0, 5);
@@ -15370,6 +15651,10 @@ function migrateSaveData(save) {
             
             // 应用存档数据
             player = migrateSaveData(saveData);
+            // 导入后同步星际探索数据到 explorationData，避免 saveGame() 用默认值覆盖
+            if (player.exploration) {
+                Object.assign(explorationData, player.exploration);
+            }
             updateDisplay();
             logAction('存档已成功导入！', 'success');
             
@@ -15977,7 +16262,19 @@ function formatTime(milliseconds) {
 
         // 游戏初始化
         loadSave();
+        if (!versionErrorBlocked) {
+            if (player.name === "勇者") {
+                setTimeout(function() {
+                    document.getElementById("renameDialog").style.display = "block";
+                    document.getElementById("renameOverlay").style.display = "block";
+                    document.getElementById("renameDialogTitle").textContent = "请为你的角色起一个名字吧（1-10个字符）：";
+                    document.getElementById("newNameInput").value = player.name;
+                    document.getElementById("newNameInput").focus();
+                }, 500);
+            }
+        }
         setInterval(() => {
+    if (checkVersionBlocked()) return;
     let gpsPerSecond = getTotalGPS();
     // 如果在线且开启了加速，应用100倍加成
     if (document.visibilityState === 'visible' && player.onlineBoostEnabled) {
@@ -22327,6 +22624,13 @@ function initExplorationSystem() {
 }
 // 切换兑换商店显示
 function toggleExchangeShop() {
+    if (player.reincarnationCount < 300) {
+
+        alert("需要达到300转才能开启星域探索！");
+
+        return;
+
+    }
     const overlay = document.getElementById('exchangeShopOverlay');
     const ui = document.getElementById('exchangeShopUI');
     
@@ -26987,6 +27291,10 @@ function upgradeGem(type, level) {
 }
 // 打开藏宝图商店
     function openTreasureShop() {
+        if (player.reincarnationCount < 600) {
+        alert("需要达到600转才能开启藏宝图商店！");
+        return;
+    }
         document.getElementById('treasureShopOverlay').style.display = 'block';
         document.getElementById('treasureShopUI').style.display = 'block';
         updateGemDisplay();
@@ -30301,6 +30609,13 @@ function initExpeditionData() {
 
 // 切换探险系统显示
 function toggleExpeditionSystem() {
+     if (player.reincarnationCount < 30) {
+
+        alert("需要达到30转才能开启伴侣系统！");
+
+        return;
+
+    }
     const ui = document.getElementById('expeditionSystemUI');
     const overlay = document.getElementById('expeditionSystemOverlay');
     
