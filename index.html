@@ -4233,9 +4233,10 @@ select:focus {
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>1.89更新日志</h4>
+            <h4>1.891更新日志</h4>
             <h4>QQ群：902481027  ，864788026，  有问题可以进群问（存档异常联系群管理修复）</h4>
-            <p>2026/02/24:  修复离线收益消失BUG.增加无限深渊：2500开启 藏宝图购买深渊令牌才能挑战 (持续更新，现在很难)。</p>
+            <p>2026/02/25:  无限深渊：增加宝石，符文，加入2转后4个分支，加强全部装备技能，宠物技能，修改怪物伤害逻辑</p>
+            <p>2026/02/24:  修复离线收益消失BUG.增加无限深渊：2500开启 藏宝图购买深渊令牌才能挑战 。</p>
             <p>2026/02/23:  修复模拟投资导致炸档BUG （如果之前有这个导致炸档这个版本自动修复存档） 。</p>
             <p>2026/02/20:  增加抽象时装：世界地图掉落 。还有玩家头像设置：自行设置</p>
             <p>2026/02/17:  增加新轮回副本：轮回试炼副本(轮回2转开启）：有几率掉落T1装备和S1神兽。轮回仙岛副本(轮回3转开启）：有几率掉落T2装备和S2神兽，修复星际舰队属性不会在重置为1级导入存档也不会。 </p>
@@ -4646,7 +4647,7 @@ select:focus {
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v1.8.9</div>
+  <div id="footer">版本号: v1.8.91</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -9570,7 +9571,7 @@ select:focus {
 
 <!-- 无限深渊系统 -->
 <div id="abyssTowerOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:2050;"></div>
-<div id="abyssTowerUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(145deg,#1a0a2e,#0d0518);color:#e0e0e0;padding:20px;border:4px solid #6a0dad;border-radius:20px;z-index:2051;width:920px;max-height:90vh;overflow-y:auto;box-shadow:0 0 40px rgba(106,13,173,0.5);">
+<div id="abyssTowerUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(145deg,#1a0a2e,#0d0518);color:#e0e0e0;padding:20px;border:4px solid #6a0dad;border-radius:20px;z-index:2051;width:1120px;max-height:90vh;overflow-y:auto;box-shadow:0 0 40px rgba(106,13,173,0.5);">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #6a0dad;flex-wrap:wrap;gap:10px;">
         <div style="display:flex;align-items:center;gap:12px;">
             <h2 style="color:#b388ff;margin:0;">&#128301; 无限深渊</h2>
@@ -9729,6 +9730,20 @@ select:focus {
     </div>
 </div>
 
+<!-- 无限深渊-二转分支选择弹窗（4个分支） -->
+<div id="abyssBranchOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:2059;"></div>
+<div id="abyssBranchUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(145deg,#2a1a4a,#1a0a2e);color:#fff;padding:25px;border:3px solid #ffd700;border-radius:15px;z-index:2060;width:620px;text-align:center;">
+    <h3 style="color:#ffd700;margin-bottom:12px;">达到2转！选择职业分支</h3>
+    <p id="abyssBranchHint" style="color:#aaa;font-size:13px;margin-bottom:18px;">选择后不可更改，将决定3转、4转技能路线</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button type="button" id="abyssBranchABtn" style="background:linear-gradient(145deg,#c62828,#8b0000);color:#fff;border:2px solid #ff6b6b;padding:14px 22px;border-radius:12px;cursor:pointer;font-weight:bold;font-size:14px;">分支A</button>
+        <button type="button" id="abyssBranchBBtn" style="background:linear-gradient(145deg,#1565c0,#0d47a1);color:#fff;border:2px solid #42a5f5;padding:14px 22px;border-radius:12px;cursor:pointer;font-weight:bold;font-size:14px;">分支B</button>
+        <button type="button" id="abyssBranchCBtn" style="background:linear-gradient(145deg,#2e7d32,#1b5e20);color:#fff;border:2px solid #4caf50;padding:14px 22px;border-radius:12px;cursor:pointer;font-weight:bold;font-size:14px;">分支C</button>
+        <button type="button" id="abyssBranchDBtn" style="background:linear-gradient(145deg,#6a1b9a,#4a148c);color:#fff;border:2px solid #9c27b0;padding:14px 22px;border-radius:12px;cursor:pointer;font-weight:bold;font-size:14px;">分支D</button>
+    </div>
+    <div id="abyssBranchDesc" style="margin-top:16px;text-align:left;font-size:13px;color:#ce93d8;"></div>
+</div>
+
 <!-- 无限深渊-三选一属性弹窗 -->
 <div id="abyssChoiceOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:2060;"></div>
 <div id="abyssChoiceUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(145deg,#2a1a4a,#1a0a2e);color:#fff;padding:25px;border:3px solid #b388ff;border-radius:15px;z-index:2061;width:680px;text-align:center;">
@@ -9751,7 +9766,7 @@ select:focus {
 <div id="abyssEquipUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(145deg,#1a0a2e,#0d0518);color:#e0e0e0;padding:20px;border:3px solid #6a0dad;border-radius:15px;z-index:2065;width:750px;max-height:88vh;overflow-y:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
         <h3 style="color:#b388ff;margin:0;">装备与背包</h3>
-        <div>闯关金币: <span id="abyssEquipGold" style="color:#ffd700;">0</span> | 升级石: <span id="abyssUpgradeStoneCount" style="color:#00bcd4;">0</span> | 强化石: <span id="abyssEnhanceStoneCount" style="color:#ffd700;">0</span> | 附魔书: <span id="abyssEnchantBookCount" style="color:#9c27b0;">0</span> | 生命药剂: <span id="abyssPotionCount" style="color:#4caf50;">0</span></div>
+        <div>闯关金币: <span id="abyssEquipGold" style="color:#ffd700;">0</span> | 升级石: <span id="abyssUpgradeStoneCount" style="color:#00bcd4;">0</span> | 强化石: <span id="abyssEnhanceStoneCount" style="color:#ffd700;">0</span> | 附魔书: <span id="abyssEnchantBookCount" style="color:#9c27b0;">0</span> | 生命药剂: <span id="abyssPotionCount" style="color:#4caf50;">0</span> | 符文: <span id="abyssRuneCount" style="color:#b388ff;">0</span> | 宝石: <span id="abyssGemCount" style="color:#ffd700;">0</span> | 符文开孔器: <span id="abyssRuneOpenerCount" style="color:#7b1fa2;">0</span> | 宝石开孔器: <span id="abyssGemOpenerCount" style="color:#e65100;">0</span></div>
         <button onclick="closeAbyssEquipmentPanel()" style="background:#4a2c4a;color:#fff;border:none;padding:6px 14px;border-radius:5px;cursor:pointer;">关闭</button>
     </div>
     <div style="margin-bottom:15px;">
@@ -9775,10 +9790,11 @@ select:focus {
     <div id="abyssChallengeShopContent" style="display:flex;flex-direction:column;gap:10px;"></div>
 </div>
 
-<!-- 无限深渊-装备操作弹窗(强化/附魔/卸下/丢弃) -->
+<!-- 无限深渊-装备操作弹窗(强化/附魔/卸下/丢弃/符文/宝石) -->
 <div id="abyssEquipActionOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:2066;"></div>
-<div id="abyssEquipActionUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#2a1a4a;color:#fff;padding:20px;border:2px solid #b388ff;border-radius:12px;z-index:2067;width:380px;">
+<div id="abyssEquipActionUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#2a1a4a;color:#fff;padding:20px;border:2px solid #b388ff;border-radius:12px;z-index:2067;width:420px;max-height:90vh;overflow-y:auto;">
     <div id="abyssEquipActionDetail" style="margin-bottom:15px;font-size:14px;"></div>
+    <div id="abyssEquipRuneGemBlock" style="margin-bottom:12px;font-size:12px;border:1px solid #6a0dad;padding:8px;border-radius:6px;background:rgba(0,0,0,0.3);"></div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;">
         <button id="abyssEquipUpgradeBtn" onclick="abyssEquipUpgrade()" style="background:#00bcd4;color:#000;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;">升级(1个升级石)</button>
         <button id="abyssEquipEnhanceBtn" onclick="abyssEquipEnhance()" style="background:#ff9800;color:#000;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;">强化</button>
@@ -9838,7 +9854,7 @@ select:focus {
 
     <script>
         
-        const GAME_VERSION = "1.8.90";
+        const GAME_VERSION = "1.8.91";
         let versionErrorBlocked = false;
 
         
@@ -65068,15 +65084,24 @@ var ABYSS_CLASSES = [
     { id: 'mage', name: '法师', desc: '技能伤害+15%，智力转化技能伤害+20%', bonus: { skillDmg: 15 }, intToSkillDmgMult: 1.2 },
     { id: 'archer', name: '射手', desc: '暴击率+8%，闪避+6%，敏捷转化暴击/闪避+20%', bonus: { critRate: 8, dodge: 6 }, agiMult: 1.2 }
 ];
-// 每职业1~4转霸气称号，用于显示「等级: 0 (战士·1转)」
+// 每职业1转通用称号，2~4转按分支（共4个分支）
 var ABYSS_ZHUAN_TITLES = {
-    warrior: { 1: '战士', 2: '战将', 3: '战神', 4: '武帝' },
-    mage: { 1: '法师', 2: '魔导师', 3: '大魔导', 4: '法圣' },
-    archer: { 1: '射手', 2: '神射', 3: '箭神', 4: '狩天' }
+    warrior: { 1: '战士', branchA: { 2: '破军·战将', 3: '破军·战神', 4: '破军·武帝' }, branchB: { 2: '铁壁·战将', 3: '铁壁·战神', 4: '铁壁·武帝' }, branchC: { 2: '狂战·战将', 3: '狂战·战神', 4: '狂战·武帝' }, branchD: { 2: '控场·战将', 3: '控场·战神', 4: '控场·武帝' } },
+    mage: { 1: '法师', branchA: { 2: '元素·魔导师', 3: '元素·大魔导', 4: '元素·法圣' }, branchB: { 2: '虚空·魔导师', 3: '虚空·大魔导', 4: '虚空·法圣' }, branchC: { 2: '圣愈·魔导师', 3: '圣愈·大魔导', 4: '圣愈·法圣' }, branchD: { 2: '诅咒·魔导师', 3: '诅咒·大魔导', 4: '诅咒·法圣' } },
+    archer: { 1: '射手', branchA: { 2: '狩魂·神射', 3: '狩魂·箭神', 4: '狩魂·狩天' }, branchB: { 2: '神射·神射', 3: '神射·箭神', 4: '神射·狩天' }, branchC: { 2: '陷阱·神射', 3: '陷阱·箭神', 4: '陷阱·狩天' }, branchD: { 2: '疾风·神射', 3: '疾风·箭神', 4: '疾风·狩天' } }
 };
-function abyssZhuanTitle(classId, zhuan) {
-    var titles = ABYSS_ZHUAN_TITLES[classId || 'warrior'];
-    return (titles && titles[zhuan]) ? titles[zhuan] + '·' + zhuan + '转' : (zhuan + '转');
+// 二转分支名称与描述（用于选择弹窗，共4个分支）
+var ABYSS_BRANCH_INFO = {
+    warrior: { branchA: { name: '破军', desc: '偏爆发与破甲，单体高伤、破防与吸血' }, branchB: { name: '铁壁', desc: '偏生存与反伤，减伤、反伤与群体控场' }, branchC: { name: '狂战', desc: '偏嗜血与连击，高攻、吸血与多段打击' }, branchD: { name: '控场', desc: '偏眩晕与群体，控场、AOE与减速' } },
+    mage: { branchA: { name: '元素', desc: '偏元素与AOE，群体伤害、控制与护盾' }, branchB: { name: '虚空', desc: '偏虚空与穿透，无视魔抗、单体爆发' }, branchC: { name: '圣愈', desc: '偏治疗与护盾，回复、增益与生存' }, branchD: { name: '诅咒', desc: '偏减益与持续伤害，虚弱、侵蚀与削弱' } },
+    archer: { branchA: { name: '狩魂', desc: '偏召唤与多目标，召唤兽、箭雨与持续输出' }, branchB: { name: '神射', desc: '偏暴击与单体，必暴、穿甲与斩杀' }, branchC: { name: '陷阱', desc: '偏陷阱与控场，定身、眩晕与持续伤' }, branchD: { name: '疾风', desc: '偏连击与闪避，多段、疾射与身法' } }
+};
+function abyssZhuanTitle(classId, zhuan, branch) {
+    var t = ABYSS_ZHUAN_TITLES[classId || 'warrior'];
+    if (!t) return zhuan + '转';
+    if (zhuan === 1) return (t[1] || '') + '·1转';
+    var b = (branch && t[branch]) ? t[branch] : null;
+    return (b && b[zhuan]) ? b[zhuan] + '·' + zhuan + '转' : (zhuan + '转');
 }
 
 var ABYSS_TALENTS = [
@@ -65112,99 +65137,319 @@ function abyssMpRegenForLevel(runLevel) {
 
 // 射手召唤物场上总上限（任意召唤技能共用）
 var ABYSS_ARCHER_SUMMON_CAP = 3;
-// 技能 zhuan: 1转/2转/3转/4转 解锁；原有技能保留，每职业234转各增加3个特色技能
+// 技能：1转通用；2转选择分支后解锁 branchA/B/C/D 的 2/3/4 转技能
+function abyssGetSkillList(classId, branch) {
+    var c = ABYSS_CLASS_SKILLS[classId];
+    if (!c) return [];
+    if (Array.isArray(c)) return c;
+    var list = (c.base || []).slice();
+    if (branch && c[branch]) { for (var i = 0; i < c[branch].length; i++) list.push(c[branch][i]); }
+    return list;
+}
 var ABYSS_CLASS_SKILLS = {
-    warrior: [
-        { id: 'war_heavy', name: '重击', desc: '本次伤害170%', cooldown: 2, dmgMult: 1.7, mpCost: 14, zhuan: 1 },
-        { id: 'war_armorBreak', name: '破甲一击', desc: '本次无视怪物50%防御', cooldown: 3, ignoreDefPct: 50, mpCost: 18, zhuan: 1 },
-        { id: 'war_roar', name: '战吼', desc: '本次伤害130%，2回合攻击+25%', cooldown: 4, dmgMult: 1.3, buffAtkPct: 25, buffRounds: 2, mpCost: 22, zhuan: 1 },
-        { id: 'war_slam', name: '猛击', desc: '本次伤害200%', cooldown: 5, dmgMult: 2, mpCost: 26, zhuan: 1 },
-        { id: 'war_iron', name: '铁壁', desc: '本回合受到伤害减少40%', cooldown: 4, reduceDmgPct: 40, mpCost: 20, zhuan: 1 },
-        { id: 'war_blood', name: '嗜血斩', desc: '本次伤害150%，回复30%伤害生命', cooldown: 3, dmgMult: 1.5, lifestealPct: 0.3, mpCost: 16, zhuan: 1 },
-        { id: 'war_cleave', name: '裂地斩', desc: '群体70%伤害', cooldown: 4, aoe: true, aoePct: 0.7, mpCost: 24, zhuan: 1 },
-        { id: 'war_quake', name: '震地波', desc: '2转·群体85%伤害', cooldown: 5, aoe: true, aoePct: 0.85, mpCost: 30, zhuan: 2 },
-        { id: 'war_berserk', name: '狂暴', desc: '2转·本次伤害240%', cooldown: 6, dmgMult: 2.4, mpCost: 34, zhuan: 2 },
-        { id: 'war_guard', name: '不屈', desc: '2转·本回合减伤60%', cooldown: 5, reduceDmgPct: 60, mpCost: 26, zhuan: 2 },
-        { id: 'war_revenge', name: '反击架势', desc: '2转·本回合受击反弹30%伤害', cooldown: 5, counterPct: 30, mpCost: 28, zhuan: 2 },
-        { id: 'war_battlewill', name: '战意燃烧', desc: '2转·本回合攻击+40%', cooldown: 4, buffAtkPct: 40, buffRounds: 1, mpCost: 24, zhuan: 2 },
-        { id: 'war_sunderarmor', name: '裂甲', desc: '2转·本次伤害165%，无视25%防御', cooldown: 4, dmgMult: 1.65, ignoreDefPct: 25, mpCost: 28, zhuan: 2 },
-        { id: 'war_stomp', name: '践踏', desc: '2转·群体60%伤害，35%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.6, stunChance: 0.35, stunTurns: 1, mpCost: 30, zhuan: 2 },
-        { id: 'war_skyfall', name: '天崩斩', desc: '3转·本次伤害280%', cooldown: 6, dmgMult: 2.8, mpCost: 38, zhuan: 3 },
-        { id: 'war_sunder', name: '破灭斩', desc: '3转·无视70%防御，伤害200%', cooldown: 5, ignoreDefPct: 70, dmgMult: 2, mpCost: 36, zhuan: 3 },
-        { id: 'war_bloodlust', name: '血怒', desc: '3转·伤害180%，回复50%伤害生命', cooldown: 4, dmgMult: 1.8, lifestealPct: 0.5, mpCost: 30, zhuan: 3 },
-        { id: 'war_warlord', name: '战神附体', desc: '3转·3回合攻击+35%、减伤15%', cooldown: 8, buffAtkPct: 35, buffRounds: 3, reduceDmgPct: 15, mpCost: 42, zhuan: 3 },
-        { id: 'war_warspirit', name: '战魂', desc: '3转·4回合暴击率+10%、爆伤+20%', cooldown: 7, buffCritRate: 10, buffCritDmg: 20, buffRounds: 4, mpCost: 40, zhuan: 3 },
-        { id: 'war_break', name: '破军', desc: '3转·本次伤害220%，目标生命>70%时额外+25%', cooldown: 5, dmgMult: 2.2, mpCost: 36, zhuan: 3 },
-        { id: 'war_bloodbath', name: '浴血', desc: '3转·本次伤害200%，自身生命低于50%时伤害+40%', cooldown: 5, dmgMult: 2, mpCost: 38, zhuan: 3 },
-        { id: 'war_apocalypse', name: '末日审判', desc: '4转·群体120%伤害', cooldown: 7, aoe: true, aoePct: 1.2, mpCost: 48, zhuan: 4 },
-        { id: 'war_titan', name: '泰坦之握', desc: '4转·本次伤害350%', cooldown: 8, dmgMult: 3.5, mpCost: 52, zhuan: 4 },
-        { id: 'war_immortal', name: '不灭战意', desc: '4转·5回合攻击+20%、减伤25%', cooldown: 10, buffAtkPct: 20, buffRounds: 5, reduceDmgPct: 25, mpCost: 50, zhuan: 4 },
-        { id: 'war_heaven', name: '天罚', desc: '4转·群体100%伤害，眩晕目标受伤+50%', cooldown: 7, aoe: true, aoePct: 1, dmgMult: 1, mpCost: 46, zhuan: 4 },
-        { id: 'war_fortress', name: '霸体', desc: '4转·本回合免疫眩晕且减伤20%', cooldown: 6, reduceDmgPct: 20, immuneStun: true, mpCost: 44, zhuan: 4 },
-        { id: 'war_doomsday', name: '灭世斩', desc: '4转·本次伤害400%', cooldown: 10, dmgMult: 4, mpCost: 58, zhuan: 4 }
-    ],
-    mage: [
-        { id: 'mage_fireball', name: '火球术', desc: '本次伤害215%（受技能伤害加成）', cooldown: 3, dmgMult: 2.15, useSkillDmg: true, mpCost: 16, zhuan: 1 },
-        { id: 'mage_ice', name: '冰锥', desc: '本次伤害140%，50%眩晕1回合', cooldown: 3, dmgMult: 1.4, stunChance: 0.5, stunTurns: 1, mpCost: 14, zhuan: 1 },
-        { id: 'mage_arcane', name: '奥术涌动', desc: '本次伤害170%，技能伤害+40%', cooldown: 4, dmgMult: 1.7, skillDmgBonus: 40, mpCost: 24, zhuan: 1 },
-        { id: 'mage_meteor', name: '陨石', desc: '本次伤害250%', cooldown: 5, dmgMult: 2.5, mpCost: 30, zhuan: 1 },
-        { id: 'mage_shield', name: '法力护盾', desc: '获得生命上限20%护盾', cooldown: 4, shieldPct: 0.2, mpCost: 22, zhuan: 1 },
-        { id: 'mage_drain', name: '生命汲取', desc: '本次伤害120%，回复50%伤害生命', cooldown: 3, dmgMult: 1.2, lifestealPct: 0.5, mpCost: 20, zhuan: 1 },
-        { id: 'mage_blizzard', name: '暴风雪', desc: '群体65%伤害', cooldown: 5, aoe: true, aoePct: 0.65, mpCost: 28, zhuan: 1 },
-        { id: 'mage_chain', name: '闪电链', desc: '2转·群体90%伤害', cooldown: 4, aoe: true, aoePct: 0.9, mpCost: 28, zhuan: 2 },
-        { id: 'mage_tide', name: '法力潮汐', desc: '2转·回复30%最大魔法，2回合技能伤害+25%', cooldown: 6, mpRegenPct: 0.3, skillDmgBonus: 25, mpCost: 8, zhuan: 2 },
-        { id: 'mage_frost', name: '极寒新星', desc: '2转·伤害200%，80%眩晕1回合', cooldown: 5, dmgMult: 2, stunChance: 0.8, stunTurns: 1, mpCost: 32, zhuan: 2 },
-        { id: 'mage_void', name: '虚空箭', desc: '2转·无视30%魔抗，伤害260%', cooldown: 4, dmgMult: 2.6, ignoreDefPct: 30, mpCost: 30, zhuan: 2 },
-        { id: 'mage_missile', name: '奥术飞弹', desc: '2转·3次50%伤害', cooldown: 4, multiHit: 3, multiHitPct: 0.5, mpCost: 26, zhuan: 2 },
-        { id: 'mage_burst', name: '元素爆发', desc: '2转·伤害180%，50%眩晕1回合', cooldown: 5, dmgMult: 1.8, stunChance: 0.5, stunTurns: 1, mpCost: 30, zhuan: 2 },
-        { id: 'mage_flux', name: '奥术脉动', desc: '2转·本次伤害160%，下回合魔法回复+15点', cooldown: 5, dmgMult: 1.6, mpRegenFlat: 15, mpCost: 24, zhuan: 2 },
-        { id: 'mage_golem', name: '奥术傀儡', desc: '3转·召唤傀儡(15%属性)协助作战，最多1个', cooldown: 10, summonBeast: true, summonPct: 0.15, summonMax: 1, summonName: '奥术傀儡', mpCost: 42, zhuan: 3 },
-        { id: 'mage_inferno', name: '炼狱火', desc: '3转·群体80%伤害', cooldown: 6, aoe: true, aoePct: 0.8, dmgMult: 1.2, mpCost: 40, zhuan: 3 },
-        { id: 'mage_mana', name: '奥术洪流', desc: '3转·伤害300%，技能伤害+50%', cooldown: 5, dmgMult: 3, skillDmgBonus: 50, mpCost: 38, zhuan: 3 },
-        { id: 'mage_barrier', name: '元素护盾', desc: '3转·获得30%生命护盾', cooldown: 5, shieldPct: 0.3, mpCost: 32, zhuan: 3 },
-        { id: 'mage_beam', name: '奥术光束', desc: '3转·本次伤害270%，无视20%魔抗', cooldown: 5, dmgMult: 2.7, ignoreDefPct: 20, mpCost: 40, zhuan: 3 },
-        { id: 'mage_curse', name: '虚弱诅咒', desc: '3转·本次伤害150%，目标下回合受到伤害+20%', cooldown: 6, dmgMult: 1.5, mpCost: 34, zhuan: 3 },
-        { id: 'mage_icewall', name: '冰墙', desc: '3转·获得25%生命护盾，50%眩晕攻击者1回合', cooldown: 6, shieldPct: 0.25, mpCost: 36, zhuan: 3 },
-        { id: 'mage_nexus', name: '虚空裂隙', desc: '4转·群体130%伤害，50%眩晕1回合', cooldown: 8, aoe: true, aoePct: 1.3, stunChance: 0.5, stunTurns: 1, mpCost: 56, zhuan: 4 },
-        { id: 'mage_blackhole', name: '黑洞', desc: '4转·群体110%伤害', cooldown: 8, aoe: true, aoePct: 1.1, dmgMult: 1.2, mpCost: 52, zhuan: 4 },
-        { id: 'mage_world', name: '世界终结', desc: '4转·本次伤害400%', cooldown: 9, dmgMult: 4, mpCost: 58, zhuan: 4 },
-        { id: 'mage_starfall', name: '星陨', desc: '4转·群体95%伤害，每命中一目标回复5%最大魔法', cooldown: 7, aoe: true, aoePct: 0.95, mpRegenPct: 0.05, mpCost: 50, zhuan: 4 },
-        { id: 'mage_voidburst', name: '虚空爆裂', desc: '4转·本次伤害350%，无视40%魔抗', cooldown: 8, dmgMult: 3.5, ignoreDefPct: 40, mpCost: 54, zhuan: 4 },
-        { id: 'mage_timestop', name: '时停', desc: '4转·群体80%伤害，70%眩晕2回合', cooldown: 9, aoe: true, aoePct: 0.8, stunChance: 0.7, stunTurns: 2, mpCost: 56, zhuan: 4 }
-    ],
-    archer: [
-        { id: 'archer_precise', name: '精准射击', desc: '必暴击，本次伤害140%', cooldown: 2, forceCrit: true, dmgMult: 1.4, mpCost: 12, zhuan: 1 },
-        { id: 'archer_multi', name: '多重箭', desc: '2次85%伤害（独立暴击/连击）', cooldown: 3, multiHit: 2, multiHitPct: 0.85, mpCost: 18, zhuan: 1 },
-        { id: 'archer_wind', name: '疾风步', desc: '本回合闪避+30%', cooldown: 4, dodgeBonus: 30, mpCost: 20, zhuan: 1 },
-        { id: 'archer_poison', name: '毒箭', desc: '本次伤害130%，50%眩晕1回合', cooldown: 3, dmgMult: 1.3, stunChance: 0.5, stunTurns: 1, mpCost: 16, zhuan: 1 },
-        { id: 'archer_rain', name: '箭雨', desc: '3次60%伤害', cooldown: 4, multiHit: 3, multiHitPct: 0.6, mpCost: 24, zhuan: 1 },
-        { id: 'archer_aim', name: '弱点射击', desc: '必暴击，本次伤害180%', cooldown: 5, forceCrit: true, dmgMult: 1.8, mpCost: 28, zhuan: 1 },
-        { id: 'archer_scatter', name: '散射', desc: '群体60%伤害', cooldown: 4, aoe: true, aoePct: 0.6, mpCost: 22, zhuan: 1 },
-        { id: 'archer_wolf', name: '召唤·狩魂灵狼', desc: '1转·召唤灵狼(15%属性)，场上召唤物最多3只', cooldown: 5, summonBeast: true, summonPct: 0.15, summonName: '狩魂灵狼', archerSummon: true, mpCost: 24, zhuan: 1 },
-        { id: 'archer_storm', name: '风暴箭', desc: '2转·群体75%伤害', cooldown: 5, aoe: true, aoePct: 0.75, mpCost: 28, zhuan: 2 },
-        { id: 'archer_pierce', name: '穿透箭', desc: '2转·无视50%防御，伤害160%', cooldown: 4, ignoreDefPct: 50, dmgMult: 1.6, mpCost: 26, zhuan: 2 },
-        { id: 'archer_shadow', name: '暗影步', desc: '2转·本回合闪避+50%', cooldown: 5, dodgeBonus: 50, mpCost: 26, zhuan: 2 },
-        { id: 'archer_beast', name: '召唤·幽冥战兽', desc: '2转·召唤战兽(20%属性)，场上最多3只', cooldown: 6, summonBeast: true, summonPct: 0.2, summonName: '幽冥战兽', archerSummon: true, mpCost: 34, zhuan: 2 },
-        { id: 'archer_marksman', name: '神射', desc: '2转·必暴击，本次伤害200%', cooldown: 5, forceCrit: true, dmgMult: 2, mpCost: 30, zhuan: 2 },
-        { id: 'archer_windarrow', name: '风之箭', desc: '2转·群体65%伤害，本回合闪避+15%', cooldown: 5, aoe: true, aoePct: 0.65, dodgeBonus: 15, mpCost: 28, zhuan: 2 },
-        { id: 'archer_ambush', name: '伏击', desc: '2转·本次伤害190%，50%眩晕1回合', cooldown: 4, dmgMult: 1.9, stunChance: 0.5, stunTurns: 1, mpCost: 30, zhuan: 2 },
-        { id: 'archer_snipe', name: '狙杀', desc: '3转·必暴击，伤害250%', cooldown: 6, forceCrit: true, dmgMult: 2.5, mpCost: 38, zhuan: 3 },
-        { id: 'archer_barrage', name: '弹幕', desc: '3转·4次70%伤害', cooldown: 5, multiHit: 4, multiHitPct: 0.7, mpCost: 36, zhuan: 3 },
-        { id: 'archer_trap', name: '冰霜陷阱', desc: '3转·伤害180%，70%眩晕2回合', cooldown: 5, dmgMult: 1.8, stunChance: 0.7, stunTurns: 2, mpCost: 34, zhuan: 3 },
-        { id: 'archer_phantom', name: '召唤·寂灭影狩', desc: '3转·召唤影狩(25%属性)，场上最多3只', cooldown: 8, summonBeast: true, summonPct: 0.25, summonName: '寂灭影狩', archerSummon: true, mpCost: 44, zhuan: 3 },
-        { id: 'archer_heartseeker', name: '穿心', desc: '3转·无视40%防御，伤害230%', cooldown: 5, ignoreDefPct: 40, dmgMult: 2.3, mpCost: 40, zhuan: 3 },
-        { id: 'archer_ghost', name: '鬼步', desc: '3转·本回合闪避+60%，下次攻击伤害+20%', cooldown: 6, dodgeBonus: 60, mpCost: 32, zhuan: 3 },
-        { id: 'archer_rapid', name: '疾射', desc: '3转·5次55%伤害', cooldown: 5, multiHit: 5, multiHitPct: 0.55, mpCost: 38, zhuan: 3 },
-        { id: 'archer_rainstorm', name: '箭雨风暴', desc: '4转·群体100%伤害', cooldown: 7, aoe: true, aoePct: 1, dmgMult: 1.1, mpCost: 46, zhuan: 4 },
-        { id: 'archer_death', name: '死亡标记', desc: '4转·必暴击，伤害320%', cooldown: 8, forceCrit: true, dmgMult: 3.2, mpCost: 50, zhuan: 4 },
-        { id: 'archer_eternal', name: '召唤·万兽朝宗', desc: '4转·召唤至尊兽灵(30%属性)，场上最多3只', cooldown: 10, summonBeast: true, summonPct: 0.3, summonName: '万兽朝宗', archerSummon: true, mpCost: 56, zhuan: 4 },
-        { id: 'archer_typhoon', name: '飓风箭', desc: '4转·群体110%伤害', cooldown: 7, aoe: true, aoePct: 1.1, dmgMult: 1, mpCost: 48, zhuan: 4 },
-        { id: 'archer_execute', name: '处决', desc: '4转·必暴击，伤害360%，目标生命低于30%时+50%', cooldown: 9, forceCrit: true, dmgMult: 3.6, mpCost: 54, zhuan: 4 },
-        { id: 'archer_phantomrain', name: '幻影箭雨', desc: '4转·6次55%伤害', cooldown: 8, multiHit: 6, multiHitPct: 0.55, mpCost: 52, zhuan: 4 }
-    ]
+    warrior: {
+        base: [
+            { id: 'war_heavy', name: '重击', desc: '本次伤害170%', cooldown: 2, dmgMult: 1.7, mpCost: 14, zhuan: 1 },
+            { id: 'war_armorBreak', name: '破甲一击', desc: '本次无视怪物50%防御', cooldown: 3, ignoreDefPct: 50, mpCost: 18, zhuan: 1 },
+            { id: 'war_roar', name: '战吼', desc: '本次伤害130%，2回合攻击+25%', cooldown: 4, dmgMult: 1.3, buffAtkPct: 25, buffRounds: 2, mpCost: 22, zhuan: 1 },
+            { id: 'war_slam', name: '猛击', desc: '本次伤害200%', cooldown: 5, dmgMult: 2, mpCost: 26, zhuan: 1 },
+            { id: 'war_iron', name: '铁壁', desc: '本回合受到伤害减少40%', cooldown: 4, reduceDmgPct: 40, mpCost: 20, zhuan: 1 },
+            { id: 'war_blood', name: '嗜血斩', desc: '本次伤害150%，回复30%伤害生命', cooldown: 3, dmgMult: 1.5, lifestealPct: 0.3, mpCost: 16, zhuan: 1 },
+            { id: 'war_cleave', name: '裂地斩', desc: '群体70%伤害', cooldown: 4, aoe: true, aoePct: 0.7, mpCost: 24, zhuan: 1 }
+        ],
+        // 破军：爆发/破甲/单体高伤
+        branchA: [
+            { id: 'war_quake', name: '震地波', desc: '2转·群体85%伤害', cooldown: 5, aoe: true, aoePct: 0.85, mpCost: 30, zhuan: 2 },
+            { id: 'war_berserk', name: '狂暴', desc: '2转·本次伤害240%', cooldown: 6, dmgMult: 2.4, mpCost: 34, zhuan: 2 },
+            { id: 'war_battlewill', name: '战意燃烧', desc: '2转·本回合攻击+40%', cooldown: 4, buffAtkPct: 40, buffRounds: 1, mpCost: 24, zhuan: 2 },
+            { id: 'war_sunderarmor', name: '裂甲', desc: '2转·本次伤害165%，无视25%防御', cooldown: 4, dmgMult: 1.65, ignoreDefPct: 25, mpCost: 28, zhuan: 2 },
+            { id: 'war_bloodthirst', name: '破军·嗜血', desc: '2转·伤害190%，回复40%伤害生命', cooldown: 3, dmgMult: 1.9, lifestealPct: 0.4, mpCost: 26, zhuan: 2 },
+            { id: 'war_crush', name: '破军·碎骨', desc: '2转·本次伤害210%，无视20%防御', cooldown: 4, dmgMult: 2.1, ignoreDefPct: 20, mpCost: 28, zhuan: 2 },
+            { id: 'war_onslaught', name: '破军·冲锋', desc: '2转·本次伤害200%，下回合攻击+30%', cooldown: 5, dmgMult: 2, buffAtkPct: 30, buffRounds: 1, mpCost: 30, zhuan: 2 },
+            { id: 'war_skyfall', name: '天崩斩', desc: '3转·本次伤害280%', cooldown: 6, dmgMult: 2.8, mpCost: 38, zhuan: 3 },
+            { id: 'war_sunder', name: '破灭斩', desc: '3转·无视70%防御，伤害200%', cooldown: 5, ignoreDefPct: 70, dmgMult: 2, mpCost: 36, zhuan: 3 },
+            { id: 'war_bloodlust', name: '血怒', desc: '3转·伤害180%，回复50%伤害生命', cooldown: 4, dmgMult: 1.8, lifestealPct: 0.5, mpCost: 30, zhuan: 3 },
+            { id: 'war_warlord', name: '战神附体', desc: '3转·3回合攻击+35%、减伤15%', cooldown: 8, buffAtkPct: 35, buffRounds: 3, reduceDmgPct: 15, mpCost: 42, zhuan: 3 },
+            { id: 'war_warspirit', name: '战魂', desc: '3转·4回合暴击率+10%、爆伤+20%', cooldown: 7, buffCritRate: 10, buffCritDmg: 20, buffRounds: 4, mpCost: 40, zhuan: 3 },
+            { id: 'war_break', name: '破军', desc: '3转·本次伤害220%，目标生命>70%时额外+25%', cooldown: 5, dmgMult: 2.2, mpCost: 36, zhuan: 3 },
+            { id: 'war_bloodbath', name: '浴血', desc: '3转·本次伤害200%，自身生命低于50%时伤害+40%', cooldown: 5, dmgMult: 2, mpCost: 38, zhuan: 3 },
+            { id: 'war_apocalypse', name: '末日审判', desc: '4转·群体120%伤害', cooldown: 7, aoe: true, aoePct: 1.2, mpCost: 48, zhuan: 4 },
+            { id: 'war_titan', name: '泰坦之握', desc: '4转·本次伤害350%', cooldown: 8, dmgMult: 3.5, mpCost: 52, zhuan: 4 },
+            { id: 'war_immortal', name: '不灭战意', desc: '4转·5回合攻击+20%、减伤25%', cooldown: 10, buffAtkPct: 20, buffRounds: 5, reduceDmgPct: 25, mpCost: 50, zhuan: 4 },
+            { id: 'war_heaven', name: '天罚', desc: '4转·群体100%伤害', cooldown: 7, aoe: true, aoePct: 1, dmgMult: 1, mpCost: 46, zhuan: 4 },
+            { id: 'war_fortress', name: '霸体', desc: '4转·本回合免疫眩晕且减伤20%', cooldown: 6, reduceDmgPct: 20, immuneStun: true, mpCost: 44, zhuan: 4 },
+            { id: 'war_doomsday', name: '灭世斩', desc: '4转·本次伤害400%', cooldown: 10, dmgMult: 4, mpCost: 58, zhuan: 4 }
+        ],
+        // 铁壁：生存/反伤/群体减伤
+        branchB: [
+            { id: 'war_guard', name: '不屈', desc: '2转·本回合减伤60%', cooldown: 5, reduceDmgPct: 60, mpCost: 26, zhuan: 2 },
+            { id: 'war_revenge', name: '反击架势', desc: '2转·本回合受击反弹30%伤害', cooldown: 5, counterPct: 30, mpCost: 28, zhuan: 2 },
+            { id: 'war_stomp', name: '践踏', desc: '2转·群体60%伤害，35%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.6, stunChance: 0.35, stunTurns: 1, mpCost: 30, zhuan: 2 },
+            { id: 'war_ironwall', name: '铁壁·铜墙', desc: '2转·本回合减伤50%，反伤15%', cooldown: 5, reduceDmgPct: 50, counterPct: 15, mpCost: 28, zhuan: 2 },
+            { id: 'war_taunt', name: '铁壁·嘲讽', desc: '2转·本回合减伤35%，受击反伤25%', cooldown: 4, reduceDmgPct: 35, counterPct: 25, mpCost: 24, zhuan: 2 },
+            { id: 'war_groundslam', name: '铁壁·地动', desc: '2转·群体55%伤害，40%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.55, stunChance: 0.4, stunTurns: 1, mpCost: 32, zhuan: 2 },
+            { id: 'war_endure', name: '铁壁·坚韧', desc: '2转·2回合减伤30%', cooldown: 6, reduceDmgPct: 30, buffRounds: 2, mpCost: 26, zhuan: 2 },
+            { id: 'war_bulwark', name: '铁壁·壁垒', desc: '3转·本回合减伤70%，反伤20%', cooldown: 6, reduceDmgPct: 70, counterPct: 20, mpCost: 36, zhuan: 3 },
+            { id: 'war_thorns', name: '荆棘反甲', desc: '3转·3回合受击反弹35%伤害', cooldown: 8, counterPct: 35, buffRounds: 3, mpCost: 40, zhuan: 3 },
+            { id: 'war_quake2', name: '铁壁·震波', desc: '3转·群体75%伤害，50%眩晕1回合', cooldown: 6, aoe: true, aoePct: 0.75, stunChance: 0.5, stunTurns: 1, mpCost: 38, zhuan: 3 },
+            { id: 'war_steadfast', name: '岿然不动', desc: '3转·本回合免疫眩晕，减伤45%', cooldown: 5, reduceDmgPct: 45, immuneStun: true, mpCost: 34, zhuan: 3 },
+            { id: 'war_legion', name: '铁壁·军阵', desc: '3转·2回合减伤40%、攻击+20%', cooldown: 7, reduceDmgPct: 40, buffAtkPct: 20, buffRounds: 2, mpCost: 42, zhuan: 3 },
+            { id: 'war_rampart', name: '铁壁·城垣', desc: '3转·获得生命上限25%护盾', cooldown: 5, shieldPct: 0.25, mpCost: 32, zhuan: 3 },
+            { id: 'war_laststand', name: '背水一战', desc: '3转·生命低于40%时本回合减伤50%、反伤30%', cooldown: 6, reduceDmgPct: 50, counterPct: 30, mpCost: 40, zhuan: 3 },
+            { id: 'war_immortalwall', name: '不破壁垒', desc: '4转·本回合减伤80%，反伤40%', cooldown: 8, reduceDmgPct: 80, counterPct: 40, mpCost: 50, zhuan: 4 },
+            { id: 'war_judgment', name: '铁壁·天谴', desc: '4转·群体90%伤害，眩晕目标受伤+30%', cooldown: 7, aoe: true, aoePct: 0.9, mpCost: 48, zhuan: 4 },
+            { id: 'war_eternalguard', name: '永恒守护', desc: '4转·4回合减伤35%、反伤25%', cooldown: 10, reduceDmgPct: 35, counterPct: 25, buffRounds: 4, mpCost: 54, zhuan: 4 },
+            { id: 'war_colossus', name: '泰坦壁垒', desc: '4转·获得40%生命护盾，本回合减伤30%', cooldown: 8, shieldPct: 0.4, reduceDmgPct: 30, mpCost: 52, zhuan: 4 },
+            { id: 'war_worldshield', name: '世界之壁', desc: '4转·本回合免疫眩晕且减伤60%', cooldown: 9, reduceDmgPct: 60, immuneStun: true, mpCost: 56, zhuan: 4 },
+            { id: 'war_apocalypse_b', name: '铁壁·末日', desc: '4转·群体100%伤害，50%眩晕1回合', cooldown: 8, aoe: true, aoePct: 1, stunChance: 0.5, stunTurns: 1, mpCost: 58, zhuan: 4 }
+        ],
+        branchC: [
+            { id: 'war_frenzy_c1', name: '狂战·狂怒', desc: '2转·本次伤害220%，回复35%伤害生命', cooldown: 3, dmgMult: 2.2, lifestealPct: 0.35, mpCost: 26, zhuan: 2 },
+            { id: 'war_frenzy_c2', name: '狂战·连斩', desc: '2转·2次100%伤害', cooldown: 4, multiHit: 2, multiHitPct: 1, mpCost: 28, zhuan: 2 },
+            { id: 'war_frenzy_c3', name: '狂战·嗜血', desc: '2转·伤害190%，回复45%伤害生命', cooldown: 3, dmgMult: 1.9, lifestealPct: 0.45, mpCost: 24, zhuan: 2 },
+            { id: 'war_frenzy_c4', name: '狂战·暴走', desc: '2转·本回合攻击+50%', cooldown: 5, buffAtkPct: 50, buffRounds: 1, mpCost: 30, zhuan: 2 },
+            { id: 'war_frenzy_c5', name: '狂战·血刃', desc: '2转·伤害200%，吸血40%', cooldown: 4, dmgMult: 2, lifestealPct: 0.4, mpCost: 32, zhuan: 2 },
+            { id: 'war_frenzy_c6', name: '狂战·三连', desc: '2转·3次75%伤害', cooldown: 4, multiHit: 3, multiHitPct: 0.75, mpCost: 30, zhuan: 2 },
+            { id: 'war_frenzy_c7', name: '狂战·渴血', desc: '2转·伤害180%，回复50%伤害生命', cooldown: 3, dmgMult: 1.8, lifestealPct: 0.5, mpCost: 28, zhuan: 2 },
+            { id: 'war_frenzy_c8', name: '狂战·血性', desc: '3转·4回合攻击+25%、吸血+15%', cooldown: 8, buffAtkPct: 25, buffRounds: 4, mpCost: 42, zhuan: 3 },
+            { id: 'war_frenzy_c9', name: '狂战·裂魂', desc: '3转·伤害260%，回复50%伤害生命', cooldown: 5, dmgMult: 2.6, lifestealPct: 0.5, mpCost: 40, zhuan: 3 },
+            { id: 'war_frenzy_c10', name: '狂战·四连', desc: '3转·4次80%伤害', cooldown: 5, multiHit: 4, multiHitPct: 0.8, mpCost: 38, zhuan: 3 },
+            { id: 'war_frenzy_c11', name: '狂战·血祭', desc: '3转·伤害240%，吸血55%', cooldown: 5, dmgMult: 2.4, lifestealPct: 0.55, mpCost: 44, zhuan: 3 },
+            { id: 'war_frenzy_c12', name: '狂战·战狂', desc: '3转·本回合攻击+60%、连击+20%', cooldown: 6, buffAtkPct: 60, buffRounds: 1, mpCost: 42, zhuan: 3 },
+            { id: 'war_frenzy_c13', name: '狂战·饮血', desc: '3转·伤害220%，回复60%伤害生命', cooldown: 4, dmgMult: 2.2, lifestealPct: 0.6, mpCost: 40, zhuan: 3 },
+            { id: 'war_frenzy_c14', name: '狂战·五连', desc: '3转·5次70%伤害', cooldown: 6, multiHit: 5, multiHitPct: 0.7, mpCost: 46, zhuan: 3 },
+            { id: 'war_frenzy_c15', name: '狂战·血神', desc: '4转·伤害380%，回复70%伤害生命', cooldown: 9, dmgMult: 3.8, lifestealPct: 0.7, mpCost: 56, zhuan: 4 },
+            { id: 'war_frenzy_c16', name: '狂战·灭魂', desc: '4转·6次65%伤害', cooldown: 8, multiHit: 6, multiHitPct: 0.65, mpCost: 54, zhuan: 4 },
+            { id: 'war_frenzy_c17', name: '狂战·天嗜', desc: '4转·5回合攻击+30%、吸血+20%', cooldown: 10, buffAtkPct: 30, buffRounds: 5, mpCost: 58, zhuan: 4 },
+            { id: 'war_frenzy_c18', name: '狂战·血海', desc: '4转·伤害350%，回复65%伤害生命', cooldown: 8, dmgMult: 3.5, lifestealPct: 0.65, mpCost: 52, zhuan: 4 },
+            { id: 'war_frenzy_c19', name: '狂战·弑神', desc: '4转·本次伤害420%', cooldown: 10, dmgMult: 4.2, mpCost: 60, zhuan: 4 },
+            { id: 'war_frenzy_c20', name: '狂战·无尽', desc: '4转·群体90%伤害，回复30%伤害生命', cooldown: 8, aoe: true, aoePct: 0.9, lifestealPct: 0.3, mpCost: 55, zhuan: 4 }
+        ],
+        branchD: [
+            { id: 'war_cc_d1', name: '控场·震击', desc: '2转·群体65%伤害，40%眩晕1回合', cooldown: 4, aoe: true, aoePct: 0.65, stunChance: 0.4, stunTurns: 1, mpCost: 28, zhuan: 2 },
+            { id: 'war_cc_d2', name: '控场·践踏', desc: '2转·群体60%伤害，35%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.6, stunChance: 0.35, stunTurns: 1, mpCost: 30, zhuan: 2 },
+            { id: 'war_cc_d3', name: '控场·怒吼', desc: '2转·群体55%伤害，50%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.55, stunChance: 0.5, stunTurns: 1, mpCost: 32, zhuan: 2 },
+            { id: 'war_cc_d4', name: '控场·震慑', desc: '2转·本次伤害160%，60%眩晕1回合', cooldown: 4, dmgMult: 1.6, stunChance: 0.6, stunTurns: 1, mpCost: 26, zhuan: 2 },
+            { id: 'war_cc_d5', name: '控场·地裂', desc: '2转·群体70%伤害，30%眩晕2回合', cooldown: 5, aoe: true, aoePct: 0.7, stunChance: 0.3, stunTurns: 2, mpCost: 34, zhuan: 2 },
+            { id: 'war_cc_d6', name: '控场·压制', desc: '2转·伤害180%，45%眩晕1回合', cooldown: 4, dmgMult: 1.8, stunChance: 0.45, stunTurns: 1, mpCost: 28, zhuan: 2 },
+            { id: 'war_cc_d7', name: '控场·锁足', desc: '2转·群体50%伤害，55%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.5, stunChance: 0.55, stunTurns: 1, mpCost: 30, zhuan: 2 },
+            { id: 'war_cc_d8', name: '控场·天崩', desc: '3转·群体85%伤害，50%眩晕1回合', cooldown: 6, aoe: true, aoePct: 0.85, stunChance: 0.5, stunTurns: 1, mpCost: 40, zhuan: 3 },
+            { id: 'war_cc_d9', name: '控场·山崩', desc: '3转·群体80%伤害，60%眩晕1回合', cooldown: 6, aoe: true, aoePct: 0.8, stunChance: 0.6, stunTurns: 1, mpCost: 42, zhuan: 3 },
+            { id: 'war_cc_d10', name: '控场·定身', desc: '3转·伤害220%，70%眩晕2回合', cooldown: 5, dmgMult: 2.2, stunChance: 0.7, stunTurns: 2, mpCost: 38, zhuan: 3 },
+            { id: 'war_cc_d11', name: '控场·震晕', desc: '3转·群体75%伤害，65%眩晕1回合', cooldown: 6, aoe: true, aoePct: 0.75, stunChance: 0.65, stunTurns: 1, mpCost: 44, zhuan: 3 },
+            { id: 'war_cc_d12', name: '控场·镇压', desc: '3转·伤害200%，55%眩晕2回合', cooldown: 5, dmgMult: 2, stunChance: 0.55, stunTurns: 2, mpCost: 40, zhuan: 3 },
+            { id: 'war_cc_d13', name: '控场·崩裂', desc: '3转·群体90%伤害，40%眩晕2回合', cooldown: 7, aoe: true, aoePct: 0.9, stunChance: 0.4, stunTurns: 2, mpCost: 46, zhuan: 3 },
+            { id: 'war_cc_d14', name: '控场·囚笼', desc: '3转·本次伤害250%，80%眩晕1回合', cooldown: 6, dmgMult: 2.5, stunChance: 0.8, stunTurns: 1, mpCost: 42, zhuan: 3 },
+            { id: 'war_cc_d15', name: '控场·末日波', desc: '4转·群体110%伤害，60%眩晕1回合', cooldown: 8, aoe: true, aoePct: 1.1, stunChance: 0.6, stunTurns: 1, mpCost: 52, zhuan: 4 },
+            { id: 'war_cc_d16', name: '控场·天罚波', desc: '4转·群体100%伤害，70%眩晕2回合', cooldown: 8, aoe: true, aoePct: 1, stunChance: 0.7, stunTurns: 2, mpCost: 54, zhuan: 4 },
+            { id: 'war_cc_d17', name: '控场·永锢', desc: '4转·伤害300%，90%眩晕2回合', cooldown: 9, dmgMult: 3, stunChance: 0.9, stunTurns: 2, mpCost: 56, zhuan: 4 },
+            { id: 'war_cc_d18', name: '控场·灭世波', desc: '4转·群体120%伤害，50%眩晕2回合', cooldown: 9, aoe: true, aoePct: 1.2, stunChance: 0.5, stunTurns: 2, mpCost: 58, zhuan: 4 },
+            { id: 'war_cc_d19', name: '控场·神罚', desc: '4转·群体95%伤害，75%眩晕2回合', cooldown: 8, aoe: true, aoePct: 0.95, stunChance: 0.75, stunTurns: 2, mpCost: 55, zhuan: 4 },
+            { id: 'war_cc_d20', name: '控场·终焉', desc: '4转·群体130%伤害，65%眩晕1回合', cooldown: 10, aoe: true, aoePct: 1.3, stunChance: 0.65, stunTurns: 1, mpCost: 60, zhuan: 4 }
+        ]
+    },
+    mage: {
+        base: [
+            { id: 'mage_fireball', name: '火球术', desc: '本次伤害215%（受技能伤害加成）', cooldown: 3, dmgMult: 2.15, useSkillDmg: true, mpCost: 16, zhuan: 1 },
+            { id: 'mage_ice', name: '冰锥', desc: '本次伤害140%，50%眩晕1回合', cooldown: 3, dmgMult: 1.4, stunChance: 0.5, stunTurns: 1, mpCost: 14, zhuan: 1 },
+            { id: 'mage_arcane', name: '奥术涌动', desc: '本次伤害170%，技能伤害+40%', cooldown: 4, dmgMult: 1.7, skillDmgBonus: 40, mpCost: 24, zhuan: 1 },
+            { id: 'mage_meteor', name: '陨石', desc: '本次伤害250%', cooldown: 5, dmgMult: 2.5, mpCost: 30, zhuan: 1 },
+            { id: 'mage_shield', name: '法力护盾', desc: '获得生命上限20%护盾', cooldown: 4, shieldPct: 0.2, mpCost: 22, zhuan: 1 },
+            { id: 'mage_drain', name: '生命汲取', desc: '本次伤害120%，回复50%伤害生命', cooldown: 3, dmgMult: 1.2, lifestealPct: 0.5, mpCost: 20, zhuan: 1 },
+            { id: 'mage_blizzard', name: '暴风雪', desc: '群体65%伤害', cooldown: 5, aoe: true, aoePct: 0.65, mpCost: 28, zhuan: 1 }
+        ],
+        branchA: [
+            { id: 'mage_chain', name: '闪电链', desc: '2转·群体90%伤害', cooldown: 4, aoe: true, aoePct: 0.9, mpCost: 28, zhuan: 2 },
+            { id: 'mage_tide', name: '法力潮汐', desc: '2转·回复30%最大魔法，2回合技能伤害+25%', cooldown: 6, mpRegenPct: 0.3, skillDmgBonus: 25, mpCost: 8, zhuan: 2 },
+            { id: 'mage_frost', name: '极寒新星', desc: '2转·伤害200%，80%眩晕1回合', cooldown: 5, dmgMult: 2, stunChance: 0.8, stunTurns: 1, mpCost: 32, zhuan: 2 },
+            { id: 'mage_flamewave', name: '元素·烈焰波', desc: '2转·群体75%伤害', cooldown: 4, aoe: true, aoePct: 0.75, mpCost: 26, zhuan: 2 },
+            { id: 'mage_icebind', name: '元素·冰缚', desc: '2转·伤害180%，70%眩晕1回合', cooldown: 4, dmgMult: 1.8, stunChance: 0.7, stunTurns: 1, mpCost: 28, zhuan: 2 },
+            { id: 'mage_arcaneburst', name: '元素·奥术爆发', desc: '2转·伤害190%，技能伤害+30%', cooldown: 5, dmgMult: 1.9, skillDmgBonus: 30, mpCost: 30, zhuan: 2 },
+            { id: 'mage_manashield', name: '元素·法力护壁', desc: '2转·获得25%生命护盾', cooldown: 5, shieldPct: 0.25, mpCost: 24, zhuan: 2 },
+            { id: 'mage_golem', name: '奥术傀儡', desc: '3转·召唤傀儡(15%属性)协助作战，最多1个', cooldown: 10, summonBeast: true, summonPct: 0.15, summonMax: 1, summonName: '奥术傀儡', mpCost: 42, zhuan: 3 },
+            { id: 'mage_inferno', name: '炼狱火', desc: '3转·群体80%伤害', cooldown: 6, aoe: true, aoePct: 0.8, dmgMult: 1.2, mpCost: 40, zhuan: 3 },
+            { id: 'mage_mana', name: '奥术洪流', desc: '3转·伤害300%，技能伤害+50%', cooldown: 5, dmgMult: 3, skillDmgBonus: 50, mpCost: 38, zhuan: 3 },
+            { id: 'mage_barrier', name: '元素护盾', desc: '3转·获得30%生命护盾', cooldown: 5, shieldPct: 0.3, mpCost: 32, zhuan: 3 },
+            { id: 'mage_beam', name: '奥术光束', desc: '3转·本次伤害270%，无视20%魔抗', cooldown: 5, dmgMult: 2.7, ignoreDefPct: 20, mpCost: 40, zhuan: 3 },
+            { id: 'mage_curse', name: '虚弱诅咒', desc: '3转·本次伤害150%，目标下回合受到伤害+20%', cooldown: 6, dmgMult: 1.5, mpCost: 34, zhuan: 3 },
+            { id: 'mage_icewall', name: '冰墙', desc: '3转·获得25%生命护盾，50%眩晕攻击者1回合', cooldown: 6, shieldPct: 0.25, mpCost: 36, zhuan: 3 },
+            { id: 'mage_nexus', name: '虚空裂隙', desc: '4转·群体130%伤害，50%眩晕1回合', cooldown: 8, aoe: true, aoePct: 1.3, stunChance: 0.5, stunTurns: 1, mpCost: 56, zhuan: 4 },
+            { id: 'mage_blackhole', name: '黑洞', desc: '4转·群体110%伤害', cooldown: 8, aoe: true, aoePct: 1.1, dmgMult: 1.2, mpCost: 52, zhuan: 4 },
+            { id: 'mage_world', name: '世界终结', desc: '4转·本次伤害400%', cooldown: 9, dmgMult: 4, mpCost: 58, zhuan: 4 },
+            { id: 'mage_starfall', name: '星陨', desc: '4转·群体95%伤害，每命中一目标回复5%最大魔法', cooldown: 7, aoe: true, aoePct: 0.95, mpRegenPct: 0.05, mpCost: 50, zhuan: 4 },
+            { id: 'mage_voidburst', name: '虚空爆裂', desc: '4转·本次伤害350%，无视40%魔抗', cooldown: 8, dmgMult: 3.5, ignoreDefPct: 40, mpCost: 54, zhuan: 4 },
+            { id: 'mage_timestop', name: '时停', desc: '4转·群体80%伤害，70%眩晕2回合', cooldown: 9, aoe: true, aoePct: 0.8, stunChance: 0.7, stunTurns: 2, mpCost: 56, zhuan: 4 }
+        ],
+        branchB: [
+            { id: 'mage_void', name: '虚空箭', desc: '2转·无视30%魔抗，伤害260%', cooldown: 4, dmgMult: 2.6, ignoreDefPct: 30, mpCost: 30, zhuan: 2 },
+            { id: 'mage_missile', name: '奥术飞弹', desc: '2转·3次50%伤害', cooldown: 4, multiHit: 3, multiHitPct: 0.5, mpCost: 26, zhuan: 2 },
+            { id: 'mage_flux', name: '奥术脉动', desc: '2转·本次伤害160%，下回合魔法回复+15点', cooldown: 5, dmgMult: 1.6, mpRegenFlat: 15, mpCost: 24, zhuan: 2 },
+            { id: 'mage_voidtouch', name: '虚空·触须', desc: '2转·无视25%魔抗，伤害240%', cooldown: 4, dmgMult: 2.4, ignoreDefPct: 25, mpCost: 28, zhuan: 2 },
+            { id: 'mage_abyssbolt', name: '虚空·深渊箭', desc: '2转·本次伤害220%，无视20%魔抗', cooldown: 3, dmgMult: 2.2, ignoreDefPct: 20, mpCost: 26, zhuan: 2 },
+            { id: 'mage_rupture', name: '虚空·裂隙', desc: '2转·伤害200%，无视15%魔抗', cooldown: 4, dmgMult: 2, ignoreDefPct: 15, mpCost: 30, zhuan: 2 },
+            { id: 'mage_darkbeam', name: '虚空·暗束', desc: '2转·本次伤害280%', cooldown: 5, dmgMult: 2.8, mpCost: 34, zhuan: 2 },
+            { id: 'mage_voidgrasp', name: '虚空·握杀', desc: '3转·无视40%魔抗，伤害320%', cooldown: 5, dmgMult: 3.2, ignoreDefPct: 40, mpCost: 42, zhuan: 3 },
+            { id: 'mage_oblivion', name: '虚空·湮灭', desc: '3转·本次伤害350%', cooldown: 6, dmgMult: 3.5, mpCost: 44, zhuan: 3 },
+            { id: 'mage_entropy', name: '虚空·熵增', desc: '3转·伤害270%，无视35%魔抗', cooldown: 5, dmgMult: 2.7, ignoreDefPct: 35, mpCost: 40, zhuan: 3 },
+            { id: 'mage_consumption', name: '虚空·吞噬', desc: '3转·伤害250%，回复40%伤害生命', cooldown: 5, dmgMult: 2.5, lifestealPct: 0.4, mpCost: 38, zhuan: 3 },
+            { id: 'mage_nullify', name: '虚空·虚无', desc: '3转·本次伤害300%，技能伤害+40%', cooldown: 6, dmgMult: 3, skillDmgBonus: 40, mpCost: 46, zhuan: 3 },
+            { id: 'mage_voidshield', name: '虚空·护膜', desc: '3转·获得20%生命护盾，下回合技能伤害+30%', cooldown: 6, shieldPct: 0.2, mpCost: 36, zhuan: 3 },
+            { id: 'mage_collapse', name: '虚空·坍缩', desc: '3转·无视50%魔抗，伤害290%', cooldown: 6, dmgMult: 2.9, ignoreDefPct: 50, mpCost: 48, zhuan: 3 },
+            { id: 'mage_voidend', name: '虚空终结', desc: '4转·本次伤害420%，无视45%魔抗', cooldown: 9, dmgMult: 4.2, ignoreDefPct: 45, mpCost: 60, zhuan: 4 },
+            { id: 'mage_abyssal', name: '虚空·深渊', desc: '4转·伤害380%，无视50%魔抗', cooldown: 8, dmgMult: 3.8, ignoreDefPct: 50, mpCost: 56, zhuan: 4 },
+            { id: 'mage_antimatter', name: '虚空·反物质', desc: '4转·本次伤害400%', cooldown: 9, dmgMult: 4, mpCost: 58, zhuan: 4 },
+            { id: 'mage_voidstorm', name: '虚空风暴', desc: '4转·群体70%伤害，无视30%魔抗', cooldown: 8, aoe: true, aoePct: 0.7, ignoreDefPct: 30, mpCost: 54, zhuan: 4 },
+            { id: 'mage_rift', name: '虚空·裂界', desc: '4转·本次伤害360%，无视55%魔抗', cooldown: 8, dmgMult: 3.6, ignoreDefPct: 55, mpCost: 52, zhuan: 4 },
+            { id: 'mage_zeropoint', name: '虚空·奇点', desc: '4转·本次伤害450%', cooldown: 10, dmgMult: 4.5, mpCost: 62, zhuan: 4 }
+        ],
+        branchC: [
+            { id: 'mage_heal_c1', name: '圣愈·治愈', desc: '2转·回复生命上限25%', cooldown: 4, healPct: 0.25, mpCost: 22, zhuan: 2 },
+            { id: 'mage_heal_c2', name: '圣愈·护盾', desc: '2转·获得30%生命护盾', cooldown: 5, shieldPct: 0.3, mpCost: 26, zhuan: 2 },
+            { id: 'mage_heal_c3', name: '圣愈·祝福', desc: '2转·2回合技能伤害+30%', cooldown: 6, skillDmgBonus: 30, buffRounds: 2, mpCost: 20, zhuan: 2 },
+            { id: 'mage_heal_c4', name: '圣愈·疗伤', desc: '2转·伤害150%，回复40%伤害生命', cooldown: 4, dmgMult: 1.5, lifestealPct: 0.4, mpCost: 28, zhuan: 2 },
+            { id: 'mage_heal_c5', name: '圣愈·圣盾', desc: '2转·获得28%生命护盾', cooldown: 4, shieldPct: 0.28, mpCost: 24, zhuan: 2 },
+            { id: 'mage_heal_c6', name: '圣愈·复苏', desc: '2转·回复生命上限20%，2回合减伤15%', cooldown: 6, healPct: 0.2, reduceDmgPct: 15, buffRounds: 2, mpCost: 30, zhuan: 2 },
+            { id: 'mage_heal_c7', name: '圣愈·光辉', desc: '2转·本次伤害170%，获得15%护盾', cooldown: 4, dmgMult: 1.7, shieldPct: 0.15, mpCost: 26, zhuan: 2 },
+            { id: 'mage_heal_c8', name: '圣愈·大疗', desc: '3转·回复生命上限35%', cooldown: 6, healPct: 0.35, mpCost: 38, zhuan: 3 },
+            { id: 'mage_heal_c9', name: '圣愈·圣域', desc: '3转·获得40%生命护盾', cooldown: 6, shieldPct: 0.4, mpCost: 42, zhuan: 3 },
+            { id: 'mage_heal_c10', name: '圣愈·神恩', desc: '3转·3回合技能伤害+40%', cooldown: 8, skillDmgBonus: 40, buffRounds: 3, mpCost: 36, zhuan: 3 },
+            { id: 'mage_heal_c11', name: '圣愈·救赎', desc: '3转·伤害200%，回复50%伤害生命', cooldown: 5, dmgMult: 2, lifestealPct: 0.5, mpCost: 40, zhuan: 3 },
+            { id: 'mage_heal_c12', name: '圣愈·天护', desc: '3转·获得35%护盾，本回合减伤20%', cooldown: 6, shieldPct: 0.35, reduceDmgPct: 20, mpCost: 44, zhuan: 3 },
+            { id: 'mage_heal_c13', name: '圣愈·圣光', desc: '3转·回复30%生命，2回合攻击+20%', cooldown: 7, healPct: 0.3, buffAtkPct: 20, buffRounds: 2, mpCost: 42, zhuan: 3 },
+            { id: 'mage_heal_c14', name: '圣愈·庇佑', desc: '3转·获得38%生命护盾', cooldown: 5, shieldPct: 0.38, mpCost: 40, zhuan: 3 },
+            { id: 'mage_heal_c15', name: '圣愈·神愈', desc: '4转·回复生命上限50%', cooldown: 9, healPct: 0.5, mpCost: 54, zhuan: 4 },
+            { id: 'mage_heal_c16', name: '圣愈·神盾', desc: '4转·获得50%生命护盾', cooldown: 9, shieldPct: 0.5, mpCost: 56, zhuan: 4 },
+            { id: 'mage_heal_c17', name: '圣愈·天恩', desc: '4转·4回合技能伤害+50%', cooldown: 10, skillDmgBonus: 50, buffRounds: 4, mpCost: 52, zhuan: 4 },
+            { id: 'mage_heal_c18', name: '圣愈·涅槃', desc: '4转·伤害280%，回复60%伤害生命', cooldown: 8, dmgMult: 2.8, lifestealPct: 0.6, mpCost: 58, zhuan: 4 },
+            { id: 'mage_heal_c19', name: '圣愈·永恒', desc: '4转·获得45%护盾，3回合减伤25%', cooldown: 10, shieldPct: 0.45, reduceDmgPct: 25, buffRounds: 3, mpCost: 60, zhuan: 4 },
+            { id: 'mage_heal_c20', name: '圣愈·神迹', desc: '4转·回复45%生命并获得30%护盾', cooldown: 10, healPct: 0.45, shieldPct: 0.3, mpCost: 62, zhuan: 4 }
+        ],
+        branchD: [
+            { id: 'mage_curse_d1', name: '诅咒·虚弱', desc: '2转·伤害170%，目标下回合受伤+25%', cooldown: 4, dmgMult: 1.7, mpCost: 26, zhuan: 2 },
+            { id: 'mage_curse_d2', name: '诅咒·侵蚀', desc: '2转·伤害180%，无视20%魔抗', cooldown: 4, dmgMult: 1.8, ignoreDefPct: 20, mpCost: 28, zhuan: 2 },
+            { id: 'mage_curse_d3', name: '诅咒·腐化', desc: '2转·伤害160%，目标受伤+20%', cooldown: 5, dmgMult: 1.6, mpCost: 24, zhuan: 2 },
+            { id: 'mage_curse_d4', name: '诅咒·噬魂', desc: '2转·伤害200%，回复30%伤害生命', cooldown: 4, dmgMult: 2, lifestealPct: 0.3, mpCost: 30, zhuan: 2 },
+            { id: 'mage_curse_d5', name: '诅咒·破魔', desc: '2转·无视25%魔抗，伤害220%', cooldown: 4, dmgMult: 2.2, ignoreDefPct: 25, mpCost: 32, zhuan: 2 },
+            { id: 'mage_curse_d6', name: '诅咒·凋零', desc: '2转·伤害190%，目标受伤+15%', cooldown: 5, dmgMult: 1.9, mpCost: 28, zhuan: 2 },
+            { id: 'mage_curse_d7', name: '诅咒·暗蚀', desc: '2转·群体60%伤害', cooldown: 5, aoe: true, aoePct: 0.6, mpCost: 30, zhuan: 2 },
+            { id: 'mage_curse_d8', name: '诅咒·魂灭', desc: '3转·伤害260%，目标受伤+25%', cooldown: 5, dmgMult: 2.6, mpCost: 40, zhuan: 3 },
+            { id: 'mage_curse_d9', name: '诅咒·破抗', desc: '3转·无视40%魔抗，伤害280%', cooldown: 5, dmgMult: 2.8, ignoreDefPct: 40, mpCost: 42, zhuan: 3 },
+            { id: 'mage_curse_d10', name: '诅咒·噬灵', desc: '3转·伤害240%，回复45%伤害生命', cooldown: 5, dmgMult: 2.4, lifestealPct: 0.45, mpCost: 44, zhuan: 3 },
+            { id: 'mage_curse_d11', name: '诅咒·群蚀', desc: '3转·群体75%伤害', cooldown: 6, aoe: true, aoePct: 0.75, mpCost: 38, zhuan: 3 },
+            { id: 'mage_curse_d12', name: '诅咒·崩解', desc: '3转·伤害270%，无视35%魔抗', cooldown: 6, dmgMult: 2.7, ignoreDefPct: 35, mpCost: 46, zhuan: 3 },
+            { id: 'mage_curse_d13', name: '诅咒·死咒', desc: '3转·伤害250%，目标受伤+30%', cooldown: 6, dmgMult: 2.5, mpCost: 42, zhuan: 3 },
+            { id: 'mage_curse_d14', name: '诅咒·暗潮', desc: '3转·群体70%伤害，无视15%魔抗', cooldown: 6, aoe: true, aoePct: 0.7, ignoreDefPct: 15, mpCost: 40, zhuan: 3 },
+            { id: 'mage_curse_d15', name: '诅咒·灭魂', desc: '4转·伤害350%，目标受伤+35%', cooldown: 8, dmgMult: 3.5, mpCost: 56, zhuan: 4 },
+            { id: 'mage_curse_d16', name: '诅咒·破界', desc: '4转·无视50%魔抗，伤害320%', cooldown: 8, dmgMult: 3.2, ignoreDefPct: 50, mpCost: 58, zhuan: 4 },
+            { id: 'mage_curse_d17', name: '诅咒·终焉', desc: '4转·群体90%伤害', cooldown: 8, aoe: true, aoePct: 0.9, mpCost: 54, zhuan: 4 },
+            { id: 'mage_curse_d18', name: '诅咒·噬神', desc: '4转·伤害380%，回复50%伤害生命', cooldown: 9, dmgMult: 3.8, lifestealPct: 0.5, mpCost: 60, zhuan: 4 },
+            { id: 'mage_curse_d19', name: '诅咒·虚空蚀', desc: '4转·无视55%魔抗，伤害340%', cooldown: 9, dmgMult: 3.4, ignoreDefPct: 55, mpCost: 62, zhuan: 4 },
+            { id: 'mage_curse_d20', name: '诅咒·灭世', desc: '4转·群体100%伤害，无视30%魔抗', cooldown: 10, aoe: true, aoePct: 1, ignoreDefPct: 30, mpCost: 60, zhuan: 4 }
+        ]
+    },
+    archer: {
+        base: [
+            { id: 'archer_precise', name: '精准射击', desc: '必暴击，本次伤害140%', cooldown: 2, forceCrit: true, dmgMult: 1.4, mpCost: 12, zhuan: 1 },
+            { id: 'archer_multi', name: '多重箭', desc: '2次85%伤害（独立暴击/连击）', cooldown: 3, multiHit: 2, multiHitPct: 0.85, mpCost: 18, zhuan: 1 },
+            { id: 'archer_wind', name: '疾风步', desc: '本回合闪避+30%', cooldown: 4, dodgeBonus: 30, mpCost: 20, zhuan: 1 },
+            { id: 'archer_poison', name: '毒箭', desc: '本次伤害130%，50%眩晕1回合', cooldown: 3, dmgMult: 1.3, stunChance: 0.5, stunTurns: 1, mpCost: 16, zhuan: 1 },
+            { id: 'archer_rain', name: '箭雨', desc: '3次60%伤害', cooldown: 4, multiHit: 3, multiHitPct: 0.6, mpCost: 24, zhuan: 1 },
+            { id: 'archer_aim', name: '弱点射击', desc: '必暴击，本次伤害180%', cooldown: 5, forceCrit: true, dmgMult: 1.8, mpCost: 28, zhuan: 1 },
+            { id: 'archer_scatter', name: '散射', desc: '群体60%伤害', cooldown: 4, aoe: true, aoePct: 0.6, mpCost: 22, zhuan: 1 },
+            { id: 'archer_wolf', name: '召唤·狩魂灵狼', desc: '1转·召唤灵狼(15%属性)，场上召唤物最多3只', cooldown: 5, summonBeast: true, summonPct: 0.15, summonName: '狩魂灵狼', archerSummon: true, mpCost: 24, zhuan: 1 }
+        ],
+        branchA: [
+            { id: 'archer_storm', name: '风暴箭', desc: '2转·群体75%伤害', cooldown: 5, aoe: true, aoePct: 0.75, mpCost: 28, zhuan: 2 },
+            { id: 'archer_pierce', name: '穿透箭', desc: '2转·无视50%防御，伤害160%', cooldown: 4, ignoreDefPct: 50, dmgMult: 1.6, mpCost: 26, zhuan: 2 },
+            { id: 'archer_shadow', name: '暗影步', desc: '2转·本回合闪避+50%', cooldown: 5, dodgeBonus: 50, mpCost: 26, zhuan: 2 },
+            { id: 'archer_beast', name: '召唤·幽冥战兽', desc: '2转·召唤战兽(20%属性)，场上最多3只', cooldown: 6, summonBeast: true, summonPct: 0.2, summonName: '幽冥战兽', archerSummon: true, mpCost: 34, zhuan: 2 },
+            { id: 'archer_windarrow', name: '风之箭', desc: '2转·群体65%伤害，本回合闪避+15%', cooldown: 5, aoe: true, aoePct: 0.65, dodgeBonus: 15, mpCost: 28, zhuan: 2 },
+            { id: 'archer_ambush', name: '伏击', desc: '2转·本次伤害190%，50%眩晕1回合', cooldown: 4, dmgMult: 1.9, stunChance: 0.5, stunTurns: 1, mpCost: 30, zhuan: 2 },
+            { id: 'archer_soularrow', name: '狩魂·魂箭', desc: '2转·群体70%伤害', cooldown: 4, aoe: true, aoePct: 0.7, mpCost: 26, zhuan: 2 },
+            { id: 'archer_snipe', name: '狙杀', desc: '3转·必暴击，伤害250%', cooldown: 6, forceCrit: true, dmgMult: 2.5, mpCost: 38, zhuan: 3 },
+            { id: 'archer_barrage', name: '弹幕', desc: '3转·4次70%伤害', cooldown: 5, multiHit: 4, multiHitPct: 0.7, mpCost: 36, zhuan: 3 },
+            { id: 'archer_trap', name: '冰霜陷阱', desc: '3转·伤害180%，70%眩晕2回合', cooldown: 5, dmgMult: 1.8, stunChance: 0.7, stunTurns: 2, mpCost: 34, zhuan: 3 },
+            { id: 'archer_phantom', name: '召唤·寂灭影狩', desc: '3转·召唤影狩(25%属性)，场上最多3只', cooldown: 8, summonBeast: true, summonPct: 0.25, summonName: '寂灭影狩', archerSummon: true, mpCost: 44, zhuan: 3 },
+            { id: 'archer_heartseeker', name: '穿心', desc: '3转·无视40%防御，伤害230%', cooldown: 5, ignoreDefPct: 40, dmgMult: 2.3, mpCost: 40, zhuan: 3 },
+            { id: 'archer_ghost', name: '鬼步', desc: '3转·本回合闪避+60%', cooldown: 6, dodgeBonus: 60, mpCost: 32, zhuan: 3 },
+            { id: 'archer_rapid', name: '疾射', desc: '3转·5次55%伤害', cooldown: 5, multiHit: 5, multiHitPct: 0.55, mpCost: 38, zhuan: 3 },
+            { id: 'archer_rainstorm', name: '箭雨风暴', desc: '4转·群体100%伤害', cooldown: 7, aoe: true, aoePct: 1, dmgMult: 1.1, mpCost: 46, zhuan: 4 },
+            { id: 'archer_death', name: '死亡标记', desc: '4转·必暴击，伤害320%', cooldown: 8, forceCrit: true, dmgMult: 3.2, mpCost: 50, zhuan: 4 },
+            { id: 'archer_eternal', name: '召唤·万兽朝宗', desc: '4转·召唤至尊兽灵(30%属性)，场上最多3只', cooldown: 10, summonBeast: true, summonPct: 0.3, summonName: '万兽朝宗', archerSummon: true, mpCost: 56, zhuan: 4 },
+            { id: 'archer_typhoon', name: '飓风箭', desc: '4转·群体110%伤害', cooldown: 7, aoe: true, aoePct: 1.1, dmgMult: 1, mpCost: 48, zhuan: 4 },
+            { id: 'archer_phantomrain', name: '幻影箭雨', desc: '4转·6次55%伤害', cooldown: 8, multiHit: 6, multiHitPct: 0.55, mpCost: 52, zhuan: 4 }
+        ],
+        branchB: [
+            { id: 'archer_marksman', name: '神射', desc: '2转·必暴击，本次伤害200%', cooldown: 5, forceCrit: true, dmgMult: 2, mpCost: 30, zhuan: 2 },
+            { id: 'archer_precision', name: '神射·精准', desc: '2转·必暴击，伤害185%', cooldown: 4, forceCrit: true, dmgMult: 1.85, mpCost: 26, zhuan: 2 },
+            { id: 'archer_armorbreak', name: '神射·破甲', desc: '2转·无视40%防御，伤害170%', cooldown: 4, ignoreDefPct: 40, dmgMult: 1.7, mpCost: 28, zhuan: 2 },
+            { id: 'archer_critstrike', name: '神射·致命', desc: '2转·必暴击，伤害210%', cooldown: 5, forceCrit: true, dmgMult: 2.1, mpCost: 32, zhuan: 2 },
+            { id: 'archer_steady', name: '神射·稳射', desc: '2转·本次伤害195%，无视25%防御', cooldown: 4, dmgMult: 1.95, ignoreDefPct: 25, mpCost: 28, zhuan: 2 },
+            { id: 'archer_quickdraw', name: '神射·快拔', desc: '2转·必暴击，伤害175%', cooldown: 3, forceCrit: true, dmgMult: 1.75, mpCost: 24, zhuan: 2 },
+            { id: 'archer_piercing', name: '神射·贯穿', desc: '2转·无视35%防御，伤害190%', cooldown: 4, ignoreDefPct: 35, dmgMult: 1.9, mpCost: 30, zhuan: 2 },
+            { id: 'archer_headshot', name: '神射·爆头', desc: '3转·必暴击，伤害280%', cooldown: 6, forceCrit: true, dmgMult: 2.8, mpCost: 40, zhuan: 3 },
+            { id: 'archer_sunder', name: '神射·裂甲', desc: '3转·无视55%防御，伤害250%', cooldown: 5, ignoreDefPct: 55, dmgMult: 2.5, mpCost: 42, zhuan: 3 },
+            { id: 'archer_truehit', name: '神射·真击', desc: '3转·必暴击，伤害260%', cooldown: 5, forceCrit: true, dmgMult: 2.6, mpCost: 38, zhuan: 3 },
+            { id: 'archer_weakpoint', name: '神射·弱点', desc: '3转·无视45%防御，伤害270%', cooldown: 6, ignoreDefPct: 45, dmgMult: 2.7, mpCost: 44, zhuan: 3 },
+            { id: 'archer_deadeye', name: '神射·死眼', desc: '3转·必暴击，伤害290%', cooldown: 6, forceCrit: true, dmgMult: 2.9, mpCost: 46, zhuan: 3 },
+            { id: 'archer_penetrate', name: '神射·穿透', desc: '3转·无视50%防御，伤害240%', cooldown: 5, ignoreDefPct: 50, dmgMult: 2.4, mpCost: 40, zhuan: 3 },
+            { id: 'archer_finisher', name: '神射·终结', desc: '3转·必暴击，目标生命低于50%时伤害+30%', cooldown: 6, forceCrit: true, dmgMult: 2.5, mpCost: 44, zhuan: 3 },
+            { id: 'archer_execute', name: '处决', desc: '4转·必暴击，伤害360%，目标生命低于30%时+50%', cooldown: 9, forceCrit: true, dmgMult: 3.6, mpCost: 54, zhuan: 4 },
+            { id: 'archer_apocalypse', name: '神射·天罚', desc: '4转·必暴击，伤害340%', cooldown: 8, forceCrit: true, dmgMult: 3.4, mpCost: 52, zhuan: 4 },
+            { id: 'archer_armorshatter', name: '神射·碎甲', desc: '4转·无视60%防御，伤害320%', cooldown: 8, ignoreDefPct: 60, dmgMult: 3.2, mpCost: 54, zhuan: 4 },
+            { id: 'archer_judgment', name: '神射·审判', desc: '4转·必暴击，伤害380%', cooldown: 9, forceCrit: true, dmgMult: 3.8, mpCost: 58, zhuan: 4 },
+            { id: 'archer_obliterate', name: '神射·湮灭', desc: '4转·无视65%防御，伤害350%', cooldown: 9, ignoreDefPct: 65, dmgMult: 3.5, mpCost: 56, zhuan: 4 },
+            { id: 'archer_godshot', name: '神射·天诛', desc: '4转·必暴击，伤害400%', cooldown: 10, forceCrit: true, dmgMult: 4, mpCost: 60, zhuan: 4 }
+        ],
+        branchC: [
+            { id: 'archer_trap_c1', name: '陷阱·冰刺', desc: '2转·伤害170%，65%眩晕1回合', cooldown: 4, dmgMult: 1.7, stunChance: 0.65, stunTurns: 1, mpCost: 26, zhuan: 2 },
+            { id: 'archer_trap_c2', name: '陷阱·毒', desc: '2转·伤害160%，60%眩晕1回合', cooldown: 4, dmgMult: 1.6, stunChance: 0.6, stunTurns: 1, mpCost: 24, zhuan: 2 },
+            { id: 'archer_trap_c3', name: '陷阱·雷', desc: '2转·伤害180%，55%眩晕2回合', cooldown: 5, dmgMult: 1.8, stunChance: 0.55, stunTurns: 2, mpCost: 30, zhuan: 2 },
+            { id: 'archer_trap_c4', name: '陷阱·定身', desc: '2转·伤害150%，70%眩晕1回合', cooldown: 4, dmgMult: 1.5, stunChance: 0.7, stunTurns: 1, mpCost: 28, zhuan: 2 },
+            { id: 'archer_trap_c5', name: '陷阱·缚足', desc: '2转·群体55%伤害，40%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.55, stunChance: 0.4, stunTurns: 1, mpCost: 32, zhuan: 2 },
+            { id: 'archer_trap_c6', name: '陷阱·麻痹', desc: '2转·伤害190%，50%眩晕2回合', cooldown: 5, dmgMult: 1.9, stunChance: 0.5, stunTurns: 2, mpCost: 34, zhuan: 2 },
+            { id: 'archer_trap_c7', name: '陷阱·刺网', desc: '2转·群体60%伤害，35%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.6, stunChance: 0.35, stunTurns: 1, mpCost: 30, zhuan: 2 },
+            { id: 'archer_trap_c8', name: '陷阱·冰牢', desc: '3转·伤害220%，75%眩晕2回合', cooldown: 6, dmgMult: 2.2, stunChance: 0.75, stunTurns: 2, mpCost: 40, zhuan: 3 },
+            { id: 'archer_trap_c9', name: '陷阱·毒沼', desc: '3转·群体70%伤害，50%眩晕1回合', cooldown: 6, aoe: true, aoePct: 0.7, stunChance: 0.5, stunTurns: 1, mpCost: 42, zhuan: 3 },
+            { id: 'archer_trap_c10', name: '陷阱·雷域', desc: '3转·伤害200%，65%眩晕2回合', cooldown: 6, dmgMult: 2, stunChance: 0.65, stunTurns: 2, mpCost: 44, zhuan: 3 },
+            { id: 'archer_trap_c11', name: '陷阱·锁魂', desc: '3转·伤害230%，70%眩晕1回合', cooldown: 5, dmgMult: 2.3, stunChance: 0.7, stunTurns: 1, mpCost: 46, zhuan: 3 },
+            { id: 'archer_trap_c12', name: '陷阱·冰霜', desc: '3转·群体65%伤害，55%眩晕1回合', cooldown: 6, aoe: true, aoePct: 0.65, stunChance: 0.55, stunTurns: 1, mpCost: 40, zhuan: 3 },
+            { id: 'archer_trap_c13', name: '陷阱·缚灵', desc: '3转·伤害210%，60%眩晕2回合', cooldown: 6, dmgMult: 2.1, stunChance: 0.6, stunTurns: 2, mpCost: 42, zhuan: 3 },
+            { id: 'archer_trap_c14', name: '陷阱·震爆', desc: '3转·群体80%伤害，45%眩晕2回合', cooldown: 7, aoe: true, aoePct: 0.8, stunChance: 0.45, stunTurns: 2, mpCost: 48, zhuan: 3 },
+            { id: 'archer_trap_c15', name: '陷阱·永冻', desc: '4转·伤害280%，80%眩晕2回合', cooldown: 8, dmgMult: 2.8, stunChance: 0.8, stunTurns: 2, mpCost: 54, zhuan: 4 },
+            { id: 'archer_trap_c16', name: '陷阱·天罗', desc: '4转·群体90%伤害，60%眩晕1回合', cooldown: 8, aoe: true, aoePct: 0.9, stunChance: 0.6, stunTurns: 1, mpCost: 56, zhuan: 4 },
+            { id: 'archer_trap_c17', name: '陷阱·灭魂', desc: '4转·伤害300%，75%眩晕2回合', cooldown: 9, dmgMult: 3, stunChance: 0.75, stunTurns: 2, mpCost: 58, zhuan: 4 },
+            { id: 'archer_trap_c18', name: '陷阱·神缚', desc: '4转·群体85%伤害，70%眩晕2回合', cooldown: 9, aoe: true, aoePct: 0.85, stunChance: 0.7, stunTurns: 2, mpCost: 60, zhuan: 4 },
+            { id: 'archer_trap_c19', name: '陷阱·绝境', desc: '4转·伤害260%，85%眩晕2回合', cooldown: 8, dmgMult: 2.6, stunChance: 0.85, stunTurns: 2, mpCost: 55, zhuan: 4 },
+            { id: 'archer_trap_c20', name: '陷阱·终焉', desc: '4转·群体100%伤害，65%眩晕2回合', cooldown: 10, aoe: true, aoePct: 1, stunChance: 0.65, stunTurns: 2, mpCost: 62, zhuan: 4 }
+        ],
+        branchD: [
+            { id: 'archer_wind_d1', name: '疾风·双箭', desc: '2转·2次90%伤害', cooldown: 3, multiHit: 2, multiHitPct: 0.9, mpCost: 22, zhuan: 2 },
+            { id: 'archer_wind_d2', name: '疾风·闪避', desc: '2转·本回合闪避+45%', cooldown: 4, dodgeBonus: 45, mpCost: 24, zhuan: 2 },
+            { id: 'archer_wind_d3', name: '疾风·三连', desc: '2转·3次70%伤害', cooldown: 4, multiHit: 3, multiHitPct: 0.7, mpCost: 26, zhuan: 2 },
+            { id: 'archer_wind_d4', name: '疾风·影步', desc: '2转·本回合闪避+55%', cooldown: 5, dodgeBonus: 55, mpCost: 28, zhuan: 2 },
+            { id: 'archer_wind_d5', name: '疾风·四连', desc: '2转·4次65%伤害', cooldown: 5, multiHit: 4, multiHitPct: 0.65, mpCost: 30, zhuan: 2 },
+            { id: 'archer_wind_d6', name: '疾风·瞬射', desc: '2转·2次95%伤害', cooldown: 3, multiHit: 2, multiHitPct: 0.95, mpCost: 28, zhuan: 2 },
+            { id: 'archer_wind_d7', name: '疾风·风步', desc: '2转·本回合闪避+50%，下次攻击+15%', cooldown: 5, dodgeBonus: 50, mpCost: 26, zhuan: 2 },
+            { id: 'archer_wind_d8', name: '疾风·五连', desc: '3转·5次60%伤害', cooldown: 5, multiHit: 5, multiHitPct: 0.6, mpCost: 38, zhuan: 3 },
+            { id: 'archer_wind_d9', name: '疾风·幻步', desc: '3转·本回合闪避+65%', cooldown: 6, dodgeBonus: 65, mpCost: 36, zhuan: 3 },
+            { id: 'archer_wind_d10', name: '疾风·六连', desc: '3转·6次55%伤害', cooldown: 6, multiHit: 6, multiHitPct: 0.55, mpCost: 42, zhuan: 3 },
+            { id: 'archer_wind_d11', name: '疾风·神行', desc: '3转·本回合闪避+70%', cooldown: 6, dodgeBonus: 70, mpCost: 40, zhuan: 3 },
+            { id: 'archer_wind_d12', name: '疾风·七连', desc: '3转·7次50%伤害', cooldown: 6, multiHit: 7, multiHitPct: 0.5, mpCost: 44, zhuan: 3 },
+            { id: 'archer_wind_d13', name: '疾风·无影', desc: '3转·3次85%伤害', cooldown: 4, multiHit: 3, multiHitPct: 0.85, mpCost: 40, zhuan: 3 },
+            { id: 'archer_wind_d14', name: '疾风·鬼步', desc: '3转·本回合闪避+75%', cooldown: 7, dodgeBonus: 75, mpCost: 46, zhuan: 3 },
+            { id: 'archer_wind_d15', name: '疾风·八连', desc: '4转·8次55%伤害', cooldown: 8, multiHit: 8, multiHitPct: 0.55, mpCost: 52, zhuan: 4 },
+            { id: 'archer_wind_d16', name: '疾风·九天', desc: '4转·本回合闪避+80%', cooldown: 8, dodgeBonus: 80, mpCost: 50, zhuan: 4 },
+            { id: 'archer_wind_d17', name: '疾风·十连', desc: '4转·10次45%伤害', cooldown: 9, multiHit: 10, multiHitPct: 0.45, mpCost: 56, zhuan: 4 },
+            { id: 'archer_wind_d18', name: '疾风·神影', desc: '4转·本回合闪避+85%', cooldown: 9, dodgeBonus: 85, mpCost: 54, zhuan: 4 },
+            { id: 'archer_wind_d19', name: '疾风·万箭', desc: '4转·群体80%伤害', cooldown: 8, aoe: true, aoePct: 0.8, mpCost: 55, zhuan: 4 },
+            { id: 'archer_wind_d20', name: '疾风·无极', desc: '4转·12次40%伤害', cooldown: 10, multiHit: 12, multiHitPct: 0.4, mpCost: 60, zhuan: 4 }
+        ]
+    }
 };
 function abyssGetSkillById(classId, skillId) {
-    var list = ABYSS_CLASS_SKILLS[classId];
+    var branch = (abyssRun && abyssRun.active) ? abyssRun.classBranch : null;
+    var list = abyssGetSkillList(classId, branch);
     if (!list) return null;
     for (var i = 0; i < list.length; i++) if (list[i].id === skillId) return list[i];
     return null;
@@ -65242,107 +65487,238 @@ var ABYSS_EQUIP_NAMES = {
     weapon: ['龙牙刃','暗影之锋','冰霜斩','烈焰裁决','雷霆之怒','幽魂镰','圣裁剑','噬魂刃','破军枪','虚空杖']
 };
 var ABYSS_EQUIP_SKILLS = [
-    { id: 'eq1', name: '破甲', effect: { atk: 8, reduceMonsterDef: 3 } },
-    { id: 'eq2', name: '致命', effect: { critRate: 2, critDmg: 15 } },
-    { id: 'eq3', name: '嗜血', effect: { lifesteal: 2, atk: 5 } },
-    { id: 'eq4', name: '神速', effect: { combo: 4, dodge: 2 } },
-    { id: 'eq5', name: '强击', effect: { atk: 12, skillDmg: 5 } },
-    { id: 'eq6', name: '铁壁', effect: { def: 15, hp: 80 } },
-    { id: 'eq7', name: '穿云', effect: { reduceMonsterDef: 5, critDmg: 10 } },
-    { id: 'eq8', name: '狂战', effect: { atk: 10, critRate: 3 } },
-    { id: 'eq9', name: '灵巧', effect: { dodge: 4, combo: 3 } },
-    { id: 'eq10', name: '法能', effect: { skillDmg: 12, atk: 4 } },
-    { id: 'eq11', name: '坚韧', effect: { hp: 120, def: 8 } },
-    { id: 'eq12', name: '碎甲', effect: { reduceMonsterDef: 6, atk: 6 } },
-    { id: 'eq13', name: '暴虐', effect: { critDmg: 20, critRate: 1 } },
-    { id: 'eq14', name: '吸血', effect: { lifesteal: 4, hp: 50 } },
-    { id: 'eq15', name: '连打', effect: { combo: 6, atk: 4 } },
-    { id: 'eq16', name: '奥术', effect: { skillDmg: 15 } },
-    { id: 'eq17', name: '洞察', effect: { reduceMonsterDef: 4, critRate: 2 } },
-    { id: 'eq18', name: '战意', effect: { atk: 15, hp: 60 } },
-    { id: 'eq19', name: '幻步', effect: { dodge: 5, lifesteal: 1 } },
-    { id: 'eq20', name: '毁灭', effect: { skillDmg: 8, critDmg: 18, reduceMonsterDef: 2 } },
-    { id: 'eq21', name: '晕击', effect: { stunChance: 0.02, stunTurns: 1 } },
-    { id: 'eq22', name: '重晕', effect: { stunChance: 0.05, stunTurns: 1 } },
-    { id: 'eq23', name: '护盾术', effect: { shieldChance: 0.02, shieldPct: 0.1 } },
-    { id: 'eq24', name: '坚甲', effect: { damageReduction: 0.05 } },
-    { id: 'eq25', name: '破势', effect: { reduceMonsterDef: 10 } },
-    { id: 'eq26', name: '冰封', effect: { stunChance: 0.03, stunTurns: 1 } },
-    { id: 'eq27', name: '神佑', effect: { shieldChance: 0.05, shieldPct: 0.1 } },
-    { id: 'eq28', name: '铁躯', effect: { damageReduction: 0.08 } },
-    { id: 'eq29', name: '穿甲', effect: { reduceMonsterDef: 12 } },
-    { id: 'eq30', name: '雷击', effect: { stunChance: 0.08, stunTurns: 1 } },
-    { id: 'eq31', name: '灵盾', effect: { shieldChance: 0.02, shieldPct: 0.2 } },
-    { id: 'eq32', name: '韧体', effect: { damageReduction: 0.03 } },
-    { id: 'eq33', name: '卸甲', effect: { reduceMonsterDef: 8 } },
-    { id: 'eq34', name: '震击', effect: { stunChance: 0.04, stunTurns: 1 } },
-    { id: 'eq35', name: '壁垒', effect: { shieldChance: 0.03, shieldPct: 0.15 } },
-    { id: 'eq36', name: '御敌', effect: { damageReduction: 0.1 } },
-    { id: 'eq37', name: '碎防', effect: { reduceMonsterDef: 15 } },
-    { id: 'eq38', name: '回春', effect: { healChance: 0.03, healPct: 0.05 } },
-    { id: 'eq39', name: '噬魂', effect: { extraDmgChance: 0.05, extraDmgPct: 0.1 } },
-    { id: 'eq40', name: '凝神', effect: { damageReduction: 0.02, shieldChance: 0.02, shieldPct: 0.05 } },
-    { id: 'eq41', name: '防反', effect: { extraDmgFromDef: 0.1 } },
-    { id: 'eq42', name: '生命打击', effect: { extraDmgFromMaxHp: 0.02 } },
-    { id: 'eq43', name: '夺命', effect: { directPctMonsterHp: 0.01 } },
-    { id: 'eq44', name: '铁壁击', effect: { extraDmgFromDef: 0.15 } },
-    { id: 'eq45', name: '血气', effect: { extraDmgFromMaxHp: 0.03 } },
-    { id: 'eq46', name: '斩魂', effect: { directPctMonsterHp: 0.02 } },
-    { id: 'eq47', name: '破军', effect: { extraDmgFromAtk: 0.05 } },
-    { id: 'eq48', name: '重甲', effect: { extraDmgFromDef: 0.2 } },
-    { id: 'eq49', name: '生命燃烧', effect: { extraDmgFromMaxHp: 0.05 } },
-    { id: 'eq50', name: '诛心', effect: { directPctMonsterHp: 0.03 } },
-    { id: 'eq51', name: '锋芒', effect: { atk: 18, critRate: 2 } },
-    { id: 'eq52', name: '固守', effect: { def: 25, hp: 100 } },
-    { id: 'eq53', name: '疾风', effect: { dodge: 6, combo: 5 } },
-    { id: 'eq54', name: '破军斩', effect: { reduceMonsterDef: 7, atk: 9 } },
-    { id: 'eq55', name: '爆裂', effect: { critDmg: 25, skillDmg: 8 } },
-    { id: 'eq56', name: '血怒', effect: { lifesteal: 3, atk: 7 } },
-    { id: 'eq57', name: '洞察', effect: { reduceMonsterDef: 9, critRate: 3 } },
-    { id: 'eq58', name: '雷霆', effect: { stunChance: 0.04, stunTurns: 1 } },
-    { id: 'eq59', name: '神盾', effect: { shieldChance: 0.04, shieldPct: 0.12 } },
-    { id: 'eq60', name: '金刚', effect: { damageReduction: 0.06 } },
-    { id: 'eq61', name: '裂甲', effect: { extraDmgFromDef: 0.12 } },
-    { id: 'eq62', name: '夺魂', effect: { directPctMonsterHp: 0.015 } },
-    { id: 'eq63', name: '狂潮', effect: { extraDmgFromMaxHp: 0.025 } },
-    { id: 'eq64', name: '战吼', effect: { atk: 14, hp: 80 } },
-    { id: 'eq65', name: '鬼步', effect: { dodge: 7, lifesteal: 2 } },
-    { id: 'eq66', name: '破魔', effect: { skillDmg: 18, reduceMonsterDef: 4 } },
-    { id: 'eq67', name: '崩山', effect: { extraDmgFromAtk: 0.08 } },
-    { id: 'eq68', name: '冰棘', effect: { stunChance: 0.06, stunTurns: 1 } },
-    { id: 'eq69', name: '圣盾', effect: { shieldChance: 0.06, shieldPct: 0.18 } },
-    { id: 'eq70', name: '不灭', effect: { damageReduction: 0.04, healChance: 0.02, healPct: 0.04 } },
-    { id: 'eq71', name: '穿心', effect: { directPctMonsterHp: 0.025 } },
-    { id: 'eq72', name: '铁骨', effect: { extraDmgFromDef: 0.18 } },
-    { id: 'eq73', name: '血沸', effect: { extraDmgFromMaxHp: 0.04 } },
-    { id: 'eq74', name: '暴风', effect: { combo: 8, atk: 6 } },
-    { id: 'eq75', name: '魔能', effect: { skillDmg: 20, critDmg: 12 } },
-    { id: 'eq76', name: '震魂', effect: { stunChance: 0.07, stunTurns: 1 } },
-    { id: 'eq77', name: '龙鳞', effect: { shieldChance: 0.03, shieldPct: 0.25 } },
-    { id: 'eq78', name: '坚毅', effect: { damageReduction: 0.07 } },
-    { id: 'eq79', name: '碎魂', effect: { extraDmgChance: 0.08, extraDmgPct: 0.15 } },
-    { id: 'eq80', name: '回生', effect: { healChance: 0.05, healPct: 0.08 } },
-    { id: 'eq81', name: '斩龙', effect: { directPctMonsterMaxHp: 0.01 } },
-    { id: 'eq82', name: '破势', effect: { reduceMonsterDef: 11, critDmg: 15 } },
-    { id: 'eq83', name: '战魂', effect: { atk: 20, critRate: 4 } },
-    { id: 'eq84', name: '玄甲', effect: { def: 35, damageReduction: 0.03 } },
-    { id: 'eq85', name: '噬血', effect: { lifesteal: 5, hp: 60 } },
-    { id: 'eq86', name: '雷域', effect: { stunChance: 0.09, stunTurns: 1 } },
-    { id: 'eq87', name: '天护', effect: { shieldChance: 0.08, shieldPct: 0.15 } },
-    { id: 'eq88', name: '崩防', effect: { extraDmgFromDef: 0.22 } },
-    { id: 'eq89', name: '诛邪', effect: { directPctMonsterHp: 0.035 } },
-    { id: 'eq90', name: '焚心', effect: { extraDmgFromMaxHp: 0.06 } },
-    { id: 'eq91', name: '无双', effect: { atk: 22, combo: 4 } },
-    { id: 'eq92', name: '神行', effect: { dodge: 8, combo: 7 } },
-    { id: 'eq93', name: '破界', effect: { skillDmg: 22, reduceMonsterDef: 8 } },
-    { id: 'eq94', name: '天罚', effect: { extraDmgFromAtk: 0.12 } },
-    { id: 'eq95', name: '冰狱', effect: { stunChance: 0.1, stunTurns: 2 } },
-    { id: 'eq96', name: '神佑', effect: { shieldChance: 0.1, shieldPct: 0.2 } },
-    { id: 'eq97', name: '霸体', effect: { damageReduction: 0.12 } },
-    { id: 'eq98', name: '噬魂', effect: { extraDmgChance: 0.12, extraDmgPct: 0.2 } },
-    { id: 'eq99', name: '涅槃', effect: { healChance: 0.08, healPct: 0.1 } },
-    { id: 'eq100', name: '灭世', effect: { directPctMonsterMaxHp: 0.02, extraDmgFromAtk: 0.1 } }
+    { id: 'eq1', name: '破甲', effect: { atk: 24, reduceMonsterDef: 8 } },
+    { id: 'eq2', name: '致命', effect: { critRate: 5, critDmg: 38 } },
+    { id: 'eq3', name: '嗜血', effect: { lifesteal: 5, atk: 16 } },
+    { id: 'eq4', name: '神速', effect: { combo: 10, dodge: 5 } },
+    { id: 'eq5', name: '强击', effect: { atk: 36, skillDmg: 14 } },
+    { id: 'eq6', name: '铁壁', effect: { def: 45, hp: 240 } },
+    { id: 'eq7', name: '穿云', effect: { reduceMonsterDef: 12, critDmg: 26 } },
+    { id: 'eq8', name: '狂战', effect: { atk: 28, critRate: 7 } },
+    { id: 'eq9', name: '灵巧', effect: { dodge: 10, combo: 8 } },
+    { id: 'eq10', name: '法能', effect: { skillDmg: 30, atk: 12 } },
+    { id: 'eq11', name: '坚韧', effect: { hp: 360, def: 24 } },
+    { id: 'eq12', name: '碎甲', effect: { reduceMonsterDef: 15, atk: 18 } },
+    { id: 'eq13', name: '暴虐', effect: { critDmg: 50, critRate: 3 } },
+    { id: 'eq14', name: '吸血', effect: { lifesteal: 10, hp: 150 } },
+    { id: 'eq15', name: '连打', effect: { combo: 15, atk: 12 } },
+    { id: 'eq16', name: '奥术', effect: { skillDmg: 38 } },
+    { id: 'eq17', name: '洞察', effect: { reduceMonsterDef: 10, critRate: 5 } },
+    { id: 'eq18', name: '战意', effect: { atk: 45, hp: 180 } },
+    { id: 'eq19', name: '幻步', effect: { dodge: 12, lifesteal: 3 } },
+    { id: 'eq20', name: '毁灭', effect: { skillDmg: 20, critDmg: 45, reduceMonsterDef: 6 } },
+    { id: 'eq21', name: '晕击', effect: { stunChance: 0.04, stunTurns: 1 } },
+    { id: 'eq22', name: '重晕', effect: { stunChance: 0.1, stunTurns: 1 } },
+    { id: 'eq23', name: '护盾术', effect: { shieldChance: 0.04, shieldPct: 0.18 } },
+    { id: 'eq24', name: '坚甲', effect: { damageReduction: 0.1 } },
+    { id: 'eq25', name: '破势', effect: { reduceMonsterDef: 24 } },
+    { id: 'eq26', name: '冰封', effect: { stunChance: 0.06, stunTurns: 1 } },
+    { id: 'eq27', name: '神佑', effect: { shieldChance: 0.1, shieldPct: 0.2 } },
+    { id: 'eq28', name: '铁躯', effect: { damageReduction: 0.15 } },
+    { id: 'eq29', name: '穿甲', effect: { reduceMonsterDef: 28 } },
+    { id: 'eq30', name: '雷击', effect: { stunChance: 0.15, stunTurns: 1 } },
+    { id: 'eq31', name: '灵盾', effect: { shieldChance: 0.05, shieldPct: 0.35 } },
+    { id: 'eq32', name: '韧体', effect: { damageReduction: 0.08 } },
+    { id: 'eq33', name: '卸甲', effect: { reduceMonsterDef: 20 } },
+    { id: 'eq34', name: '震击', effect: { stunChance: 0.08, stunTurns: 1 } },
+    { id: 'eq35', name: '壁垒', effect: { shieldChance: 0.06, shieldPct: 0.28 } },
+    { id: 'eq36', name: '御敌', effect: { damageReduction: 0.18 } },
+    { id: 'eq37', name: '碎防', effect: { reduceMonsterDef: 36 } },
+    { id: 'eq38', name: '回春', effect: { healChance: 0.06, healPct: 0.1 } },
+    { id: 'eq39', name: '噬魂', effect: { extraDmgChance: 0.1, extraDmgPct: 0.22 } },
+    { id: 'eq40', name: '凝神', effect: { damageReduction: 0.05, shieldChance: 0.04, shieldPct: 0.12 } },
+    { id: 'eq41', name: '防反', effect: { extraDmgFromDef: 0.22 } },
+    { id: 'eq42', name: '生命打击', effect: { extraDmgFromMaxHp: 0.05 } },
+    { id: 'eq43', name: '夺命', effect: { directPctMonsterHp: 0.025 } },
+    { id: 'eq44', name: '铁壁击', effect: { extraDmgFromDef: 0.28 } },
+    { id: 'eq45', name: '血气', effect: { extraDmgFromMaxHp: 0.07 } },
+    { id: 'eq46', name: '斩魂', effect: { directPctMonsterHp: 0.05 } },
+    { id: 'eq47', name: '破军', effect: { extraDmgFromAtk: 0.12 } },
+    { id: 'eq48', name: '重甲', effect: { extraDmgFromDef: 0.38 } },
+    { id: 'eq49', name: '生命燃烧', effect: { extraDmgFromMaxHp: 0.12 } },
+    { id: 'eq50', name: '诛心', effect: { directPctMonsterHp: 0.07 } },
+    { id: 'eq51', name: '锋芒', effect: { atk: 52, critRate: 5 } },
+    { id: 'eq52', name: '固守', effect: { def: 72, hp: 300 } },
+    { id: 'eq53', name: '疾风', effect: { dodge: 14, combo: 12 } },
+    { id: 'eq54', name: '破军斩', effect: { reduceMonsterDef: 18, atk: 26 } },
+    { id: 'eq55', name: '爆裂', effect: { critDmg: 62, skillDmg: 20 } },
+    { id: 'eq56', name: '血怒', effect: { lifesteal: 8, atk: 20 } },
+    { id: 'eq57', name: '洞察', effect: { reduceMonsterDef: 22, critRate: 7 } },
+    { id: 'eq58', name: '雷霆', effect: { stunChance: 0.08, stunTurns: 1 } },
+    { id: 'eq59', name: '神盾', effect: { shieldChance: 0.08, shieldPct: 0.28 } },
+    { id: 'eq60', name: '金刚', effect: { damageReduction: 0.14 } },
+    { id: 'eq61', name: '裂甲', effect: { extraDmgFromDef: 0.28 } },
+    { id: 'eq62', name: '夺魂', effect: { directPctMonsterHp: 0.04 } },
+    { id: 'eq63', name: '狂潮', effect: { extraDmgFromMaxHp: 0.06 } },
+    { id: 'eq64', name: '战吼', effect: { atk: 42, hp: 240 } },
+    { id: 'eq65', name: '鬼步', effect: { dodge: 16, lifesteal: 5 } },
+    { id: 'eq66', name: '破魔', effect: { skillDmg: 45, reduceMonsterDef: 10 } },
+    { id: 'eq67', name: '崩山', effect: { extraDmgFromAtk: 0.18 } },
+    { id: 'eq68', name: '冰棘', effect: { stunChance: 0.12, stunTurns: 1 } },
+    { id: 'eq69', name: '圣盾', effect: { shieldChance: 0.12, shieldPct: 0.38 } },
+    { id: 'eq70', name: '不灭', effect: { damageReduction: 0.1, healChance: 0.05, healPct: 0.1 } },
+    { id: 'eq71', name: '穿心', effect: { directPctMonsterHp: 0.06 } },
+    { id: 'eq72', name: '铁骨', effect: { extraDmgFromDef: 0.38 } },
+    { id: 'eq73', name: '血沸', effect: { extraDmgFromMaxHp: 0.1 } },
+    { id: 'eq74', name: '暴风', effect: { combo: 20, atk: 18 } },
+    { id: 'eq75', name: '魔能', effect: { skillDmg: 50, critDmg: 30 } },
+    { id: 'eq76', name: '震魂', effect: { stunChance: 0.14, stunTurns: 1 } },
+    { id: 'eq77', name: '龙鳞', effect: { shieldChance: 0.08, shieldPct: 0.45 } },
+    { id: 'eq78', name: '坚毅', effect: { damageReduction: 0.16 } },
+    { id: 'eq79', name: '碎魂', effect: { extraDmgChance: 0.16, extraDmgPct: 0.35 } },
+    { id: 'eq80', name: '回生', effect: { healChance: 0.1, healPct: 0.18 } },
+    { id: 'eq81', name: '斩龙', effect: { directPctMonsterMaxHp: 0.025 } },
+    { id: 'eq82', name: '破势', effect: { reduceMonsterDef: 26, critDmg: 38 } },
+    { id: 'eq83', name: '战魂', effect: { atk: 58, critRate: 10 } },
+    { id: 'eq84', name: '玄甲', effect: { def: 100, damageReduction: 0.08 } },
+    { id: 'eq85', name: '噬血', effect: { lifesteal: 12, hp: 180 } },
+    { id: 'eq86', name: '雷域', effect: { stunChance: 0.18, stunTurns: 1 } },
+    { id: 'eq87', name: '天护', effect: { shieldChance: 0.16, shieldPct: 0.35 } },
+    { id: 'eq88', name: '崩防', effect: { extraDmgFromDef: 0.48 } },
+    { id: 'eq89', name: '诛邪', effect: { directPctMonsterHp: 0.08 } },
+    { id: 'eq90', name: '焚心', effect: { extraDmgFromMaxHp: 0.14 } },
+    { id: 'eq91', name: '无双', effect: { atk: 64, combo: 10 } },
+    { id: 'eq92', name: '神行', effect: { dodge: 20, combo: 18 } },
+    { id: 'eq93', name: '破界', effect: { skillDmg: 55, reduceMonsterDef: 20 } },
+    { id: 'eq94', name: '天罚', effect: { extraDmgFromAtk: 0.28 } },
+    { id: 'eq95', name: '冰狱', effect: { stunChance: 0.2, stunTurns: 2 } },
+    { id: 'eq96', name: '神佑', effect: { shieldChance: 0.2, shieldPct: 0.4 } },
+    { id: 'eq97', name: '霸体', effect: { damageReduction: 0.24 } },
+    { id: 'eq98', name: '噬魂', effect: { extraDmgChance: 0.24, extraDmgPct: 0.4 } },
+    { id: 'eq99', name: '涅槃', effect: { healChance: 0.16, healPct: 0.22 } },
+    { id: 'eq100', name: '灭世', effect: { directPctMonsterMaxHp: 0.05, extraDmgFromAtk: 0.24 } },
+    { id: 'eq101', name: '分裂·微光', effect: { splitChance: 0.08, splitPct: 0.15 } },
+    { id: 'eq102', name: '分裂·涟漪', effect: { splitChance: 0.1, splitPct: 0.18 } },
+    { id: 'eq103', name: '分裂·溅射', effect: { splitChance: 0.12, splitPct: 0.22 } },
+    { id: 'eq104', name: '分裂·扩散', effect: { splitChance: 0.14, splitPct: 0.26 } },
+    { id: 'eq105', name: '分裂·震荡', effect: { splitChance: 0.16, splitPct: 0.3 } },
+    { id: 'eq106', name: '分裂·冲击波', effect: { splitChance: 0.18, splitPct: 0.35 } },
+    { id: 'eq107', name: '分裂·余波', effect: { splitChance: 0.2, splitPct: 0.4 } },
+    { id: 'eq108', name: '分裂·崩裂', effect: { splitChance: 0.22, splitPct: 0.45 } },
+    { id: 'eq109', name: '分裂·天崩', effect: { splitChance: 0.25, splitPct: 0.5 } },
+    { id: 'eq110', name: '分裂·灭世', effect: { splitChance: 0.28, splitPct: 0.55 } },
+    { id: 'eq111', name: '灵宠·攻', effect: { petAtk: 42 } },
+    { id: 'eq112', name: '灵宠·守', effect: { petDef: 36, petHp: 280 } },
+    { id: 'eq113', name: '灵宠·命', effect: { petHp: 480 } },
+    { id: 'eq114', name: '灵宠·嗜', effect: { petLifesteal: 6, petAtk: 22 } },
+    { id: 'eq115', name: '灵宠·闪', effect: { petDodge: 9 } },
+    { id: 'eq116', name: '灵宠·暴', effect: { petCritRate: 7, petCritDmg: 35 } },
+    { id: 'eq117', name: '灵宠·韧', effect: { petDamageReduction: 0.11, petHp: 260 } },
+    { id: 'eq118', name: '灵宠·锋', effect: { petAtk: 68, petCritRate: 5 } },
+    { id: 'eq119', name: '灵宠·甲', effect: { petDef: 62, petDamageReduction: 0.07 } },
+    { id: 'eq120', name: '灵宠·血', effect: { petHp: 680, petLifesteal: 5 } },
+    { id: 'eq121', name: '灵宠·影', effect: { petDodge: 14, petAtk: 28 } },
+    { id: 'eq122', name: '灵宠·狂', effect: { petCritRate: 11, petCritDmg: 55 } },
+    { id: 'eq123', name: '灵宠·壁', effect: { petDef: 82, petHp: 420, petDamageReduction: 0.09 } },
+    { id: 'eq124', name: '灵宠·噬', effect: { petLifesteal: 9, petAtk: 48, petHp: 280 } },
+    { id: 'eq125', name: '灵宠·幻', effect: { petDodge: 19, petCritRate: 6 } },
+    { id: 'eq126', name: '灵宠·戮', effect: { petAtk: 95, petCritDmg: 68 } },
+    { id: 'eq127', name: '灵宠·圣', effect: { petHp: 950, petDamageReduction: 0.14, petLifesteal: 6 } },
+    { id: 'eq128', name: '灵宠·神行', effect: { petDodge: 24, petAtk: 55, petDef: 42 } },
+    { id: 'eq129', name: '灵宠·战神', effect: { petAtk: 120, petCritRate: 14, petCritDmg: 82 } },
+    { id: 'eq130', name: '灵宠·至尊', effect: { petAtk: 82, petDef: 68, petHp: 820, petLifesteal: 7, petDodge: 16, petCritRate: 8, petCritDmg: 48, petDamageReduction: 0.16 } },
+    { id: 'eq131', name: '灵宠·分裂·微', effect: { petSplitChance: 0.1, petSplitPct: 0.18 } },
+    { id: 'eq132', name: '灵宠·分裂·波', effect: { petSplitChance: 0.14, petSplitPct: 0.25 } },
+    { id: 'eq133', name: '灵宠·分裂·震', effect: { petSplitChance: 0.18, petSplitPct: 0.32 } },
+    { id: 'eq134', name: '灵宠·分裂·灭', effect: { petSplitChance: 0.22, petSplitPct: 0.4 } },
+    { id: 'eq135', name: '灵宠·吸血·噬', effect: { petLifesteal: 10, petAtk: 20 } },
+    { id: 'eq136', name: '灵宠·吸血·渴', effect: { petLifesteal: 14, petHp: 250 } },
+    { id: 'eq137', name: '灵宠·吸血·魂', effect: { petLifesteal: 18, petAtk: 30, petHp: 200 } },
+    { id: 'eq138', name: '灵宠·吸血·王', effect: { petLifesteal: 22, petAtk: 40, petHp: 400 } }
 ];
+
+// 无限深渊-装备符文（每件装备最多2个符文槽）
+var ABYSS_RUNES = [
+    { id: 'rune_atk', name: '攻击符文', effect: { atk: 38 } },
+    { id: 'rune_hp', name: '生命符文', effect: { hp: 320 } },
+    { id: 'rune_def', name: '护甲符文', effect: { def: 26 } },
+    { id: 'rune_crit', name: '暴击符文', effect: { critRate: 3, critDmg: 20 } },
+    { id: 'rune_dodge', name: '闪避符文', effect: { dodge: 4 } },
+    { id: 'rune_life', name: '吸血符文', effect: { lifesteal: 7 } },
+    { id: 'rune_combo', name: '连击符文', effect: { combo: 5 } },
+    { id: 'rune_skill', name: '法强符文', effect: { skillDmg: 12 } },
+    { id: 'rune_break', name: '破甲符文', effect: { reduceMonsterDef: 6 } },
+    { id: 'rune_str', name: '力量符文', effect: { str: 9 } },
+    { id: 'rune_agi', name: '敏捷符文', effect: { agi: 9 } },
+    { id: 'rune_int', name: '智力符文', effect: { int: 9 } },
+    { id: 'rune_sta', name: '体力符文', effect: { sta: 9 } },
+    { id: 'rune_fire', name: '火攻符文', effect: { fireAtk: 8 } },
+    { id: 'rune_ice', name: '冰攻符文', effect: { waterAtk: 8 } },
+    { id: 'rune_metal', name: '金攻符文', effect: { metalAtk: 8 } }
+];
+var ABYSS_MAX_RUNE_SLOTS = 2;
+
+// 无限深渊-装备宝石（每件装备最多3个宝石槽）
+var ABYSS_GEMS = [
+    { id: 'gem_hp', name: '生命宝石', effect: { hp: 260 } },
+    { id: 'gem_atk', name: '攻击宝石', effect: { atk: 32 } },
+    { id: 'gem_def', name: '防御宝石', effect: { def: 22 } },
+    { id: 'gem_crit', name: '暴击宝石', effect: { critRate: 2, critDmg: 15 } },
+    { id: 'gem_dodge', name: '闪避宝石', effect: { dodge: 6 } },
+    { id: 'gem_life', name: '吸血宝石', effect: { lifesteal: 5 } },
+    { id: 'gem_combo', name: '连击宝石', effect: { combo: 4 } },
+    { id: 'gem_skill', name: '法强宝石', effect: { skillDmg: 10 } },
+    { id: 'gem_break', name: '破甲宝石', effect: { reduceMonsterDef: 5 } },
+    { id: 'gem_str', name: '力量宝石', effect: { str: 7 } },
+    { id: 'gem_agi', name: '敏捷宝石', effect: { agi: 7 } },
+    { id: 'gem_int', name: '智力宝石', effect: { int: 7 } },
+    { id: 'gem_sta', name: '体力宝石', effect: { sta: 7 } },
+    { id: 'gem_exp', name: '经验宝石', effect: { expGainPct: 5 } },
+    { id: 'gem_gold', name: '金币宝石', effect: { goldGainPct: 5 } }
+];
+var ABYSS_MAX_GEM_SLOTS = 3;
+
+// 深渊装备（符文+宝石）提供的经验/金币获得加成（百分比）
+function abyssGetExpGoldBonus() {
+    var expPct = 0, goldPct = 0;
+    if (!abyssRun || !abyssRun.equipped) return { expPct: expPct, goldPct: goldPct };
+    for (var ek in abyssRun.equipped) {
+        var eq = abyssRun.equipped[ek];
+        if (!eq) continue;
+        var runes = eq.runes || [];
+        for (var ri = 0; ri < runes.length; ri++) {
+            var r = runes[ri] ? getAbyssRuneById(runes[ri]) : null;
+            if (r && r.effect) { expPct += r.effect.expGainPct || 0; goldPct += r.effect.goldGainPct || 0; }
+        }
+        var gems = eq.gems || [];
+        for (var gi = 0; gi < gems.length; gi++) {
+            var g = gems[gi] ? getAbyssGemById(gems[gi]) : null;
+            if (g && g.effect) { expPct += g.effect.expGainPct || 0; goldPct += g.effect.goldGainPct || 0; }
+        }
+    }
+    return { expPct: expPct, goldPct: goldPct };
+}
+function abyssApplyExpGoldBonus(baseExp, baseGold) {
+    var b = abyssGetExpGoldBonus();
+    return {
+        exp: Math.floor((baseExp || 0) * (1 + (b.expPct || 0) / 100)),
+        gold: Math.floor((baseGold || 0) * (1 + (b.goldPct || 0) / 100))
+    };
+}
+
+function getAbyssRuneById(runeId) {
+    for (var i = 0; i < ABYSS_RUNES.length; i++) if (ABYSS_RUNES[i].id === runeId) return ABYSS_RUNES[i];
+    return null;
+}
+function getAbyssGemById(gemId) {
+    for (var i = 0; i < ABYSS_GEMS.length; i++) if (ABYSS_GEMS[i].id === gemId) return ABYSS_GEMS[i];
+    return null;
+}
+// 掉落时随机符文槽数量：80%为0个，15%为1个，5%为2个
+function abyssRollRuneSlotCount() {
+    var r = Math.random();
+    if (r < 0.80) return 0;
+    if (r < 0.95) return 1;
+    return 2;
+}
+// 掉落时随机宝石槽数量：75%为0个，15%为1个，5%为2个，5%为3个
+function abyssRollGemSlotCount() {
+    var r = Math.random();
+    if (r < 0.75) return 0;
+    if (r < 0.90) return 1;
+    if (r < 0.95) return 2;
+    return 3;
+}
 
 function getAbyssTower() {
     if (!player.abyssTower) {
@@ -65425,6 +65801,38 @@ function abyssSelectClass(classId) {
     });
 }
 
+function abyssShowBranchSelection() {
+    if (!abyssRun || !abyssRun.active || abyssRun.classBranch) return;
+    var classId = abyssRun.playerClass || 'warrior';
+    var info = ABYSS_BRANCH_INFO[classId];
+    if (!info) return;
+    var descEl = document.getElementById('abyssBranchDesc');
+    if (descEl) {
+        var a = info.branchA ? info.branchA.name + '</b><br/><span style="color:#aaa;">' + info.branchA.desc : '';
+        var b = info.branchB ? info.branchB.name + '</b><br/><span style="color:#aaa;">' + info.branchB.desc : '';
+        var c = info.branchC ? info.branchC.name + '</b><br/><span style="color:#aaa;">' + info.branchC.desc : '';
+        var d = info.branchD ? info.branchD.name + '</b><br/><span style="color:#aaa;">' + info.branchD.desc : '';
+        descEl.innerHTML = '<div style="margin-bottom:6px;"><b style="color:#ff6b6b;">分支A · ' + a + '</span></div><div style="margin-bottom:6px;"><b style="color:#42a5f5;">分支B · ' + b + '</span></div><div style="margin-bottom:6px;"><b style="color:#4caf50;">分支C · ' + c + '</span></div><div><b style="color:#9c27b0;">分支D · ' + d + '</span></div>';
+    }
+    document.getElementById('abyssBranchOverlay').style.display = 'block';
+    document.getElementById('abyssBranchUI').style.display = 'block';
+    var btnA = document.getElementById('abyssBranchABtn'); var btnB = document.getElementById('abyssBranchBBtn'); var btnC = document.getElementById('abyssBranchCBtn'); var btnD = document.getElementById('abyssBranchDBtn');
+    if (btnA) { btnA.onclick = function() { abyssChooseBranch('branchA'); }; btnA.textContent = (info.branchA ? info.branchA.name : '分支A'); }
+    if (btnB) { btnB.onclick = function() { abyssChooseBranch('branchB'); }; btnB.textContent = (info.branchB ? info.branchB.name : '分支B'); }
+    if (btnC) { btnC.onclick = function() { abyssChooseBranch('branchC'); }; btnC.textContent = (info.branchC ? info.branchC.name : '分支C'); }
+    if (btnD) { btnD.onclick = function() { abyssChooseBranch('branchD'); }; btnD.textContent = (info.branchD ? info.branchD.name : '分支D'); }
+}
+function abyssChooseBranch(branch) {
+    if (!abyssRun || !abyssRun.active || abyssRun.classBranch) return;
+    abyssRun.classBranch = branch;
+    document.getElementById('abyssBranchOverlay').style.display = 'none';
+    document.getElementById('abyssBranchUI').style.display = 'none';
+    var info = ABYSS_BRANCH_INFO[abyssRun.playerClass] || {};
+    var name = (info[branch] && info[branch].name) ? info[branch].name : branch;
+    abyssLog('选择职业分支：' + name + '！');
+    updateAbyssRunUI();
+}
+
 function startAbyssRun() {
      // 检查深渊令牌
     if (!player.items.fubeng1 || player.items.fubeng1 < 1) {
@@ -65447,7 +65855,9 @@ function startAbyssRun() {
         },
         equipped: { helmet: null, chest: null, pants: null, shoes: null, necklace: null, ring: null, weapon: null },
         inventory: [],
-        materials: { enhanceStone: 0, enchantBook: 0, potion: 0, upgradeStone: 0, petRevivePotion: 0, petSkillBook: 0 },
+        runeInventory: [],
+        gemInventory: [],
+        materials: { enhanceStone: 0, enchantBook: 0, potion: 0, upgradeStone: 0, petRevivePotion: 0, petSkillBook: 0, runeSlotOpener: 0, gemSlotOpener: 0 },
         tempStats: { hp: 0, atk: 0, def: 0, critRate: 0, critDmg: 0, dodge: 0, lifesteal: 0, combo: 0, skillDmg: 0, reduceMonsterDef: 0 },
         talentPoints: 0,
         talents: {},
@@ -65468,7 +65878,8 @@ function startAbyssRun() {
         playerTargetIndex: 0,
         learnedSkillIds: [],
         equippedSkillIds: [null, null, null],
-        beastSummons: []
+        beastSummons: [],
+        classBranch: null
     };
     var at = getAbyssTower();
     var pb = at.permanentBonuses || {};
@@ -65564,9 +65975,17 @@ function abyssGenEquipment(floor, forStart, maxQuality, fixedQuality) {
         equipSkill = { id: sk.id, name: sk.name, effect: JSON.parse(JSON.stringify(sk.effect)) };
     }
     var displayName = ABYSS_QUALITIES[quality] + '·' + equipName + (setIdx ? '(' + ABYSS_SET_NAMES[setIdx] + ')' : '') + (equipSkill ? '[' + equipSkill.name + ']' : '');
+    var runeSlots = abyssRollRuneSlotCount();
+    var gemSlots = abyssRollGemSlotCount();
+    var runesArr = [];
+    for (var rs = 0; rs < runeSlots; rs++) runesArr.push(null);
+    var gemsArr = [];
+    for (var gs = 0; gs < gemSlots; gs++) gemsArr.push(null);
     return {
         id: abyssGenId(), slot: slot, quality: quality, set: ABYSS_SET_NAMES[setIdx], equipLevel: equipLevel, level: 0, enchant: null,
-        stats: base, name: displayName, equipSkill: equipSkill
+        stats: base, name: displayName, equipSkill: equipSkill,
+        runes: runesArr,
+        gems: gemsArr
     };
 }
 
@@ -65639,6 +66058,56 @@ function abyssCalcPlayerStats() {
             if (addEff.combo) combo += (addEff.combo || 0) * lvMult;
             if (addEff.skillDmg) skillDmg += Math.floor((addEff.skillDmg || 0) * lvMult * 1.5 * 0.5);
             if (addEff.reduceMonsterDef) reduceMonsterDef += (addEff.reduceMonsterDef || 0) * lvMult;
+        }
+        var runes = eq.runes || [];
+        for (var ri = 0; ri < runes.length; ri++) {
+            var runeId = runes[ri];
+            if (!runeId) continue;
+            var rune = getAbyssRuneById(runeId);
+            if (rune && rune.effect) {
+                var re = rune.effect;
+                if (re.hp) hp += Math.floor(re.hp * enhanceMult);
+                if (re.atk) atk += Math.floor(re.atk * enhanceMult);
+                if (re.def) def += Math.floor(re.def * enhanceMult);
+                if (re.critRate) critRate += (re.critRate || 0) * enhanceMult;
+                if (re.critDmg) critDmg += (re.critDmg || 0) * enhanceMult;
+                if (re.dodge) dodge += (re.dodge || 0) * enhanceMult;
+                if (re.lifesteal) lifesteal += (re.lifesteal || 0) * enhanceMult;
+                if (re.combo) combo += (re.combo || 0) * enhanceMult;
+                if (re.skillDmg) skillDmg += (re.skillDmg || 0) * enhanceMult;
+                if (re.reduceMonsterDef) reduceMonsterDef += (re.reduceMonsterDef || 0) * enhanceMult;
+                if (re.str) totalStr += (re.str || 0) * enhanceMult;
+                if (re.agi) totalAgi += (re.agi || 0) * enhanceMult;
+                if (re.int) totalInt += (re.int || 0) * enhanceMult;
+                if (re.sta) totalSta += (re.sta || 0) * enhanceMult;
+                for (var rei = 0; rei < ABYSS_ELEMENTS.length; rei++) {
+                    var el = ABYSS_ELEMENTS[rei];
+                    if (re[el + 'Atk']) elementAtk[el] += (re[el + 'Atk'] || 0) * enhanceMult;
+                }
+            }
+        }
+        var gems = eq.gems || [];
+        for (var gi = 0; gi < gems.length; gi++) {
+            var gemId = gems[gi];
+            if (!gemId) continue;
+            var gem = getAbyssGemById(gemId);
+            if (gem && gem.effect) {
+                var ge = gem.effect;
+                if (ge.hp) hp += Math.floor(ge.hp * enhanceMult);
+                if (ge.atk) atk += Math.floor(ge.atk * enhanceMult);
+                if (ge.def) def += Math.floor(ge.def * enhanceMult);
+                if (ge.critRate) critRate += (ge.critRate || 0) * enhanceMult;
+                if (ge.critDmg) critDmg += (ge.critDmg || 0) * enhanceMult;
+                if (ge.dodge) dodge += (ge.dodge || 0) * enhanceMult;
+                if (ge.lifesteal) lifesteal += (ge.lifesteal || 0) * enhanceMult;
+                if (ge.combo) combo += (ge.combo || 0) * enhanceMult;
+                if (ge.skillDmg) skillDmg += (ge.skillDmg || 0) * enhanceMult;
+                if (ge.reduceMonsterDef) reduceMonsterDef += (ge.reduceMonsterDef || 0) * enhanceMult;
+                if (ge.str) totalStr += (ge.str || 0) * enhanceMult;
+                if (ge.agi) totalAgi += (ge.agi || 0) * enhanceMult;
+                if (ge.int) totalInt += (ge.int || 0) * enhanceMult;
+                if (ge.sta) totalSta += (ge.sta || 0) * enhanceMult;
+            }
         }
         if (eq.set) setCount[eq.set] = (setCount[eq.set] || 0) + 1;
     }
@@ -65760,6 +66229,178 @@ var ABYSS_NORMAL_MONSTER_NAMES = [
     '裂渊狼', '虚空魔狼', '腐尸毒兽', '血爪蛛', '幽魂狼', '魔焰狼', '深渊魔狼', '噬魂毒兽', '骨魔蛛', '影刃蛛',
     '怨念毒兽', '堕落魔狼', '魔化毒兽', '虚空怨灵', '腐化怨灵', '血渊怨灵', '幽暗怨灵', '诅咒怨灵', '深渊怨灵', '噬骨怨灵'
 ];
+
+// 普通怪物前缀词条（共150个）：影响名称与属性
+var ABYSS_MONSTER_PREFIXES = [
+    { name: '强壮的', hpMult: 1.12, atkMult: 1.18, defMult: 1.0 },
+    { name: '凶猛的', hpMult: 0.95, atkMult: 1.22, defMult: 0.92 },
+    { name: '坚韧的', hpMult: 1.15, atkMult: 0.95, defMult: 1.25 },
+    { name: '虚弱的', hpMult: 0.82, atkMult: 0.88, defMult: 0.85 },
+    { name: '分裂的', hpMult: 0.9, atkMult: 1.05, defMult: 0.9, multiHit: 0.12 },
+    { name: '吸血的', hpMult: 1.0, atkMult: 1.05, defMult: 1.0, lifesteal: 3 },
+    { name: '迅捷的', hpMult: 0.92, atkMult: 1.08, defMult: 0.95, dodge: 4 },
+    { name: '笨重的', hpMult: 1.2, atkMult: 0.9, defMult: 1.15, dodge: -3 },
+    { name: '暴虐的', hpMult: 1.0, atkMult: 1.2, defMult: 0.9, critRate: 6 },
+    { name: '厚皮的', hpMult: 1.18, atkMult: 0.92, defMult: 1.2 },
+    { name: '狂化的', hpMult: 0.88, atkMult: 1.28, defMult: 0.88 },
+    { name: '腐朽的', hpMult: 0.78, atkMult: 0.92, defMult: 0.8 },
+    { name: '嗜血的', hpMult: 1.05, atkMult: 1.15, defMult: 0.95, lifesteal: 4 },
+    { name: '石肤的', hpMult: 1.1, atkMult: 0.9, defMult: 1.35 },
+    { name: '灵巧的', hpMult: 0.9, atkMult: 1.1, defMult: 0.9, dodge: 6 },
+    { name: '重甲的', hpMult: 1.22, atkMult: 0.88, defMult: 1.3 },
+    { name: '尖刺的', hpMult: 1.0, atkMult: 1.05, defMult: 1.1, thornsRate: 0.08 },
+    { name: '剧毒的', hpMult: 0.95, atkMult: 1.15, defMult: 0.95, venomBonus: 0.1 },
+    { name: '燃烧的', hpMult: 0.92, atkMult: 1.18, defMult: 0.9 },
+    { name: '冰霜的', hpMult: 1.0, atkMult: 1.05, defMult: 1.08 },
+    { name: '暗影的', hpMult: 0.95, atkMult: 1.12, defMult: 0.98, dodge: 3 },
+    { name: '狂暴的', hpMult: 1.0, atkMult: 1.25, defMult: 0.85 },
+    { name: '再生的', hpMult: 1.2, atkMult: 0.9, defMult: 1.0 },
+    { name: '脆弱的', hpMult: 0.75, atkMult: 1.0, defMult: 0.75 },
+    { name: '巨力的', hpMult: 1.08, atkMult: 1.28, defMult: 0.95 },
+    { name: '铁壁的', hpMult: 1.15, atkMult: 0.85, defMult: 1.4 },
+    { name: '双生的', hpMult: 0.85, atkMult: 1.15, defMult: 0.9, multiHit: 0.15 },
+    { name: '诅咒的', hpMult: 0.9, atkMult: 1.1, defMult: 0.92 },
+    { name: '邪能的', hpMult: 1.05, atkMult: 1.18, defMult: 0.95 },
+    { name: '腐化的', hpMult: 0.95, atkMult: 1.12, defMult: 0.9 },
+    { name: '精英的', hpMult: 1.2, atkMult: 1.15, defMult: 1.1 },
+    { name: '变异的', hpMult: 1.1, atkMult: 1.12, defMult: 1.05 },
+    { name: '古老的', hpMult: 1.25, atkMult: 1.05, defMult: 1.15 },
+    { name: '幼体的', hpMult: 0.7, atkMult: 0.8, defMult: 0.75 },
+    { name: '魁梧的', hpMult: 1.35, atkMult: 1.1, defMult: 1.1 },
+    { name: '瘦小的', hpMult: 0.65, atkMult: 0.95, defMult: 0.7 },
+    { name: '狡诈的', hpMult: 0.9, atkMult: 1.1, defMult: 0.88, critRate: 8 },
+    { name: '无畏的', hpMult: 1.1, atkMult: 1.15, defMult: 1.05 },
+    { name: '流亡的', hpMult: 0.92, atkMult: 1.18, defMult: 0.9 },
+    { name: '野性的', hpMult: 1.05, atkMult: 1.2, defMult: 0.92 },
+    { name: '护甲的', hpMult: 1.08, atkMult: 0.9, defMult: 1.28 },
+    { name: '锋利的', hpMult: 0.95, atkMult: 1.22, defMult: 0.9 },
+    { name: '顽强的', hpMult: 1.22, atkMult: 0.95, defMult: 1.18 },
+    { name: '凶残的', hpMult: 0.98, atkMult: 1.28, defMult: 0.88 },
+    { name: '幽灵的', hpMult: 0.85, atkMult: 1.08, defMult: 0.82, dodge: 8 },
+    { name: '重击的', hpMult: 1.0, atkMult: 1.2, defMult: 1.0, heavyChance: 0.15 },
+    { name: '连打的', hpMult: 0.92, atkMult: 1.1, defMult: 0.9, multiHit: 0.18 },
+    { name: '破甲的', hpMult: 0.95, atkMult: 1.15, defMult: 0.95, armorBreak: 0.12 },
+    { name: '嗜战的', hpMult: 1.05, atkMult: 1.18, defMult: 0.95, lifesteal: 2 },
+    { name: '威压的', hpMult: 1.08, atkMult: 1.05, defMult: 1.15 },
+    { name: '不死的', hpMult: 1.15, atkMult: 0.95, defMult: 1.1 },
+    /* ========== 新增100个前缀词条 ========== */
+    { name: '嗜杀的', hpMult: 0.95, atkMult: 1.2, defMult: 0.9, critRate: 5 },
+    { name: '龟甲的', hpMult: 1.2, atkMult: 0.82, defMult: 1.38 },
+    { name: '疾风的', hpMult: 0.88, atkMult: 1.12, defMult: 0.88, dodge: 5 },
+    { name: '枯朽的', hpMult: 0.72, atkMult: 0.95, defMult: 0.78 },
+    { name: '血怒的', hpMult: 1.02, atkMult: 1.22, defMult: 0.88, lifesteal: 2 },
+    { name: '岩壳的', hpMult: 1.18, atkMult: 0.88, defMult: 1.32 },
+    { name: '鬼步的', hpMult: 0.85, atkMult: 1.05, defMult: 0.85, dodge: 7 },
+    { name: '铁骨的', hpMult: 1.25, atkMult: 0.9, defMult: 1.22 },
+    { name: '碎颅的', hpMult: 0.98, atkMult: 1.26, defMult: 0.9 },
+    { name: '毒腺的', hpMult: 0.92, atkMult: 1.12, defMult: 0.92 },
+    { name: '焰心的', hpMult: 0.9, atkMult: 1.2, defMult: 0.88 },
+    { name: '霜甲的', hpMult: 1.05, atkMult: 0.95, defMult: 1.2 },
+    { name: '幽魂的', hpMult: 0.8, atkMult: 1.1, defMult: 0.8, dodge: 6 },
+    { name: '疯魔的', hpMult: 0.9, atkMult: 1.3, defMult: 0.85 },
+    { name: '自愈的', hpMult: 1.22, atkMult: 0.92, defMult: 1.05 },
+    { name: '薄血的', hpMult: 0.68, atkMult: 1.05, defMult: 0.82 },
+    { name: '开山的', hpMult: 1.05, atkMult: 1.3, defMult: 0.95 },
+    { name: '铜墙的', hpMult: 1.15, atkMult: 0.8, defMult: 1.45 },
+    { name: '三连的', hpMult: 0.88, atkMult: 1.12, defMult: 0.88, multiHit: 0.2 },
+    { name: '蚀骨的', hpMult: 0.9, atkMult: 1.15, defMult: 0.88 },
+    { name: '魔焰的', hpMult: 0.95, atkMult: 1.2, defMult: 0.9 },
+    { name: '寒冰的', hpMult: 1.0, atkMult: 1.08, defMult: 1.12 },
+    { name: '潜行的', hpMult: 0.88, atkMult: 1.15, defMult: 0.85, dodge: 5 },
+    { name: '癫狂的', hpMult: 0.85, atkMult: 1.32, defMult: 0.82 },
+    { name: '回春的', hpMult: 1.28, atkMult: 0.88, defMult: 1.0 },
+    { name: '纸糊的', hpMult: 0.6, atkMult: 1.0, defMult: 0.7 },
+    { name: '崩山的', hpMult: 1.0, atkMult: 1.28, defMult: 0.95 },
+    { name: '钢甲的', hpMult: 1.2, atkMult: 0.85, defMult: 1.35 },
+    { name: '乱舞的', hpMult: 0.9, atkMult: 1.08, defMult: 0.9, multiHit: 0.22 },
+    { name: '溃烂的', hpMult: 0.78, atkMult: 1.0, defMult: 0.8 },
+    { name: '炼狱的', hpMult: 0.92, atkMult: 1.22, defMult: 0.88 },
+    { name: '极寒的', hpMult: 1.02, atkMult: 1.05, defMult: 1.15 },
+    { name: '幻影的', hpMult: 0.82, atkMult: 1.1, defMult: 0.8, dodge: 9 },
+    { name: '入魔的', hpMult: 0.88, atkMult: 1.28, defMult: 0.85 },
+    { name: '不息的', hpMult: 1.25, atkMult: 0.9, defMult: 1.08 },
+    { name: '易碎的', hpMult: 0.58, atkMult: 0.98, defMult: 0.68 },
+    { name: '裂地的', hpMult: 1.02, atkMult: 1.26, defMult: 0.98 },
+    { name: '金钟的', hpMult: 1.22, atkMult: 0.82, defMult: 1.4 },
+    { name: '疾打的', hpMult: 0.86, atkMult: 1.15, defMult: 0.88, multiHit: 0.18 },
+    { name: '噬魂的', hpMult: 0.92, atkMult: 1.18, defMult: 0.9 },
+    { name: '邪火的', hpMult: 0.95, atkMult: 1.22, defMult: 0.92 },
+    { name: '凛冬的', hpMult: 1.05, atkMult: 1.0, defMult: 1.18 },
+    { name: '无踪的', hpMult: 0.8, atkMult: 1.12, defMult: 0.78, dodge: 8 },
+    { name: '入煞的', hpMult: 0.9, atkMult: 1.3, defMult: 0.88 },
+    { name: '续命的', hpMult: 1.3, atkMult: 0.88, defMult: 1.05 },
+    { name: '一碰就碎的', hpMult: 0.52, atkMult: 0.95, defMult: 0.62 },
+    { name: '破军的', hpMult: 1.0, atkMult: 1.3, defMult: 0.92 },
+    { name: '玄铁的', hpMult: 1.18, atkMult: 0.85, defMult: 1.38 },
+    { name: '连环的', hpMult: 0.88, atkMult: 1.1, defMult: 0.9, multiHit: 0.25 },
+    { name: '蚀心的', hpMult: 0.88, atkMult: 1.15, defMult: 0.88 },
+    { name: '业火的', hpMult: 0.9, atkMult: 1.25, defMult: 0.88 },
+    { name: '永冻的', hpMult: 1.08, atkMult: 0.98, defMult: 1.22 },
+    { name: '无形的', hpMult: 0.78, atkMult: 1.08, defMult: 0.75, dodge: 10 },
+    { name: '煞化的', hpMult: 0.92, atkMult: 1.26, defMult: 0.9 },
+    { name: '长生的', hpMult: 1.32, atkMult: 0.85, defMult: 1.1 },
+    { name: '豆腐的', hpMult: 0.5, atkMult: 0.9, defMult: 0.6 },
+    { name: '斩铁的', hpMult: 0.98, atkMult: 1.28, defMult: 0.95 },
+    { name: '龙鳞的', hpMult: 1.2, atkMult: 0.88, defMult: 1.35 },
+    { name: '多段的', hpMult: 0.9, atkMult: 1.05, defMult: 0.88, multiHit: 0.28 },
+    { name: '摄魂的', hpMult: 0.9, atkMult: 1.2, defMult: 0.9 },
+    { name: '魔息的', hpMult: 0.95, atkMult: 1.22, defMult: 0.92 },
+    { name: '冰封的', hpMult: 1.1, atkMult: 0.95, defMult: 1.25 },
+    { name: '遁形的', hpMult: 0.75, atkMult: 1.1, defMult: 0.72, dodge: 9 },
+    { name: '狂煞的', hpMult: 0.88, atkMult: 1.32, defMult: 0.85 },
+    { name: '不灭的', hpMult: 1.28, atkMult: 0.9, defMult: 1.12 },
+    { name: '泡沫的', hpMult: 0.48, atkMult: 0.88, defMult: 0.58 },
+    { name: '碎甲的', hpMult: 0.95, atkMult: 1.25, defMult: 0.92 },
+    { name: '神盾的', hpMult: 1.22, atkMult: 0.82, defMult: 1.42 },
+    { name: '五连的', hpMult: 0.82, atkMult: 1.08, defMult: 0.85, multiHit: 0.3 },
+    { name: '夺魄的', hpMult: 0.88, atkMult: 1.18, defMult: 0.88 },
+    { name: '冥炎的', hpMult: 0.92, atkMult: 1.25, defMult: 0.9 },
+    { name: '霜魂的', hpMult: 1.05, atkMult: 1.02, defMult: 1.2 },
+    { name: '隐身的', hpMult: 0.72, atkMult: 1.12, defMult: 0.7, dodge: 11 },
+    { name: '魔煞的', hpMult: 0.9, atkMult: 1.28, defMult: 0.88 },
+    { name: '永生的', hpMult: 1.35, atkMult: 0.88, defMult: 1.15 },
+    { name: '朽木的', hpMult: 0.45, atkMult: 0.85, defMult: 0.55 },
+    { name: '贯甲的', hpMult: 0.96, atkMult: 1.28, defMult: 0.92 },
+    { name: '圣盾的', hpMult: 1.25, atkMult: 0.8, defMult: 1.45 },
+    { name: '暴风的', hpMult: 0.84, atkMult: 1.12, defMult: 0.86, multiHit: 0.26 },
+    { name: '勾魂的', hpMult: 0.86, atkMult: 1.22, defMult: 0.88 },
+    { name: '焚天的', hpMult: 0.9, atkMult: 1.28, defMult: 0.88 },
+    { name: '冰魄的', hpMult: 1.08, atkMult: 0.98, defMult: 1.28 },
+    { name: '鬼隐的', hpMult: 0.7, atkMult: 1.08, defMult: 0.68, dodge: 12 },
+    { name: '灭世的', hpMult: 0.86, atkMult: 1.35, defMult: 0.85 },
+    { name: '涅槃的', hpMult: 1.32, atkMult: 0.9, defMult: 1.18 },
+    { name: '朽败的', hpMult: 0.42, atkMult: 0.82, defMult: 0.52 },
+    { name: '破城的', hpMult: 0.98, atkMult: 1.3, defMult: 0.9 },
+    { name: '天罡的', hpMult: 1.28, atkMult: 0.82, defMult: 1.42 },
+    { name: '骤雨的', hpMult: 0.82, atkMult: 1.1, defMult: 0.84, multiHit: 0.28 },
+    { name: '索命的', hpMult: 0.85, atkMult: 1.25, defMult: 0.86 },
+    { name: '红莲的', hpMult: 0.88, atkMult: 1.3, defMult: 0.86 },
+    { name: '玄冰的', hpMult: 1.12, atkMult: 0.95, defMult: 1.3 },
+    { name: '化风的', hpMult: 0.68, atkMult: 1.1, defMult: 0.65, dodge: 13 },
+    { name: '灭道的', hpMult: 0.88, atkMult: 1.32, defMult: 0.86 },
+    { name: '不死的', hpMult: 1.3, atkMult: 0.92, defMult: 1.2 },
+    { name: '风化的', hpMult: 0.4, atkMult: 0.8, defMult: 0.5 },
+    { name: '弑神的', hpMult: 0.96, atkMult: 1.32, defMult: 0.9 },
+    { name: '金刚的', hpMult: 1.3, atkMult: 0.8, defMult: 1.48 },
+    { name: '星落的', hpMult: 0.8, atkMult: 1.15, defMult: 0.82, multiHit: 0.3 },
+    { name: '追魂的', hpMult: 0.84, atkMult: 1.28, defMult: 0.85 },
+    { name: '天火的', hpMult: 0.86, atkMult: 1.32, defMult: 0.84 },
+    { name: '万载寒冰的', hpMult: 1.15, atkMult: 0.92, defMult: 1.32 },
+    { name: '虚无的', hpMult: 0.65, atkMult: 1.08, defMult: 0.62, dodge: 14 },
+    { name: '劫灭的', hpMult: 0.85, atkMult: 1.35, defMult: 0.84 },
+    { name: '不朽的', hpMult: 1.28, atkMult: 0.92, defMult: 1.22 },
+    { name: '尘埃的', hpMult: 0.38, atkMult: 0.78, defMult: 0.48 },
+    { name: '崩天的', hpMult: 0.94, atkMult: 1.35, defMult: 0.88 },
+    { name: '不破的', hpMult: 1.32, atkMult: 0.78, defMult: 1.5 },
+    { name: '流星雨的', hpMult: 0.78, atkMult: 1.12, defMult: 0.8, multiHit: 0.32 },
+    /* ========== 福利怪前缀（属性-30%，经验与货币×2） ========== */
+    { name: '【福利】', hpMult: 0.7, atkMult: 0.7, defMult: 0.7, welfareReward: 2 },
+    { name: '【送宝】', hpMult: 0.7, atkMult: 0.7, defMult: 0.7, welfareReward: 2 },
+    { name: '【福星】', hpMult: 0.7, atkMult: 0.7, defMult: 0.7, welfareReward: 2 },
+    { name: '【财神】', hpMult: 0.7, atkMult: 0.7, defMult: 0.7, welfareReward: 2 },
+    { name: '【好运】', hpMult: 0.7, atkMult: 0.7, defMult: 0.7, welfareReward: 2 }
+];
+
 var ABYSS_BOSS_NAMES = [
     '灭世魔尊', '深渊主宰', '混沌领主', '虚空君王', '噬界者', '永恒梦魇', '破灭天尊', '万劫魔君', '寂灭帝尊',
     '葬天者', '湮灭之瞳', '深渊帝君', '混沌魔神', '虚空吞噬者', '永劫魔皇', '崩界尊者', '弑神者', '无间狱主',
@@ -65820,6 +66461,12 @@ var ABYSS_PET_SKILLS = [
     { id: 'petAdvBerserk', name: '高级舍身击', atkBonus: 0.45, defPenalty: 0.18 },
     { id: 'petAdvWisdom', name: '高级慧根', dmgBonus: 0.18 },
     { id: 'petAdvMiracle', name: '高级神迹', defBonus: 0.28 },
+    /* ========== 宠物多目标攻击技能 ========== */
+    { id: 'petSweep', name: '横扫', petAoeChance: 0.2, petAoePct: 0.4 },
+    { id: 'petSplash', name: '溅射', petAoeChance: 0.25, petAoePct: 0.35 },
+    { id: 'petShockwave', name: '震波', petAoeChance: 0.3, petAoePct: 0.3 },
+    { id: 'petRift', name: '裂空', petAoeChance: 0.15, petAoePct: 0.55 },
+    { id: 'petAdvSweep', name: '高级横扫', petAoeChance: 0.35, petAoePct: 0.5 },
     /* ========== 宠物被动：给玩家加成（低级） ========== */
     { id: 'petPassionWar', name: '战意', playerBonus: { atk: 40 } },
     { id: 'petIronWall', name: '铁壁', playerBonus: { def: 30 } },
@@ -65943,7 +66590,7 @@ function abyssCalcPetStats(pet) {
     def = Math.max(0, def);
     maxHp = Math.max(50, maxHp);
     var dodge = Math.min(15, Math.max(0, (g.speed - 1000) / 2000 * 10));
-    var p = { atk: atk, def: def, maxHp: maxHp, dodge: dodge };
+    var p = { atk: atk, def: def, maxHp: maxHp, dodge: dodge, critRate: 0, critDmg: 0, lifesteal: 0, damageReduction: 0 };
     for (var i = 0; i < (pet.skills || []).length; i++) {
         var sk = null;
         for (var j = 0; j < ABYSS_PET_SKILLS.length; j++) {
@@ -65954,6 +66601,25 @@ function abyssCalcPetStats(pet) {
             if (sk.defBonus) p.def = Math.floor(p.def * (1 + sk.defBonus));
         }
     }
+    if (abyssRun && abyssRun.equipped) {
+        for (var ek in abyssRun.equipped) {
+            var eq = abyssRun.equipped[ek];
+            if (!eq || !eq.equipSkill || !eq.equipSkill.effect) continue;
+            var e = eq.equipSkill.effect;
+            if (e.petAtk) p.atk = (p.atk || 0) + e.petAtk;
+            if (e.petDef) p.def = (p.def || 0) + e.petDef;
+            if (e.petHp) p.maxHp = (p.maxHp || 0) + e.petHp;
+            if (e.petDodge) p.dodge = (p.dodge || 0) + e.petDodge;
+            if (e.petCritRate) p.critRate = (p.critRate || 0) + e.petCritRate;
+            if (e.petCritDmg) p.critDmg = (p.critDmg || 0) + e.petCritDmg;
+            if (e.petLifesteal) p.lifesteal = (p.lifesteal || 0) + e.petLifesteal;
+            if (e.petDamageReduction) p.damageReduction = (p.damageReduction || 0) + e.petDamageReduction;
+        }
+    }
+    p.atk = Math.max(1, p.atk);
+    p.def = Math.max(0, p.def);
+    p.maxHp = Math.max(50, p.maxHp);
+    p.dodge = Math.min(75, (p.dodge || 0));
     pet.maxHp = p.maxHp;
     return p;
 }
@@ -66044,7 +66710,100 @@ var ABYSS_BOSS_SKILLS = [
     { id: 'execute', name: '终结', lowHpThreshold: 0.35, dmgBonus: 0.58 },
     { id: 'thorns', name: '荆棘', reflectRate: 0.11 },
     { id: 'shield', name: '屏障', shieldPct: 0.24 },
-    { id: 'bossSummon', name: '深渊召唤', chance: 0.2, summonCount: 2, summonPct: 0.1 }
+    { id: 'bossSummon', name: '深渊召唤', chance: 0.2, summonCount: 2, summonPct: 0.1 },
+    /* ========== 10层+ 进阶技能 ========== */
+    { id: 'quadrupleStrike', name: '四连斩', chance: 0.12, multi: 4, minTier: 1 },
+    { id: 'execute', name: '裂魂', lowHpThreshold: 0.2, dmgBonus: 0.85, minTier: 1 },
+    { id: 'crush', name: '泰坦之握', dmgBonus: 0.4, minTier: 1 },
+    { id: 'shield', name: '邪能护甲', shieldPct: 0.3, minTier: 1 },
+    { id: 'rage', name: '暴君之怒', atkBonus: 0.6, minTier: 1 },
+    { id: 'armorBreak', name: '破城', defIgnore: 0.45, minTier: 1 },
+    { id: 'intimidate', name: '深渊凝视', dmgReduce: 0.25, minTier: 1 },
+    { id: 'thorns', name: '荆棘王座', reflectRate: 0.2, minTier: 1 },
+    { id: 'heavyStrike', name: '崩山', chance: 0.35, dmgMult: 1.85, minTier: 1 },
+    { id: 'bloodthirst', name: '噬生', atkBonusPerMissing: 0.7, minTier: 1 },
+    { id: 'lifesteal', name: '生命汲取', rate: 0.22, minTier: 1 },
+    { id: 'ignite', name: '业火', dotRate: 0.09, minTier: 1 },
+    { id: 'bossSummon', name: '召唤仆从', chance: 0.28, summonCount: 2, summonPct: 0.15, minTier: 1 },
+    /* ========== 20层+ 高阶技能 ========== */
+    { id: 'quadrupleStrike', name: '乱舞', chance: 0.15, multi: 4, minTier: 2 },
+    { id: 'execute', name: '死愿', lowHpThreshold: 0.18, dmgBonus: 0.95, minTier: 2 },
+    { id: 'halfDamage', name: '霸体', rate: 0.2, maxRate: 0.75, minTier: 2 },
+    { id: 'freeze', name: '深渊吐息', chance: 0.2, multi: 2.5, minTier: 2 },
+    { id: 'venom', name: '毒心', dmgBonus: 0.28, minTier: 2 },
+    { id: 'bleed', name: '裂伤', extraDmg: 0.15, minTier: 2 },
+    { id: 'curse', name: '腐化印记', defIgnore: 0.28, minTier: 2 },
+    { id: 'doubleStrike', name: '双生斩', chance: 0.32, multi: 2.4, minTier: 2 },
+    { id: 'tripleStrike', name: '三劫', chance: 0.2, multi: 3.5, minTier: 2 },
+    { id: 'rage', name: '二阶段', atkBonus: 0.55, rageThreshold: 0.5, minTier: 2 },
+    { id: 'revive', name: '不灭', revivePct: 0.4, minTier: 2 },
+    { id: 'lifesteal', name: '血宴', rate: 0.28, minTier: 2 },
+    { id: 'ignite', name: '永燃', dotRate: 0.12, minTier: 2 },
+    { id: 'bossSummon', name: '召唤精英', chance: 0.25, summonCount: 2, summonPct: 0.2, minTier: 2 },
+    /* ========== 30层+ 深渊专属 ========== */
+    { id: 'quadrupleStrike', name: '万象崩灭', chance: 0.18, multi: 4.2, minTier: 3 },
+    { id: 'execute', name: '终焉', lowHpThreshold: 0.15, dmgBonus: 1.1, minTier: 3 },
+    { id: 'halfDamage', name: '深渊之肤', rate: 0.28, maxRate: 0.78, minTier: 3 },
+    { id: 'shield', name: '虚空壁垒', shieldPct: 0.35, minTier: 3 },
+    { id: 'intimidate', name: '神威', dmgReduce: 0.3, minTier: 3 },
+    { id: 'thorns', name: '反噬', reflectRate: 0.24, minTier: 3 },
+    { id: 'armorBreak', name: '碎界', defIgnore: 0.5, minTier: 3 },
+    { id: 'heavyStrike', name: '天崩', chance: 0.38, dmgMult: 2, minTier: 3 },
+    { id: 'bloodthirst', name: '献祭', atkBonusPerMissing: 0.85, minTier: 3 },
+    { id: 'lifesteal', name: '夺魂', rate: 0.35, minTier: 3 },
+    { id: 'ignite', name: '炼狱', dotRate: 0.15, minTier: 3 },
+    { id: 'freeze', name: '永冻', chance: 0.22, multi: 2.8, minTier: 3 },
+    { id: 'revive', name: '轮回', revivePct: 0.5, minTier: 3 },
+    { id: 'bossSummon', name: '深渊军团', chance: 0.35, summonCount: 3, summonPct: 0.18, minTier: 3 },
+    /* ========== 40层+ 传说技能 ========== */
+    { id: 'execute', name: '弑神', lowHpThreshold: 0.12, dmgBonus: 1.25, minTier: 4 },
+    { id: 'quadrupleStrike', name: '万剑归宗', chance: 0.2, multi: 4.5, minTier: 4 },
+    { id: 'halfDamage', name: '不朽', rate: 0.35, maxRate: 0.8, minTier: 4 },
+    { id: 'rage', name: '灭世', atkBonus: 0.75, minTier: 4 },
+    { id: 'lifesteal', name: '永生', rate: 0.4, minTier: 4 },
+    { id: 'bossSummon', name: '深渊主宰', chance: 0.4, summonCount: 3, summonPct: 0.22, minTier: 4 },
+    /* ========== 20个特色技能（与众不同） ========== */
+    { id: 'mpSteal', name: '夺魂', mpStealPct: 0.2 },
+    { id: 'silence', name: '静默', silenceChance: 0.3, silenceRounds: 1 },
+    { id: 'hitAll', name: '崩裂', hitAllPct: 0.55 },
+    { id: 'counterStrike', name: '复仇', counterBonus: 0.5 },
+    { id: 'phaseAtHp', name: '蜕皮', phaseAtkBonus: 0.4 },
+    { id: 'shieldOnHit', name: '噬能护甲', shieldOnHitPct: 0.12 },
+    { id: 'firstStrike', name: '先制', firstStrikeMult: 1.6 },
+    { id: 'lastStand', name: '死志', lastStandThreshold: 0.15 },
+    { id: 'surviveOneDeath', name: '不溃' },
+    { id: 'enrageAtRounds', name: '狂乱', enrageRound: 3, enrageMult: 1.5 },
+    { id: 'lifesteal', name: '血契', rate: 0.32 },
+    { id: 'revive', name: '魂牢', revivePct: 0.45 },
+    { id: 'execute', name: '湮灭', lowHpThreshold: 0.12, dmgBonus: 1.0 },
+    { id: 'armorBreak', name: '破势', defIgnore: 0.48 },
+    { id: 'halfDamage', name: '永劫', rate: 0.25, maxRate: 0.76 },
+    { id: 'bloodthirst', name: '噬梦', atkBonusPerMissing: 0.78 },
+    { id: 'shield', name: '虚空障壁', shieldPct: 0.32 },
+    { id: 'thorns', name: '反噬之触', reflectRate: 0.22 },
+    { id: 'intimidate', name: '咒缚', dmgReduce: 0.28 },
+    { id: 'revive', name: '终末', revivePct: 0.55 },
+    /* ========== 新增20个与众不同的BOSS特色技能 ========== */
+    { id: 'timeStop', name: '时空凝滞', chance: 0.22, skipTurns: 1 },
+    { id: 'soulDrain', name: '魂噬', dotMaxHpPct: 0.04, dotRounds: 2 },
+    { id: 'curseMark', name: '咒印', stackDmgPerHit: 0.06, stackMax: 0.3 },
+    { id: 'stealBuff', name: '掠夺', stealBuffChance: 0.35 },
+    { id: 'deathAura', name: '死域', healOnAllyHitPct: 0.03 },
+    { id: 'healReduce', name: '锁链', healReducePct: 0.35 },
+    { id: 'voidTouch', name: '湮灭之触', missingHpDmgPct: 0.25 },
+    { id: 'foresight', name: '预知', dodgeBonus: 18 },
+    { id: 'deathCurse', name: '怨念', deathDmgMaxHpPct: 0.22 },
+    { id: 'mirrorImage', name: '幻身', chance: 0.18, imagePct: 0.2 },
+    { id: 'bloodPrice', name: '血偿', selfHpCostPct: 0.08, atkBonus: 0.5 },
+    { id: 'entropy', name: '熵增', chaosChance: 0.25 },
+    { id: 'soulLink', name: '魂链', damageSharePct: 0.15 },
+    { id: 'abyssGaze', name: '深渊凝视', blindChance: 0.2, blindRounds: 1 },
+    { id: 'boneArmor', name: '骨甲', armorPerHit: 5, armorCap: 80 },
+    { id: 'lifeSwap', name: '生命置换', swapChance: 0.12 },
+    { id: 'manaBurn', name: '燃魔', burnPct: 0.18 },
+    { id: 'fear', name: '恐惧', fearChance: 0.15, skipAttackChance: 0.5 },
+    { id: 'corrupt', name: '腐化', corruptHealPct: 0.2 },
+    { id: 'overwhelm', name: '碾压意志', overwhelmDefIgnore: 0.4 }
 ];
 
 var ABYSS_NORMAL_MONSTER_SKILLS = [
@@ -66155,6 +66914,12 @@ function abyssCreateOneMonster(f, isBoss, nameSuffix, baseStats) {
     var baseHp = (baseStats && baseStats.hp) || (500 + f * 78);
     var baseAtk = (baseStats && baseStats.atk) || (30 + f * 6);
     var baseDef = (baseStats && baseStats.def) || (10 + Math.floor(f * 1.9));
+    // 普通怪物：基础属性 下浮20% 上浮10%（即 80%～110%）
+    if (!isBoss) {
+        baseHp *= (0.8 + Math.random() * 0.3);
+        baseAtk *= (0.8 + Math.random() * 0.3);
+        baseDef *= (0.8 + Math.random() * 0.3);
+    }
     var hpPow = 1.068, atkPow = 1.055, defPow = 1.035;
     if (isBoss) {
         baseHp *= 2.4;
@@ -66167,33 +66932,70 @@ function abyssCreateOneMonster(f, isBoss, nameSuffix, baseStats) {
     var hp = Math.floor(baseHp * Math.pow(hpPow, f - 1));
     var atk = Math.floor(baseAtk * Math.pow(atkPow, f - 1));
     var def = Math.floor(baseDef * Math.pow(defPow, f - 1));
-    var monsterName = nameSuffix || (isBoss
-        ? (ABYSS_BOSS_NAMES[Math.floor(Math.random() * ABYSS_BOSS_NAMES.length)] + '·' + f + '层')
-        : (ABYSS_NORMAL_MONSTER_NAMES[Math.floor(Math.random() * ABYSS_NORMAL_MONSTER_NAMES.length)] + '·' + f + '层'));
+    var prefix = null;
+    var baseName = '';
+    if (isBoss) {
+        baseName = ABYSS_BOSS_NAMES[Math.floor(Math.random() * ABYSS_BOSS_NAMES.length)] + '·' + f + '层';
+    } else {
+        prefix = ABYSS_MONSTER_PREFIXES[Math.floor(Math.random() * ABYSS_MONSTER_PREFIXES.length)];
+        baseName = ABYSS_NORMAL_MONSTER_NAMES[Math.floor(Math.random() * ABYSS_NORMAL_MONSTER_NAMES.length)] + '·' + f + '层';
+    }
+    var monsterName = nameSuffix || (isBoss ? baseName : (prefix.name + baseName));
     var monsterElement = ABYSS_ELEMENTS[Math.floor(Math.random() * ABYSS_ELEMENTS.length)];
     var monsterElementRes = { metal: 0, wood: 0, water: 0, fire: 0, earth: 0 };
     for (var ei = 0; ei < ABYSS_ELEMENTS.length; ei++) {
         var el = ABYSS_ELEMENTS[ei];
         monsterElementRes[el] = Math.min(40, Math.floor(f / 3) + Math.floor(Math.random() * 6));
     }
+    var magicRes = isBoss ? Math.min(50, 10 + Math.floor(f / 3) + Math.floor(Math.random() * 13)) : Math.min(40, 5 + Math.floor(f / 4) + Math.floor(Math.random() * 9));
+    // 普通怪物：应用前缀词条属性加成
+    if (!isBoss && prefix) {
+        hp = Math.max(1, Math.floor(hp * (prefix.hpMult || 1)));
+        atk = Math.max(1, Math.floor(atk * (prefix.atkMult || 1)));
+        def = Math.max(0, Math.floor(def * (prefix.defMult || 1)));
+    }
+    var baseCrit = 5 + Math.min(25, Math.floor(f / 5));
+    var baseDodge = Math.min(15, Math.floor(f / 10));
+    var baseLifesteal = Math.min(10, Math.floor(f / 15));
+    if (!isBoss && prefix) {
+        baseCrit = Math.max(0, baseCrit + (prefix.critRate || 0));
+        baseDodge = Math.max(0, Math.min(30, baseDodge + (prefix.dodge || 0)));
+        baseLifesteal = Math.max(0, Math.min(25, baseLifesteal + (prefix.lifesteal || 0)));
+    }
     var mon = {
         name: monsterName,
-        hp: hp, maxHp: hp, atk: atk, def: def, critRate: 5 + Math.min(25, Math.floor(f / 5)), critDmg: 150, dodge: Math.min(15, Math.floor(f / 10)), lifesteal: Math.min(10, Math.floor(f / 15)), combo: Math.min(15, Math.floor(f / 8)),
-        isBoss: isBoss, multiHit: isBoss ? 0.25 : 0.1, halfDamage: isBoss ? Math.min(0.65, 0.3 + (f / 10) * 0.02) : 0, skills: [],
-        element: monsterElement, elementRes: monsterElementRes
+        hp: hp, maxHp: hp, atk: atk, def: def, critRate: baseCrit, critDmg: 150, dodge: baseDodge, lifesteal: baseLifesteal, combo: Math.min(15, Math.floor(f / 8)),
+        isBoss: isBoss, multiHit: isBoss ? 0.25 : (0.1 + (prefix && prefix.multiHit ? prefix.multiHit : 0)), halfDamage: isBoss ? Math.min(0.65, 0.3 + (f / 10) * 0.02) : 0, skills: [],
+        element: monsterElement, elementRes: monsterElementRes, magicRes: magicRes
     };
+    if (!isBoss && prefix && prefix.welfareReward) mon.welfareReward = prefix.welfareReward;
     if (isBoss) {
         mon.revived = false;
         mon.summonCount = 0;
         var tier = Math.floor(f / 10);
         var numSkills = Math.min(ABYSS_BOSS_SKILLS.length, 2 + Math.floor(tier / 2) + Math.min(3, Math.floor(tier / 15)));
         if (numSkills < 2) numSkills = 2;
-        var pool = ABYSS_BOSS_SKILLS.slice();
-        for (var s = 0; s < numSkills && pool.length > 0; s++) {
+        var pool = ABYSS_BOSS_SKILLS.filter(function(s) { return (s.minTier || 0) <= tier; });
+        if (pool.length === 0) pool = ABYSS_BOSS_SKILLS.slice();
+        var summonPool = pool.filter(function(s) { return s.id === 'bossSummon'; });
+        if (summonPool.length > 0) {
+            var summonPick = summonPool[Math.floor(Math.random() * summonPool.length)];
+            mon.skills.push(summonPick);
+            var idxInPool = pool.indexOf(summonPick);
+            if (idxInPool >= 0) pool.splice(idxInPool, 1);
+        }
+        for (var s = mon.skills.length; s < numSkills && pool.length > 0; s++) {
             var idx = Math.floor(Math.random() * pool.length);
             var picked = pool[idx];
             mon.skills.push(picked);
             pool.splice(idx, 1);
+        }
+        for (var hdi = 0; hdi < mon.skills.length; hdi++) {
+            var hds = mon.skills[hdi];
+            if (hds.id === 'halfDamage') {
+                mon.halfDamage = Math.min(hds.maxRate != null ? hds.maxRate : 0.8, (mon.halfDamage || 0) + (hds.rate || 0));
+                break;
+            }
         }
         mon.shield = Math.floor(mon.maxHp * 0.15);
         for (var si = 0; si < mon.skills.length; si++) {
@@ -66280,6 +67082,11 @@ function updateAbyssRunUI() {
         abyssRun.talentPoints = (abyssRun.talentPoints || 0) + add;
         abyssRun.lastGrantedTalentLevel = abyssRun.runLevel;
     }
+    var runZhuan = abyssZhuan(abyssRun.runLevel || 0);
+    if (runZhuan >= 2 && !abyssRun.classBranch) {
+        abyssShowBranchSelection();
+        return;
+    }
     var stats = abyssCalcPlayerStats();
     if (!stats) return;
     abyssEnsurePlayerTarget();
@@ -66318,7 +67125,7 @@ function updateAbyssRunUI() {
     var expEl = document.getElementById('abyssPlayerExp');
     if (expEl) expEl.textContent = formatNumber(abyssRun.exp || 0);
     var zhuanEl = document.getElementById('abyssPlayerZhuan');
-    if (zhuanEl) zhuanEl.textContent = stats.zhuan ? ' (' + abyssZhuanTitle(abyssRun.playerClass, stats.zhuan) + ')' : '';
+    if (zhuanEl) zhuanEl.textContent = stats.zhuan ? ' (' + abyssZhuanTitle(abyssRun.playerClass, stats.zhuan, abyssRun.classBranch) + ')' : '';
     var maxMp = stats.maxMp != null ? stats.maxMp : abyssMaxMpForLevel(abyssRun.runLevel || 0);
     abyssRun.player.mp = Math.min(maxMp, Math.max(0, abyssRun.player.mp != null ? abyssRun.player.mp : 50));
     var mpEl = document.getElementById('abyssPlayerMp');
@@ -66345,7 +67152,8 @@ function updateAbyssRunUI() {
             card.innerHTML = '<div style="color:#ff6b6b;font-weight:bold;font-size:12px;margin-bottom:4px;">' + nameLine + '</div>' +
                 '<div style="font-size:11px;">生命: ' + formatNumber(m.hp) + (m.shield > 0 ? ' (盾' + formatNumber(m.shield) + ')' : '') + '/' + formatNumber(m.maxHp) + '</div>' +
                 '<div style="height:6px;background:#333;border-radius:3px;margin-top:4px;overflow:hidden;"><div style="height:100%;background:linear-gradient(90deg,#ff6b6b,#ffd700);width:' + (m.maxHp > 0 ? Math.max(0, (m.hp + (m.shield || 0)) / (m.maxHp + (m.shield || 0)) * 100) : 0) + '%;border-radius:3px;"></div></div>' +
-                '<div style="margin-top:4px;font-size:10px;color:#aaa;">' + (m.isBoss ? '深渊护盾 ' : '') + (m.skills && m.skills.length ? m.skills.slice(0, 3).map(function(s){return s.name;}).join(' ') : '') + '</div>';
+                '<div style="margin-top:4px;font-size:10px;color:#aaa;">' + (m.isBoss ? '深渊护盾 ' : '') + (m.skills && m.skills.length ? m.skills.slice(0, 3).map(function(s){return s.name;}).join(' ') : '') + '</div>' +
+                (function(){ var res = []; if (m.elementRes) { for (var ei = 0; ei < ABYSS_ELEMENTS.length; ei++) { var el = ABYSS_ELEMENTS[ei]; var v = m.elementRes[el]; if (v > 0) res.push((ABYSS_ELEMENT_NAMES[el] || el) + '抗' + v + '%'); } } if ((m.magicRes || 0) > 0) res.push('魔抗' + m.magicRes + '%'); return res.length ? '<div style="margin-top:2px;font-size:9px;color:#8a8;">' + res.join(' ') + '</div>' : ''; })();
             container.appendChild(card);
         }
     }
@@ -66468,20 +67276,23 @@ function abyssAttack() {
         abyssRun.skillCooldowns[sid]--;
         if (abyssRun.skillCooldowns[sid] <= 0) delete abyssRun.skillCooldowns[sid];
     }
+    abyssRun.roundCount = (abyssRun.roundCount || 0) + 1;
+    if (abyssRun.skipPlayerTurn > 0) { abyssRun.skipPlayerTurn--; abyssRun._skipThisTurn = true; abyssLog('时空凝滞！你本回合无法行动'); }
     abyssRun.thisRoundDodgeBonus = 0;
     abyssRun.thisRoundReduceDmg = 0;
     abyssRun.thisRoundCounterPct = 0;
     if (abyssRun.buffs && abyssRun.buffs.roundsLeft > 0 && abyssRun.buffs.reduceDmgPct != null) abyssRun.thisRoundReduceDmg = abyssRun.buffs.reduceDmgPct;
     var useSkill = null;
     var classId = abyssRun.playerClass || 'warrior';
-    var skillList = ABYSS_CLASS_SKILLS[classId];
+    var skillList = abyssGetSkillList(classId, abyssRun.classBranch);
     var currentMp = abyssRun.player.mp != null ? abyssRun.player.mp : 50;
     var equipped = abyssRun.equippedSkillIds || [null, null, null];
     var learned = abyssRun.learnedSkillIds || [];
     var nextId = abyssRun.nextSkillId;
+    if (abyssRun.playerSilenced > 0) { nextId = null; abyssRun.playerSilenced--; abyssLog('静默中，本回合无法使用技能'); }
     var isEquipped = nextId && (equipped.indexOf(nextId) >= 0);
     var isLearned = nextId && (learned.indexOf(nextId) >= 0);
-    if (abyssRun.nextSkillId && skillList && isEquipped && isLearned) {
+    if (abyssRun.nextSkillId && nextId && skillList && isEquipped && isLearned) {
         for (var si = 0; si < skillList.length; si++) {
             if (skillList[si].id === abyssRun.nextSkillId) {
                 var sk = skillList[si];
@@ -66536,10 +67347,26 @@ function abyssAttack() {
     }
     var stats = abyssCalcPlayerStats();
     if (!stats) return;
+    if (abyssRun.playerBurning && abyssRun.playerBurning.rounds > 0) {
+        var dotDmg = Math.floor(stats.maxHp * (abyssRun.playerBurning.rate || 0.05));
+        abyssRun.player.hp = (abyssRun.player.hp || 0) - dotDmg;
+        abyssRun.playerBurning.rounds--;
+        abyssLog('灼烧造成 ' + formatNumber(dotDmg) + ' 伤害' + (abyssRun.playerBurning.rounds > 0 ? '（剩余' + abyssRun.playerBurning.rounds + '回合）' : ''));
+        if (abyssRun.playerBurning.rounds <= 0) abyssRun.playerBurning = null;
+        if (abyssRun.player.hp <= 0) { stopAbyssAutoAttack(); abyssOnPlayerDeath(); return; }
+    }
+    if (abyssRun.playerSoulDrain && abyssRun.playerSoulDrain.rounds > 0) {
+        var soulDmg = Math.floor(stats.maxHp * (abyssRun.playerSoulDrain.rate || 0.04));
+        abyssRun.player.hp = (abyssRun.player.hp || 0) - soulDmg;
+        abyssRun.playerSoulDrain.rounds--;
+        abyssLog('魂噬造成 ' + formatNumber(soulDmg) + ' 伤害' + (abyssRun.playerSoulDrain.rounds > 0 ? '（剩余' + abyssRun.playerSoulDrain.rounds + '回合）' : ''));
+        if (abyssRun.playerSoulDrain.rounds <= 0) abyssRun.playerSoulDrain = null;
+        if (abyssRun.player.hp <= 0) { stopAbyssAutoAttack(); abyssOnPlayerDeath(); return; }
+    }
     var m = abyssRun.monster;
     var effDef = m.def * (1 - (stats.reduceMonsterDef || 0) / 100);
     if (useSkill && useSkill.ignoreDefPct) effDef = effDef * (1 - useSkill.ignoreDefPct / 100);
-    var baseDmg = Math.max(1, stats.atk - Math.floor(effDef * 0.5));
+    var baseDmg = abyssRun._skipThisTurn ? (abyssRun._skipThisTurn = false, 0) : Math.max(1, stats.atk - Math.floor(effDef * 0.5));
     var crit = (useSkill && useSkill.forceCrit) || (Math.random() * 100 < stats.critRate);
     if (crit) baseDmg = Math.floor(baseDmg * (1 + stats.critDmg / 100));
     var combo = Math.random() * 100 < stats.combo;
@@ -66572,6 +67399,7 @@ function abyssAttack() {
                 fd = Math.floor(fd * (1 - Math.min(75, tr) / 100));
             }
             fd = Math.max(1, fd);
+            if (useSkill && (tm.magicRes || 0) > 0) { fd = Math.floor(fd * (1 - Math.min(75, tm.magicRes) / 100)); fd = Math.max(1, fd); }
             if (tm.skills && tm.skills.length) { for (var si = 0; si < tm.skills.length; si++) { if (tm.skills[si].id === 'intimidate') { fd = Math.floor(fd * (1 - (tm.skills[si].dmgReduce || 0.15))); fd = Math.max(1, fd); break; } } }
             var rem = fd;
             if (tm.shield > 0) { var ts = Math.min(tm.shield, rem); tm.shield -= ts; rem -= ts; }
@@ -66583,17 +67411,22 @@ function abyssAttack() {
         for (var di = abyssRun.monsters.length - 1; di >= 0; di--) {
             var dm = abyssRun.monsters[di];
             if (dm && dm.hp <= 0) {
+                var usedSurviveAoe = false;
+                if (dm.skills && !dm.surviveOneDeathUsed) for (var sod2 = 0; sod2 < dm.skills.length; sod2++) { if (dm.skills[sod2].id === 'surviveOneDeath') { dm.hp = 1; dm.surviveOneDeathUsed = true; usedSurviveAoe = true; abyssLog(dm.name + ' 不溃！保留1点生命'); break; } }
+                if (usedSurviveAoe) continue;
                 var hasRev = false;
                 if (dm.skills && dm.skills.length && !dm.revived) for (var rvi = 0; rvi < dm.skills.length; rvi++) { if (dm.skills[rvi].id === 'revive') { hasRev = true; break; } }
-                if (hasRev) { dm.revived = true; dm.hp = Math.floor(dm.maxHp * 0.25); abyssLog(dm.name + ' 发动复活！'); }
+                if (hasRev) { var revSk = null; for (var rvx = 0; rvx < dm.skills.length; rvx++) if (dm.skills[rvx].id === 'revive') { revSk = dm.skills[rvx]; break; } dm.revived = true; dm.hp = Math.floor(dm.maxHp * (revSk && revSk.revivePct != null ? revSk.revivePct : 0.25)); abyssLog(dm.name + ' 发动复活！恢复' + ((revSk && revSk.revivePct != null ? revSk.revivePct : 0.25) * 100).toFixed(0) + '%生命'); }
                 else {
                     abyssPetGainExp(dm.isBoss ? 35 : (12 + Math.floor(Math.random() * 5)));
                     if (!dm.isBoss) {
-                        var normExp = 8 + Math.floor(Math.random() * 8);
-                        var normGold = 20 + Math.floor(Math.random() * 11);
-                        abyssRun.exp = (abyssRun.exp || 0) + normExp;
-                        abyssRun.gold = (abyssRun.gold || 0) + normGold;
-                        abyssLog('获得经验 ' + normExp + '，闯关金币 ' + normGold);
+                        var welf = dm.welfareReward || 1;
+                        var normExp = (10 + Math.floor(Math.random() * 6)) * welf;
+                        var normGold = (21 + Math.floor(Math.random() * 11)) * welf;
+                        var applied = abyssApplyExpGoldBonus(normExp, normGold);
+                        abyssRun.exp = (abyssRun.exp || 0) + applied.exp;
+                        abyssRun.gold = (abyssRun.gold || 0) + applied.gold;
+                        abyssLog('获得经验 ' + applied.exp + '，闯关金币 ' + applied.gold);
                         if (Math.random() < 0.1) {
                             abyssRun.materials.potion = (abyssRun.materials.potion || 0) + 1;
                             abyssLog('获得生命药剂 x1');
@@ -66601,6 +67434,18 @@ function abyssAttack() {
                         if (Math.random() < 0.1) {
                             abyssRun.materials.upgradeStone = (abyssRun.materials.upgradeStone || 0) + 1;
                             abyssLog('获得升级石 x1');
+                        }
+                        if (Math.random() < 0.08) {
+                            var runeId = ABYSS_RUNES[Math.floor(Math.random() * ABYSS_RUNES.length)].id;
+                            abyssRun.runeInventory = abyssRun.runeInventory || [];
+                            abyssRun.runeInventory.push(runeId);
+                            abyssLog('获得符文【' + (getAbyssRuneById(runeId) || {}).name + '】');
+                        }
+                        if (Math.random() < 0.08) {
+                            var gemId = ABYSS_GEMS[Math.floor(Math.random() * ABYSS_GEMS.length)].id;
+                            abyssRun.gemInventory = abyssRun.gemInventory || [];
+                            abyssRun.gemInventory.push(gemId);
+                            abyssLog('获得宝石【' + (getAbyssGemById(gemId) || {}).name + '】');
                         }
                     }
                     abyssRun.monsters.splice(di, 1);
@@ -66644,6 +67489,7 @@ function abyssAttack() {
             if (m.skills[si].id === 'intimidate') { finalDmg = Math.floor(finalDmg * (1 - (m.skills[si].dmgReduce || 0.15))); finalDmg = Math.max(1, finalDmg); break; }
         }
     }
+    if (useSkill && (m.magicRes || 0) > 0) { finalDmg = Math.floor(finalDmg * (1 - Math.min(75, m.magicRes) / 100)); finalDmg = Math.max(1, finalDmg); }
     for (var _ek in abyssRun.equipped) {
         var _eq = abyssRun.equipped[_ek];
         if (!_eq || !_eq.equipSkill || !_eq.equipSkill.effect) continue;
@@ -66655,13 +67501,101 @@ function abyssAttack() {
         if (_eff.directPctMonsterMaxHp) finalDmg += Math.floor(m.maxHp * _eff.directPctMonsterMaxHp);
     }
     finalDmg = Math.max(1, finalDmg);
+    if (m.skills && m.skills.length) {
+        for (var lssi = 0; lssi < m.skills.length; lssi++) {
+            if (m.skills[lssi].id === 'lastStand' && m.hp < m.maxHp * (m.skills[lssi].lastStandThreshold || 0.15)) { finalDmg = Math.floor(finalDmg * 0.5); finalDmg = Math.max(1, finalDmg); break; }
+        }
+        for (var foi = 0; foi < m.skills.length; foi++) {
+            if (m.skills[foi].id === 'foresight' && Math.random() * 100 < (m.skills[foi].dodgeBonus || 0)) { finalDmg = 0; abyssLog(m.name + ' 预知！闪避了攻击'); break; }
+        }
+    }
+    if (abyssRun.playerBlinded > 0) { finalDmg = 0; abyssRun.playerBlinded--; abyssLog('致盲中，本回合攻击落空'); }
     var remain = finalDmg;
+    if (m.skills && m.skills.length) {
+        for (var mii = 0; mii < m.skills.length; mii++) {
+            if (m.skills[mii].id === 'mirrorImage' && Math.random() < (m.skills[mii].chance || 0.18)) {
+                remain = Math.floor(remain * (1 - (m.skills[mii].imagePct || 0.2)));
+                abyssLog(m.name + ' 幻身！减免部分伤害');
+                break;
+            }
+        }
+    }
     if (m.shield > 0) {
         var toShield = Math.min(m.shield, remain);
         m.shield -= toShield;
         remain -= toShield;
     }
-    if (remain > 0) m.hp -= remain;
+    if (remain > 0) {
+        if (m.skills && m.skills.length) {
+            for (var bai = 0; bai < m.skills.length; bai++) {
+                if (m.skills[bai].id === 'boneArmor') {
+                    var boneRed = Math.min(remain, m.boneArmor || 0);
+                    remain -= boneRed;
+                    m.boneArmor = Math.max(0, (m.boneArmor || 0) - boneRed);
+                    if (boneRed > 0) abyssLog(m.name + ' 骨甲吸收 ' + formatNumber(boneRed) + ' 伤害');
+                    break;
+                }
+            }
+        }
+        m.hp -= remain;
+        if (m.skills && m.skills.length && remain > 0) {
+            for (var sli = 0; sli < m.skills.length; sli++) {
+                if (m.skills[sli].id === 'soulLink') {
+                    var sharePct = m.skills[sli].damageSharePct || 0.15;
+                    var linkDmg = Math.floor(remain * sharePct);
+                    var others = abyssGetAliveMonsters().filter(function(x) { return x !== m && x.hp > 0; });
+                    for (var oi = 0; oi < others.length && linkDmg > 0; oi++) {
+                        var tm = others[oi];
+                        tm.hp = Math.max(0, (tm.hp || 0) - linkDmg);
+                        abyssLog(m.name + ' 魂链！' + tm.name + ' 分担 ' + formatNumber(linkDmg) + ' 伤害');
+                    }
+                    break;
+                }
+            }
+        }
+        if ((m.isSummon || (m.name && m.name.indexOf('仆从') >= 0)) && remain > 0) {
+            var bossA = abyssGetAliveMonsters().filter(function(x) { return x.isBoss && x !== m && x.hp > 0; })[0];
+            if (bossA && bossA.skills) for (var dai = 0; dai < bossA.skills.length; dai++) {
+                if (bossA.skills[dai].id === 'deathAura') {
+                    var healA = Math.floor(remain * (bossA.skills[dai].healOnAllyHitPct || 0.03));
+                    if (healA > 0) { bossA.hp = Math.min(bossA.maxHp, (bossA.hp || 0) + healA); abyssLog(bossA.name + ' 死域！仆从受伤恢复 ' + formatNumber(healA)); }
+                    break;
+                }
+            }
+        }
+        if (m.skills && m.skills.length) {
+            for (var bai2 = 0; bai2 < m.skills.length; bai2++) {
+                if (m.skills[bai2].id === 'boneArmor') {
+                    var cap = m.skills[bai2].armorCap || 80;
+                    m.boneArmor = Math.min(cap, (m.boneArmor || 0) + (m.skills[bai2].armorPerHit || 5));
+                    break;
+                }
+            }
+            for (var shi = 0; shi < m.skills.length; shi++) {
+                if (m.skills[shi].id === 'shieldOnHit') {
+                    var shAdd = Math.floor(remain * (m.skills[shi].shieldOnHitPct || 0.12));
+                    if (shAdd > 0) { m.shield = (m.shield || 0) + shAdd; abyssLog(m.name + ' 噬能护甲！获得 ' + formatNumber(shAdd) + ' 护盾'); }
+                    break;
+                }
+            }
+            for (var csi = 0; csi < m.skills.length; csi++) {
+                if (m.skills[csi].id === 'counterStrike') {
+                    var refDmg = Math.floor(finalDmg * (m.skills[csi].counterBonus || 0.5));
+                    if (refDmg > 0) { abyssRun.player.hp = Math.max(0, (abyssRun.player.hp || 0) - refDmg); abyssLog(m.name + ' 复仇！反击 ' + formatNumber(refDmg) + ' 伤害'); if (abyssRun.player.hp <= 0) { stopAbyssAutoAttack(); abyssOnPlayerDeath(); return; } }
+                    break;
+                }
+            }
+        }
+    }
+    if (m.skills && m.skills.length) {
+        for (var csti = 0; csti < m.skills.length; csti++) { if (m.skills[csti].id === 'counterStrike') { m.counterStrikeNext = true; break; } }
+    }
+    if (m.skills && m.skills.length && m.hp < m.maxHp * 0.5) {
+        for (var phi = 0; phi < m.skills.length; phi++) {
+            var phs = m.skills[phi];
+            if (phs.id === 'phaseAtHp' && !m.phaseTriggered) { m.phaseTriggered = true; m.atk = Math.floor(m.atk * (1 + (phs.phaseAtkBonus || 0.3))); abyssLog(m.name + ' 蜕皮！进入二阶段，攻击力提升'); break; }
+        }
+    }
     var logMsg = (crit ? '暴击 ' : '') + (combo ? '连击 ' : '') + '造成 ' + formatNumber(finalDmg) + ' 伤害';
     if (playerMainElement && m.element) {
         var mul = abyssElementRestrainMultiplier(playerMainElement, m.element);
@@ -66725,6 +67659,49 @@ function abyssAttack() {
             if (remainExtra > 0) m.hp -= remainExtra;
             abyssLog('【' + eq.equipSkill.name + '】额外造成 ' + formatNumber(extraTotal) + ' 伤害');
         }
+        if (eff.splitChance != null && eff.splitPct != null && Math.random() < eff.splitChance) {
+            var aliveAll = abyssGetAliveMonsters();
+            var others = [];
+            for (var oi = 0; oi < aliveAll.length; oi++) { if (aliveAll[oi] !== m) others.push(aliveAll[oi]); }
+            if (others.length > 0) {
+                var splitDmg = Math.max(1, Math.floor(finalDmg * eff.splitPct));
+                var splitTotal = 0;
+                for (var si = 0; si < others.length; si++) {
+                    var tm = others[si];
+                    var sd = Math.floor(splitDmg * (1 - (tm.halfDamage || 0)));
+                    sd = Math.max(1, sd);
+                    var srem = sd;
+                    if (tm.shield > 0) { var ts = Math.min(tm.shield, srem); tm.shield -= ts; srem -= ts; }
+                    if (srem > 0) tm.hp -= srem;
+                    splitTotal += sd;
+                }
+                abyssLog('【' + eq.equipSkill.name + '】分裂攻击！对其它 ' + others.length + ' 个目标共造成 ' + formatNumber(splitTotal) + ' 伤害');
+                for (var di = abyssRun.monsters.length - 1; di >= 0; di--) {
+                    var dm = abyssRun.monsters[di];
+                    if (!dm || dm.hp > 0 || dm === m) continue;
+                    var hasRev = false;
+                    if (dm.skills && dm.skills.length && !dm.revived) for (var rvi = 0; rvi < dm.skills.length; rvi++) { if (dm.skills[rvi].id === 'revive') { hasRev = true; break; } }
+                    if (hasRev) { var revSk2 = null; for (var rvx2 = 0; rvx2 < dm.skills.length; rvx2++) if (dm.skills[rvx2].id === 'revive') { revSk2 = dm.skills[rvx2]; break; } dm.revived = true; dm.hp = Math.floor(dm.maxHp * (revSk2 && revSk2.revivePct != null ? revSk2.revivePct : 0.25)); abyssLog(dm.name + ' 发动复活！'); }
+                    else {
+                        abyssPetGainExp(dm.isBoss ? 35 : (12 + Math.floor(Math.random() * 5)));
+                        if (!dm.isBoss) {
+                            var welf = dm.welfareReward || 1;
+                            var normExp = (10 + Math.floor(Math.random() * 6)) * welf;
+                            var normGold = (21 + Math.floor(Math.random() * 11)) * welf;
+                            var applied = abyssApplyExpGoldBonus(normExp, normGold);
+                            abyssRun.exp = (abyssRun.exp || 0) + applied.exp;
+                            abyssRun.gold = (abyssRun.gold || 0) + applied.gold;
+                            abyssLog('获得经验 ' + applied.exp + '，闯关金币 ' + applied.gold);
+                            if (Math.random() < 0.1) { abyssRun.materials.potion = (abyssRun.materials.potion || 0) + 1; abyssLog('获得生命药剂 x1'); }
+                            if (Math.random() < 0.1) { abyssRun.materials.upgradeStone = (abyssRun.materials.upgradeStone || 0) + 1; abyssLog('获得升级石 x1'); }
+                        }
+                        abyssRun.monsters.splice(di, 1);
+                    }
+                }
+                if (abyssGetAliveMonsters().length === 0) { stopAbyssAutoAttack(); abyssOnKillMonster(); return; }
+                abyssEnsurePlayerTarget();
+            }
+        }
     }
     var deployedPets = abyssGetDeployedPets();
     for (var pidx = 0; pidx < deployedPets.length && m.hp > 0; pidx++) {
@@ -66755,6 +67732,10 @@ function abyssAttack() {
                 }
                 if (psk.dmgBonus) petDmg = Math.floor(petDmg * (1 + psk.dmgBonus));
             }
+            if (!critDone && (pstats.critRate || 0) > 0 && Math.random() * 100 < (pstats.critRate || 0)) {
+                petDmg = Math.floor(petDmg * (1 + (pstats.critDmg || 50) / 100));
+                critDone = true;
+            }
             petDmg = Math.max(1, petDmg);
             var premain = petDmg;
             if (m.shield > 0) {
@@ -66762,8 +67743,115 @@ function abyssAttack() {
                 m.shield -= toPs;
                 premain -= toPs;
             }
+            if (m.skills && m.skills.length) { for (var lsp = 0; lsp < m.skills.length; lsp++) { if (m.skills[lsp].id === 'lastStand' && m.hp < m.maxHp * (m.skills[lsp].lastStandThreshold || 0.15)) { premain = Math.floor(premain * 0.5); premain = Math.max(1, premain); break; } } }
             if (premain > 0) m.hp -= premain;
+            if (m.skills) for (var csp = 0; csp < m.skills.length; csp++) { if (m.skills[csp].id === 'counterStrike') { m.counterStrikeNext = true; break; } }
+            if ((pstats.lifesteal || 0) > 0 && petDmg > 0) {
+                var petHeal = Math.floor(petDmg * (pstats.lifesteal || 0) / 100);
+                if (petHeal > 0) {
+                    var curHp = pet.hp != null ? pet.hp : pstats.maxHp;
+                    pet.hp = Math.min(pstats.maxHp, curHp + petHeal);
+                    abyssLog('宠物【' + pet.name + '】吸血回复 ' + formatNumber(petHeal));
+                }
+            }
             abyssLog('宠物【' + pet.name + '】造成 ' + formatNumber(petDmg) + ' 伤害');
+            for (var ek in abyssRun.equipped) {
+                var eq = abyssRun.equipped[ek];
+                if (!eq || !eq.equipSkill || !eq.equipSkill.effect) continue;
+                var eff = eq.equipSkill.effect;
+                if (eff.petSplitChance == null || eff.petSplitPct == null || Math.random() >= eff.petSplitChance) continue;
+                var aliveAll = abyssGetAliveMonsters();
+                var others = [];
+                for (var oi = 0; oi < aliveAll.length; oi++) { if (aliveAll[oi] !== m) others.push(aliveAll[oi]); }
+                if (others.length > 0) {
+                    var petSplitDmg = Math.max(1, Math.floor(petDmg * eff.petSplitPct));
+                    var petSplitTotal = 0;
+                    for (var si = 0; si < others.length; si++) {
+                        var tm = others[si];
+                        var sd = Math.floor(petSplitDmg * (1 - (tm.halfDamage || 0)));
+                        sd = Math.max(1, sd);
+                        var srem = sd;
+                        if (tm.shield > 0) { var ts = Math.min(tm.shield, srem); tm.shield -= ts; srem -= ts; }
+                        if (srem > 0) tm.hp -= srem;
+                        petSplitTotal += sd;
+                    }
+                    abyssLog('【' + eq.equipSkill.name + '】宠物分裂！对其它 ' + others.length + ' 个目标共造成 ' + formatNumber(petSplitTotal) + ' 伤害');
+                    for (var di = abyssRun.monsters.length - 1; di >= 0; di--) {
+                        var dm = abyssRun.monsters[di];
+                        if (!dm || dm.hp > 0 || dm === m) continue;
+                        var hasRev = false;
+                        if (dm.skills && dm.skills.length && !dm.revived) for (var rvi = 0; rvi < dm.skills.length; rvi++) { if (dm.skills[rvi].id === 'revive') { hasRev = true; break; } }
+                        if (hasRev) { var revSk3 = null; for (var rvx3 = 0; rvx3 < dm.skills.length; rvx3++) if (dm.skills[rvx3].id === 'revive') { revSk3 = dm.skills[rvx3]; break; } dm.revived = true; dm.hp = Math.floor(dm.maxHp * (revSk3 && revSk3.revivePct != null ? revSk3.revivePct : 0.25)); abyssLog(dm.name + ' 发动复活！'); }
+                        else {
+                            abyssPetGainExp(dm.isBoss ? 35 : (12 + Math.floor(Math.random() * 5)));
+                            if (!dm.isBoss) {
+                                var welf = dm.welfareReward || 1;
+                                var normExp = (10 + Math.floor(Math.random() * 6)) * welf;
+                                var normGold = (21 + Math.floor(Math.random() * 11)) * welf;
+                                var applied = abyssApplyExpGoldBonus(normExp, normGold);
+                                abyssRun.exp = (abyssRun.exp || 0) + applied.exp;
+                                abyssRun.gold = (abyssRun.gold || 0) + applied.gold;
+                                abyssLog('获得经验 ' + applied.exp + '，闯关金币 ' + applied.gold);
+                                if (Math.random() < 0.1) { abyssRun.materials.potion = (abyssRun.materials.potion || 0) + 1; abyssLog('获得生命药剂 x1'); }
+                                if (Math.random() < 0.1) { abyssRun.materials.upgradeStone = (abyssRun.materials.upgradeStone || 0) + 1; abyssLog('获得升级石 x1'); }
+                            }
+                            abyssRun.monsters.splice(di, 1);
+                        }
+                    }
+                    if (abyssGetAliveMonsters().length === 0) { stopAbyssAutoAttack(); abyssOnKillMonster(); return; }
+                    abyssEnsurePlayerTarget();
+                }
+            }
+            // 宠物多目标技能：对其它存活怪物造成额外伤害
+            var aliveAll = abyssGetAliveMonsters();
+            var others = [];
+            for (var oi = 0; oi < aliveAll.length; oi++) { if (aliveAll[oi] !== m) others.push(aliveAll[oi]); }
+            if (others.length > 0 && (pet.skills || []).length > 0) {
+                for (var aoeSi = 0; aoeSi < pet.skills.length; aoeSi++) {
+                    var aoeSk = null;
+                    for (var ask = 0; ask < ABYSS_PET_SKILLS.length; ask++) {
+                        if (ABYSS_PET_SKILLS[ask].id === pet.skills[aoeSi].id) { aoeSk = ABYSS_PET_SKILLS[ask]; break; }
+                    }
+                    if (!aoeSk || aoeSk.petAoeChance == null || aoeSk.petAoePct == null || Math.random() >= aoeSk.petAoeChance) continue;
+                    var aoeDmg = Math.max(1, Math.floor(petDmg * aoeSk.petAoePct));
+                    var aoeTotal = 0;
+                    for (var ai = 0; ai < others.length; ai++) {
+                        var am = others[ai];
+                        if (!am || am.hp <= 0) continue;
+                        var ad = Math.floor(aoeDmg * (1 - (am.halfDamage || 0)));
+                        ad = Math.max(1, ad);
+                        var arem = ad;
+                        if (am.shield > 0) { var as = Math.min(am.shield, arem); am.shield -= as; arem -= as; }
+                        if (arem > 0) am.hp -= arem;
+                        aoeTotal += ad;
+                    }
+                    if (aoeTotal > 0) abyssLog('宠物【' + pet.name + '】' + aoeSk.name + '！对其它 ' + others.length + ' 个目标共造成 ' + formatNumber(aoeTotal) + ' 伤害');
+                }
+                for (var di = abyssRun.monsters.length - 1; di >= 0; di--) {
+                    var dm = abyssRun.monsters[di];
+                    if (!dm || dm.hp > 0 || dm === m) continue;
+                    var hasRev = false;
+                    if (dm.skills && dm.skills.length && !dm.revived) for (var rvi = 0; rvi < dm.skills.length; rvi++) { if (dm.skills[rvi].id === 'revive') { hasRev = true; break; } }
+                    if (hasRev) { var revSk4 = null; for (var rvx4 = 0; rvx4 < dm.skills.length; rvx4++) if (dm.skills[rvx4].id === 'revive') { revSk4 = dm.skills[rvx4]; break; } dm.revived = true; dm.hp = Math.floor(dm.maxHp * (revSk4 && revSk4.revivePct != null ? revSk4.revivePct : 0.25)); abyssLog(dm.name + ' 发动复活！'); }
+                    else {
+                        abyssPetGainExp(dm.isBoss ? 35 : (12 + Math.floor(Math.random() * 5)));
+                        if (!dm.isBoss) {
+                            var welf = dm.welfareReward || 1;
+                            var normExp = (10 + Math.floor(Math.random() * 6)) * welf;
+                            var normGold = (21 + Math.floor(Math.random() * 11)) * welf;
+                            var applied = abyssApplyExpGoldBonus(normExp, normGold);
+                            abyssRun.exp = (abyssRun.exp || 0) + applied.exp;
+                            abyssRun.gold = (abyssRun.gold || 0) + applied.gold;
+                            abyssLog('获得经验 ' + applied.exp + '，闯关金币 ' + applied.gold);
+                            if (Math.random() < 0.1) { abyssRun.materials.potion = (abyssRun.materials.potion || 0) + 1; abyssLog('获得生命药剂 x1'); }
+                            if (Math.random() < 0.1) { abyssRun.materials.upgradeStone = (abyssRun.materials.upgradeStone || 0) + 1; abyssLog('获得升级石 x1'); }
+                        }
+                        abyssRun.monsters.splice(di, 1);
+                    }
+                }
+                if (abyssGetAliveMonsters().length === 0) { stopAbyssAutoAttack(); abyssOnKillMonster(); return; }
+                abyssEnsurePlayerTarget();
+            }
         }
     }
     var beasts = abyssRun.beastSummons || [];
@@ -66785,6 +67873,13 @@ function abyssAttack() {
         if (beasts[bj] && beasts[bj].hp <= 0) beasts.splice(bj, 1);
     }
     if (m.hp <= 0) {
+        var usedSurvive = false;
+        if (m.skills && m.skills.length && !m.surviveOneDeathUsed) {
+            for (var sodi = 0; sodi < m.skills.length; sodi++) {
+                if (m.skills[sodi].id === 'surviveOneDeath') { m.hp = 1; m.surviveOneDeathUsed = true; usedSurvive = true; abyssLog(m.name + ' 不溃！保留1点生命'); break; }
+            }
+        }
+        if (usedSurvive) { /* 本回合不死亡 */ } else if (m.hp <= 0) {
         var hasRevive = false;
         if (m.skills && m.skills.length && !m.revived) {
             for (var si = 0; si < m.skills.length; si++) {
@@ -66792,18 +67887,32 @@ function abyssAttack() {
             }
         }
         if (hasRevive) {
+            var revSkM = null; for (var rvxm = 0; rvxm < m.skills.length; rvxm++) if (m.skills[rvxm].id === 'revive') { revSkM = m.skills[rvxm]; break; }
             m.revived = true;
-            m.hp = Math.floor(m.maxHp * 0.25);
-            abyssLog('BOSS发动复活！恢复25%生命');
+            m.hp = Math.floor(m.maxHp * (revSkM && revSkM.revivePct != null ? revSkM.revivePct : 0.25));
+            abyssLog('BOSS发动复活！恢复' + ((revSkM && revSkM.revivePct != null ? revSkM.revivePct : 0.25) * 100).toFixed(0) + '%生命');
         } else {
+            if (m.skills && m.skills.length) {
+                for (var dci = 0; dci < m.skills.length; dci++) {
+                    if (m.skills[dci].id === 'deathCurse') {
+                        var deathDmg = Math.floor(stats.maxHp * (m.skills[dci].deathDmgMaxHpPct || 0.2));
+                        abyssRun.player.hp = Math.max(0, (abyssRun.player.hp || 0) - deathDmg);
+                        abyssLog(m.name + ' 怨念！对你造成 ' + formatNumber(deathDmg) + ' 伤害');
+                        if (abyssRun.player.hp <= 0) { stopAbyssAutoAttack(); abyssOnPlayerDeath(); return; }
+                        break;
+                    }
+                }
+            }
             var expGain = m.isBoss ? 35 : (12 + Math.floor(Math.random() * 5));
             abyssPetGainExp(Math.floor(expGain));
             if (!m.isBoss) {
-                var normExp = 8 + Math.floor(Math.random() * 8);
-                var normGold = 20 + Math.floor(Math.random() * 11);
-                abyssRun.exp = (abyssRun.exp || 0) + normExp;
-                abyssRun.gold = (abyssRun.gold || 0) + normGold;
-                abyssLog('获得经验 ' + normExp + '，闯关金币 ' + normGold);
+                var welf = m.welfareReward || 1;
+                var normExp = (10 + Math.floor(Math.random() * 6)) * welf;
+                var normGold = (21 + Math.floor(Math.random() * 11)) * welf;
+                var applied = abyssApplyExpGoldBonus(normExp, normGold);
+                abyssRun.exp = (abyssRun.exp || 0) + applied.exp;
+                abyssRun.gold = (abyssRun.gold || 0) + applied.gold;
+                abyssLog('获得经验 ' + applied.exp + '，闯关金币 ' + applied.gold);
                 if (Math.random() < 0.1) {
                     abyssRun.materials.potion = (abyssRun.materials.potion || 0) + 1;
                     abyssLog('获得生命药剂 x1');
@@ -66822,6 +67931,7 @@ function abyssAttack() {
                 return;
             }
             abyssEnsurePlayerTarget();
+        }
         }
     }
     if (m.skills && m.skills.length) {
@@ -66850,15 +67960,48 @@ function abyssAttack() {
             abyssLog('「蝼蚁安能伤吾！——回天续命！」' + m.name + ' 恢复10%最大生命 +' + formatNumber(healAmt) + '！');
             continue;
         }
+        if (m.skills) for (var fsi = 0; fsi < m.skills.length; fsi++) {
+            var fsk = m.skills[fsi];
+            if (fsk.id === 'firstStrike' && Math.random() < (fsk.chance || 0.25)) {
+                var firstDmg = fsk.firstStrikeMult ? Math.max(1, Math.floor(m.atk * fsk.firstStrikeMult) - Math.floor(stats.def * 0.2)) : Math.max(1, Math.floor(m.atk * (fsk.firstStrikePct || 0.6)) - Math.floor(stats.def * 0.2));
+                abyssRun.player.hp = (abyssRun.player.hp || 0) - firstDmg;
+                abyssLog(m.name + ' 先制！造成 ' + formatNumber(firstDmg) + ' 伤害');
+                if (abyssRun.player.hp <= 0) { stopAbyssAutoAttack(); abyssOnPlayerDeath(); return; }
+                break;
+            }
+        }
+        if (m.skills) for (var saci = 0; saci < m.skills.length; saci++) {
+            var sask = m.skills[saci];
+            if (sask.id === 'sacrifice' && Math.random() < (sask.chance || 0.2)) {
+                m.hp = Math.max(1, (m.hp || 0) - Math.floor(m.maxHp * (sask.sacrificeHpPct || 0.1)));
+                m._sacrificeDmgBonus = sask.dmgBonus || 0.35;
+                abyssLog(m.name + ' 献祭生命，本回合伤害提升！');
+                break;
+            }
+        }
         var monsterAtk = m.atk;
+        if (m.skills && m.skills.length) {
+            for (var bpi = 0; bpi < m.skills.length; bpi++) {
+                if (m.skills[bpi].id === 'bloodPrice' && Math.random() < 0.25) {
+                    var cost = Math.floor(m.maxHp * (m.skills[bpi].selfHpCostPct || 0.08));
+                    m.hp = Math.max(1, (m.hp || 0) - cost);
+                    m._bloodPriceAtk = m.skills[bpi].atkBonus || 0.5;
+                    abyssLog(m.name + ' 血偿！消耗生命提升攻击');
+                    break;
+                }
+            }
+        }
         var playerDef = stats.def;
         if (m.skills && m.skills.length) {
             for (var si = 0; si < m.skills.length; si++) {
                 var sk = m.skills[si];
                 if (sk.id === 'armorBreak') playerDef *= (1 - (sk.defIgnore || 0.3));
                 if (sk.id === 'curse') playerDef *= (1 - (sk.defIgnore || 0.1));
-                if (sk.id === 'rage' && m.hp / m.maxHp < 0.4) monsterAtk = Math.floor(monsterAtk * (1 + (sk.atkBonus || 0.4)));
+                if (sk.id === 'overwhelm') playerDef *= (1 - (sk.overwhelmDefIgnore || 0.4));
+                if (sk.id === 'rage') { var rageTh = sk.rageThreshold != null ? sk.rageThreshold : 0.4; if (m.hp / m.maxHp < rageTh) monsterAtk = Math.floor(monsterAtk * (1 + (sk.atkBonus || 0.4))); }
                 if (sk.id === 'bloodthirst') monsterAtk = Math.floor(monsterAtk * (1 + (1 - m.hp / m.maxHp) * (sk.atkBonusPerMissing || 0.5)));
+                if (sk.id === 'enrageTimer' && (m._enrageTurns || 0) >= (sk.turnsToEnrage || 4)) monsterAtk = Math.floor(monsterAtk * (1 + (sk.enrageAtkBonus || 0.3)));
+                if (sk.id === 'enrageAtRounds' && (abyssRun.roundCount || 0) >= (sk.enrageRound || 3)) monsterAtk = Math.floor(monsterAtk * (sk.enrageMult || 1.5));
             }
         }
         monsterAtk = Math.max(1, monsterAtk - Math.floor(playerDef * 0.3));
@@ -66867,14 +68010,17 @@ function abyssAttack() {
         if (m.skills && m.skills.length) {
             for (var si = 0; si < m.skills.length; si++) {
                 var sk = m.skills[si];
-                if ((sk.id === 'tripleStrike' && Math.random() < (sk.chance || 0.12)) || (sk.id === 'doubleStrike' && Math.random() < (sk.chance || 0.2)) || (sk.id === 'multiHit' && Math.random() < (sk.chance || 0.25)) || (sk.id === 'freeze' && Math.random() < (sk.chance || 0.12))) {
+                if ((sk.id === 'quadrupleStrike' && Math.random() < (sk.chance || 0.1)) || (sk.id === 'tripleStrike' && Math.random() < (sk.chance || 0.12)) || (sk.id === 'doubleStrike' && Math.random() < (sk.chance || 0.2)) || (sk.id === 'multiHit' && Math.random() < (sk.chance || 0.25)) || (sk.id === 'freeze' && Math.random() < (sk.chance || 0.12))) {
                     var mul = sk.multi || 2;
                     if (mul > multi) multi = mul;
                 }
                 if (sk.id === 'heavyStrike' && Math.random() < (sk.chance || 0.25)) multi = Math.max(multi, 1.5);
             }
         } else if (Math.random() < m.multiHit) multi = 2;
+        if (m._bloodPriceAtk != null) { monsterAtk = Math.floor(monsterAtk * (1 + m._bloodPriceAtk)); m._bloodPriceAtk = null; }
         var taken = Math.floor(monsterAtk * multi);
+        if (m._sacrificeDmgBonus != null) { taken = Math.floor(taken * (1 + m._sacrificeDmgBonus)); m._sacrificeDmgBonus = null; }
+        if (abyssRun.markedTarget === 'player' && abyssRun.markedByIndex === mi) { taken = Math.floor(taken * (1 + (m.skills && m.skills.length ? (function(){ for (var mki = 0; mki < m.skills.length; mki++) if (m.skills[mki].id === 'mark') return m.skills[mki].markDmgBonus || 0.45; return 0.45; })() : 0.45))); abyssRun.markedTarget = null; abyssRun.markedByIndex = null; abyssLog(m.name + ' 点名命中！'); }
         if (m.skills && m.skills.length) {
             for (var si = 0; si < m.skills.length; si++) {
                 var sk = m.skills[si];
@@ -66882,8 +68028,14 @@ function abyssAttack() {
                 if (sk.id === 'crush') taken = Math.floor(taken * (1 + (sk.dmgBonus || 0.25)));
                 if (sk.id === 'bleed') taken = Math.floor(taken * (1 + (sk.extraDmg || 0.05)));
                 if (sk.id === 'venom') taken = Math.floor(taken * (1 + (sk.dmgBonus || 0.1)));
+                if (sk.id === 'voidTouch') { var missingHp = Math.max(0, stats.maxHp - (abyssRun.player.hp || 0)); taken += Math.floor(missingHp * (sk.missingHpDmgPct || 0.2)); }
+                if (sk.id === 'curseMark') { m.curseMarkStacks = (m.curseMarkStacks || 0) + 1; var cmBonus = Math.min(sk.stackMax || 0.3, (m.curseMarkStacks || 0) * (sk.stackDmgPerHit || 0.06)); taken = Math.floor(taken * (1 + cmBonus)); }
+                if (sk.id === 'entropy' && Math.random() < (sk.chaosChance || 0.25)) taken = Math.floor(taken * (Math.random() < 0.5 ? 1.5 : 0.5));
             }
         }
+        var minionCount = 0;
+        for (var rci = 0; rci < allMonsters.length; rci++) if (allMonsters[rci].isSummon || (allMonsters[rci].name && allMonsters[rci].name.indexOf('仆从') >= 0)) minionCount++;
+        if (m.skills) for (var rsi = 0; rsi < m.skills.length; rsi++) if (m.skills[rsi].id === 'resonance' && minionCount > 0) { taken = Math.floor(taken * (1 + minionCount * (m.skills[rsi].dmgPerMinion || 0.1))); break; }
         var totalDR = 0;
         for (var ek2 in abyssRun.equipped) {
             var eq2 = abyssRun.equipped[ek2];
@@ -66905,10 +68057,36 @@ function abyssAttack() {
         var deployedForHit = abyssGetDeployedPets().filter(function(p) { return p && (p.hp === null || p.hp > 0); });
         var pet2 = deployedForHit.length > 0 ? deployedForHit[Math.floor(Math.random() * deployedForHit.length)] : null;
         var attackPet = !attackBeast && ((abyssRun.petGuard && pet2) || (pet2 && Math.random() < 0.5));
+        if (m.skills && pet2) for (var phi = 0; phi < m.skills.length; phi++) if (m.skills[phi].id === 'petHate' && Math.random() < (m.skills[phi].petHateChance || 0.85)) { attackPet = true; attackBeast = false; abyssLog(m.name + ' 仇宠，锁定宠物！'); break; }
         var takenPlayer = (attackBeast || attackPet) ? 0 : taken;
         var takenPet = attackPet ? taken : 0;
         var takenBeast = attackBeast && aliveBeasts.length > 0 ? taken : 0;
-        if (takenBeast > 0 && aliveBeasts.length > 0) {
+        var hitAllUsed = false;
+        if (m.skills) for (var hai = 0; hai < m.skills.length; hai++) {
+            if (m.skills[hai].id === 'hitAll') {
+                var haPct = m.skills[hai].hitAllPct || 0.55;
+                var hitAllDmg = Math.max(1, Math.floor(taken * haPct));
+                abyssRun.player.hp -= hitAllDmg;
+                abyssLog(m.name + ' 崩裂！玩家受到 ' + formatNumber(hitAllDmg) + ' 伤害');
+                for (var pi = 0; pi < deployedForHit.length; pi++) {
+                    var pt = deployedForHit[pi];
+                    if (pt && (pt.hp === null || pt.hp > 0)) {
+                        if (pt.hp === null) { var _ps2 = abyssCalcPetStats(pt); if (_ps2) pt.hp = _ps2.maxHp; }
+                        pt.hp = Math.max(0, (pt.hp || 0) - hitAllDmg);
+                        if (pt.hp < 0) pt.hp = 0;
+                        abyssLog(m.name + ' 崩裂！宠物【' + pt.name + '】受到 ' + formatNumber(hitAllDmg) + ' 伤害');
+                    }
+                }
+                for (var bi = 0; bi < aliveBeasts.length; bi++) {
+                    aliveBeasts[bi].hp = Math.max(0, (aliveBeasts[bi].hp || 0) - hitAllDmg);
+                    abyssLog(m.name + ' 崩裂！【' + (aliveBeasts[bi].name || '战兽') + '】受到 ' + formatNumber(hitAllDmg) + ' 伤害');
+                }
+                takenPlayer = hitAllDmg; takenPet = 0; takenBeast = 0;
+                hitAllUsed = true;
+                break;
+            }
+        }
+        if (!hitAllUsed && takenBeast > 0 && aliveBeasts.length > 0) {
             var targBeast = aliveBeasts[0];
             targBeast.hp = Math.max(0, (targBeast.hp || 0) - takenBeast);
             abyssLog(m.name + ' 造成 ' + formatNumber(takenBeast) + ' 伤害 → 【' + (targBeast.name || '战兽') + '】' + (targBeast.hp <= 0 ? ' 已消散' : ''));
@@ -66918,20 +68096,22 @@ function abyssAttack() {
                 abyssLog('反击造成 ' + formatNumber(refDmg) + ' 伤害 → ' + m.name);
             }
         }
-        if (takenPet > 0 && pet2) {
+        if (!hitAllUsed && takenPet > 0 && pet2) {
             if (pet2.hp === null) { var _ps = abyssCalcPetStats(pet2); if (_ps) pet2.hp = _ps.maxHp; }
             var pst = abyssCalcPetStats(pet2);
-            if (pst && pst.dodge > 0 && Math.random() * 100 < pst.dodge) {
+            if (pst && m.skills) for (var epi = 0; epi < m.skills.length; epi++) if (m.skills[epi].id === 'executePet') { var petHpPct = (pet2.hp != null ? pet2.hp : pst.maxHp) / (pst.maxHp || 1); if (petHpPct < (m.skills[epi].executePetThreshold || 0.35)) { takenPet = Math.floor(takenPet * (1 + (m.skills[epi].executePetBonus || 0.6))); abyssLog(m.name + ' 屠宠！'); } break; }
+            if (pst && (pst.dodge || 0) > 0 && Math.random() * 100 < (pst.dodge || 0)) {
                 takenPet = 0;
                 abyssLog('宠物【' + pet2.name + '】闪避了攻击');
             } else {
-                if (pst) takenPet = Math.max(1, takenPet - Math.floor(pst.def * 0.3));
+                if (pst) takenPet = Math.max(1, takenPet - Math.floor((pst.def || 0) * 0.3));
+                if (pst && (pst.damageReduction || 0) > 0) takenPet = Math.max(1, Math.floor(takenPet * (1 - Math.min(0.6, pst.damageReduction))));
                 pet2.hp = (pet2.hp || 0) - takenPet;
                 if (pet2.hp < 0) pet2.hp = 0;
                 abyssLog(m.name + ' 造成 ' + formatNumber(takenPet) + ' 伤害 → 宠物【' + pet2.name + '】' + (pet2.hp <= 0 ? ' 已死亡，可使用复活药水复活' : ''));
             }
         }
-        if (takenPlayer > 0) {
+        if (!hitAllUsed && takenPlayer > 0) {
             if (abyssRun.player.shield > 0) {
                 var toShield = Math.min(abyssRun.player.shield, takenPlayer);
                 abyssRun.player.shield -= toShield;
@@ -66946,7 +68126,107 @@ function abyssAttack() {
             }
         }
         var heal = Math.floor((takenPlayer + takenPet) * (stats.lifesteal || 0) / 100);
-        if (heal > 0) { abyssRun.player.hp += heal; abyssRun.player.hp = Math.min(abyssRun.player.hp, stats.maxHp); }
+        if (heal > 0) {
+            var healReducePct = 0;
+            var aliveForHeal = abyssGetAliveMonsters();
+            for (var hri = 0; hri < aliveForHeal.length; hri++) {
+                var monHeal = aliveForHeal[hri];
+                if (monHeal.skills) for (var hrii = 0; hrii < monHeal.skills.length; hrii++) {
+                    if (monHeal.skills[hrii].id === 'healReduce') healReducePct = Math.max(healReducePct, monHeal.skills[hrii].healReducePct || 0);
+                    if (monHeal.skills[hrii].id === 'corrupt') healReducePct = Math.max(healReducePct, monHeal.skills[hrii].corruptHealPct || 0);
+                }
+            }
+            heal = Math.floor(heal * (1 - healReducePct));
+            if (heal > 0) { abyssRun.player.hp += heal; abyssRun.player.hp = Math.min(abyssRun.player.hp, stats.maxHp); }
+        }
+        if (m.skills && m.skills.length && (takenPlayer + takenPet) > 0) {
+            for (var lsi = 0; lsi < m.skills.length; lsi++) {
+                if (m.skills[lsi].id === 'lifesteal') {
+                    var healB = Math.floor((takenPlayer + takenPet) * (m.skills[lsi].rate || 0.1));
+                    if (healB > 0) { m.hp = Math.min(m.maxHp, (m.hp || 0) + healB); abyssLog(m.name + ' 吸血恢复 ' + formatNumber(healB)); }
+                    break;
+                }
+            }
+        }
+        if (taken > 0 && m.skills && m.skills.length) {
+            for (var igi = 0; igi < m.skills.length; igi++) {
+                if (m.skills[igi].id === 'ignite' && Math.random() < 0.5) {
+                    abyssRun.playerBurning = { rate: m.skills[igi].dotRate || 0.05, rounds: 3 };
+                    abyssLog(m.name + ' 施加灼烧！');
+                    break;
+                }
+            }
+            for (var sdi = 0; sdi < m.skills.length; sdi++) {
+                if (m.skills[sdi].id === 'soulDrain' && (takenPlayer + takenPet) > 0 && Math.random() < 0.5) {
+                    abyssRun.playerSoulDrain = { rate: m.skills[sdi].dotMaxHpPct || 0.04, rounds: m.skills[sdi].dotRounds || 2 };
+                    abyssLog(m.name + ' 魂噬！对你施加生命侵蚀');
+                    break;
+                }
+            }
+        }
+        if (m.skills && m.skills.length && (takenPlayer + takenPet) > 0) {
+            for (var sili = 0; sili < m.skills.length; sili++) {
+                if (m.skills[sili].id === 'silence' && Math.random() < (m.skills[sili].silenceChance || 0.3)) {
+                    abyssRun.playerSilenced = m.skills[sili].silenceRounds || 1;
+                    abyssLog(m.name + ' 静默！你' + abyssRun.playerSilenced + '回合无法使用技能');
+                    break;
+                }
+                if (m.skills[sili].id === 'timeStop' && Math.random() < (m.skills[sili].chance || 0.2)) {
+                    abyssRun.skipPlayerTurn = m.skills[sili].skipTurns || 1;
+                    abyssLog(m.name + ' 时空凝滞！你' + abyssRun.skipPlayerTurn + '回合无法行动');
+                    break;
+                }
+            }
+            for (var mpsi = 0; mpsi < m.skills.length; mpsi++) {
+                if (m.skills[mpsi].id === 'mpSteal') {
+                    var maxMpVal = abyssMaxMpForLevel(runLevel);
+                    var stealMp = Math.floor(maxMpVal * (m.skills[mpsi].mpStealPct || 0.2));
+                    abyssRun.player.mp = Math.max(0, (abyssRun.player.mp || 0) - stealMp);
+                    if (stealMp > 0) abyssLog(m.name + ' 夺魂！失去 ' + stealMp + ' 魔法');
+                    break;
+                }
+                if (m.skills[mpsi].id === 'manaBurn') {
+                    var maxMpVal2 = abyssMaxMpForLevel(runLevel);
+                    var burnMp = Math.floor(maxMpVal2 * (m.skills[mpsi].burnPct || 0.18));
+                    abyssRun.player.mp = Math.max(0, (abyssRun.player.mp || 0) - burnMp);
+                    if (burnMp > 0) abyssLog(m.name + ' 燃魔！失去 ' + burnMp + ' 魔法');
+                    break;
+                }
+            }
+            for (var sbi = 0; sbi < m.skills.length; sbi++) {
+                if (m.skills[sbi].id === 'stealBuff' && Math.random() < (m.skills[sbi].stealBuffChance || 0.35)) {
+                    if (abyssRun.buffs && (abyssRun.buffs.roundsLeft > 0 || abyssRun.buffs.atkPct || abyssRun.buffs.reduceDmgPct)) {
+                        abyssRun.buffs = {}; abyssRun.thisRoundCounterPct = 0; abyssRun.thisRoundReduceDmg = 0;
+                        abyssLog(m.name + ' 掠夺！清除了你的增益');
+                    }
+                    break;
+                }
+            }
+            for (var abi = 0; abi < m.skills.length; abi++) {
+                if (m.skills[abi].id === 'abyssGaze' && Math.random() < (m.skills[abi].blindChance || 0.2)) {
+                    abyssRun.playerBlinded = m.skills[abi].blindRounds || 1;
+                    abyssLog(m.name + ' 深渊凝视！你被致盲 ' + abyssRun.playerBlinded + ' 回合');
+                    break;
+                }
+            }
+            for (var fei = 0; fei < m.skills.length; fei++) {
+                if (m.skills[fei].id === 'fear' && Math.random() < (m.skills[fei].fearChance || 0.15) && Math.random() < (m.skills[fei].skipAttackChance || 0.5)) {
+                    abyssRun.skipPlayerTurn = 1;
+                    abyssLog(m.name + ' 恐惧！你下回合无法行动');
+                    break;
+                }
+            }
+            for (var lwi = 0; lwi < m.skills.length; lwi++) {
+                if (m.skills[lwi].id === 'lifeSwap' && (takenPlayer + takenPet) > 0 && Math.random() < (m.skills[lwi].swapChance || 0.12)) {
+                    var playerHpPct = (abyssRun.player.hp || 0) / (stats.maxHp || 1);
+                    var monHpPct = (m.hp || 0) / (m.maxHp || 1);
+                    abyssRun.player.hp = Math.floor(stats.maxHp * monHpPct);
+                    m.hp = Math.floor(m.maxHp * playerHpPct);
+                    abyssLog(m.name + ' 生命置换！与玩家交换了生命');
+                    break;
+                }
+            }
+        }
         if (abyssRun.player.hp <= 0) { stopAbyssAutoAttack(); abyssOnPlayerDeath(); return; }
     }
     if (abyssRun.buffs && abyssRun.buffs.roundsLeft) {
@@ -66957,8 +68237,9 @@ function abyssAttack() {
     if (bossForSummon && bossForSummon.hp > 0 && bossForSummon.skills && bossForSummon.skills.length) {
         for (var si = 0; si < bossForSummon.skills.length; si++) {
             var sk = bossForSummon.skills[si];
-            if (sk.id === 'bossSummon' && (bossForSummon.summonCount || 0) < 2 && Math.random() < (sk.chance || 0.2)) {
-                var toSummon = Math.min(2 - (bossForSummon.summonCount || 0), 1 + Math.floor(Math.random() * 2));
+            var maxSummon = sk.summonCount != null ? sk.summonCount : 2;
+            if (sk.id === 'bossSummon' && (bossForSummon.summonCount || 0) < maxSummon && Math.random() < (sk.chance || 0.2)) {
+                var toSummon = Math.min(maxSummon - (bossForSummon.summonCount || 0), 1 + Math.floor(Math.random() * Math.min(2, maxSummon)));
                 if (toSummon <= 0) break;
                 for (var sumi = 0; sumi < toSummon; sumi++) {
                     var minionHp = Math.max(1, Math.floor(bossForSummon.maxHp * (sk.summonPct || 0.1)));
@@ -67062,18 +68343,27 @@ function abyssGenEquipmentQuality(floor, minQuality) {
         equipSkill = { id: sk.id, name: sk.name, effect: JSON.parse(JSON.stringify(sk.effect)) };
     }
     var displayName = ABYSS_QUALITIES[q] + '·' + equipName + (setIdx ? '(' + ABYSS_SET_NAMES[setIdx] + ')' : '') + (equipSkill ? '[' + equipSkill.name + ']' : '');
+    var runeSlotsQ = abyssRollRuneSlotCount();
+    var gemSlotsQ = abyssRollGemSlotCount();
+    var runesArrQ = [];
+    for (var rsq = 0; rsq < runeSlotsQ; rsq++) runesArrQ.push(null);
+    var gemsArrQ = [];
+    for (var gsq = 0; gsq < gemSlotsQ; gsq++) gemsArrQ.push(null);
     return {
         id: abyssGenId(), slot: slot, quality: q, set: ABYSS_SET_NAMES[setIdx], equipLevel: equipLevel, level: 0, enchant: null,
-        stats: base, name: displayName, equipSkill: equipSkill
+        stats: base, name: displayName, equipSkill: equipSkill,
+        runes: runesArrQ,
+        gems: gemsArrQ
     };
 }
 
 function abyssBossDrops() {
     var f = abyssRun.floor;
-    abyssRun.gold += 220;
     var bossExp = 55 + Math.floor(Math.random() * 25);
-    abyssRun.exp = (abyssRun.exp || 0) + bossExp;
-    abyssLog('获得闯关金币 220，经验 ' + bossExp);
+    var appliedBoss = abyssApplyExpGoldBonus(bossExp, 220);
+    abyssRun.exp = (abyssRun.exp || 0) + appliedBoss.exp;
+    abyssRun.gold = (abyssRun.gold || 0) + appliedBoss.gold;
+    abyssLog('获得闯关金币 ' + appliedBoss.gold + '，经验 ' + appliedBoss.exp);
     var eqCount = 1 + Math.floor(Math.random() * 3);
     for (var i = 0; i < eqCount; i++) {
         var eq = abyssGenEquipmentQuality(f, 3);
@@ -67083,6 +68373,19 @@ function abyssBossDrops() {
     abyssRun.materials.enhanceStone += 3;
     abyssRun.materials.enchantBook += 3;
     abyssLog('获得 强化石 x3，附魔书 x3');
+    var runeId = ABYSS_RUNES[Math.floor(Math.random() * ABYSS_RUNES.length)].id;
+    abyssRun.runeInventory = abyssRun.runeInventory || [];
+    abyssRun.runeInventory.push(runeId);
+    abyssRun.runeInventory.push(ABYSS_RUNES[Math.floor(Math.random() * ABYSS_RUNES.length)].id);
+    abyssLog('获得符文 x2');
+    var gemId = ABYSS_GEMS[Math.floor(Math.random() * ABYSS_GEMS.length)].id;
+    abyssRun.gemInventory = abyssRun.gemInventory || [];
+    abyssRun.gemInventory.push(gemId);
+    abyssRun.gemInventory.push(ABYSS_GEMS[Math.floor(Math.random() * ABYSS_GEMS.length)].id);
+    abyssLog('获得宝石 x2');
+    abyssRun.materials.runeSlotOpener = (abyssRun.materials.runeSlotOpener || 0) + 1;
+    abyssRun.materials.gemSlotOpener = (abyssRun.materials.gemSlotOpener || 0) + 1;
+    abyssLog('获得 符文开孔器 x1，宝石开孔器 x1');
 }
 
 function abyssNormalDrops() {
@@ -67102,6 +68405,24 @@ function abyssNormalDrops() {
         abyssRun.materials.enchantBook++;
         abyssLog('获得 附魔书 x1');
     }
+    if (Math.random() < 0.12) {
+        abyssRun.runeInventory = abyssRun.runeInventory || [];
+        abyssRun.runeInventory.push(ABYSS_RUNES[Math.floor(Math.random() * ABYSS_RUNES.length)].id);
+        abyssLog('获得 符文 x1');
+    }
+    if (Math.random() < 0.12) {
+        abyssRun.gemInventory = abyssRun.gemInventory || [];
+        abyssRun.gemInventory.push(ABYSS_GEMS[Math.floor(Math.random() * ABYSS_GEMS.length)].id);
+        abyssLog('获得 宝石 x1');
+    }
+    if (Math.random() < 0.05) {
+        abyssRun.materials.runeSlotOpener = (abyssRun.materials.runeSlotOpener || 0) + 1;
+        abyssLog('获得 符文开孔器 x1');
+    }
+    if (Math.random() < 0.05) {
+        abyssRun.materials.gemSlotOpener = (abyssRun.materials.gemSlotOpener || 0) + 1;
+        abyssLog('获得 宝石开孔器 x1');
+    }
 }
 
 var ABYSS_CHOICE_POOL = [
@@ -67114,7 +68435,7 @@ var ABYSS_CHOICE_POOL = [
     { key: 'critDmg', name: '爆伤', value: 5, valueScale: 0 },
     { key: 'skillDmg', name: '技能伤害加成', value: 2, valueScale: 0 },
     { key: 'reduceMonsterDef', name: '减少怪物防御', value: 2, valueScale: 0 },
-    { key: 'level', name: '增加20经验', value: 20, valueScale: 0 }
+    { key: 'level', name: '增加25经验', value: 25, valueScale: 0 }
 ];
 
 function abyssShowChoice() {
@@ -67125,7 +68446,7 @@ function abyssShowChoice() {
         var idx = Math.floor(Math.random() * pool.length);
         var o = pool[idx];
         pool.splice(idx, 1);
-        var v = o.key === 'level' ? 20 : (o.value + (o.valueScale ? Math.floor(f * o.valueScale) : 0));
+        var v = o.key === 'level' ? 25 : (o.value + (o.valueScale ? Math.floor(f * o.valueScale) : 0));
         opts.push({ key: o.key, name: o.name, value: v });
     }
     var el = document.getElementById('abyssChoiceOptions');
@@ -67150,7 +68471,8 @@ function abyssApplyChoice(key, value) {
     if (!abyssRun || !abyssRun.tempStats) return;
     var nameMap = { hp: '生命', atk: '攻击', def: '防御', lifesteal: '吸血', dodge: '闪避', critRate: '暴击率', critDmg: '爆伤', skillDmg: '技能伤害', reduceMonsterDef: '减怪防', level: '经验' };
     if (key === 'level') {
-        abyssRun.exp = (abyssRun.exp || 0) + 20;
+        var appliedLevel = abyssApplyExpGoldBonus(25, 0);
+        abyssRun.exp = (abyssRun.exp || 0) + appliedLevel.exp;
     } else if (key === 'hp') {
         abyssRun.player.maxHp += value;
         abyssRun.player.hp += value;
@@ -67240,6 +68562,16 @@ function openAbyssEquipmentPanel() {
     document.getElementById('abyssEnhanceStoneCount').textContent = abyssRun.materials.enhanceStone || 0;
     document.getElementById('abyssEnchantBookCount').textContent = abyssRun.materials.enchantBook || 0;
     document.getElementById('abyssPotionCount').textContent = abyssRun.materials.potion || 0;
+    var runeInv = abyssRun.runeInventory || [];
+    var gemInv = abyssRun.gemInventory || [];
+    var runeCountEl = document.getElementById('abyssRuneCount');
+    var gemCountEl = document.getElementById('abyssGemCount');
+    if (runeCountEl) runeCountEl.textContent = runeInv.length;
+    if (gemCountEl) gemCountEl.textContent = gemInv.length;
+    var runeOpenerEl = document.getElementById('abyssRuneOpenerCount');
+    var gemOpenerEl = document.getElementById('abyssGemOpenerCount');
+    if (runeOpenerEl) runeOpenerEl.textContent = abyssRun.materials.runeSlotOpener || 0;
+    if (gemOpenerEl) gemOpenerEl.textContent = abyssRun.materials.gemSlotOpener || 0;
     var slotEl = document.getElementById('abyssEquippedSlots');
     slotEl.innerHTML = '';
     ABYSS_SLOTS.forEach(function(slot) {
@@ -67250,7 +68582,19 @@ function openAbyssEquipmentPanel() {
         div.style.borderRadius = '6px';
         div.style.cursor = 'pointer';
         div.style.fontSize = '12px';
-        div.textContent = ABYSS_SLOT_NAMES[slot] + ': ' + (eq ? abyssGetEquipDisplayName(eq) : '空');
+        var line1 = ABYSS_SLOT_NAMES[slot] + ': ' + (eq ? abyssGetEquipDisplayName(eq) : '空');
+        var line2 = '';
+        if (eq && eq.equipSkill) {
+            var eff = eq.equipSkill.effect;
+            if (!eff && eq.equipSkill.id) {
+                var sk = ABYSS_EQUIP_SKILLS.find(function(s) { return s.id === eq.equipSkill.id; });
+                if (sk && sk.effect) eff = sk.effect;
+            }
+            var effDesc = abyssEquipSkillEffectDesc(eff);
+            if (effDesc.length) line2 = '<div style="font-size:11px;color:#ce93d8;margin-top:4px;">' + eq.equipSkill.name + '：' + effDesc.join('；') + '</div>';
+            else line2 = '<div style="font-size:11px;color:#b388ff;margin-top:4px;">' + eq.equipSkill.name + '</div>';
+        }
+        div.innerHTML = line1 + (line2 ? line2 : '');
         div.onclick = (function(s, e) { return function() { if (e) abyssOpenEquipAction(e, s); }; })(slot, eq);
         slotEl.appendChild(div);
     });
@@ -67287,7 +68631,11 @@ function openAbyssChallengeShop() {
         { id: 'enhanceStone', name: '强化石', price: 100, mat: 'enhanceStone' },
         { id: 'enchantBook', name: '附魔书', price: 120, mat: 'enchantBook' },
         { id: 'petRevivePotion', name: '宠物复活药水', price: 300, mat: 'petRevivePotion' },
-        { id: 'petSkillBook', name: '宠物兽决', price: 110, mat: 'petSkillBook' }
+        { id: 'petSkillBook', name: '宠物兽决', price: 110, mat: 'petSkillBook' },
+        { id: 'randomRune', name: '随机符文', price: 200, mat: 'rune' },
+        { id: 'randomGem', name: '随机宝石', price: 180, mat: 'gem' },
+        { id: 'runeSlotOpener', name: '符文开孔器', price: 350, mat: 'runeSlotOpener' },
+        { id: 'gemSlotOpener', name: '宝石开孔器', price: 320, mat: 'gemSlotOpener' }
     ];
     shopItems.forEach(function(it) {
         var div = document.createElement('div');
@@ -67305,7 +68653,17 @@ function openAbyssChallengeShop() {
                 if (!abyssRun || !abyssRun.active) return;
                 if ((abyssRun.gold || 0) >= cost) {
                     abyssRun.gold -= cost;
-                    abyssRun.materials[mat] = (abyssRun.materials[mat] || 0) + 1;
+                    if (mat === 'rune') {
+                        abyssRun.runeInventory = abyssRun.runeInventory || [];
+                        abyssRun.runeInventory.push(ABYSS_RUNES[Math.floor(Math.random() * ABYSS_RUNES.length)].id);
+                    } else                     if (mat === 'gem') {
+                        abyssRun.gemInventory = abyssRun.gemInventory || [];
+                        abyssRun.gemInventory.push(ABYSS_GEMS[Math.floor(Math.random() * ABYSS_GEMS.length)].id);
+                    } else if (mat === 'runeSlotOpener' || mat === 'gemSlotOpener') {
+                        abyssRun.materials[mat] = (abyssRun.materials[mat] || 0) + 1;
+                    } else {
+                        abyssRun.materials[mat] = (abyssRun.materials[mat] || 0) + 1;
+                    }
                     document.getElementById('abyssChallengeShopGold').textContent = formatNumber(abyssRun.gold || 0);
                     updateAbyssRunUI();
                 }
@@ -67700,7 +69058,7 @@ function openAbyssSkillPanel() {
     }
     var listEl = document.getElementById('abyssSkillLearnList');
     listEl.innerHTML = '';
-    var skillList = ABYSS_CLASS_SKILLS[classId];
+    var skillList = abyssGetSkillList(classId, abyssRun.classBranch);
     if (skillList) {
         for (var z = 1; z <= 4; z++) {
             var header = document.createElement('div');
@@ -67816,6 +69174,14 @@ function abyssGetEquipDisplayName(eq) {
     t += ' Lv.' + equipLv;
     if (enhanceLv > 0) t += ' 强化+' + enhanceLv;
     if (eq.enchant && (eq.enchant === true || (typeof eq.enchant === 'object' && (eq.enchant.statMult || eq.enchant.skillMult || eq.enchant.addedSkill)))) t += ' 附魔';
+    var runes = eq.runes || [];
+    var runeCnt = 0;
+    for (var r = 0; r < runes.length; r++) if (runes[r]) runeCnt++;
+    if (runeCnt > 0) t += ' 符文×' + runeCnt;
+    var gems = eq.gems || [];
+    var gemCnt = 0;
+    for (var g = 0; g < gems.length; g++) if (gems[g]) gemCnt++;
+    if (gemCnt > 0) t += ' 宝石×' + gemCnt;
     return t;
 }
 
@@ -67862,7 +69228,12 @@ function abyssBuildEquipDetailHtml(eq) {
     if (elParts.length) html += '<div style="font-size:12px;color:#ffd700;margin-top:4px;">五行: ' + elParts.join(' | ') + '</div>';
     if (eq.equipSkill) {
         html += '<div style="color:#b388ff;margin-top:6px;">装备技能: ' + eq.equipSkill.name + '</div>';
-        var effDesc = abyssEquipSkillEffectDesc(eq.equipSkill.effect);
+        var eff = eq.equipSkill.effect;
+        if (!eff && eq.equipSkill.id) {
+            var sk = ABYSS_EQUIP_SKILLS.find(function(s) { return s.id === eq.equipSkill.id; });
+            if (sk && sk.effect) eff = sk.effect;
+        }
+        var effDesc = abyssEquipSkillEffectDesc(eff);
         if (effDesc.length) html += '<div style="font-size:12px;color:#ce93d8;margin-left:8px;">' + effDesc.join('；') + '</div>';
     }
     return html;
@@ -67942,6 +69313,16 @@ function abyssEquipSkillEffectDesc(effect) {
     if (effect.directPctMonsterHp) parts.push('攻击附加怪物当前生命' + (effect.directPctMonsterHp * 100).toFixed(0) + '%的伤害');
     if (effect.extraDmgFromAtk) parts.push('攻击附加攻击力' + (effect.extraDmgFromAtk * 100).toFixed(0) + '%的伤害');
     if (effect.directPctMonsterMaxHp) parts.push('攻击附加怪物最大生命' + (effect.directPctMonsterMaxHp * 100).toFixed(0) + '%的伤害');
+    if (effect.splitChance != null && effect.splitPct != null) parts.push('攻击时' + (effect.splitChance * 100).toFixed(0) + '%分裂，对其它目标造成本次伤害' + (effect.splitPct * 100).toFixed(0) + '%');
+    if (effect.petAtk) parts.push('宠物攻击+' + effect.petAtk);
+    if (effect.petDef) parts.push('宠物防御+' + effect.petDef);
+    if (effect.petHp) parts.push('宠物生命+' + effect.petHp);
+    if (effect.petLifesteal) parts.push('宠物吸血+' + effect.petLifesteal + '%');
+    if (effect.petDodge) parts.push('宠物闪避+' + effect.petDodge + '%');
+    if (effect.petCritRate) parts.push('宠物暴击率+' + effect.petCritRate + '%');
+    if (effect.petCritDmg) parts.push('宠物爆伤+' + effect.petCritDmg + '%');
+    if (effect.petDamageReduction) parts.push('宠物减伤' + (effect.petDamageReduction * 100).toFixed(0) + '%');
+    if (effect.petSplitChance != null && effect.petSplitPct != null) parts.push('宠物攻击时' + (effect.petSplitChance * 100).toFixed(0) + '%分裂，对其它目标造成宠物伤害' + (effect.petSplitPct * 100).toFixed(0) + '%');
     return parts;
 }
 
@@ -67995,13 +69376,71 @@ function abyssOpenEquipAction(item, slot, invIdx) {
     if (elParts.length) html += '<div style="font-size:12px;color:#ffd700;margin-top:4px;">五行: ' + elParts.join(' | ') + '</div>';
     if (item.equipSkill) {
         html += '<div style="color:#b388ff;margin-top:6px;">装备技能: ' + item.equipSkill.name + '</div>';
-        var effDesc = abyssEquipSkillEffectDesc(item.equipSkill.effect);
+        var eff = item.equipSkill.effect;
+        if (!eff && item.equipSkill.id) {
+            var sk = ABYSS_EQUIP_SKILLS.find(function(s) { return s.id === item.equipSkill.id; });
+            if (sk && sk.effect) eff = sk.effect;
+        }
+        var effDesc = abyssEquipSkillEffectDesc(eff);
         if (effDesc.length) html += '<div style="font-size:12px;color:#ce93d8;margin-top:2px;margin-left:8px;">效果: ' + effDesc.join('；') + '</div>';
     }
     var runLevel = Math.max(1, Math.floor((abyssRun.exp || 0) / 100));
     var upgradeStone = abyssRun.materials.upgradeStone || 0;
     html += '<div style="font-size:12px;color:#00bcd4;margin-top:6px;">升级: 消耗1个升级石，装备等级不可超过当前等级(' + runLevel + '级)</div>';
     document.getElementById('abyssEquipActionDetail').innerHTML = html;
+    var runeGemBlock = document.getElementById('abyssEquipRuneGemBlock');
+    if (runeGemBlock) {
+        var eq = item;
+        eq.runes = eq.runes || [];
+        eq.gems = eq.gems || [];
+        var rgHtml = '<div style="color:#b388ff;margin-bottom:6px;">符文槽(' + eq.runes.length + '/' + ABYSS_MAX_RUNE_SLOTS + '): </div>';
+        for (var rsi = 0; rsi < eq.runes.length; rsi++) {
+            var rid = eq.runes[rsi];
+            var rname = rid ? (getAbyssRuneById(rid) || {}).name || rid : '空';
+            rgHtml += '<span style="margin-right:8px;">' + (rsi + 1) + '.' + rname + '</span>';
+            if (rid) rgHtml += '<button type="button" onclick="abyssEquipUnsocketRune(' + rsi + ')" style="background:#555;color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px;margin-right:8px;">取下</button>';
+        }
+        if (eq.runes.length < ABYSS_MAX_RUNE_SLOTS && (abyssRun.materials.runeSlotOpener || 0) >= 1) {
+            rgHtml += '<button type="button" onclick="abyssEquipUseRuneOpener()" style="background:#7b1fa2;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:6px;">使用符文开孔器</button>';
+        }
+        rgHtml += '<div style="color:#ffd700;margin:8px 0 4px 0;">宝石槽(' + eq.gems.length + '/' + ABYSS_MAX_GEM_SLOTS + '): </div>';
+        for (var gsi = 0; gsi < eq.gems.length; gsi++) {
+            var gid = eq.gems[gsi];
+            var gname = gid ? (getAbyssGemById(gid) || {}).name || gid : '空';
+            rgHtml += '<span style="margin-right:8px;">' + (gsi + 1) + '.' + gname + '</span>';
+            if (gid) rgHtml += '<button type="button" onclick="abyssEquipUnsocketGem(' + gsi + ')" style="background:#555;color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px;margin-right:8px;">取下</button>';
+        }
+        if (eq.gems.length < ABYSS_MAX_GEM_SLOTS && (abyssRun.materials.gemSlotOpener || 0) >= 1) {
+            rgHtml += '<button type="button" onclick="abyssEquipUseGemOpener()" style="background:#e65100;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:6px;">使用宝石开孔器</button>';
+        }
+        var runeInv = abyssRun.runeInventory || [];
+        var runeCounts = {};
+        for (var rci = 0; rci < runeInv.length; rci++) { var id = runeInv[rci]; runeCounts[id] = (runeCounts[id] || 0) + 1; }
+        var firstEmptyRune = -1;
+        for (var re = 0; re < eq.runes.length; re++) { if (!eq.runes[re]) { firstEmptyRune = re; break; } }
+        if (firstEmptyRune >= 0 && Object.keys(runeCounts).length > 0) {
+            rgHtml += '<div style="margin-top:8px;color:#ce93d8;">镶嵌符文: ';
+            for (var rid in runeCounts) {
+                var rn = (getAbyssRuneById(rid) || {}).name || rid;
+                rgHtml += '<button type="button" onclick="abyssEquipSocketRune(\'' + rid.replace(/'/g, "\\'") + '\')" style="background:#6a0dad;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px;margin:2px;">' + rn + '(' + runeCounts[rid] + ')</button>';
+            }
+            rgHtml += '</div>';
+        }
+        var gemInv = abyssRun.gemInventory || [];
+        var gemCounts = {};
+        for (var gci = 0; gci < gemInv.length; gci++) { var id = gemInv[gci]; gemCounts[id] = (gemCounts[id] || 0) + 1; }
+        var firstEmptyGem = -1;
+        for (var ge = 0; ge < eq.gems.length; ge++) { if (!eq.gems[ge]) { firstEmptyGem = ge; break; } }
+        if (firstEmptyGem >= 0 && Object.keys(gemCounts).length > 0) {
+            rgHtml += '<div style="margin-top:6px;color:#ffd700;">镶嵌宝石: ';
+            for (var gid in gemCounts) {
+                var gn = (getAbyssGemById(gid) || {}).name || gid;
+                rgHtml += '<button type="button" onclick="abyssEquipSocketGem(\'' + gid.replace(/'/g, "\\'") + '\')" style="background:#b8860b;color:#000;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px;margin:2px;">' + gn + '(' + gemCounts[gid] + ')</button>';
+            }
+            rgHtml += '</div>';
+        }
+        runeGemBlock.innerHTML = rgHtml;
+    }
     var ueb = document.getElementById('abyssEquipUnequipBtn');
     if (ueb) ueb.textContent = (invIdx !== null && invIdx !== undefined) ? '装备' : '卸下';
     var upgradeBtn = document.getElementById('abyssEquipUpgradeBtn');
@@ -68111,6 +69550,102 @@ function abyssEquipDismantle() {
     closeAbyssEquipAction();
     openAbyssEquipmentPanel();
     updateAbyssRunUI();
+}
+
+function abyssEquipSocketRune(runeId) {
+    if (!abyssEquipActionTarget || !abyssRun || !runeId) return;
+    var inv = abyssRun.runeInventory || [];
+    var idx = inv.indexOf(runeId);
+    if (idx < 0) return;
+    var eq = abyssEquipActionTarget;
+    eq.runes = eq.runes || [];
+    var slot = -1;
+    for (var i = 0; i < eq.runes.length; i++) { if (!eq.runes[i]) { slot = i; break; } }
+    if (slot < 0) return;
+    inv.splice(idx, 1);
+    eq.runes = eq.runes || [];
+    eq.runes[slot] = runeId;
+    abyssRun.runeInventory = inv;
+    var rn = (getAbyssRuneById(runeId) || {}).name || runeId;
+    abyssLog('镶嵌符文【' + rn + '】');
+    abyssOpenEquipAction(abyssEquipActionTarget, abyssEquipActionSlot, abyssEquipActionInvIdx);
+    if (abyssRun && abyssRun.active) updateAbyssRunUI();
+}
+
+function abyssEquipSocketGem(gemId) {
+    if (!abyssEquipActionTarget || !abyssRun || !gemId) return;
+    var inv = abyssRun.gemInventory || [];
+    var idx = inv.indexOf(gemId);
+    if (idx < 0) return;
+    var eq = abyssEquipActionTarget;
+    eq.gems = eq.gems || [null, null, null];
+    var slot = -1;
+    for (var i = 0; i < eq.gems.length; i++) { if (!eq.gems[i]) { slot = i; break; } }
+    if (slot < 0) return;
+    inv.splice(idx, 1);
+    eq.gems = eq.gems || [];
+    eq.gems[slot] = gemId;
+    abyssRun.gemInventory = inv;
+    var gn = (getAbyssGemById(gemId) || {}).name || gemId;
+    abyssLog('镶嵌宝石【' + gn + '】');
+    abyssOpenEquipAction(abyssEquipActionTarget, abyssEquipActionSlot, abyssEquipActionInvIdx);
+    if (abyssRun && abyssRun.active) updateAbyssRunUI();
+}
+
+function abyssEquipUnsocketRune(slotIndex) {
+    if (!abyssEquipActionTarget || !abyssRun || slotIndex < 0) return;
+    var eq = abyssEquipActionTarget;
+    eq.runes = eq.runes || [];
+    var runeId = eq.runes[slotIndex];
+    if (!runeId) return;
+    eq.runes[slotIndex] = null;
+    abyssRun.runeInventory = (abyssRun.runeInventory || []).slice();
+    abyssRun.runeInventory.push(runeId);
+    var rn = (getAbyssRuneById(runeId) || {}).name || runeId;
+    abyssLog('取下符文【' + rn + '】');
+    abyssOpenEquipAction(abyssEquipActionTarget, abyssEquipActionSlot, abyssEquipActionInvIdx);
+    if (abyssRun && abyssRun.active) updateAbyssRunUI();
+}
+
+function abyssEquipUnsocketGem(slotIndex) {
+    if (!abyssEquipActionTarget || !abyssRun || slotIndex < 0) return;
+    var eq = abyssEquipActionTarget;
+    eq.gems = eq.gems || [];
+    var gemId = eq.gems[slotIndex];
+    if (!gemId) return;
+    eq.gems[slotIndex] = null;
+    abyssRun.gemInventory = (abyssRun.gemInventory || []).slice();
+    abyssRun.gemInventory.push(gemId);
+    var gn = (getAbyssGemById(gemId) || {}).name || gemId;
+    abyssLog('取下宝石【' + gn + '】');
+    abyssOpenEquipAction(abyssEquipActionTarget, abyssEquipActionSlot, abyssEquipActionInvIdx);
+    if (abyssRun && abyssRun.active) updateAbyssRunUI();
+}
+
+function abyssEquipUseRuneOpener() {
+    if (!abyssEquipActionTarget || !abyssRun) return;
+    var eq = abyssEquipActionTarget;
+    eq.runes = eq.runes || [];
+    if (eq.runes.length >= ABYSS_MAX_RUNE_SLOTS) return;
+    if ((abyssRun.materials.runeSlotOpener || 0) < 1) return;
+    abyssRun.materials.runeSlotOpener--;
+    eq.runes.push(null);
+    abyssLog('使用符文开孔器，当前符文槽 ' + eq.runes.length + '/' + ABYSS_MAX_RUNE_SLOTS);
+    abyssOpenEquipAction(abyssEquipActionTarget, abyssEquipActionSlot, abyssEquipActionInvIdx);
+    if (abyssRun && abyssRun.active) updateAbyssRunUI();
+}
+
+function abyssEquipUseGemOpener() {
+    if (!abyssEquipActionTarget || !abyssRun) return;
+    var eq = abyssEquipActionTarget;
+    eq.gems = eq.gems || [];
+    if (eq.gems.length >= ABYSS_MAX_GEM_SLOTS) return;
+    if ((abyssRun.materials.gemSlotOpener || 0) < 1) return;
+    abyssRun.materials.gemSlotOpener--;
+    eq.gems.push(null);
+    abyssLog('使用宝石开孔器，当前宝石槽 ' + eq.gems.length + '/' + ABYSS_MAX_GEM_SLOTS);
+    abyssOpenEquipAction(abyssEquipActionTarget, abyssEquipActionSlot, abyssEquipActionInvIdx);
+    if (abyssRun && abyssRun.active) updateAbyssRunUI();
 }
 
 function useAbyssPotion() {
@@ -68275,7 +69810,7 @@ function abyssOnPlayerDeath() {
     abyssRun.active = false;
     var at = getAbyssTower();
     if (abyssRun.floor > (at.bestFloor || 0)) at.bestFloor = abyssRun.floor;
-    var reward = Math.floor(abyssRun.floor * 3 + (abyssRun.floor % 10 === 0 ? 50 : 0));
+    var reward = Math.floor(abyssRun.floor * 4);
     at.exclusiveCurrency = (at.exclusiveCurrency || 0) + reward;
     abyssLog('挑战结束。获得深渊币 ' + reward);
     document.getElementById('abyssFailFloor').textContent = abyssRun.floor;
@@ -69091,5 +70626,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
+
 </body>
 </html>
