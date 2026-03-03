@@ -6106,8 +6106,9 @@ select:focus {
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>1.898更新日志</h4>
+            <h4>1.899更新日志</h4>
             <h4>QQ群：902481027  ，864788026，  有问题可以进群问（存档异常联系群管理修复）</h4> 
+            <p>2026/03/03: 无限深渊提高获取的深渊币，增强吸血职业技能可以吃到吸血加成， 修复宗门BUG<p>
             <p>2026/03/03: 地主海钓手机版修复不会再触发长按复制。玩家等级增加自动飞升。无限深渊增加新装备技能。结婚增加新内容。 修复疯狂地主在线不能获得词条BUG 。修复通天塔异常卡顿。修改一下系统界面UI.<p>
             <p>2026/03/02: 修复跑商库存异常，更新夜店系统内容。更新疯狂地主新玩法海钓模式。 修复BUG<p>
             <p>2026/03/01: 修复BUG，更新直播系统内容，抽象时装增加全选丢弃<p>
@@ -6527,7 +6528,7 @@ select:focus {
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v1.8.98</div>
+  <div id="footer">版本号: v1.8.99</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -12488,7 +12489,7 @@ select:focus {
 
     <script>
         
-        const GAME_VERSION = "1.8.98";
+        const GAME_VERSION = "1.8.99";
         let versionErrorBlocked = false;
 
         
@@ -29229,6 +29230,10 @@ function getIdleMembers(includePlayer = true) {
 }
 // 更新宗门界面
 function updateSectUI() {
+    // 打开/刷新界面时，优先检查一次是否满足升级条件（防止读档后声望已超阈值但未升级）
+    if (player.sect && player.sect.created && typeof checkSectLevelUp === 'function') {
+        checkSectLevelUp();
+    }
     if (!player.sect.created) {
         document.getElementById('sectInfoContainer').innerHTML = `
             <div style="text-align: center; padding: 20px;">
@@ -30340,6 +30345,10 @@ function runSectTrial() {
     player.sect.spiritStones += stonesReward;
     player.sect.trialLastTime = Date.now();
     logAction(`试炼完成！${idleCount}名弟子获得 ${expReward} 声望、${stonesReward} 灵石（下次试炼需等待6小时）`, "success");
+    // 试炼获得声望后检查是否满足升级条件
+    if (typeof checkSectLevelUp === 'function') {
+        checkSectLevelUp();
+    }
     updateSectUI();
 }
 function checkSectTrialAuto() {
@@ -77912,9 +77921,13 @@ function abyssAttack() {
         if (abyssGetAliveMonsters().length === 0) { stopAbyssAutoAttack(); abyssOnKillMonster(); return; }
         abyssEnsurePlayerTarget();
         if (useSkill.lifestealPct && totalAoeDmg > 0) {
-            var aoeHeal = Math.floor(totalAoeDmg * useSkill.lifestealPct);
-            abyssRun.player.hp = Math.min(stats.maxHp, abyssRun.player.hp + aoeHeal);
-            abyssLog('技能回复 ' + formatNumber(aoeHeal) + ' 生命');
+            // 技能吸血 * (1 + 面板吸血%)，例如：30% * (1 + 100%) = 60%
+            var totalLifestealPct = useSkill.lifestealPct * (1 + (stats.lifesteal || 0) / 100);
+            var aoeHeal = Math.floor(totalAoeDmg * totalLifestealPct);
+            if (aoeHeal > 0) {
+                abyssRun.player.hp = Math.min(stats.maxHp, abyssRun.player.hp + aoeHeal);
+                abyssLog('技能回复 ' + formatNumber(aoeHeal) + ' 生命');
+            }
         }
     } else {
     var finalDmg = Math.floor(baseDmg * (1 - m.halfDamage));
@@ -78089,9 +78102,13 @@ function abyssAttack() {
     if (useSkill && useSkill.dodgeBonus) abyssRun.thisRoundDodgeBonus = useSkill.dodgeBonus;
     if (useSkill && useSkill.reduceDmgPct) abyssRun.thisRoundReduceDmg = useSkill.reduceDmgPct;
     if (useSkill && useSkill.lifestealPct && finalDmg > 0) {
-        var healAmt = Math.floor(finalDmg * useSkill.lifestealPct);
-        abyssRun.player.hp = Math.min(stats.maxHp, abyssRun.player.hp + healAmt);
-        abyssLog('技能回复 ' + formatNumber(healAmt) + ' 生命');
+        // 技能吸血 * (1 + 面板吸血%)，例如：50% * (1 + 150%) = 125%
+        var totalLifestealPct = useSkill.lifestealPct * (1 + (stats.lifesteal || 0) / 100);
+        var healAmt = Math.floor(finalDmg * totalLifestealPct);
+        if (healAmt > 0) {
+            abyssRun.player.hp = Math.min(stats.maxHp, abyssRun.player.hp + healAmt);
+            abyssLog('技能回复 ' + formatNumber(healAmt) + ' 生命');
+        }
     }
     if (useSkill && useSkill.shieldPct) {
         var sh = Math.floor(stats.maxHp * useSkill.shieldPct);
@@ -82284,8 +82301,10 @@ function abyssOnPlayerDeath() {
     abyssRun.active = false;
     var at = getAbyssTower();
     if (abyssRun.floor > (at.bestFloor || 0)) at.bestFloor = abyssRun.floor;
-    // 深渊币 = 层数×倍数：1-10层×1，11-20层×2，21-30层×3，每10层加1倍（例：7关=7，12关=24，22关=66）
-    var mul = Math.floor((abyssRun.floor - 1) / 10) + 1;
+    // 深渊币 = 层数×倍数：基础2倍，每10层多1倍
+    // 原规则：1-10层×1，11-20层×2，21-30层×3 ...
+    // 现规则：1-10层×2，11-20层×3，21-30层×4 ...（每10层多1倍不变）
+    var mul = Math.floor((abyssRun.floor - 1) / 10) + 2;
     var reward = abyssRun.floor * mul;
     at.exclusiveCurrency = (at.exclusiveCurrency || 0) + reward;
     abyssLog('挑战结束。获得深渊币 ' + reward);
@@ -83112,5 +83131,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
+
 </body>
 </html>
