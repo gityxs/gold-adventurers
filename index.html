@@ -6106,8 +6106,9 @@ select:focus {
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>1.90更新日志</h4>
+            <h4>1.91更新日志</h4>
             <h4>QQ群：902481027  ，864788026，  有问题可以进群问（存档异常联系群管理修复）</h4> 
+            <p>2026/03/06:银行系统增加百分比取款存款。无限深渊增加宠物装备提升宠物属性，装备分解自动卸下宝石和符文<p>
             <p>2026/03/05:增加云存档，无限深渊怪物反伤移除词条<p>
             <p>2026/03/03: 无限深渊提高获取的深渊币，增强吸血职业技能可以吃到吸血加成， 修复宗门BUG<p>
             <p>2026/03/03: 地主海钓手机版修复不会再触发长按复制。玩家等级增加自动飞升。无限深渊增加新装备技能。结婚增加新内容。 修复疯狂地主在线不能获得词条BUG 。修复通天塔异常卡顿。修改一下系统界面UI.<p>
@@ -6416,7 +6417,21 @@ select:focus {
             <p>当前存款: <span id="bankDeposit">0</span> 转生币</p>
             <p>利息: <span id="bankInterest">0.2%</span> 每6分钟</p>
             <p>总金额: <span id="bankTotal">0</span> 转生币</p>
-            <input type="number" id="bankAmount" placeholder="存款金额" min="1">
+            <input type="number" id="bankAmount" placeholder="金额" min="1">
+            <div style="margin:6px 0;font-size:12px;">
+                <span>存款快捷比例：</span>
+                <button type="button" onclick="setBankAmountPercent('deposit',1)">1%</button>
+                <button type="button" onclick="setBankAmountPercent('deposit',10)">10%</button>
+                <button type="button" onclick="setBankAmountPercent('deposit',25)">25%</button>
+                <button type="button" onclick="setBankAmountPercent('deposit',50)">50%</button>
+            </div>
+            <div style="margin:6px 0;font-size:12px;">
+                <span>取款快捷比例：</span>
+                <button type="button" onclick="setBankAmountPercent('withdraw',1)">1%</button>
+                <button type="button" onclick="setBankAmountPercent('withdraw',10)">10%</button>
+                <button type="button" onclick="setBankAmountPercent('withdraw',25)">25%</button>
+                <button type="button" onclick="setBankAmountPercent('withdraw',50)">50%</button>
+            </div>
             <button onclick="depositToBank()">存款</button>
             <button onclick="withdrawFromBank()">取款</button>
             <button onclick="depositAllToBank()">存款所有</button>
@@ -6529,7 +6544,7 @@ select:focus {
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v1.9.0</div>
+  <div id="footer">版本号: v1.9.1</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -12063,7 +12078,7 @@ select:focus {
             <button type="button" onclick="abyssSelectClass('mage')" id="abyssClassMage" style="background:linear-gradient(145deg,#4a148c,#1a0a2e);color:#ce93d8;border:2px solid #7c4dff;padding:12px 24px;border-radius:10px;cursor:pointer;font-weight:bold;">🔮 法师</button>
             <button type="button" onclick="abyssSelectClass('archer')" id="abyssClassArcher" style="background:linear-gradient(145deg,#1b5e20,#0d3d0d);color:#81c784;border:2px solid #4caf50;padding:12px 24px;border-radius:10px;cursor:pointer;font-weight:bold;">🏹 射手</button>
         </div>
-        <p id="abyssClassDesc" style="color:#888;font-size:13px;margin-bottom:15px;">战士：攻击+18，生命+320，防御+18；力量、体力转化收益+20%</p>
+        <p id="abyssClassDesc" style="color:#888;font-size:13px;margin-bottom:15px;">战士：攻击+22，生命+360，防御+22；力量转化攻击+40%，体力转化生命/防御+35%</p>
         <p style="color:#ffd700;margin-bottom:10px;">开局装备: <span id="abyssStartGearCount">0</span>/20 件（专属商店购买，每买1次+1件）</p>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:15px;">
             <button onclick="startAbyssRun()" id="abyssStartBtn" style="background:linear-gradient(145deg,#6a0dad,#4a0072);color:#fff;border:2px solid #b388ff;padding:14px 40px;border-radius:12px;cursor:pointer;font-size:18px;font-weight:bold;">开始闯关</button>
@@ -12142,9 +12157,9 @@ select:focus {
     </div>
 </div>
 
-<!-- 无限深渊-宠物面板（梦幻西游风格） -->
+<!-- 无限深渊-宠物面板 -->
 <div id="abyssPetOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:2074;" onclick="closeAbyssPetPanel()"></div>
-<div id="abyssPetUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(160deg,#2a1a3a 0%,#1a0a22 50%,#0d0515 100%);color:#e0e0e0;padding:0;border:3px solid #c2185b;border-radius:12px;z-index:2075;width:620px;max-height:88vh;overflow:hidden;box-shadow:0 0 30px rgba(194,24,91,0.4);">
+<div id="abyssPetUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(160deg,#2a1a3a 0%,#1a0a22 50%,#0d0515 100%);color:#e0e0e0;padding:0;border:3px solid #c2185b;border-radius:12px;z-index:2075;width:720px;max-height:88vh;overflow:hidden;box-shadow:0 0 30px rgba(194,24,91,0.4);">
     <div style="background:linear-gradient(90deg,#4a1942,#2d0f28);padding:12px 16px;border-bottom:2px solid #c2185b;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
         <h3 style="color:#ff80ab;margin:0;font-size:18px;">🐾 宠物</h3>
         <span style="color:#b388ff;font-size:13px;">复活药水: <b id="abyssPetReviveCount">0</b></span>
@@ -12153,7 +12168,7 @@ select:focus {
         <button type="button" onclick="openAbyssPetSynthesisPanel()" style="background:#6a1b9a;color:#ff80ab;border:1px solid #b388ff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">宠物合成</button>
         <button onclick="closeAbyssPetPanel()" style="background:#5c3d5c;color:#ff80ab;border:1px solid #c2185b;padding:6px 14px;border-radius:6px;cursor:pointer;">关闭</button>
     </div>
-    <div style="display:flex;height:380px;">
+    <div style="display:flex;height:550px;">
         <div style="width:200px;border-right:2px solid #4a1942;overflow-y:auto;background:rgba(0,0,0,0.25);">
             <div style="padding:8px;color:#b388ff;font-size:12px;display:flex;justify-content:space-between;align-items:center;"><span>宠物列表</span><span id="abyssPetCount" style="color:#ff80ab;">0/10</span></div>
             <div id="abyssPetList" style="padding:4px;"></div>
@@ -12171,7 +12186,7 @@ select:focus {
 <div id="abyssPetSynthesisOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:2076;" onclick="closeAbyssPetSynthesisPanel()"></div>
 <div id="abyssPetSynthesisUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(160deg,#2a1a4a 0%,#1a0a2e 50%,#0d0518 100%);color:#e0e0e0;padding:20px;border:3px solid #b388ff;border-radius:12px;z-index:2077;width:480px;box-shadow:0 0 30px rgba(179,136,255,0.4);" onclick="event.stopPropagation();">
     <h3 style="color:#b388ff;margin:0 0 12px 0;font-size:18px;">🔮 宠物合成</h3>
-    <p style="color:#aaa;font-size:12px;margin-bottom:12px;">选择两只宠物合成：50%继承第一只/50%继承第二只；资质在继承基础上±20%波动；技能从两只宠物技能池中随机抽取，数量按概率：5%得10%、20%得25%、50%得50%、20%得75%、5%得100%。</p>
+    <p style="color:#aaa;font-size:12px;margin-bottom:12px;">选择两只宠物合成：50%继承第一只/50%继承第二只；资质在继承基础上±20%波动；技能从两只宠物技能池中随机抽取，数量按概率：5%得10%、20%得25%、50%得50%、20%得75%、5%得100%。<br/><span style="color:#ff9800;">穿着装备的宠物参与合成时，其身上装备会自动转移到新宠物或返还至装备背包。</span></p>
     <div style="margin-bottom:12px;">
         <label style="color:#ce93d8;font-size:13px;">第一只</label>
         <select id="abyssSynthesisPet1" style="width:100%;padding:8px;background:#1a0a2e;color:#fff;border:1px solid #b388ff;border-radius:6px;margin-top:4px;"></select>
@@ -12187,6 +12202,17 @@ select:focus {
     <div style="display:flex;gap:10px;justify-content:flex-end;">
         <button type="button" onclick="closeAbyssPetSynthesisPanel()" style="background:#555;color:#ccc;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">取消</button>
         <button type="button" id="abyssSynthesisConfirmBtn" onclick="abyssDoPetSynthesis()" style="background:#6a1b9a;color:#ff80ab;border:1px solid #b388ff;padding:8px 20px;border-radius:6px;cursor:pointer;font-weight:bold;">确认合成</button>
+    </div>
+</div>
+
+<!-- 无限深渊-装备背包弹窗 -->
+<div id="abyssPetEquipBagOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:2078;" onclick="closeAbyssPetEquipBag()"></div>
+<div id="abyssPetEquipBagUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(160deg,#2a1a3a 0%,#1a0a22 50%,#0d0515 100%);color:#e0e0e0;padding:20px;border:3px solid #ffb74d;border-radius:12px;z-index:2079;width:420px;max-height:70vh;overflow:hidden;box-shadow:0 0 30px rgba(255,183,77,0.35);" onclick="event.stopPropagation();">
+    <h3 style="color:#ffb74d;margin:0 0 12px 0;font-size:18px;">🎒 装备背包</h3>
+    <p style="color:#aaa;font-size:12px;margin-bottom:10px;">当前选中宠物可装备此处物品；分解可获得 1 本宠物兽决。</p>
+    <div id="abyssPetEquipBagList" style="max-height:320px;overflow-y:auto;font-size:12px;"></div>
+    <div style="margin-top:12px;text-align:right;">
+        <button type="button" onclick="closeAbyssPetEquipBag()" style="background:#555;color:#ccc;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">关闭</button>
     </div>
 </div>
 
@@ -12542,7 +12568,7 @@ select:focus {
 
     <script>
         
-        const GAME_VERSION = "1.9.0";
+        const GAME_VERSION = "1.9.1";
         let versionErrorBlocked = false;
         // 账号与联网排行榜 API 地址（部署时改为你的服务器地址）
         window.GOLD_GAME_API_BASE = window.GOLD_GAME_API_BASE || 'http://218.244.139.4:3000';
@@ -18011,6 +18037,17 @@ function resetTraditionalLottery() {
             } else {
                 logAction("存款不足！", "error");
             }
+        }
+
+        // 按百分比设置存取款金额（1%、10%、25%、50%）
+        function setBankAmountPercent(type, percent) {
+            const base = type === 'deposit' ? player.reincarnationCoin : player.bank.deposit;
+            let amount = Math.floor(base * (percent / 100));
+            if (amount < 1) {
+                logAction("当前金额太少，无法按该比例操作", "error");
+                return;
+            }
+            document.getElementById('bankAmount').value = amount;
         }
      // 存款所有转生币
 function depositAllToBank() {
@@ -75357,8 +75394,8 @@ var abyssRun = null;
 var abyssSelectedClass = 'warrior';
 
 var ABYSS_CLASSES = [
-    { id: 'warrior', name: '战士', desc: '攻击+18，生命+320，防御+18；力量、体力转化收益+20%', bonus: { atk: 18, hp: 320, def: 18 }, strConversionMult: 1.2, staConversionMult: 1.2 },
-    { id: 'mage', name: '法师', desc: '攻击+16，生命+280，防御+12，技能伤害+24%；智力转化技能伤害+35%', bonus: { atk: 16, hp: 280, def: 12, skillDmg: 24 }, intToSkillDmgMult: 1.35 },
+    { id: 'warrior', name: '战士', desc: '攻击+24，生命+380，防御+24；力量转化攻击+50%，体力转化生命/防御+40%', bonus: { atk: 24, hp: 380, def: 24 }, strConversionMult: 1.5, staConversionMult: 1.4 },
+    { id: 'mage', name: '法师', desc: '攻击+18，生命+300，防御+14，技能伤害+32%；智力转化技能伤害+55%', bonus: { atk: 18, hp: 300, def: 14, skillDmg: 32 }, intToSkillDmgMult: 1.55 },
     { id: 'archer', name: '射手', desc: '攻击+20，生命+260，防御+12，暴击率+10%，闪避+8%；敏捷转化暴击/闪避+30%', bonus: { atk: 20, hp: 260, def: 12, critRate: 10, dodge: 8 }, agiMult: 1.3 }
 ];
 // 每职业1转通用称号，2~4转按分支（共4个分支）
@@ -75391,10 +75428,10 @@ var ABYSS_TALENTS = [
     { id: 'tal_life', name: '吸血', maxLevel: 5, effect: { lifesteal: 2.5 }, parent: 'tal_hp' },
     { id: 'tal_combo', name: '连击', maxLevel: 5, effect: { combo: 3.5 }, parent: 'tal_dodge' },
     { id: 'tal_armor', name: '破甲', maxLevel: 5, effect: { reduceMonsterDef: 5 }, parent: 'tal_atk' },
-    { id: 'tal_str', name: '力量专精', maxLevel: 4, effect: { atk: 14 }, parent: 'tal_atk' },
+    { id: 'tal_str', name: '力量专精', maxLevel: 4, effect: { atk: 20 }, parent: 'tal_atk' },
     { id: 'tal_int', name: '智力专精', maxLevel: 4, effect: { skillDmg: 6 }, parent: 'tal_skill' },
     { id: 'tal_agi', name: '敏捷专精', maxLevel: 4, effect: { critRate: 2.5, dodge: 2 }, parent: 'tal_dodge' },
-    { id: 'tal_sta', name: '体力专精', maxLevel: 4, effect: { hp: 70, def: 5 }, parent: 'tal_hp' }
+    { id: 'tal_sta', name: '体力专精', maxLevel: 4, effect: { hp: 110, def: 8 }, parent: 'tal_hp' }
 ];
 
 function abyssZhuan(level) {
@@ -75426,54 +75463,54 @@ function abyssGetSkillList(classId, branch) {
 var ABYSS_CLASS_SKILLS = {
     warrior: {
         base: [
-            { id: 'war_heavy', name: '重击', desc: '本次伤害170%', cooldown: 2, dmgMult: 1.7, mpCost: 14, zhuan: 1 },
+            { id: 'war_heavy', name: '重击', desc: '本次伤害190%', cooldown: 2, dmgMult: 1.9, mpCost: 14, zhuan: 1 },
             { id: 'war_armorBreak', name: '破甲一击', desc: '本次无视怪物50%防御', cooldown: 3, ignoreDefPct: 50, mpCost: 18, zhuan: 1 },
-            { id: 'war_roar', name: '战吼', desc: '本次伤害130%，2回合攻击+25%', cooldown: 4, dmgMult: 1.3, buffAtkPct: 25, buffRounds: 2, mpCost: 22, zhuan: 1 },
-            { id: 'war_slam', name: '猛击', desc: '本次伤害200%', cooldown: 5, dmgMult: 2, mpCost: 26, zhuan: 1 },
+            { id: 'war_roar', name: '战吼', desc: '本次伤害130%，3回合攻击+35%', cooldown: 4, dmgMult: 1.3, buffAtkPct: 35, buffRounds: 3, mpCost: 22, zhuan: 1 },
+            { id: 'war_slam', name: '猛击', desc: '本次伤害230%', cooldown: 5, dmgMult: 2.3, mpCost: 26, zhuan: 1 },
             { id: 'war_iron', name: '铁壁', desc: '本回合受到伤害减少40%', cooldown: 4, reduceDmgPct: 40, mpCost: 20, zhuan: 1 },
             { id: 'war_blood', name: '嗜血斩', desc: '本次伤害150%，回复30%伤害生命', cooldown: 3, dmgMult: 1.5, lifestealPct: 0.3, mpCost: 16, zhuan: 1 },
-            { id: 'war_cleave', name: '裂地斩', desc: '群体70%伤害', cooldown: 4, aoe: true, aoePct: 0.7, mpCost: 24, zhuan: 1 }
+            { id: 'war_cleave', name: '裂地斩', desc: '群体100%伤害', cooldown: 4, aoe: true, aoePct: 1, mpCost: 24, zhuan: 1 }
         ],
         // 破军：爆发/破甲/单体高伤
         branchA: [
-            { id: 'war_quake', name: '震地波', desc: '2转·群体85%伤害', cooldown: 5, aoe: true, aoePct: 0.85, mpCost: 30, zhuan: 2 },
-            { id: 'war_berserk', name: '狂暴', desc: '2转·本次伤害240%', cooldown: 6, dmgMult: 2.4, mpCost: 34, zhuan: 2 },
-            { id: 'war_battlewill', name: '战意燃烧', desc: '2转·本回合攻击+40%', cooldown: 4, buffAtkPct: 40, buffRounds: 1, mpCost: 24, zhuan: 2 },
+            { id: 'war_quake', name: '震地波', desc: '2转·群体125%伤害', cooldown: 5, aoe: true, aoePct: 1.25, mpCost: 30, zhuan: 2 },
+            { id: 'war_berserk', name: '狂暴', desc: '2转·本次伤害270%', cooldown: 6, dmgMult: 2.7, mpCost: 34, zhuan: 2 },
+            { id: 'war_battlewill', name: '战意燃烧', desc: '2转·本回合攻击+50%', cooldown: 4, buffAtkPct: 50, buffRounds: 1, mpCost: 24, zhuan: 2 },
             { id: 'war_sunderarmor', name: '裂甲', desc: '2转·本次伤害165%，无视25%防御', cooldown: 4, dmgMult: 1.65, ignoreDefPct: 25, mpCost: 28, zhuan: 2 },
             { id: 'war_bloodthirst', name: '破军·嗜血', desc: '2转·伤害190%，回复40%伤害生命', cooldown: 3, dmgMult: 1.9, lifestealPct: 0.4, mpCost: 26, zhuan: 2 },
             { id: 'war_crush', name: '破军·碎骨', desc: '2转·本次伤害210%，无视20%防御', cooldown: 4, dmgMult: 2.1, ignoreDefPct: 20, mpCost: 28, zhuan: 2 },
-            { id: 'war_onslaught', name: '破军·冲锋', desc: '2转·本次伤害200%，下回合攻击+30%', cooldown: 5, dmgMult: 2, buffAtkPct: 30, buffRounds: 1, mpCost: 30, zhuan: 2 },
-            { id: 'war_skyfall', name: '天崩斩', desc: '3转·本次伤害280%', cooldown: 6, dmgMult: 2.8, mpCost: 38, zhuan: 3 },
+            { id: 'war_onslaught', name: '破军·冲锋', desc: '2转·本次伤害200%，下回合攻击+40%', cooldown: 5, dmgMult: 2, buffAtkPct: 40, buffRounds: 1, mpCost: 30, zhuan: 2 },
+            { id: 'war_skyfall', name: '天崩斩', desc: '3转·本次伤害310%', cooldown: 6, dmgMult: 3.1, mpCost: 38, zhuan: 3 },
             { id: 'war_sunder', name: '破灭斩', desc: '3转·无视70%防御，伤害200%', cooldown: 5, ignoreDefPct: 70, dmgMult: 2, mpCost: 36, zhuan: 3 },
             { id: 'war_bloodlust', name: '血怒', desc: '3转·伤害180%，回复50%伤害生命', cooldown: 4, dmgMult: 1.8, lifestealPct: 0.5, mpCost: 30, zhuan: 3 },
-            { id: 'war_warlord', name: '战神附体', desc: '3转·3回合攻击+35%、减伤15%', cooldown: 8, buffAtkPct: 35, buffRounds: 3, reduceDmgPct: 15, mpCost: 42, zhuan: 3 },
-            { id: 'war_warspirit', name: '战魂', desc: '3转·4回合暴击率+10%、爆伤+20%', cooldown: 7, buffCritRate: 10, buffCritDmg: 20, buffRounds: 4, mpCost: 40, zhuan: 3 },
+            { id: 'war_warlord', name: '战神附体', desc: '3转·3回合攻击+75%、减伤10%', cooldown: 8, buffAtkPct: 75, buffRounds: 3, reduceDmgPct: 15, mpCost: 42, zhuan: 3 },
+            { id: 'war_warspirit', name: '战魂', desc: '3转·3回合暴击率+20%、爆伤+80%', cooldown: 7, buffCritRate: 20, buffCritDmg: 20, buffRounds: 3, mpCost: 80, zhuan: 3 },
             { id: 'war_break', name: '破军', desc: '3转·本次伤害220%，目标生命>70%时额外+25%', cooldown: 5, dmgMult: 2.2, mpCost: 36, zhuan: 3 },
             { id: 'war_bloodbath', name: '浴血', desc: '3转·本次伤害200%，自身生命低于50%时伤害+40%', cooldown: 5, dmgMult: 2, mpCost: 38, zhuan: 3 },
-            { id: 'war_apocalypse', name: '末日审判', desc: '4转·群体120%伤害', cooldown: 7, aoe: true, aoePct: 1.2, mpCost: 48, zhuan: 4 },
-            { id: 'war_titan', name: '泰坦之握', desc: '4转·本次伤害350%', cooldown: 8, dmgMult: 3.5, mpCost: 52, zhuan: 4 },
-            { id: 'war_immortal', name: '不灭战意', desc: '4转·5回合攻击+20%、减伤25%', cooldown: 10, buffAtkPct: 20, buffRounds: 5, reduceDmgPct: 25, mpCost: 50, zhuan: 4 },
+            { id: 'war_apocalypse', name: '末日审判', desc: '4转·群体150%伤害', cooldown: 7, aoe: true, aoePct: 1.5, mpCost: 48, zhuan: 4 },
+            { id: 'war_titan', name: '泰坦之握', desc: '4转·本次伤害380%', cooldown: 8, dmgMult: 3.8, mpCost: 52, zhuan: 4 },
+            { id: 'war_immortal', name: '不灭战意', desc: '4转·4回合攻击+100%、减伤10%', cooldown: 10, buffAtkPct: 100, buffRounds: 4, reduceDmgPct: 10, mpCost: 50, zhuan: 4 },
             { id: 'war_heaven', name: '天罚', desc: '4转·群体100%伤害', cooldown: 7, aoe: true, aoePct: 1, dmgMult: 1, mpCost: 46, zhuan: 4 },
             { id: 'war_fortress', name: '霸体', desc: '4转·本回合免疫眩晕且减伤20%', cooldown: 6, reduceDmgPct: 20, immuneStun: true, mpCost: 44, zhuan: 4 },
-            { id: 'war_doomsday', name: '灭世斩', desc: '4转·本次伤害400%', cooldown: 10, dmgMult: 4, mpCost: 58, zhuan: 4 }
+            { id: 'war_doomsday', name: '灭世斩', desc: '4转·本次伤害430%', cooldown: 10, dmgMult: 4.3, mpCost: 58, zhuan: 4 }
         ],
         // 铁壁：生存/反伤/群体减伤
         branchB: [
             { id: 'war_guard', name: '不屈', desc: '2转·本回合减伤60%', cooldown: 5, reduceDmgPct: 60, mpCost: 26, zhuan: 2 },
             { id: 'war_revenge', name: '反击架势', desc: '2转·本回合受击反弹30%伤害', cooldown: 5, counterPct: 30, mpCost: 28, zhuan: 2 },
             { id: 'war_stomp', name: '践踏', desc: '2转·群体60%伤害，35%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.6, stunChance: 0.35, stunTurns: 1, mpCost: 30, zhuan: 2 },
-            { id: 'war_ironwall', name: '铁壁·铜墙', desc: '2转·本回合减伤50%，反伤15%', cooldown: 5, reduceDmgPct: 50, counterPct: 15, mpCost: 28, zhuan: 2 },
-            { id: 'war_taunt', name: '铁壁·嘲讽', desc: '2转·本回合减伤35%，受击反伤25%', cooldown: 4, reduceDmgPct: 35, counterPct: 25, mpCost: 24, zhuan: 2 },
+            { id: 'war_ironwall', name: '铁壁·铜墙', desc: '2转·本回合减伤30%，反伤15%', cooldown: 5, reduceDmgPct: 30, counterPct: 15, mpCost: 28, zhuan: 2 },
+            { id: 'war_taunt', name: '铁壁·嘲讽', desc: '2转·本回合减伤25%，受击反伤25%', cooldown: 4, reduceDmgPct: 25, counterPct: 25, mpCost: 24, zhuan: 2 },
             { id: 'war_groundslam', name: '铁壁·地动', desc: '2转·群体55%伤害，40%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.55, stunChance: 0.4, stunTurns: 1, mpCost: 32, zhuan: 2 },
-            { id: 'war_endure', name: '铁壁·坚韧', desc: '2转·2回合减伤30%', cooldown: 6, reduceDmgPct: 30, buffRounds: 2, mpCost: 26, zhuan: 2 },
+            { id: 'war_endure', name: '铁壁·坚韧', desc: '2转·2回合减伤15%', cooldown: 6, reduceDmgPct: 15, buffRounds: 2, mpCost: 26, zhuan: 2 },
             { id: 'war_bulwark', name: '铁壁·壁垒', desc: '3转·本回合减伤70%，反伤20%', cooldown: 6, reduceDmgPct: 70, counterPct: 20, mpCost: 36, zhuan: 3 },
             { id: 'war_thorns', name: '荆棘反甲', desc: '3转·3回合受击反弹35%伤害', cooldown: 8, counterPct: 35, buffRounds: 3, mpCost: 40, zhuan: 3 },
             { id: 'war_quake2', name: '铁壁·震波', desc: '3转·群体75%伤害，50%眩晕1回合', cooldown: 6, aoe: true, aoePct: 0.75, stunChance: 0.5, stunTurns: 1, mpCost: 38, zhuan: 3 },
             { id: 'war_steadfast', name: '岿然不动', desc: '3转·本回合免疫眩晕，减伤45%', cooldown: 5, reduceDmgPct: 45, immuneStun: true, mpCost: 34, zhuan: 3 },
-            { id: 'war_legion', name: '铁壁·军阵', desc: '3转·2回合减伤40%、攻击+20%', cooldown: 7, reduceDmgPct: 40, buffAtkPct: 20, buffRounds: 2, mpCost: 42, zhuan: 3 },
+            { id: 'war_legion', name: '铁壁·军阵', desc: '3转·2回合减伤10%、攻击+80%', cooldown: 7, reduceDmgPct: 10, buffAtkPct: 80, buffRounds: 2, mpCost: 42, zhuan: 3 },
             { id: 'war_rampart', name: '铁壁·城垣', desc: '3转·获得生命上限25%护盾', cooldown: 5, shieldPct: 0.25, mpCost: 32, zhuan: 3 },
             { id: 'war_laststand', name: '背水一战', desc: '3转·生命低于40%时本回合减伤50%、反伤30%', cooldown: 6, reduceDmgPct: 50, counterPct: 30, mpCost: 40, zhuan: 3 },
-            { id: 'war_immortalwall', name: '不破壁垒', desc: '4转·本回合减伤80%，反伤40%', cooldown: 8, reduceDmgPct: 80, counterPct: 40, mpCost: 50, zhuan: 4 },
+            { id: 'war_immortalwall', name: '不破壁垒', desc: '4转·本回合减伤40%，反伤40%', cooldown: 8, reduceDmgPct: 40, counterPct: 40, mpCost: 50, zhuan: 4 },
             { id: 'war_judgment', name: '铁壁·天谴', desc: '4转·群体90%伤害，眩晕目标受伤+30%', cooldown: 7, aoe: true, aoePct: 0.9, mpCost: 48, zhuan: 4 },
             { id: 'war_eternalguard', name: '永恒守护', desc: '4转·4回合减伤35%、反伤25%', cooldown: 10, reduceDmgPct: 35, counterPct: 25, buffRounds: 4, mpCost: 54, zhuan: 4 },
             { id: 'war_colossus', name: '泰坦壁垒', desc: '4转·获得40%生命护盾，本回合减伤30%', cooldown: 8, shieldPct: 0.4, reduceDmgPct: 30, mpCost: 52, zhuan: 4 },
@@ -75497,32 +75534,32 @@ var ABYSS_CLASS_SKILLS = {
             { id: 'war_frenzy_c14', name: '狂战·五连', desc: '3转·5次70%伤害', cooldown: 6, multiHit: 5, multiHitPct: 0.7, mpCost: 46, zhuan: 3 },
             { id: 'war_frenzy_c15', name: '狂战·血神', desc: '4转·伤害380%，回复70%伤害生命', cooldown: 9, dmgMult: 3.8, lifestealPct: 0.7, mpCost: 56, zhuan: 4 },
             { id: 'war_frenzy_c16', name: '狂战·灭魂', desc: '4转·6次65%伤害', cooldown: 8, multiHit: 6, multiHitPct: 0.65, mpCost: 54, zhuan: 4 },
-            { id: 'war_frenzy_c17', name: '狂战·天嗜', desc: '4转·5回合攻击+30%、吸血+20%', cooldown: 10, buffAtkPct: 30, buffRounds: 5, mpCost: 58, zhuan: 4 },
+            { id: 'war_frenzy_c17', name: '狂战·天嗜', desc: '4转·4回合攻击+60%、吸血+20%', cooldown: 10, buffAtkPct: 60, buffRounds: 4, mpCost: 58, zhuan: 4 },
             { id: 'war_frenzy_c18', name: '狂战·血海', desc: '4转·伤害350%，回复65%伤害生命', cooldown: 8, dmgMult: 3.5, lifestealPct: 0.65, mpCost: 52, zhuan: 4 },
-            { id: 'war_frenzy_c19', name: '狂战·弑神', desc: '4转·本次伤害420%', cooldown: 10, dmgMult: 4.2, mpCost: 60, zhuan: 4 },
-            { id: 'war_frenzy_c20', name: '狂战·无尽', desc: '4转·群体90%伤害，回复30%伤害生命', cooldown: 8, aoe: true, aoePct: 0.9, lifestealPct: 0.3, mpCost: 55, zhuan: 4 }
+            { id: 'war_frenzy_c19', name: '狂战·弑神', desc: '4转·本次伤害450%', cooldown: 10, dmgMult: 4.5, mpCost: 60, zhuan: 4 },
+            { id: 'war_frenzy_c20', name: '狂战·无尽', desc: '4转·群体120%伤害，回复30%伤害生命', cooldown: 8, aoe: true, aoePct: 1.2, lifestealPct: 0.3, mpCost: 55, zhuan: 4 }
         ],
         branchD: [
-            { id: 'war_cc_d1', name: '控场·震击', desc: '2转·群体65%伤害，40%眩晕1回合', cooldown: 4, aoe: true, aoePct: 0.65, stunChance: 0.4, stunTurns: 1, mpCost: 28, zhuan: 2 },
-            { id: 'war_cc_d2', name: '控场·践踏', desc: '2转·群体60%伤害，35%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.6, stunChance: 0.35, stunTurns: 1, mpCost: 30, zhuan: 2 },
-            { id: 'war_cc_d3', name: '控场·怒吼', desc: '2转·群体55%伤害，50%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.55, stunChance: 0.5, stunTurns: 1, mpCost: 32, zhuan: 2 },
-            { id: 'war_cc_d4', name: '控场·震慑', desc: '2转·本次伤害160%，60%眩晕1回合', cooldown: 4, dmgMult: 1.6, stunChance: 0.6, stunTurns: 1, mpCost: 26, zhuan: 2 },
-            { id: 'war_cc_d5', name: '控场·地裂', desc: '2转·群体70%伤害，30%眩晕2回合', cooldown: 5, aoe: true, aoePct: 0.7, stunChance: 0.3, stunTurns: 2, mpCost: 34, zhuan: 2 },
-            { id: 'war_cc_d6', name: '控场·压制', desc: '2转·伤害180%，45%眩晕1回合', cooldown: 4, dmgMult: 1.8, stunChance: 0.45, stunTurns: 1, mpCost: 28, zhuan: 2 },
-            { id: 'war_cc_d7', name: '控场·锁足', desc: '2转·群体50%伤害，55%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.5, stunChance: 0.55, stunTurns: 1, mpCost: 30, zhuan: 2 },
-            { id: 'war_cc_d8', name: '控场·天崩', desc: '3转·群体85%伤害，50%眩晕1回合', cooldown: 6, aoe: true, aoePct: 0.85, stunChance: 0.5, stunTurns: 1, mpCost: 40, zhuan: 3 },
-            { id: 'war_cc_d9', name: '控场·山崩', desc: '3转·群体80%伤害，60%眩晕1回合', cooldown: 6, aoe: true, aoePct: 0.8, stunChance: 0.6, stunTurns: 1, mpCost: 42, zhuan: 3 },
-            { id: 'war_cc_d10', name: '控场·定身', desc: '3转·伤害220%，70%眩晕2回合', cooldown: 5, dmgMult: 2.2, stunChance: 0.7, stunTurns: 2, mpCost: 38, zhuan: 3 },
-            { id: 'war_cc_d11', name: '控场·震晕', desc: '3转·群体75%伤害，65%眩晕1回合', cooldown: 6, aoe: true, aoePct: 0.75, stunChance: 0.65, stunTurns: 1, mpCost: 44, zhuan: 3 },
-            { id: 'war_cc_d12', name: '控场·镇压', desc: '3转·伤害200%，55%眩晕2回合', cooldown: 5, dmgMult: 2, stunChance: 0.55, stunTurns: 2, mpCost: 40, zhuan: 3 },
-            { id: 'war_cc_d13', name: '控场·崩裂', desc: '3转·群体90%伤害，40%眩晕2回合', cooldown: 7, aoe: true, aoePct: 0.9, stunChance: 0.4, stunTurns: 2, mpCost: 46, zhuan: 3 },
-            { id: 'war_cc_d14', name: '控场·囚笼', desc: '3转·本次伤害250%，80%眩晕1回合', cooldown: 6, dmgMult: 2.5, stunChance: 0.8, stunTurns: 1, mpCost: 42, zhuan: 3 },
-            { id: 'war_cc_d15', name: '控场·末日波', desc: '4转·群体110%伤害，60%眩晕1回合', cooldown: 8, aoe: true, aoePct: 1.1, stunChance: 0.6, stunTurns: 1, mpCost: 52, zhuan: 4 },
-            { id: 'war_cc_d16', name: '控场·天罚波', desc: '4转·群体100%伤害，70%眩晕2回合', cooldown: 8, aoe: true, aoePct: 1, stunChance: 0.7, stunTurns: 2, mpCost: 54, zhuan: 4 },
-            { id: 'war_cc_d17', name: '控场·永锢', desc: '4转·伤害300%，90%眩晕2回合', cooldown: 9, dmgMult: 3, stunChance: 0.9, stunTurns: 2, mpCost: 56, zhuan: 4 },
-            { id: 'war_cc_d18', name: '控场·灭世波', desc: '4转·群体120%伤害，50%眩晕2回合', cooldown: 9, aoe: true, aoePct: 1.2, stunChance: 0.5, stunTurns: 2, mpCost: 58, zhuan: 4 },
-            { id: 'war_cc_d19', name: '控场·神罚', desc: '4转·群体95%伤害，75%眩晕2回合', cooldown: 8, aoe: true, aoePct: 0.95, stunChance: 0.75, stunTurns: 2, mpCost: 55, zhuan: 4 },
-            { id: 'war_cc_d20', name: '控场·终焉', desc: '4转·群体130%伤害，65%眩晕1回合', cooldown: 10, aoe: true, aoePct: 1.3, stunChance: 0.65, stunTurns: 1, mpCost: 60, zhuan: 4 }
+            { id: 'war_cc_d1', name: '控场·震击', desc: '2转·群体85%伤害，40%眩晕1回合', cooldown: 4, aoe: true, aoePct: 0.85, stunChance: 0.4, stunTurns: 1, mpCost: 28, zhuan: 2 },
+            { id: 'war_cc_d2', name: '控场·践踏', desc: '2转·群体80%伤害，35%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.8, stunChance: 0.35, stunTurns: 1, mpCost: 30, zhuan: 2 },
+            { id: 'war_cc_d3', name: '控场·怒吼', desc: '2转·群体75%伤害，50%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.75, stunChance: 0.5, stunTurns: 1, mpCost: 32, zhuan: 2 },
+            { id: 'war_cc_d4', name: '控场·震慑', desc: '2转·本次伤害180%，60%眩晕1回合', cooldown: 4, dmgMult: 1.8, stunChance: 0.6, stunTurns: 1, mpCost: 26, zhuan: 2 },
+            { id: 'war_cc_d5', name: '控场·地裂', desc: '2转·群体90%伤害，30%眩晕2回合', cooldown: 5, aoe: true, aoePct: 0.9, stunChance: 0.3, stunTurns: 2, mpCost: 34, zhuan: 2 },
+            { id: 'war_cc_d6', name: '控场·压制', desc: '2转·伤害200%，45%眩晕1回合', cooldown: 4, dmgMult: 2.0, stunChance: 0.45, stunTurns: 1, mpCost: 28, zhuan: 2 },
+            { id: 'war_cc_d7', name: '控场·锁足', desc: '2转·群体70%伤害，55%眩晕1回合', cooldown: 5, aoe: true, aoePct: 0.7, stunChance: 0.55, stunTurns: 1, mpCost: 30, zhuan: 2 },
+            { id: 'war_cc_d8', name: '控场·天崩', desc: '3转·群体105%伤害，50%眩晕1回合', cooldown: 6, aoe: true, aoePct: 1.05, stunChance: 0.5, stunTurns: 1, mpCost: 40, zhuan: 3 },
+            { id: 'war_cc_d9', name: '控场·山崩', desc: '3转·群体100%伤害，60%眩晕1回合', cooldown: 6, aoe: true, aoePct: 1.0, stunChance: 0.6, stunTurns: 1, mpCost: 42, zhuan: 3 },
+            { id: 'war_cc_d10', name: '控场·定身', desc: '3转·伤害250%，70%眩晕2回合', cooldown: 5, dmgMult: 2.5, stunChance: 0.7, stunTurns: 2, mpCost: 38, zhuan: 3 },
+            { id: 'war_cc_d11', name: '控场·震晕', desc: '3转·群体105%伤害，65%眩晕1回合', cooldown: 6, aoe: true, aoePct: 1.05, stunChance: 0.65, stunTurns: 1, mpCost: 44, zhuan: 3 },
+            { id: 'war_cc_d12', name: '控场·镇压', desc: '3转·伤害230%，55%眩晕2回合', cooldown: 5, dmgMult: 2.3, stunChance: 0.55, stunTurns: 2, mpCost: 40, zhuan: 3 },
+            { id: 'war_cc_d13', name: '控场·崩裂', desc: '3转·群体110%伤害，40%眩晕2回合', cooldown: 7, aoe: true, aoePct: 1.1, stunChance: 0.4, stunTurns: 2, mpCost: 46, zhuan: 3 },
+            { id: 'war_cc_d14', name: '控场·囚笼', desc: '3转·本次伤害270%，80%眩晕1回合', cooldown: 6, dmgMult: 2.7, stunChance: 0.8, stunTurns: 1, mpCost: 42, zhuan: 3 },
+            { id: 'war_cc_d15', name: '控场·末日波', desc: '4转·群体150%伤害，60%眩晕1回合', cooldown: 8, aoe: true, aoePct: 1.5, stunChance: 0.6, stunTurns: 1, mpCost: 52, zhuan: 4 },
+            { id: 'war_cc_d16', name: '控场·天罚波', desc: '4转·群体130%伤害，70%眩晕2回合', cooldown: 8, aoe: true, aoePct: 1.3, stunChance: 0.7, stunTurns: 2, mpCost: 54, zhuan: 4 },
+            { id: 'war_cc_d17', name: '控场·永锢', desc: '4转·伤害350%，90%眩晕2回合', cooldown: 9, dmgMult: 3.5, stunChance: 0.9, stunTurns: 2, mpCost: 56, zhuan: 4 },
+            { id: 'war_cc_d18', name: '控场·灭世波', desc: '4转·群体150%伤害，50%眩晕2回合', cooldown: 9, aoe: true, aoePct: 1.5, stunChance: 0.5, stunTurns: 2, mpCost: 58, zhuan: 4 },
+            { id: 'war_cc_d19', name: '控场·神罚', desc: '4转·群体125%伤害，75%眩晕2回合', cooldown: 8, aoe: true, aoePct: 1.25, stunChance: 0.75, stunTurns: 2, mpCost: 55, zhuan: 4 },
+            { id: 'war_cc_d20', name: '控场·终焉', desc: '4转·群体170%伤害，65%眩晕1回合', cooldown: 10, aoe: true, aoePct: 1.7, stunChance: 0.65, stunTurns: 1, mpCost: 60, zhuan: 4 }
         ]
     },
     mage: {
@@ -75874,34 +75911,34 @@ var ABYSS_EQUIP_SKILLS = [
     { id: 'eq108', name: '分裂·崩裂', effect: { splitChance: 0.22, splitPct: 0.45 } },
     { id: 'eq109', name: '分裂·天崩', effect: { splitChance: 0.25, splitPct: 0.5 } },
     { id: 'eq110', name: '分裂·灭世', effect: { splitChance: 0.28, splitPct: 0.55 } },
-    { id: 'eq111', name: '灵宠·攻', effect: { petAtk: 42 } },
-    { id: 'eq112', name: '灵宠·守', effect: { petDef: 36, petHp: 280 } },
-    { id: 'eq113', name: '灵宠·命', effect: { petHp: 480 } },
-    { id: 'eq114', name: '灵宠·嗜', effect: { petLifesteal: 6, petAtk: 22 } },
+    { id: 'eq111', name: '灵宠·攻', effect: { petAtk: 142 } },
+    { id: 'eq112', name: '灵宠·守', effect: { petDef: 136, petHp: 1280 } },
+    { id: 'eq113', name: '灵宠·命', effect: { petHp: 2480 } },
+    { id: 'eq114', name: '灵宠·嗜', effect: { petLifesteal: 6, petAtk: 122 } },
     { id: 'eq115', name: '灵宠·闪', effect: { petDodge: 9 } },
-    { id: 'eq116', name: '灵宠·暴', effect: { petCritRate: 7, petCritDmg: 35 } },
-    { id: 'eq117', name: '灵宠·韧', effect: { petDamageReduction: 0.11, petHp: 260 } },
-    { id: 'eq118', name: '灵宠·锋', effect: { petAtk: 68, petCritRate: 5 } },
-    { id: 'eq119', name: '灵宠·甲', effect: { petDef: 62, petDamageReduction: 0.07 } },
-    { id: 'eq120', name: '灵宠·血', effect: { petHp: 680, petLifesteal: 5 } },
-    { id: 'eq121', name: '灵宠·影', effect: { petDodge: 14, petAtk: 28 } },
-    { id: 'eq122', name: '灵宠·狂', effect: { petCritRate: 11, petCritDmg: 55 } },
-    { id: 'eq123', name: '灵宠·壁', effect: { petDef: 82, petHp: 420, petDamageReduction: 0.09 } },
-    { id: 'eq124', name: '灵宠·噬', effect: { petLifesteal: 9, petAtk: 48, petHp: 280 } },
+    { id: 'eq116', name: '灵宠·暴', effect: { petCritRate: 7, petCritDmg: 55 } },
+    { id: 'eq117', name: '灵宠·韧', effect: { petDamageReduction: 0.11, petHp: 2260 } },
+    { id: 'eq118', name: '灵宠·锋', effect: { petAtk: 98, petCritRate: 5 } },
+    { id: 'eq119', name: '灵宠·甲', effect: { petDef: 162, petDamageReduction: 0.07 } },
+    { id: 'eq120', name: '灵宠·血', effect: { petHp: 1680, petLifesteal: 5 } },
+    { id: 'eq121', name: '灵宠·影', effect: { petDodge: 14, petAtk: 128 } },
+    { id: 'eq122', name: '灵宠·狂', effect: { petCritRate: 11, petCritDmg: 75 } },
+    { id: 'eq123', name: '灵宠·壁', effect: { petDef: 182, petHp: 2420, petDamageReduction: 0.09 } },
+    { id: 'eq124', name: '灵宠·噬', effect: { petLifesteal: 9, petAtk: 148, petHp: 1280 } },
     { id: 'eq125', name: '灵宠·幻', effect: { petDodge: 19, petCritRate: 6 } },
     { id: 'eq126', name: '灵宠·戮', effect: { petAtk: 95, petCritDmg: 68 } },
-    { id: 'eq127', name: '灵宠·圣', effect: { petHp: 950, petDamageReduction: 0.14, petLifesteal: 6 } },
-    { id: 'eq128', name: '灵宠·神行', effect: { petDodge: 24, petAtk: 55, petDef: 42 } },
-    { id: 'eq129', name: '灵宠·战神', effect: { petAtk: 120, petCritRate: 14, petCritDmg: 82 } },
-    { id: 'eq130', name: '灵宠·至尊', effect: { petAtk: 82, petDef: 68, petHp: 820, petLifesteal: 7, petDodge: 16, petCritRate: 8, petCritDmg: 48, petDamageReduction: 0.16 } },
-    { id: 'eq131', name: '灵宠·分裂·微', effect: { petSplitChance: 0.1, petSplitPct: 0.18 } },
-    { id: 'eq132', name: '灵宠·分裂·波', effect: { petSplitChance: 0.14, petSplitPct: 0.25 } },
-    { id: 'eq133', name: '灵宠·分裂·震', effect: { petSplitChance: 0.18, petSplitPct: 0.32 } },
-    { id: 'eq134', name: '灵宠·分裂·灭', effect: { petSplitChance: 0.22, petSplitPct: 0.4 } },
-    { id: 'eq135', name: '灵宠·吸血·噬', effect: { petLifesteal: 10, petAtk: 20 } },
-    { id: 'eq136', name: '灵宠·吸血·渴', effect: { petLifesteal: 14, petHp: 250 } },
-    { id: 'eq137', name: '灵宠·吸血·魂', effect: { petLifesteal: 18, petAtk: 30, petHp: 200 } },
-    { id: 'eq138', name: '灵宠·吸血·王', effect: { petLifesteal: 22, petAtk: 40, petHp: 400 } },
+    { id: 'eq127', name: '灵宠·圣', effect: { petHp: 2950, petDamageReduction: 0.14, petLifesteal: 6 } },
+    { id: 'eq128', name: '灵宠·神行', effect: { petDodge: 24, petAtk: 125, petDef: 72 } },
+    { id: 'eq129', name: '灵宠·战神', effect: { petAtk: 150, petCritRate: 14, petCritDmg: 82 } },
+    { id: 'eq130', name: '灵宠·至尊', effect: { petAtk: 282, petDef: 268, petHp: 4520, petLifesteal: 17, petDodge: 26, petCritRate: 18, petCritDmg: 58, petDamageReduction: 0.26 } },
+    { id: 'eq131', name: '灵宠·分裂·微', effect: { petSplitChance: 0.1, petSplitPct: 0.28 } },
+    { id: 'eq132', name: '灵宠·分裂·波', effect: { petSplitChance: 0.14, petSplitPct: 0.35 } },
+    { id: 'eq133', name: '灵宠·分裂·震', effect: { petSplitChance: 0.18, petSplitPct: 0.42 } },
+    { id: 'eq134', name: '灵宠·分裂·灭', effect: { petSplitChance: 0.22, petSplitPct: 0.60 } },
+    { id: 'eq135', name: '灵宠·吸血·噬', effect: { petLifesteal: 10, petAtk: 1200 } },
+    { id: 'eq136', name: '灵宠·吸血·渴', effect: { petLifesteal: 14, petHp: 1550 } },
+    { id: 'eq137', name: '灵宠·吸血·魂', effect: { petLifesteal: 18, petAtk: 80, petHp: 2500 } },
+    { id: 'eq138', name: '灵宠·吸血·王', effect: { petLifesteal: 22, petAtk: 150, petHp: 3000 } },
     // === 属性攻击与各类Buff扩展（200个）===
     { id: 'eq139', name: '灼烧', effect: { fireAtk: 25 } },
     { id: 'eq140', name: '冰冻', effect: { waterAtk: 22, stunChance: 0.05, stunTurns: 1 } },
@@ -76102,7 +76139,7 @@ var ABYSS_EQUIP_SKILLS = [
     { id: 'eq335', name: '全能·护盾', effect: { shieldChance: 0.15, shieldPct: 0.4, damageReduction: 0.08 } },
     { id: 'eq336', name: '全能·眩晕', effect: { stunChance: 0.15, stunTurns: 2, atk: 28 } },
     { id: 'eq337', name: '全能·分裂', effect: { splitChance: 0.22, splitPct: 0.7, atk: 22 } },
-    { id: 'eq338', name: '全能·至尊', effect: { atk: 45, def: 50, hp: 350, fireAtk: 25, waterAtk: 25, metalAtk: 25, vulnerablePct: 8, damageIncreasePct: 10, thornsPct: 12, hpRegenPerRound: 80 } }
+    { id: 'eq338', name: '全能·至尊', effect: { atk: 145, def: 150, hp: 1350, fireAtk: 25, waterAtk: 25, metalAtk: 25, vulnerablePct: 8, damageIncreasePct: 10, thornsPct: 12, hpRegenPerRound: 80 } }
 ];
 var ABYSS_EQUIP_SKILL_TIER_RANGES = [
     { start: 0, end: 109 },    
@@ -76387,6 +76424,7 @@ function startAbyssRun() {
         runLevel: 0,
         exp: 0,
         pets: [],
+        petEquipmentInventory: [],
         deployedPetIds: [],
         petGuard: false,
         playerTargetIndex: 0,
@@ -77100,6 +77138,55 @@ var ABYSS_PET_TYPES = [
     { id: 'hp', name: '体力型' }
 ];
 
+// 宠物装备：项圈(攻)、护腕(防)、铠甲(体)，50个部位名字
+var ABYSS_PET_EQUIP_NAMES = [
+    '烈焰','寒冰','雷霆','幽影','龙鳞','虎骨','玄铁','青钢','赤铜','白银','黄金','翡翠','琥珀','紫晶','血玉',
+    '暗影','光明','风暴','大地','流水','烈火','霜冻','毒牙','荆棘','羽翼','兽爪','骨刺','魂灵','咒怨','祝福',
+    '破军','铁壁','疾风','厚土','灵木','锐金','柔水','炎阳','月华','星尘','虚空','混沌','秩序','毁灭','重生',
+    '永恒','刹那','无畏','守护','狂暴','神佑'
+];
+var ABYSS_PET_EQUIP_SLOTS = [
+    { type: '项圈', stat: 'atkPct' },
+    { type: '护腕', stat: 'defPct' },
+    { type: '铠甲', stat: 'hpPct' }
+];
+function abyssGenPetEquipId() { return 'peq_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9); }
+function abyssGenPetEquipment() {
+    var slotIdx = Math.floor(Math.random() * 3);
+    var slot = ABYSS_PET_EQUIP_SLOTS[slotIdx];
+    var nameStem = ABYSS_PET_EQUIP_NAMES[Math.floor(Math.random() * ABYSS_PET_EQUIP_NAMES.length)];
+    var displayName = nameStem + slot.type;
+    var r = Math.random();
+    var value;
+    if (r < 0.86) value = 1 + Math.floor(Math.random() * 20);
+    else if (r < 0.94) value = 21 + Math.floor(Math.random() * 20);
+    else if (r < 0.97) value = 41 + Math.floor(Math.random() * 20);
+    else if (r < 0.99) value = 61 + Math.floor(Math.random() * 20);
+    else value = 81 + Math.floor(Math.random() * 20);
+    r = Math.random();
+    var prefix = null, mult = 1;
+    if (r < 0.01) { prefix = '仙品'; mult = 2; }
+    else if (r < 0.04) { prefix = '神品'; mult = 1.5; }
+    else if (r < 0.14) { prefix = '圣品'; mult = 1.2; }
+    value = Math.min(100, Math.floor(value * mult));
+    var eq = {
+        id: abyssGenPetEquipId(),
+        slotType: slot.type,
+        name: displayName,
+        prefix: prefix,
+        atkPct: 0, defPct: 0, hpPct: 0
+    };
+    eq[slot.stat] = value;
+    if (Math.random() < 0.2) {
+        var skillPool = ABYSS_PET_SKILLS.filter(function(s) { return !s.playerBonus; });
+        if (skillPool.length > 0) {
+            var sk = skillPool[Math.floor(Math.random() * skillPool.length)];
+            eq.skill = { id: sk.id, name: sk.name };
+        }
+    }
+    return eq;
+}
+
 function abyssGenPet(monsterName, floor) {
     var baseName = (monsterName || '未命名').replace(/·\d+层$/, '').trim();
     baseName = baseName.replace(/^【[^】]+】/, '');
@@ -77108,7 +77195,11 @@ function abyssGenPet(monsterName, floor) {
         if (baseName.indexOf(pn) === 0) { baseName = baseName.slice(pn.length).trim(); break; }
     }
     if (!baseName) baseName = '未命名';
-    var isVariant = Math.random() < 0.1;
+    // 超级/闪光/变异宠物：从低到高依次稀有
+    var rollRand = Math.random();
+    var isSuper = rollRand < 0.005;             
+    var isShiny = !isSuper && rollRand < 0.02;  
+    var isVariant = !isSuper && !isShiny && rollRand < 0.1; 
     var f = Math.max(1, floor || 1);
     var bonus = Math.min(800, Math.floor(f * 25));
     var baseMin = 1500;
@@ -77120,11 +77211,17 @@ function abyssGenPet(monsterName, floor) {
         hp: roll(),
         speed: roll()
     };
-    if (isVariant) {
-        growth.atk = Math.floor(growth.atk * 1.2);
-        growth.def = Math.floor(growth.def * 1.2);
-        growth.hp = Math.floor(growth.hp * 1.2);
-        growth.speed = Math.floor(growth.speed * 1.2);
+    if (isVariant || isShiny || isSuper) {
+        // 变异：+20%；闪光：在变异基础上再+30%（1.2 * 1.3 = 1.56）
+        // 超级：比变异再高100%（1.2 * 2 = 2.4）
+        var mult = 1.0;
+        if (isSuper) mult = 2.4;
+        else if (isShiny) mult = 1.56;
+        else if (isVariant) mult = 1.2;
+        growth.atk = Math.floor(growth.atk * mult);
+        growth.def = Math.floor(growth.def * mult);
+        growth.hp = Math.floor(growth.hp * mult);
+        growth.speed = Math.floor(growth.speed * mult);
     }
     var typeIdx = Math.floor(Math.random() * ABYSS_PET_TYPES.length);
     var petType = ABYSS_PET_TYPES[typeIdx].id;
@@ -77137,7 +77234,10 @@ function abyssGenPet(monsterName, floor) {
         growth.hp = Math.floor(growth.hp * 1.08);
         growth.speed = Math.floor(growth.speed * 1.08);
     }
-    var skillCount = isVariant ? (4 + Math.floor(Math.random() * 3)) : (1 + Math.floor(Math.random() * 3));
+    var skillCount = isSuper ? (6 + Math.floor(Math.random() * 3))   // 超级：6~8个技能
+                    : (isShiny ? (5 + Math.floor(Math.random() * 3)) // 闪光：5~7个技能
+                               : (isVariant ? (4 + Math.floor(Math.random() * 3)) // 变异：4~6个技能
+                                            : (1 + Math.floor(Math.random() * 3)))); // 普通：1~3个技能
     var pool = ABYSS_PET_SKILLS.slice();
     var skills = [];
     for (var i = 0; i < skillCount && pool.length > 0; i++) {
@@ -77145,16 +77245,22 @@ function abyssGenPet(monsterName, floor) {
         skills.push({ id: pool[idx].id, name: pool[idx].name });
         pool.splice(idx, 1);
     }
-    var displayName = isVariant ? ('变异' + baseName) : baseName;
+    var displayName = baseName;
+    if (isSuper) displayName = '超级' + displayName;
+    else if (isShiny) displayName = '闪光' + displayName;
+    else if (isVariant) displayName = '变异' + displayName;
     return {
         id: abyssGenPetId(),
         name: displayName,
         type: petType,
         variant: !!isVariant,
+        shiny: !!isShiny,
+        super: !!isSuper,
         level: 1,
         exp: 0,
         growth: growth,
         skills: skills,
+        equipment: { '项圈': null, '护腕': null, '铠甲': null },
         hp: null,
         maxHp: 0
     };
@@ -77164,9 +77270,9 @@ function abyssCalcPetStats(pet) {
     if (!pet) return null;
     var L = pet.level || 1;
     var g = pet.growth || { atk: 1000, def: 1000, hp: 1000, speed: 1000 };
-    var atk = Math.floor(L * (g.atk / 1000) * 22);
-    var def = Math.floor(L * (g.def / 1000) * 13);
-    var maxHp = Math.floor(L * (g.hp / 1000) * 150);
+    var atk = Math.floor(L * (g.atk / 1000) * 34);
+    var def = Math.floor(L * (g.def / 1000) * 23);
+    var maxHp = Math.floor(L * (g.hp / 1000) * 380);
     atk = Math.max(1, atk);
     def = Math.max(0, def);
     maxHp = Math.max(50, maxHp);
@@ -77220,6 +77326,24 @@ function abyssCalcPetStats(pet) {
     if (petAtkFlat) p.atk = (p.atk || 0) + petAtkFlat;
     if (petDefFlat) p.def = (p.def || 0) + petDefFlat;
     if (petHpFlat) p.maxHp = (p.maxHp || 0) + petHpFlat;
+    var petEq = pet.equipment || {};
+    if (petEq['项圈'] && petEq['项圈'].atkPct) p.atk = Math.floor(p.atk * (1 + petEq['项圈'].atkPct / 100));
+    if (petEq['护腕'] && petEq['护腕'].defPct) p.def = Math.floor(p.def * (1 + petEq['护腕'].defPct / 100));
+    if (petEq['铠甲'] && petEq['铠甲'].hpPct) p.maxHp = Math.floor(p.maxHp * (1 + petEq['铠甲'].hpPct / 100));
+    var equipSkills = (pet.skills || []).slice();
+    if (petEq['项圈'] && petEq['项圈'].skill) equipSkills.push(petEq['项圈'].skill);
+    if (petEq['护腕'] && petEq['护腕'].skill) equipSkills.push(petEq['护腕'].skill);
+    if (petEq['铠甲'] && petEq['铠甲'].skill) equipSkills.push(petEq['铠甲'].skill);
+    for (var esi = 0; esi < equipSkills.length; esi++) {
+        var sk = null;
+        for (var j = 0; j < ABYSS_PET_SKILLS.length; j++) {
+            if (ABYSS_PET_SKILLS[j].id === equipSkills[esi].id) { sk = ABYSS_PET_SKILLS[j]; break; }
+        }
+        if (sk) {
+            if (sk.atkBonus) p.atk = Math.floor(p.atk * (1 + sk.atkBonus));
+            if (sk.defBonus) p.def = Math.floor(p.def * (1 + sk.defBonus));
+        }
+    }
     p.atk = Math.max(1, p.atk);
     p.def = Math.max(0, p.def);
     p.maxHp = Math.max(50, p.maxHp);
@@ -78091,6 +78215,14 @@ function abyssAttack() {
     var effDef = m.def * (1 - (stats.reduceMonsterDef || 0) / 100);
     if (useSkill && useSkill.ignoreDefPct) effDef = effDef * (1 - useSkill.ignoreDefPct / 100);
     var baseDmg = abyssRun._skipThisTurn ? (abyssRun._skipThisTurn = false, 0) : Math.max(1, stats.atk - Math.floor(effDef * 0.5));
+    // 战士职业被动：半血以下怒战，提升输出与吸血
+    if ((abyssRun.playerClass || 'warrior') === 'warrior' && stats.maxHp > 0) {
+        var curHpRatio = (abyssRun.player.hp || stats.maxHp) / stats.maxHp;
+        if (curHpRatio <= 0.5) {
+            baseDmg = Math.floor(baseDmg * 1.2);      // 低血时伤害+20%
+            stats.lifesteal = (stats.lifesteal || 0) + 5; // 技能吸血+5%
+        }
+    }
     var crit = (useSkill && useSkill.forceCrit) || (Math.random() * 100 < stats.critRate);
     if (crit) baseDmg = Math.floor(baseDmg * (1 + stats.critDmg / 100));
     var combo = Math.random() * 100 < stats.combo;
@@ -79172,7 +79304,8 @@ function abyssOnKillMonster() {
             var newPet = abyssGenPet(m ? m.name : '未知', abyssRun.floor);
             abyssRun.pets.push(newPet);
             var typeName = (ABYSS_PET_TYPES.find(function(t){ return t.id === newPet.type; }) || {}).name || '';
-            abyssLog('获得宠物【' + newPet.name + '】' + (newPet.variant ? '变异 ' : '') + typeName + ' 资质 攻' + newPet.growth.atk + ' 防' + newPet.growth.def + ' 体' + newPet.growth.hp + ' 速' + newPet.growth.speed);
+            var rareTag = newPet.super ? '超级 ' : (newPet.shiny ? '闪光 ' : (newPet.variant ? '变异 ' : ''));
+            abyssLog('获得宠物【' + newPet.name + '】' + rareTag + typeName + ' 资质 攻' + newPet.growth.atk + ' 防' + newPet.growth.def + ' 体' + newPet.growth.hp + ' 速' + newPet.growth.speed);
         } else {
             abyssLog('宠物已达上限(10只)，未获得新宠物');
         }
@@ -79180,6 +79313,14 @@ function abyssOnKillMonster() {
     if (Math.random() < 0.2) {
         abyssRun.materials.petSkillBook = (abyssRun.materials.petSkillBook || 0) + 1;
         abyssLog('获得 宠物兽决 x1');
+    }
+    if (Math.random() < 0.2) {
+        abyssRun.petEquipmentInventory = abyssRun.petEquipmentInventory || [];
+        var peq = abyssGenPetEquipment();
+        abyssRun.petEquipmentInventory.push(peq);
+        var tag = peq.prefix ? peq.prefix : '';
+        var attr = (peq.atkPct ? ' 攻+' + peq.atkPct + '%' : '') + (peq.defPct ? ' 防+' + peq.defPct + '%' : '') + (peq.hpPct ? ' 体+' + peq.hpPct + '%' : '');
+        abyssLog('获得宠物装备 ' + tag + peq.name + attr + (peq.skill ? ' [' + peq.skill.name + ']' : ''));
     }
     var stats = abyssCalcPlayerStats();
     if (stats) {
@@ -81399,12 +81540,75 @@ function openAbyssPetPanel() {
             var expPct = (expCur / expNext * 100);
             var detail = document.getElementById('abyssPetDetail');
             var typeName = (ABYSS_PET_TYPES && ABYSS_PET_TYPES.find(function(t){ return t.id === selPet.type; })) ? ABYSS_PET_TYPES.find(function(t){ return t.id === selPet.type; }).name : '';
-            detail.innerHTML = '<div style="margin-bottom:12px;"><span style="color:#ff80ab;font-size:16px;font-weight:bold;">' + selPet.name + '</span> ' + (selPet.variant ? '<span style="color:#ffd700;font-size:11px;">变异</span> ' : '') + (typeName ? '<span style="color:#81c784;font-size:11px;">' + typeName + '</span> ' : '') + '<span style="color:#b388ff;">Lv.' + selPet.level + '/' + runLv + '</span></div>' +
+            var rareHtml = selPet.super ? '<span style="color:#ff5722;font-size:11px;">超级</span> '
+                           : (selPet.shiny ? '<span style="color:#ffeb3b;font-size:11px;">闪光</span> '
+                           : (selPet.variant ? '<span style="color:#ffd700;font-size:11px;">变异</span> ' : ''));
+            selPet.equipment = selPet.equipment || { '项圈': null, '护腕': null, '铠甲': null };
+            var eqLines = [];
+            for (var slotIdx = 0; slotIdx < ABYSS_PET_EQUIP_SLOTS.length; slotIdx++) {
+                var st = ABYSS_PET_EQUIP_SLOTS[slotIdx].type;
+                var eqObj = selPet.equipment[st];
+                var txt = st + ': ' + (eqObj ? (eqObj.prefix || '') + eqObj.name + (eqObj.atkPct ? ' 攻+' + eqObj.atkPct + '%' : '') + (eqObj.defPct ? ' 防+' + eqObj.defPct + '%' : '') + (eqObj.hpPct ? ' 体+' + eqObj.hpPct + '%' : '') + (eqObj.skill ? ' [' + eqObj.skill.name + ']' : '') : '空');
+                eqLines.push(txt);
+            }
+            detail.innerHTML = '<div style="margin-bottom:12px;"><span style="color:#ff80ab;font-size:16px;font-weight:bold;">' + selPet.name + '</span> ' + rareHtml + (typeName ? '<span style="color:#81c784;font-size:11px;">' + typeName + '</span> ' : '') + '<span style="color:#b388ff;">Lv.' + selPet.level + '/' + runLv + '</span></div>' +
                 '<div style="margin-bottom:6px;"><div style="font-size:11px;color:#aaa;">气血</div><div style="height:18px;background:#333;border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + hpPct + '%;background:linear-gradient(90deg,#c62828,#e91e63);border-radius:4px;"></div></div><div style="font-size:11px;color:#888;">' + formatNumber(curHp) + ' / ' + formatNumber(maxHp) + '</div></div>' +
                 '<div style="margin-bottom:12px;"><div style="font-size:11px;color:#aaa;">经验</div><div style="height:12px;background:#333;border-radius:3px;overflow:hidden;"><div style="height:100%;width:' + expPct + '%;background:linear-gradient(90deg,#ffa726,#ffd54f);border-radius:3px;"></div></div><div style="font-size:11px;color:#888;">' + expCur + ' / ' + expNext + (selPet.level >= runLv ? ' (已满级)' : '') + '</div></div>' +
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;font-size:13px;"><div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;">攻击资质 <span style="color:#ff9800">' + selPet.growth.atk + '</span></div><div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;">防御资质 <span style="color:#2196f3">' + selPet.growth.def + '</span></div><div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;">体力资质 <span style="color:#4caf50">' + selPet.growth.hp + '</span></div><div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;">速度资质 <span style="color:#9c27b0">' + selPet.growth.speed + '</span></div></div>' +
                 '<div style="font-size:11px;color:#aaa;margin-bottom:4px;">属性 攻击' + (pstats ? pstats.atk : 0) + ' 防御' + (pstats ? pstats.def : 0) + ' 气血' + (pstats ? pstats.maxHp : 0) + '</div>' +
-                '<div style="font-size:11px;color:#b388ff;">技能: ' + ((selPet.skills || []).map(function(s) { return s.name; }).join('、') || '无') + '</div>';
+                '<div style="font-size:11px;color:#b388ff;">技能: ' + ((selPet.skills || []).map(function(s) { return s.name; }).join('、') || '无') + '</div>' +
+                '<div id="abyssPetEquipBlock" style="margin-top:10px;border-top:1px solid #333;padding-top:8px;"><div style="font-size:12px;color:#ffb74d;margin-bottom:6px;">宠物装备</div><div id="abyssPetEquipSlots" style="display:flex;flex-direction:column;gap:4px;"></div></div>';
+            var slotsEl = document.getElementById('abyssPetEquipSlots');
+            if (slotsEl) {
+                slotsEl.innerHTML = '';
+                for (var si = 0; si < ABYSS_PET_EQUIP_SLOTS.length; si++) {
+                    var slotType = ABYSS_PET_EQUIP_SLOTS[si].type;
+                    var eqItem = selPet.equipment[slotType];
+                    var row = document.createElement('div');
+                    row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:4px 8px;background:rgba(0,0,0,0.25);border-radius:4px;border:1px solid #555;';
+                    var nameStr = eqItem ? (eqItem.prefix || '') + eqItem.name + (eqItem.atkPct ? ' 攻+' + eqItem.atkPct + '%' : '') + (eqItem.defPct ? ' 防+' + eqItem.defPct + '%' : '') + (eqItem.hpPct ? ' 体+' + eqItem.hpPct + '%' : '') + (eqItem.skill ? ' [' + eqItem.skill.name + ']' : '') : '空';
+                    row.innerHTML = '<span style="color:#aaa;">' + slotType + '</span><span style="color:#e0e0e0;">' + nameStr + '</span>';
+                    if (eqItem) {
+                        var ub = document.createElement('button');
+                        ub.textContent = '卸下';
+                        ub.style.cssText = 'background:#555;color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px;';
+                        ub.onclick = (function(pid, st) { return function() {
+                            var pet = null;
+                            for (var k = 0; k < abyssRun.pets.length; k++) { if (abyssRun.pets[k].id === pid) { pet = abyssRun.pets[k]; break; } }
+                            if (!pet || !pet.equipment) return;
+                            var old = pet.equipment[st];
+                            if (old) {
+                                abyssRun.petEquipmentInventory = abyssRun.petEquipmentInventory || [];
+                                abyssRun.petEquipmentInventory.push(old);
+                                pet.equipment[st] = null;
+                                abyssLog('已卸下宠物装备 ' + (old.prefix || '') + old.name);
+                                openAbyssPetPanel();
+                                updateAbyssRunUI();
+                            }
+                        }; })(selPet.id, slotType);
+                        row.appendChild(ub);
+                        var db = document.createElement('button');
+                        db.textContent = '分解';
+                        db.style.cssText = 'background:#795548;color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:4px;';
+                        db.onclick = (function(pid, st) { return function() {
+                            var pet = null;
+                            for (var k = 0; k < abyssRun.pets.length; k++) { if (abyssRun.pets[k].id === pid) { pet = abyssRun.pets[k]; break; } }
+                            if (!pet || !pet.equipment) return;
+                            var old = pet.equipment[st];
+                            if (old) {
+                                pet.equipment[st] = null;
+                                abyssRun.materials.petSkillBook = (abyssRun.materials.petSkillBook || 0) + 1;
+                                abyssLog('分解装备获得宠物兽决 x1');
+                                openAbyssPetPanel();
+                                if (typeof refreshAbyssPetEquipBagList === 'function') refreshAbyssPetEquipBagList();
+                                updateAbyssRunUI();
+                            }
+                        }; })(selPet.id, slotType);
+                        row.appendChild(db);
+                    }
+                    slotsEl.appendChild(row);
+                }
+            }
             var actEl = document.getElementById('abyssPetDetailActions');
             var isDeployedSel = abyssIsPetDeployed(selPet.id);
             var isDeadSel = selPet.hp !== null && selPet.hp <= 0;
@@ -81481,6 +81685,11 @@ function openAbyssPetPanel() {
                 updateAbyssRunUI();
             }; })(selPet.id);
             actEl.appendChild(btnSkill);
+            var btnEquipBag = document.createElement('button');
+            btnEquipBag.textContent = '装备背包';
+            btnEquipBag.style.cssText = 'background:#5d4037;color:#ffcc80;border:none;padding:8px 18px;border-radius:6px;cursor:pointer;font-weight:bold;';
+            btnEquipBag.onclick = function() { openAbyssPetEquipBag(); };
+            actEl.appendChild(btnEquipBag);
             var btnRelease = document.createElement('button');
             btnRelease.textContent = '放生';
             btnRelease.style.cssText = 'background:#795548;color:#fff;border:none;padding:8px 18px;border-radius:6px;cursor:pointer;font-weight:bold;';
@@ -81528,6 +81737,77 @@ function openAbyssPetPanel() {
 function closeAbyssPetPanel() {
     document.getElementById('abyssPetOverlay').style.display = 'none';
     document.getElementById('abyssPetUI').style.display = 'none';
+}
+
+function openAbyssPetEquipBag() {
+    if (!abyssRun) return;
+    document.getElementById('abyssPetEquipBagOverlay').style.display = 'block';
+    document.getElementById('abyssPetEquipBagUI').style.display = 'block';
+    refreshAbyssPetEquipBagList();
+}
+function closeAbyssPetEquipBag() {
+    document.getElementById('abyssPetEquipBagOverlay').style.display = 'none';
+    document.getElementById('abyssPetEquipBagUI').style.display = 'none';
+}
+function refreshAbyssPetEquipBagList() {
+    var listEl = document.getElementById('abyssPetEquipBagList');
+    if (!listEl || !abyssRun) return;
+    var inv = abyssRun.petEquipmentInventory || [];
+    var selPetId = abyssPetPanelSelectedId;
+    if (inv.length === 0) {
+        listEl.innerHTML = '<div style="color:#666;padding:12px;">暂无装备</div>';
+        return;
+    }
+    listEl.innerHTML = '';
+    for (var ii = 0; ii < inv.length; ii++) {
+        var it = inv[ii];
+        var div = document.createElement('div');
+        div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-bottom:1px solid #333;background:rgba(0,0,0,0.2);border-radius:4px;margin-bottom:4px;';
+        var itName = (it.prefix || '') + it.name + (it.atkPct ? ' 攻+' + it.atkPct + '%' : '') + (it.defPct ? ' 防+' + it.defPct + '%' : '') + (it.hpPct ? ' 体+' + it.hpPct + '%' : '') + (it.skill ? ' [' + it.skill.name + ']' : '');
+        div.innerHTML = '<span style="color:#e0e0e0;">' + itName + '</span>';
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'display:flex;gap:6px;';
+        var eb = document.createElement('button');
+        eb.textContent = '装备';
+        eb.style.cssText = 'background:#6a1b9a;color:#ff80ab;border:none;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:11px;';
+        eb.onclick = (function(pid, idx) { return function() {
+            if (!abyssRun) return;
+            var pet = null;
+            for (var k = 0; k < abyssRun.pets.length; k++) { if (abyssRun.pets[k].id === pid) { pet = abyssRun.pets[k]; break; } }
+            if (!pet) { abyssLog('请先在宠物列表选择一只宠物'); return; }
+            pet.equipment = pet.equipment || { '项圈': null, '护腕': null, '铠甲': null };
+            var inv2 = abyssRun.petEquipmentInventory || [];
+            if (idx < 0 || idx >= inv2.length) return;
+            var piece = inv2[idx];
+            var slotType = piece.slotType;
+            var old = pet.equipment[slotType];
+            if (old) inv2.push(old);
+            pet.equipment[slotType] = piece;
+            inv2.splice(idx, 1);
+            abyssLog('已装备 ' + (piece.prefix || '') + piece.name + ' 到【' + pet.name + '】');
+            refreshAbyssPetEquipBagList();
+            openAbyssPetPanel();
+            updateAbyssRunUI();
+        }; })(selPetId, ii);
+        var db = document.createElement('button');
+        db.textContent = '分解';
+        db.style.cssText = 'background:#795548;color:#fff;border:none;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:11px;';
+        db.onclick = (function(idx) { return function() {
+            if (!abyssRun) return;
+            var inv2 = abyssRun.petEquipmentInventory || [];
+            if (idx < 0 || idx >= inv2.length) return;
+            inv2.splice(idx, 1);
+            abyssRun.materials.petSkillBook = (abyssRun.materials.petSkillBook || 0) + 1;
+            abyssLog('分解装备获得宠物兽决 x1');
+            refreshAbyssPetEquipBagList();
+            openAbyssPetPanel();
+            updateAbyssRunUI();
+        }; })(ii);
+        wrap.appendChild(eb);
+        wrap.appendChild(db);
+        div.appendChild(wrap);
+        listEl.appendChild(div);
+    }
 }
 
 function openAbyssPetSynthesisPanel() {
@@ -81585,6 +81865,10 @@ function closeAbyssPetSynthesisPanel() {
     document.getElementById('abyssPetSynthesisUI').style.display = 'none';
 }
 
+function abyssPetHasEquipment(pet) {
+    var eq = pet.equipment || {};
+    return !!(eq['项圈'] || eq['护腕'] || eq['铠甲']);
+}
 function abyssDoPetSynthesis() {
     if (!abyssRun || !abyssRun.active) return;
     var id1 = document.getElementById('abyssSynthesisPet1').value;
@@ -81643,9 +81927,44 @@ function abyssDoPetSynthesis() {
         exp: 0,
         growth: growth,
         skills: skills,
+        equipment: { '项圈': null, '护腕': null, '铠甲': null },
         hp: null,
         maxHp: 0
     };
+    // 将两只参与合成的宠物身上的装备自动继承到新宠物
+    var slots = ['项圈','护腕','铠甲'];
+    var usedFrom = {};
+    for (var si = 0; si < slots.length; si++) {
+        var st = slots[si];
+        var e1 = (pet1.equipment || {})[st] || null;
+        var e2 = (pet2.equipment || {})[st] || null;
+        var chosen = null;
+        if (e1 && e2) {
+            if (Math.random() < 0.5) { chosen = e1; usedFrom[st] = 1; } else { chosen = e2; usedFrom[st] = 2; }
+        } else if (e1) {
+            chosen = e1; usedFrom[st] = 1;
+        } else if (e2) {
+            chosen = e2; usedFrom[st] = 2;
+        }
+        if (chosen) newPet.equipment[st] = chosen;
+    }
+    // 清空原宠物上的装备，未被继承的装备返回到装备背包
+    abyssRun.petEquipmentInventory = abyssRun.petEquipmentInventory || [];
+    for (var si2 = 0; si2 < slots.length; si2++) {
+        var st2 = slots[si2];
+        if (pet1.equipment && pet1.equipment[st2]) {
+            if (!usedFrom[st2] || usedFrom[st2] !== 1) {
+                abyssRun.petEquipmentInventory.push(pet1.equipment[st2]);
+            }
+            pet1.equipment[st2] = null;
+        }
+        if (pet2.equipment && pet2.equipment[st2]) {
+            if (!usedFrom[st2] || usedFrom[st2] !== 2) {
+                abyssRun.petEquipmentInventory.push(pet2.equipment[st2]);
+            }
+            pet2.equipment[st2] = null;
+        }
+    }
     if (abyssRun.deployedPetIds) {
         var d = abyssRun.deployedPetIds;
         for (var di = d.length - 1; di >= 0; di--) { if (d[di] === id1 || d[di] === id2) d.splice(di, 1); }
@@ -81950,6 +82269,14 @@ function abyssCompareDoEquip() {
 function abyssCompareDoDismantle() {
     if (!abyssRun || !abyssEquipActionTarget || abyssEquipActionInvIdx === null || abyssEquipActionInvIdx === undefined) return;
     var eq = abyssEquipActionTarget;
+    abyssRun.runeInventory = abyssRun.runeInventory || [];
+    abyssRun.gemInventory = abyssRun.gemInventory || [];
+    for (var ri = 0; ri < (eq.runes || []).length; ri++) {
+        if (eq.runes[ri]) abyssRun.runeInventory.push(eq.runes[ri]);
+    }
+    for (var gi = 0; gi < (eq.gems || []).length; gi++) {
+        if (eq.gems[gi]) abyssRun.gemInventory.push(eq.gems[gi]);
+    }
     var enhanceLv = eq.level || 0;
     abyssRun.materials.enhanceStone = (abyssRun.materials.enhanceStone || 0) + 1;
     if (enhanceLv > 0) {
@@ -82235,8 +82562,16 @@ function abyssEquipUnequip() {
 }
 
 function abyssEquipDismantle() {
-    if (!abyssEquipActionTarget) return;
+    if (!abyssEquipActionTarget || !abyssRun) return;
     var eq = abyssEquipActionTarget;
+    abyssRun.runeInventory = abyssRun.runeInventory || [];
+    abyssRun.gemInventory = abyssRun.gemInventory || [];
+    for (var ri = 0; ri < (eq.runes || []).length; ri++) {
+        if (eq.runes[ri]) abyssRun.runeInventory.push(eq.runes[ri]);
+    }
+    for (var gi = 0; gi < (eq.gems || []).length; gi++) {
+        if (eq.gems[gi]) abyssRun.gemInventory.push(eq.gems[gi]);
+    }
     var enhanceLv = eq.level || 0;
     abyssRun.materials.enhanceStone = (abyssRun.materials.enhanceStone || 0) + 1;
     if (enhanceLv > 0) {
