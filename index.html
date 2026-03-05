@@ -6082,7 +6082,7 @@ select:focus {
         <p>32. 宗门系统：1000转开启，每级GPS收益，功法库提升功法秘笈加成。</p>
         <p>33.轮回副本： 黑龙潭副本：1轮回开启，掉落大量材料，翅膀升级材料。   圣兽岛副本：2轮回开启，掉落大量材料，坐骑升级材料。. 蓬莱仙岛系统：3轮回开启，掉落大量材料，符文升级材料。 轮回试炼副本(轮回2转开启）：有几率掉落T1装备和S1神兽。轮回仙岛副本(轮回3转开启）：有几率掉落T2装备和S2神兽 </p>             
         <p>34. 跑商系统：1000转开启，可以获得大量星币。</p>         
-        <p>35. 娱乐玩法：老虎机。</p>
+        <p>35. 娱乐玩法：水果机。</p>
        <p>36. 秘境：2000转开启，提升临时总数值，和大量神器碎片（藏宝图怪物掉落）。</p>
        <p>37. 疯狂地主：0转开启（打怪模式第三层以上开启），提升总数值根据（果实和卖鱼总获得地主币），新版农田，10分钟刷新商店，成熟只要不收获也可以吃天气词条，离线也可以吃词条，最高48条。增加海钓玩法，类似普通钓鱼。</p>
        <p>38. 无尽挖矿：(升级一下稿子等级不然挖不到普通矿)1500转开启，提升大量世界地图经验，和各项属性。</p>
@@ -6106,8 +6106,9 @@ select:focus {
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>1.899更新日志</h4>
+            <h4>1.90更新日志</h4>
             <h4>QQ群：902481027  ，864788026，  有问题可以进群问（存档异常联系群管理修复）</h4> 
+            <p>2026/03/05:增加云存档，无限深渊怪物反伤移除词条<p>
             <p>2026/03/03: 无限深渊提高获取的深渊币，增强吸血职业技能可以吃到吸血加成， 修复宗门BUG<p>
             <p>2026/03/03: 地主海钓手机版修复不会再触发长按复制。玩家等级增加自动飞升。无限深渊增加新装备技能。结婚增加新内容。 修复疯狂地主在线不能获得词条BUG 。修复通天塔异常卡顿。修改一下系统界面UI.<p>
             <p>2026/03/02: 修复跑商库存异常，更新夜店系统内容。更新疯狂地主新玩法海钓模式。 修复BUG<p>
@@ -6252,7 +6253,7 @@ select:focus {
       <button class="sidebar-item" onclick="toggleTradingSystem()"><span class="sidebar-icon">&#128666;</span> 跑商 <span class="sidebar-lock">1000转</span></button>
       <button class="sidebar-item" onclick="toggleGambleStone()"><span class="sidebar-icon">&#128142;</span> 赌石<span class="sidebar-lock">5000资产</span></button>
       <button class="sidebar-item" onclick="toggleFundSystem()"><span class="sidebar-icon">&#128181;</span> 基金<span class="sidebar-lock">高风险</span></button>
-      <button class="sidebar-item" onclick="toggleSlotMachine()"><span class="sidebar-icon">&#127920;</span> 老虎机<span class="sidebar-lock">高风险</span></button>      
+      <button class="sidebar-item" onclick="toggleSlotMachine()"><span class="sidebar-icon">&#127920;</span> 水果机<span class="sidebar-lock">高风险</span></button>      
     </div>
   </div>
   <div class="sidebar-group collapsed">
@@ -6528,7 +6529,7 @@ select:focus {
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v1.8.99</div>
+  <div id="footer">版本号: v1.9.0</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -6971,20 +6972,72 @@ select:focus {
 <!-- 设置界面对话框 -->
 <div id="settingsDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 28px 36px; border: 1px solid #ccc; border-radius: 10px; z-index: 1000; text-align: center; min-width: 420px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);">
     <h3 style="font-size: 22px; margin: 0 0 20px 0;">游戏设置</h3>
+    <div style="margin-bottom: 16px; padding: 10px; background: #f8f9fa; border-radius: 8px; text-align: left;">
+        <div style="font-weight: 700; margin-bottom: 8px;">账号与云存档</div>
+        <div id="goldGameAccountStatus" style="font-size: 13px; color: #666;">未登录</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+            <button onclick="showGoldGameLoginDialog()" style="padding: 10px 16px; font-size: 14px;">登录/注册</button>
+            <button onclick="if(typeof goldGameLogout==='function'){ goldGameLogout(); } var s=document.getElementById('goldGameAccountStatus'); if(s) s.textContent='未登录';" style="padding: 10px 16px; font-size: 14px;">登出</button>
+            <button onclick="goldGameUploadSave && goldGameUploadSave().catch(function(e){ alert(e.message||'上传失败'); });" style="padding: 10px 16px; font-size: 14px;">上传云存档</button>
+            <button onclick="goldGameDownloadSave && goldGameDownloadSave().catch(function(e){ alert(e.message||'下载失败'); });" style="padding: 10px 16px; font-size: 14px;">下载云存档</button>
+        </div>
+        <div style="margin-top: 8px;"><button onclick="showGoldGameLeaderboardDialog()" style="padding: 10px 16px; font-size: 14px;">联网排行榜</button></div>
+        <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 13px;">自动上传云存档（每1分钟）：</span>
+            <button id="goldGameAutoCloudSaveBtn" onclick="toggleGoldGameAutoCloudSave();" style="padding: 8px 16px; font-size: 13px;">开启</button>
+        </div>
+    </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
         <button onclick="showRenameDialog()" style="padding: 12px 20px; font-size: 16px;">名字修改</button>
         <button onclick="document.getElementById('avatarInput').click()" style="padding: 12px 20px; font-size: 16px;">更改头像</button>
         <button onclick="clearAvatar()" style="padding: 12px 20px; font-size: 16px;">清除头像</button>
         <button onclick="showActivationCodeDialog()" style="padding: 12px 20px; font-size: 16px;">激活码兑换</button>
         <button onclick="saveGame()" style="padding: 12px 20px; font-size: 16px;">保存游戏</button>
-        <button onclick="loadGame()" style="padding: 12px 20px; font-size: 16px;">加载游戏</button>
-        <button onclick="exportSave()" style="padding: 12px 20px; font-size: 16px;">导出存档（自动复制）</button>        
-        <button onclick="importSave()" style="padding: 12px 20px; font-size: 16px;">导入存档</button>
         <button onclick="downloadSave()" style="padding: 12px 20px; font-size: 16px;">下载TXT存档</button>
-         <button onclick="importEncryptedSave()" style="padding: 12px 20px; font-size: 16px;">导入TXT存档</button>
+        <button onclick="importEncryptedSave()" style="padding: 12px 20px; font-size: 16px;">导入TXT存档</button>
         <button onclick="resetGame()" style="padding: 12px 20px; font-size: 16px; background-color: #ff4444; color: white; border: none;">重置游戏</button>
     </div>
     <button onclick="toggleSettingsUI()" style="margin-top: 20px; padding: 10px 28px; font-size: 15px;">关闭设置</button>
+</div>
+<!-- 进入游戏前的登录门控：未登录时全白背景 + 中央登录弹窗 -->
+<div id="goldGameLoginGateOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 1000;"></div>
+<!-- 账号登录/注册弹窗 -->
+<div id="goldGameLoginOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001;"></div>
+<div id="goldGameLoginDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 10px; z-index: 1002; min-width: 320px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+    <h4 style="margin: 0 0 16px 0;">账号登录 / 注册</h4>
+    <div style="margin-bottom: 10px; text-align: left; display: none;">
+        <label style="font-size: 13px;">服务器地址（如 http://localhost:3000）</label>
+        <input type="text" id="goldGameApiBaseInput" placeholder="留空则使用当前配置" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
+    </div>
+    <div style="margin-bottom: 10px; text-align: left;">
+        <label style="font-size: 13px;">用户名</label>
+        <input type="text" id="goldGameLoginUsername" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
+    </div>
+    <div style="margin-bottom: 14px; text-align: left;">
+        <label style="font-size: 13px;">密码</label>
+        <input type="password" id="goldGameLoginPassword" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
+    </div>
+    <div id="goldGameLoginMessage" style="font-size: 13px; color: #c00; margin-bottom: 10px; min-height: 18px;"></div>
+    <div style="display: flex; gap: 10px; justify-content: center;">
+        <button onclick="var u=document.getElementById('goldGameLoginUsername').value; var p=document.getElementById('goldGameLoginPassword').value; var base=document.getElementById('goldGameApiBaseInput').value.trim(); if(base) window.GOLD_GAME_API_BASE=base; var msg=document.getElementById('goldGameLoginMessage'); if(!u||!p){ msg.textContent='请输入用户名和密码'; return; } msg.textContent=''; msg.style.color='green'; goldGameLogin(u,p).then(function(){ msg.textContent='登录成功，正在加载云存档…'; return goldGameDownloadSave(); }).then(function(){ msg.textContent='登录成功，已加载云存档'; if(document.getElementById('goldGameAccountStatus')) document.getElementById('goldGameAccountStatus').textContent='已登录: '+getGoldGameAuthUsername(); closeGoldGameLoginDialog(); }).catch(function(e){ var err=e&amp;&amp;e.message?e.message:'登录失败'; if(typeof getGoldGameAuthUsername==='function'&amp;&amp;getGoldGameAuthUsername()){ msg.textContent='登录成功，云存档未加载: '+err; if(document.getElementById('goldGameAccountStatus')) document.getElementById('goldGameAccountStatus').textContent='已登录: '+getGoldGameAuthUsername(); closeGoldGameLoginDialog(); } else { msg.style.color=''; msg.textContent=err; } });" style="padding: 10px 20px;">登录</button>
+        <button onclick="var u=document.getElementById('goldGameLoginUsername').value; var p=document.getElementById('goldGameLoginPassword').value; var base=document.getElementById('goldGameApiBaseInput').value.trim(); if(base) window.GOLD_GAME_API_BASE=base; var msg=document.getElementById('goldGameLoginMessage'); if(!u||!p){ msg.textContent='请输入用户名和密码'; return; } msg.textContent=''; msg.style.color='green'; goldGameRegister(u,p).then(function(){ msg.textContent='注册成功，正在加载云存档…'; return goldGameDownloadSave(); }).then(function(){ msg.textContent='注册成功，已加载云存档'; if(document.getElementById('goldGameAccountStatus')) document.getElementById('goldGameAccountStatus').textContent='已登录: '+getGoldGameAuthUsername(); closeGoldGameLoginDialog(); }).catch(function(e){ var err=e&amp;&amp;e.message?e.message:'注册失败'; if(typeof getGoldGameAuthUsername==='function'&amp;&amp;getGoldGameAuthUsername()){ msg.textContent='注册成功，云存档未加载: '+err; if(document.getElementById('goldGameAccountStatus')) document.getElementById('goldGameAccountStatus').textContent='已登录: '+getGoldGameAuthUsername(); closeGoldGameLoginDialog(); } else { msg.style.color=''; msg.textContent=err; } });" style="padding: 10px 20px;">注册</button>
+        <button id="goldGameLoginCloseBtn" onclick="closeGoldGameLoginDialog()" style="padding: 10px 20px;">关闭</button>
+    </div>
+</div>
+<!-- 联网排行榜弹窗 -->
+<div id="goldGameLeaderboardOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001;"></div>
+<div id="goldGameLeaderboardDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 10px; z-index: 1002; max-width: 90%; max-height: 80vh; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+    <h4 style="margin: 0 0 12px 0;">联网排行榜</h4>
+    <div id="goldGameLeaderboardTabs" style="margin-bottom: 8px;">
+        <button onclick="switchGoldGameLeaderboard('total')" style="padding: 6px 10px; margin-right: 4px; font-size: 12px;">无限深渊排行</button>
+        <button onclick="switchGoldGameLeaderboard('stage')" style="padding: 6px 10px; margin-right: 4px; font-size: 12px;">关卡排行</button>
+        <button onclick="switchGoldGameLeaderboard('tower')" style="padding: 6px 10px; margin-right: 4px; font-size: 12px;">塔层排行</button>
+        <button onclick="switchGoldGameLeaderboard('reincarnation')" style="padding: 6px 10px; margin-right: 4px; font-size: 12px;">转生排行</button>
+        <button onclick="switchGoldGameLeaderboard('wealth')" style="padding: 6px 10px; margin-right: 4px; font-size: 12px;">富翁排行</button>
+    </div>
+    <div id="goldGameLeaderboardList" style="max-height: 320px; overflow-y: auto; margin-bottom: 12px; text-align: left;"></div>
+    <button onclick="var p=typeof goldGameGetLeaderboardPayload==='function'?goldGameGetLeaderboardPayload():{total:goldGameGetLeaderboardScore&&goldGameGetLeaderboardScore()}; goldGameSubmitLeaderboard(p).then(function(){ showGoldGameLeaderboardDialog(); }).catch(function(e){ alert(e.message); });" style="padding: 10px 20px;">提交我的成绩</button>
+    <button onclick="closeGoldGameLeaderboardDialog()" style="margin-left: 8px; padding: 10px 20px;">关闭</button>
 </div>
 <input type="file" id="fileInput" accept=".txt" style="display: none;">
 <input type="file" id="avatarInput" accept="image/*" style="display: none;">
@@ -9132,12 +9185,12 @@ select:focus {
 
 
 
-<!-- 老虎机界面 -->
+<!-- 水果机界面 -->
 <div id="slotMachineOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; backdrop-filter: blur(5px);"></div>
 <div id="slotMachineUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #8B0000, #B22222); color: white; padding: 20px; border: 5px solid #FFD700; border-radius: 15px; z-index: 1001; width: 500px; box-shadow: 0 0 20px rgba(255,215,0,0.5);">
 <button onclick="toggleSlotMachine()" style="background: #4b0082; color: #d8bfd8; border: 1px solid #9370db; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-weight: bold;">关闭</button>
     <div style="text-align: center; margin-bottom: 20px;">
-        <h2 style="color: #FFD700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin: 0;">幸运老虎机</h2>
+        <h2 style="color: #FFD700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin: 0;">幸运水果机</h2>
         <div style="color: #FFD700; font-size: 14px;">使用星尘发票赢取更多奖励！</div>
     </div>
     
@@ -9155,7 +9208,7 @@ select:focus {
         </div>
     </div>
     
-    <!-- 老虎机转轴 -->
+    <!-- 水果机转轴 -->
     <div id="slotReels" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; perspective: 1000px;">
         <div class="reel-container" style="position: relative; width: 100px; height: 300px; background: #000; border: 3px solid #FFD700; border-radius: 10px; overflow: hidden; transform-style: preserve-3d;">
             <div class="reel" id="reel1" style="position: absolute; width: 100%; transition: top 3s cubic-bezier(0.17, 0.67, 0.83, 0.67);">
@@ -12489,8 +12542,10 @@ select:focus {
 
     <script>
         
-        const GAME_VERSION = "1.8.99";
+        const GAME_VERSION = "1.9.0";
         let versionErrorBlocked = false;
+        // 账号与联网排行榜 API 地址（部署时改为你的服务器地址）
+        window.GOLD_GAME_API_BASE = window.GOLD_GAME_API_BASE || 'http://218.244.139.4:3000';
 
         
         function isCurrentVersionOlderThan(saveVersion) {
@@ -15678,6 +15733,20 @@ function setTechniqueMaxCost() {
     try {
         const save = JSON.parse(localStorage.getItem('goldGameSave'));
         if (save) {
+            // 防伪：存档带 accountId 时，必须与当前登录账号一致，否则禁止使用该存档
+            var currentAccountId = (typeof getGoldGameAccountId === 'function') ? (getGoldGameAccountId() || '') : '';
+            if (save.accountId) {
+                if (!currentAccountId) {
+                    try { localStorage.removeItem('goldGameSave'); } catch (e) {}
+                    if (typeof logAction === 'function') logAction('该存档已绑定账号，请登录对应账号后加载', 'error');
+                    return;
+                }
+                if (save.accountId !== currentAccountId) {
+                    try { localStorage.removeItem('goldGameSave'); } catch (e) {}
+                    if (typeof logAction === 'function') logAction('存档与当前账号不匹配（防伪校验），已清除该存档', 'error');
+                    return;
+                }
+            }
             // 跑商离线：用「第一次读档」的 lastUpdate 立即固定离线时长，避免后面有人写回存档导致第二次 loadSave 读到 lastUpdate=现在 从而变成 0
             if (save.lastUpdate != null && !window._tradingOfflineRunThisSession) {
                 var offFirst = Date.now() - save.lastUpdate;
@@ -17410,7 +17479,7 @@ function updateItemDisplay() {
         })
         .join('');
 }
- window.onload = function() {
+ window._startGameAfterLogin = function() {
     loadSave();
     if (typeof runTradingOfflineIfNeeded === 'function') runTradingOfflineIfNeeded();
     // 跑商：初始化主循环（更新城市价格、旅行状态）并启动自动贸易定时器
@@ -17425,13 +17494,15 @@ function updateItemDisplay() {
     updateExplorationUI();
    updateDimensionUI();
     // 恢复自动扫荡状态显示
-    document.getElementById('autoSweepStatus').textContent = 
-        player.battle.autoSweepEnabled ? '开' : '关';
-    
+    var autoSweepEl = document.getElementById('autoSweepStatus');
+    if (autoSweepEl && player && player.battle) autoSweepEl.textContent = player.battle.autoSweepEnabled ? '开' : '关';
     // 如果自动扫荡是开启状态，重新启动
-    if (player.battle.autoSweepEnabled) {
+    if (player && player.battle && player.battle.autoSweepEnabled && typeof startAutoSweep === 'function') {
         startAutoSweep();
     }
+};
+ window.onload = function() {
+    window._startGameAfterLogin();
 };
         // 更新股票显示
         function updateStockDisplay() {
@@ -18539,7 +18610,8 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
         function saveGame() {
     if (versionErrorBlocked) return; // 版本被阻止时不写入，避免覆盖新版本存档
     player.gameVersion = GAME_VERSION;
-    player.lastUpdate = Date.now(); // 确保保存时更新最后更新时间   
+    player.lastUpdate = Date.now(); // 确保保存时更新最后更新时间
+    player.accountId = (typeof getGoldGameAccountId === 'function') ? (getGoldGameAccountId() || '') : '';   
     player.actionLogs = player.actionLogs.slice(0, 5);
     player.lotteryResults = player.lotteryResults.slice(0, 5);
    
@@ -18577,6 +18649,197 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
     // 不在 saveGame 里写 goldGameLastUnload，否则自动/手动保存会覆盖「离开时间」，导致重开时离线时长恒为 0；仅 beforeunload 写入
     logAction('游戏已保存', 'success');
 }
+
+        // ========== 账号与联网排行榜（可选，需配置 GOLD_GAME_API_BASE） ==========
+        (function() {
+            var AUTH_KEY = 'goldGameAuth';
+            var AUTH_USER_KEY = 'goldGameAuthUser';
+            var ACCOUNT_ID_KEY = 'goldGameAccountId';
+            function getToken() { try { return localStorage.getItem(AUTH_KEY) || ''; } catch (e) { return ''; } }
+            function setToken(t) { try { localStorage.setItem(AUTH_KEY, t || ''); } catch (e) {} }
+            function getAuthUser() { try { return localStorage.getItem(AUTH_USER_KEY) || ''; } catch (e) { return ''; } }
+            function setAuthUser(u) { try { localStorage.setItem(AUTH_USER_KEY, u || ''); } catch (e) {} }
+            function getAccountId() { try { return localStorage.getItem(ACCOUNT_ID_KEY) || ''; } catch (e) { return ''; } }
+            function setAccountId(id) { try { localStorage.setItem(ACCOUNT_ID_KEY, id || ''); } catch (e) {} }
+            window.getGoldGameAuthToken = getToken;
+            window.getGoldGameAuthUsername = getAuthUser;
+            window.getGoldGameAccountId = getAccountId;
+
+            function apiBase() { return (window.GOLD_GAME_API_BASE || '').replace(/\/$/, ''); }
+            function hasApi() { return apiBase().length > 0; }
+
+            function apiRequest(method, path, body, needAuth) {
+                var base = apiBase();
+                if (!base) return Promise.reject(new Error('未配置服务器地址：请设置 window.GOLD_GAME_API_BASE'));
+                var opt = { method: method || 'GET', headers: { 'Content-Type': 'application/json' } };
+                if (needAuth && getToken()) opt.headers['Authorization'] = 'Bearer ' + getToken();
+                if (body !== undefined) opt.body = JSON.stringify(body);
+                return fetch(base + path, opt).then(function(r) { return r.json().catch(function() { return { ok: false, message: '网络错误' }; }); });
+            }
+
+            window.goldGameLogin = function(username, password) {
+                return apiRequest('POST', '/api/login', { username: username, password: password }, false).then(function(res) {
+                    if (res.ok && res.token) { setToken(res.token); setAuthUser(res.username || username); setAccountId(res.accountId || ''); return res; }
+                    throw new Error(res.message || '登录失败');
+                });
+            };
+            window.goldGameRegister = function(username, password) {
+                return apiRequest('POST', '/api/register', { username: username, password: password }, false).then(function(res) {
+                    if (res.ok && res.token) { setToken(res.token); setAuthUser(res.username || username); setAccountId(res.accountId || ''); return res; }
+                    throw new Error(res.message || '注册失败');
+                });
+            };
+            window.goldGameLogout = function() { setToken(''); setAuthUser(''); setAccountId(''); };
+            window.goldGameUploadSave = function() {
+                if (!hasApi()) { if (typeof logAction === 'function') logAction('未配置服务器地址', 'common'); return Promise.reject(); }
+                saveGame();
+                var data = null;
+                try { data = JSON.parse(localStorage.getItem('goldGameSave') || '{}'); } catch (e) {}
+                return apiRequest('POST', '/api/save', data, true).then(function(res) {
+                    if (res.ok && typeof logAction === 'function') logAction('云存档已上传', 'success');
+                    else throw new Error(res.message || '上传失败');
+                });
+            };
+            window.goldGameDownloadSave = function() {
+                if (!hasApi()) { if (typeof logAction === 'function') logAction('未配置服务器地址', 'common'); return Promise.reject(); }
+                return apiRequest('GET', '/api/save', undefined, true).then(function(res) {
+                    if (!res.ok) throw new Error(res.message || '下载失败');
+                    if (res.data && typeof res.data === 'object') {
+                        try { localStorage.setItem('goldGameSave', JSON.stringify(res.data)); } catch (e) { throw new Error('写入本地失败'); }
+                        loadGame();
+                        if (typeof logAction === 'function') logAction('已从云端加载存档', 'success');
+                    } else { if (typeof logAction === 'function') logAction('云端暂无存档', 'common'); }
+                });
+            };
+            // 自动云存档：仅当设置开启时每 1 分钟上传（localStorage goldGameAutoCloudSave === 'true'）
+            setInterval(function() {
+                if (localStorage.getItem('goldGameAutoCloudSave') !== 'true') return;
+                if (typeof goldGameUploadSave === 'function' && hasApi()) {
+                    goldGameUploadSave().catch(function() {});
+                }
+            }, 60 * 1000);
+            window.getGoldGameAutoCloudSave = function() { return localStorage.getItem('goldGameAutoCloudSave') === 'true'; };
+            window.toggleGoldGameAutoCloudSave = function() {
+                var key = 'goldGameAutoCloudSave';
+                var on = localStorage.getItem(key) === 'true';
+                localStorage.setItem(key, on ? 'false' : 'true');
+                var btn = document.getElementById('goldGameAutoCloudSaveBtn');
+                if (btn) btn.textContent = on ? '开启' : '关闭';
+                if (typeof logAction === 'function') logAction(on ? '已关闭自动云存档' : '已开启自动云存档（每1分钟）', on ? 'common' : 'success');
+            };
+            window.updateGoldGameAutoCloudSaveButton = function() {
+                var btn = document.getElementById('goldGameAutoCloudSaveBtn');
+                if (btn) btn.textContent = (localStorage.getItem('goldGameAutoCloudSave') === 'true') ? '关闭' : '开启';
+            };
+            window.goldGameGetLeaderboard = function(limit, type) {
+                if (!hasApi()) return Promise.resolve({ ok: true, list: [] });
+                var url = '/api/leaderboard?limit=' + (limit || 100);
+                if (type) url += '&type=' + encodeURIComponent(type);
+                return apiRequest('GET', url, undefined, false);
+            };
+            window.goldGameGetLeaderboardPayload = function() {
+                if (typeof player === 'undefined') return { total: 0, stage: 0, tower: 0, reincarnation: 0, wealth: 0, bestFloor: 0 };
+                var at = player.abyssTower;
+                var bestFloor = (at && at.bestFloor != null && !isNaN(at.bestFloor)) ? Number(at.bestFloor) : 0;
+                var inv = player.investmentGame && player.investmentGame.userData;
+                var wealth = (inv && inv.totalAssets != null && !isNaN(inv.totalAssets)) ? Number(inv.totalAssets) : ((inv && inv.availableFunds != null && !isNaN(inv.availableFunds)) ? Number(inv.availableFunds) : 0);
+                var r = (player.reincarnationCount != null && !isNaN(player.reincarnationCount)) ? Number(player.reincarnationCount) : 0;
+                var stage = (player.battle && player.battle.maxStage != null && !isNaN(player.battle.maxStage)) ? Number(player.battle.maxStage) : 0;
+                var tower = (player.tower && player.tower.currentFloor != null && !isNaN(player.tower.currentFloor)) ? Number(player.tower.currentFloor) : 0;
+                if (tower === 0 && player.trialTower && player.trialTower.currentFloor != null) tower = Number(player.trialTower.currentFloor) || 0;
+                return { total: bestFloor, stage: stage, tower: tower, reincarnation: r, wealth: wealth, bestFloor: bestFloor };
+            };
+            window.goldGameSubmitLeaderboard = function(scoreOrPayload, displayName) {
+                if (!hasApi()) { if (typeof logAction === 'function') logAction('未配置服务器地址', 'common'); return Promise.reject(); }
+                var name = (displayName != null && String(displayName).trim()) ? String(displayName).trim() : (player && player.name) || getAuthUser();
+                var avatar = (player && player.avatar) ? player.avatar : '';
+                var body;
+                if (scoreOrPayload != null && typeof scoreOrPayload === 'object' && !isNaN(scoreOrPayload.total)) {
+                    body = { score: scoreOrPayload.total, name: name, avatar: avatar, stage: scoreOrPayload.stage, tower: scoreOrPayload.tower, reincarnation: scoreOrPayload.reincarnation, wealth: scoreOrPayload.wealth, bestFloor: scoreOrPayload.bestFloor };
+                } else {
+                    var num = typeof scoreOrPayload === 'number' ? scoreOrPayload : parseFloat(scoreOrPayload);
+                    if (isNaN(num)) num = goldGameGetLeaderboardPayload().total;
+                    body = { score: num, name: name, avatar: avatar };
+                }
+                return apiRequest('POST', '/api/leaderboard', body, true).then(function(res) {
+                    if (res.ok && typeof logAction === 'function') logAction('已更新排行榜', 'success');
+                    else throw new Error(res.message || '提交失败');
+                });
+            };
+            window.goldGameGetLeaderboardScore = function() {
+                return goldGameGetLeaderboardPayload().total;
+            };
+            window.showGoldGameLoginDialog = function() {
+                var d = document.getElementById('goldGameLoginDialog');
+                var o = document.getElementById('goldGameLoginOverlay');
+                if (d) d.style.display = 'block';
+                if (o) o.style.display = 'block';
+            };
+            window.closeGoldGameLoginDialog = function() {
+                var d = document.getElementById('goldGameLoginDialog');
+                var o = document.getElementById('goldGameLoginOverlay');
+                if (d) d.style.display = 'none';
+                if (o) o.style.display = 'none';
+                if (window._loginGateActive) {
+                    window._loginGateActive = false;
+                    var gate = document.getElementById('goldGameLoginGateOverlay');
+                    if (gate) gate.style.display = 'none';
+                    var closeBtn = document.getElementById('goldGameLoginCloseBtn');
+                    if (closeBtn) closeBtn.style.display = '';
+                    if (typeof window._startGameAfterLogin === 'function') window._startGameAfterLogin();
+                }
+            };
+            var _goldGameLeaderboardCurrentType = 'total';
+
+            function renderGoldGameLeaderboard(listEl, type) {
+                if (!listEl) return;
+                listEl.innerHTML = '<p style="color:#666;">加载中…</p>';
+                if (typeof goldGameGetLeaderboard !== 'function') return;
+                var cat = type || _goldGameLeaderboardCurrentType || 'total';
+                _goldGameLeaderboardCurrentType = cat;
+                goldGameGetLeaderboard(100, cat).then(function(res) {
+                    if (!listEl) return;
+                    if (!res.ok || !Array.isArray(res.list)) { listEl.innerHTML = '<p style="color:#999;">暂无数据或未配置服务器</p>'; return; }
+                    if (res.list.length === 0) { listEl.innerHTML = '<p style="color:#999;">暂无排行</p>'; return; }
+                    var scoreLabel = (cat === 'total') ? '最佳层数' : (cat === 'wealth') ? '资金' : '分数';
+                    listEl.innerHTML = '<table style="width:100%;border-collapse:collapse;"><tr style="background:#f0f0f0;"><th style="padding:6px;">排名</th><th>玩家</th><th>' + scoreLabel + '</th></tr>' +
+                        res.list.map(function(item, index) {
+                            var rank = (item.rank != null && !isNaN(item.rank)) ? item.rank : (index + 1);
+                            var scoreStr = (item.score != null && !isNaN(item.score)) ? (cat === 'total' ? Math.floor(Number(item.score)).toLocaleString() : (item.score >= 1e15 ? (item.score).toExponential(2) : Number(item.score).toLocaleString())) : '-';
+                            var name = item.displayName || item.username || '未知玩家';
+                            var avatar = item.avatar || item.avatarUrl || '';
+                            var playerHtml = avatar
+                                ? '<div style="display:flex;align-items:center;gap:6px;"><img src="' + avatar + '" alt="avatar" style="width:24px;height:24px;border-radius:50%;object-fit:cover;border:1px solid #ddd;"><span>' + name + '</span></div>'
+                                : name;
+                            return '<tr><td style="padding:6px;">' + rank + '</td><td>' + playerHtml + '</td><td>' + scoreStr + '</td></tr>';
+                        }).join('') + '</table>';
+                }).catch(function() { if (listEl) listEl.innerHTML = '<p style="color:#c00;">加载失败</p>'; });
+            }
+
+            window.switchGoldGameLeaderboard = function(type) {
+                _goldGameLeaderboardCurrentType = type || 'total';
+                var listEl = document.getElementById('goldGameLeaderboardList');
+                renderGoldGameLeaderboard(listEl, _goldGameLeaderboardCurrentType);
+            };
+
+            window.showGoldGameLeaderboardDialog = function(type, onlyRefresh) {
+                var d = document.getElementById('goldGameLeaderboardDialog');
+                var o = document.getElementById('goldGameLeaderboardOverlay');
+                if (!onlyRefresh) {
+                    if (d) d.style.display = 'block';
+                    if (o) o.style.display = 'block';
+                }
+                var listEl = document.getElementById('goldGameLeaderboardList');
+                if (!onlyRefresh && type) _goldGameLeaderboardCurrentType = type;
+                renderGoldGameLeaderboard(listEl, type);
+            };
+            window.closeGoldGameLeaderboardDialog = function() {
+                var d = document.getElementById('goldGameLeaderboardDialog');
+                var o = document.getElementById('goldGameLeaderboardOverlay');
+                if (d) d.style.display = 'none';
+                if (o) o.style.display = 'none';
+            };
+        })();
 
         // 加载游戏
         function loadGame() {
@@ -20228,6 +20491,10 @@ function toggleSettingsUI() {
     if (dialog.style.display === 'none') {
         dialog.style.display = 'block';
         overlay.style.display = 'block';
+        var statusEl = document.getElementById('goldGameAccountStatus');
+        if (statusEl && typeof getGoldGameAuthUsername === 'function')
+            statusEl.textContent = getGoldGameAuthUsername() ? ('已登录: ' + getGoldGameAuthUsername()) : '未登录';
+        if (typeof updateGoldGameAutoCloudSaveButton === 'function') updateGoldGameAutoCloudSaveButton();
     } else {
         dialog.style.display = 'none';
         overlay.style.display = 'none';
@@ -38988,7 +39255,7 @@ function updateTowerUI() {
     // 更新战斗日志
     updateTowerBattleLog();
 }
-// 老虎机配置
+// 水果机配置
 const slotMachineConfig = {
     symbols: ["🍒", "🍋", "🍊", "🍇", "🍉", "🍎", "7️⃣"],
     symbolProbabilities: [0.3, 0.25, 0.2, 0.15, 0.07, 0.02, 0.01],
@@ -39006,7 +39273,7 @@ const slotMachineConfig = {
     autoSpinDelay: 2000 // 自动旋转间隔(毫秒)
 };
 
-// 初始化老虎机数据
+// 初始化水果机数据
 function initSlotMachine() {
     if (!player.slotMachine) {
         player.slotMachine = {
@@ -39018,7 +39285,7 @@ function initSlotMachine() {
     }
 }
 
-// 切换老虎机界面
+// 切换水果机界面
 function toggleSlotMachine() {
     const overlay = document.getElementById("slotMachineOverlay");
     const ui = document.getElementById("slotMachineUI");
@@ -39063,7 +39330,7 @@ function initReels() {
     }
 }
 
-// 更新老虎机界面
+// 更新水果机界面
 function updateSlotMachineUI() {
     document.getElementById("slotMachineBalance").textContent = formatNumber(player.items.yuzhou1);
     document.getElementById("currentBet").textContent = player.slotMachine.bet;
@@ -39104,10 +39371,10 @@ function changeBet(amount) {
     }
 }
 
-// 旋转老虎机
+// 旋转水果机
 function spinSlotMachine() {
     if (player.items.yuzhou1 < player.slotMachine.bet) {
-        logAction("转生币不足，无法旋转老虎机", "error");
+        logAction("转生币不足，无法旋转水果机", "error");
         return;
     }
     
@@ -39200,13 +39467,13 @@ function checkWin(results) {
             iterations: 3
         });
         
-        logAction(`老虎机中奖：${combination}，赢得 ${formatNumber(winAmount)} 星尘发票`, "success");
+        logAction(`水果机中奖：${combination}，赢得 ${formatNumber(winAmount)} 星尘发票`, "success");
     } else {
         const resultElement = document.getElementById("slotResult");
         resultElement.textContent = "未中奖，再试一次！";
         resultElement.style.color = "#FF6B6B";
         
-        logAction(`老虎机未中奖：${combination}`, "info");
+        logAction(`水果机未中奖：${combination}`, "info");
     }
     
     // 保存结果历史
@@ -77374,8 +77641,8 @@ function abyssCreateOneMonster(f, isBoss, nameSuffix, baseStats) {
         var numSkills = Math.min(ABYSS_BOSS_SKILLS.length, 2 + Math.floor(tier / 2) + Math.min(3, Math.floor(tier / 15)));
         if (numSkills < 2) numSkills = 2;
         if (f >= 10 && numSkills < 5) numSkills = 5;
-        var pool = ABYSS_BOSS_SKILLS.filter(function(s) { return (s.minTier || 0) <= tier; });
-        if (pool.length === 0) pool = ABYSS_BOSS_SKILLS.slice();
+        var pool = ABYSS_BOSS_SKILLS.filter(function(s) { return (s.minTier || 0) <= tier && s.id !== 'thorns'; });
+        if (pool.length === 0) pool = ABYSS_BOSS_SKILLS.filter(function(s) { return s.id !== 'thorns'; });
         var summonPool = pool.filter(function(s) { return s.id === 'bossSummon'; });
         if (summonPool.length > 0) {
             var summonPick = summonPool[Math.floor(Math.random() * summonPool.length)];
@@ -77405,7 +77672,7 @@ function abyssCreateOneMonster(f, isBoss, nameSuffix, baseStats) {
         }
     } else {
         var numNorm = Math.max(minSkills, 1 + Math.min(5, Math.floor(f / 8)));
-        var normPool = ABYSS_NORMAL_MONSTER_SKILLS.slice();
+        var normPool = ABYSS_NORMAL_MONSTER_SKILLS.filter(function(s) { return s.id !== 'thorns'; });
         for (var sn = 0; sn < numNorm && normPool.length > 0; sn++) {
             var nidx = Math.floor(Math.random() * normPool.length);
             var npick = normPool[nidx];
@@ -78463,10 +78730,7 @@ function abyssAttack() {
     if (m.skills && m.skills.length) {
         for (var si = 0; si < m.skills.length; si++) {
             if (m.skills[si].id === 'thorns' && finalDmg > 0) {
-                var reflectDmg = Math.floor(finalDmg * (m.skills[si].reflectRate || 0.1));
-                abyssRun.player.hp -= reflectDmg;
-                abyssLog('反伤受到 ' + formatNumber(reflectDmg) + ' 伤害');
-                if (abyssRun.player.hp <= 0) { abyssOnPlayerDeath(); return; }
+                // 无限深渊已去掉怪物反伤，此处不再造成反伤伤害
                 break;
             }
         }
