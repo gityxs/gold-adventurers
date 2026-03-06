@@ -6106,8 +6106,9 @@ select:focus {
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>1.91更新日志</h4>
+            <h4>1.92更新日志</h4>
             <h4>QQ群：902481027  ，864788026，  有问题可以进群问（存档异常联系群管理修复）</h4> 
+            <p>2026/03/06:修改银行和股票取款存款BUG，地主海钓下降难度，无限深渊：加强战士法师，新增驯兽师。<p>
             <p>2026/03/06:银行系统增加百分比取款存款。无限深渊增加宠物装备提升宠物属性，装备分解自动卸下宝石和符文<p>
             <p>2026/03/05:增加云存档，无限深渊怪物反伤移除词条<p>
             <p>2026/03/03: 无限深渊提高获取的深渊币，增强吸血职业技能可以吃到吸血加成， 修复宗门BUG<p>
@@ -6544,7 +6545,7 @@ select:focus {
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v1.9.1</div>
+  <div id="footer">版本号: v1.9.2</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -7021,7 +7022,7 @@ select:focus {
 <div id="goldGameLoginDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 10px; z-index: 1002; min-width: 320px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
     <h4 style="margin: 0 0 16px 0;">账号登录 / 注册</h4>
     <div style="margin-bottom: 10px; text-align: left; display: none;">
-        <label style="font-size: 13px;">服务器地址（如 http://localhost:3000）</label>
+        <label style="font-size: 13px;">服务器地址（如 http://218.244.139.4:3000）</label>
         <input type="text" id="goldGameApiBaseInput" placeholder="留空则使用当前配置" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
     </div>
     <div style="margin-bottom: 10px; text-align: left;">
@@ -12077,6 +12078,7 @@ select:focus {
             <button type="button" onclick="abyssSelectClass('warrior')" id="abyssClassWarrior" style="background:linear-gradient(145deg,#8b4513,#5d2e0a);color:#ffd700;border:2px solid #daa520;padding:12px 24px;border-radius:10px;cursor:pointer;font-weight:bold;">⚔ 战士</button>
             <button type="button" onclick="abyssSelectClass('mage')" id="abyssClassMage" style="background:linear-gradient(145deg,#4a148c,#1a0a2e);color:#ce93d8;border:2px solid #7c4dff;padding:12px 24px;border-radius:10px;cursor:pointer;font-weight:bold;">🔮 法师</button>
             <button type="button" onclick="abyssSelectClass('archer')" id="abyssClassArcher" style="background:linear-gradient(145deg,#1b5e20,#0d3d0d);color:#81c784;border:2px solid #4caf50;padding:12px 24px;border-radius:10px;cursor:pointer;font-weight:bold;">🏹 射手</button>
+            <button type="button" onclick="abyssSelectClass('tamer')" id="abyssClassTamer" style="background:linear-gradient(145deg,#5d4037,#3e2723);color:#bcaaa4;border:2px solid #8d6e63;padding:12px 24px;border-radius:10px;cursor:pointer;font-weight:bold;">🐾 驯兽师</button>
         </div>
         <p id="abyssClassDesc" style="color:#888;font-size:13px;margin-bottom:15px;">战士：攻击+22，生命+360，防御+22；力量转化攻击+40%，体力转化生命/防御+35%</p>
         <p style="color:#ffd700;margin-bottom:10px;">开局装备: <span id="abyssStartGearCount">0</span>/20 件（专属商店购买，每买1次+1件）</p>
@@ -12132,6 +12134,10 @@ select:focus {
                 <div style="color:#ff6b6b;font-size:12px;margin-bottom:6px;">怪物（点击选择攻击目标）</div>
                 <div id="abyssMonstersContainer" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
             </div>
+        </div>
+        <div style="margin-top:8px;margin-bottom:8px;">
+            <div style="color:#81c784;font-size:12px;margin-bottom:6px;">召唤兽（己方）</div>
+            <div id="abyssBeastSummonsContainer" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
         </div>
         <div style="margin-bottom:10px;">
             <div style="color:#b388ff;font-size:12px;margin-bottom:6px;">人物技能（点击后下次攻击释放）</div>
@@ -12568,10 +12574,11 @@ select:focus {
 
     <script>
         
-        const GAME_VERSION = "1.9.1";
+        const GAME_VERSION = "1.9.2";
         let versionErrorBlocked = false;
-        // 账号与联网排行榜 API 地址（部署时改为你的服务器地址）
-        window.GOLD_GAME_API_BASE = window.GOLD_GAME_API_BASE || 'http://218.244.139.4:3000';
+        // 账号与联网排行榜 API 地址。HTTPS 页面必须请求 HTTPS，否则浏览器会拦截（Mixed Content）
+        var _apiHost = '218.244.139.4:3000';
+        window.GOLD_GAME_API_BASE = window.GOLD_GAME_API_BASE || (typeof location !== 'undefined' && location.protocol === 'https:' ? 'https://' + _apiHost : 'http://' + _apiHost);
 
         
         function isCurrentVersionOlderThan(saveVersion) {
@@ -17689,9 +17696,9 @@ function useAllGems(index, gemType) {
             player.stockData.lastStockUpdate = now - (elapsed % (10 * 60 * 1000));
         }
 
-        // 股票购买逻辑
+        // 股票购买逻辑（使用 parseFloat 支持科学计数法如 1e20）
         function buyStock() {
-            const amount = parseInt(document.getElementById('stockAmount').value) || 0;
+            const amount = Math.floor(parseFloat(document.getElementById('stockAmount').value) || 0);
             const selectedIndex = document.querySelector('.stock-item.selected')?.dataset.index;
             
             if(selectedIndex === undefined || amount < 1) {
@@ -17714,9 +17721,9 @@ function useAllGems(index, gemType) {
             updateStockDisplay();
         }
 
-        // 股票出售逻辑
+        // 股票出售逻辑（使用 parseFloat 支持科学计数法如 1e20）
         function sellStock() {
-            const amount = parseInt(document.getElementById('stockAmount').value) || 0;
+            const amount = Math.floor(parseFloat(document.getElementById('stockAmount').value) || 0);
             const selectedIndex = document.querySelector('.stock-item.selected')?.dataset.index;
             
             if(selectedIndex === undefined || amount < 1) {
@@ -18006,9 +18013,9 @@ function resetTraditionalLottery() {
         .join('');
 }
 
-        // 银行系统逻辑
+        // 银行系统逻辑（使用 parseFloat 支持科学计数法如 1e24，避免 parseInt("1e24") 只得到 1）
         function depositToBank() {
-            const amount = parseInt(document.getElementById('bankAmount').value) || 0;
+            const amount = Math.floor(parseFloat(document.getElementById('bankAmount').value) || 0);
             if (amount < 1) {
                 logAction("请输入有效的存款金额", "error");
                 return;
@@ -18024,7 +18031,7 @@ function resetTraditionalLottery() {
         }
 
         function withdrawFromBank() {
-            const amount = parseInt(document.getElementById('bankAmount').value) || 0;
+            const amount = Math.floor(parseFloat(document.getElementById('bankAmount').value) || 0);
             if (amount < 1) {
                 logAction("请输入有效的取款金额", "error");
                 return;
@@ -18711,7 +18718,15 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
                 var opt = { method: method || 'GET', headers: { 'Content-Type': 'application/json' } };
                 if (needAuth && getToken()) opt.headers['Authorization'] = 'Bearer ' + getToken();
                 if (body !== undefined) opt.body = JSON.stringify(body);
-                return fetch(base + path, opt).then(function(r) { return r.json().catch(function() { return { ok: false, message: '网络错误' }; }); });
+                return fetch(base + path, opt)
+                    .then(function(r) { return r.json().catch(function() { return { ok: false, message: '网络错误' }; }); })
+                    .catch(function(err) {
+                        var msg = (err && err.message) ? String(err.message) : '';
+                        if (/failed to fetch|networkerror|cors|跨域/i.test(msg) || !msg) {
+                            return Promise.reject(new Error('请求失败：当前网页与 API 服务器跨域被拦截。请在本游戏官网(218.244.139.4)或本地打开；若需在其它站使用，需在 API 服务器(218.244.139.4:3000) 上配置 CORS 允许该站域名。'));
+                        }
+                        return Promise.reject(err);
+                    });
             }
 
             window.goldGameLogin = function(username, password) {
@@ -18809,6 +18824,8 @@ document.getElementById('ascentionCountqa').textContent = `轮回.${player.level
             window.showGoldGameLoginDialog = function() {
                 var d = document.getElementById('goldGameLoginDialog');
                 var o = document.getElementById('goldGameLoginOverlay');
+                var input = document.getElementById('goldGameApiBaseInput');
+                if (input && window.GOLD_GAME_API_BASE) input.value = window.GOLD_GAME_API_BASE;
                 if (d) d.style.display = 'block';
                 if (o) o.style.display = 'block';
             };
@@ -54671,17 +54688,17 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
             var rarityD = SEA_RARITY_DIFFICULTY[rarity] != null ? SEA_RARITY_DIFFICULTY[rarity] : 0.1;
             return Math.min(1, priceD * 0.55 + rarityD * 0.45);
         }
-        /** 返回 { safeMin, safeMax, struggleDurationMs, tensionSpeedMul, biteWindowMs, burstRatio } 供拉扯阶段使用 */
+        /** 返回 { safeMin, safeMax, struggleDurationMs, tensionSpeedMul, biteWindowMs, burstRatio } 供拉扯阶段使用（已整体降低难度） */
         function getSeaFishingDifficultyParams(basePrice, rarity) {
             var d = getSeaFishingDifficulty(basePrice, rarity);
-            var halfWidth = 0.25 - 0.2 * d;
-            halfWidth = Math.max(0.05, halfWidth);
+            var halfWidth = 0.28 - 0.12 * d;
+            halfWidth = Math.max(0.08, halfWidth);
             var safeMin = 0.5 - halfWidth, safeMax = 0.5 + halfWidth;
-            var struggleDurationMs = 4500 + 8000 * d + Math.random() * (2500 + 6000 * d);
-            var tensionSpeedMul = 1 + 1.6 * d;
-            var biteWindowMs = 2600 - 1400 * d;
-            biteWindowMs = Math.max(1100, biteWindowMs);
-            var burstRatio = 0.45 + 0.4 * d;
+            var struggleDurationMs = (4500 + 8000 * d) * 0.7 + Math.random() * (2500 + 6000 * d) * 0.7;
+            var tensionSpeedMul = 1 + 0.9 * d;
+            var biteWindowMs = 3200 - 1000 * d;
+            biteWindowMs = Math.max(1600, biteWindowMs);
+            var burstRatio = 0.4 + 0.28 * d;
             return { safeMin: safeMin, safeMax: safeMax, struggleDurationMs: struggleDurationMs, tensionSpeedMul: tensionSpeedMul, biteWindowMs: biteWindowMs, burstRatio: burstRatio };
         }
         
@@ -54930,7 +54947,7 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
             sf.currentCatch = catch_;
             var params = getSeaFishingDifficultyParams(catch_.basePrice, catch_.rarity);
             var d = getSeaFishingDifficulty(catch_.basePrice, catch_.rarity);
-            if (Math.random() < 0.04 + 0.03 * d) {
+            if (Math.random() < 0.02 + 0.015 * d) {
                 seaFishingLoseFish('鱼没咬牢，脱钩了……');
                 showLandlordNotification('鱼没咬牢脱钩了', 'error');
                 return;
@@ -55067,17 +55084,17 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
                 var difficulty = getSeaFishingDifficulty(sf.currentCatch.basePrice, sf.currentCatch.rarity);
                 var venue = sf.currentVenue;
                 var isRiverJiang = (venue === 5 || venue === 6);
-                if (Math.random() < 0.0009 + 0.0006 * difficulty) {
+                if (Math.random() < (0.0009 + 0.0006 * difficulty) * 0.5) {
                     seaFishingLoseFish('鱼咬断线跑了！');
                     showLandlordNotification('鱼咬断线跑了……', 'error');
                     return;
                 }
-                if (Math.random() < 0.0005 + (nearEdge ? 0.0004 : 0)) {
+                if (Math.random() < (0.0005 + (nearEdge ? 0.0004 : 0)) * 0.5) {
                     seaFishingLoseFish('鱼脱钩跑了！');
                     showLandlordNotification('鱼脱钩跑了', 'error');
                     return;
                 }
-                if (Math.random() < (isRiverJiang ? 0.0009 : 0.0005)) {
+                if (Math.random() < (isRiverJiang ? 0.0009 : 0.0005) * 0.55) {
                     var msgObstacle = Math.random() < 0.5 ? '鱼钻入障碍物，线缠住跑了！' : '挂底了！线断了……';
                     seaFishingLoseFish(msgObstacle);
                     showLandlordNotification(msgObstacle.indexOf('挂底') >= 0 ? '挂底断线' : '鱼钻障碍物跑了', 'error');
@@ -55085,8 +55102,8 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
                 }
                 if (!sf.reelJamEnd || now > sf.reelJamEnd) sf.reelJamEnd = 0;
                 if (!sf.weedJamEnd || now > sf.weedJamEnd) sf.weedJamEnd = 0;
-                if (sf.reelJamEnd === 0 && Math.random() < 0.002) {
-                    sf.reelJamEnd = now + 550 + Math.random() * 450;
+                if (sf.reelJamEnd === 0 && Math.random() < 0.001) {
+                    sf.reelJamEnd = now + 450 + Math.random() * 350;
                     var jamMsg = Math.random() < 0.5 ? '轮子卡了一下！收线暂时不顺…' : '什么东西夹住线了！收线不顺…';
                     var stJ = document.getElementById('seaFishingStatusText');
                     if (stJ) stJ.textContent = jamMsg;
@@ -55097,8 +55114,8 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
                         }
                     }, 800);
                 }
-                if (sf.weedJamEnd === 0 && Math.random() < 0.0014) {
-                    sf.weedJamEnd = now + 700 + Math.random() * 500;
+                if (sf.weedJamEnd === 0 && Math.random() < 0.0008) {
+                    sf.weedJamEnd = now + 550 + Math.random() * 400;
                     var stWeed = document.getElementById('seaFishingStatusText');
                     if (stWeed) stWeed.textContent = '缠到水草了！收线变慢…';
                     setTimeout(function() {
@@ -75394,21 +75411,24 @@ var abyssRun = null;
 var abyssSelectedClass = 'warrior';
 
 var ABYSS_CLASSES = [
-    { id: 'warrior', name: '战士', desc: '攻击+24，生命+380，防御+24；力量转化攻击+50%，体力转化生命/防御+40%', bonus: { atk: 24, hp: 380, def: 24 }, strConversionMult: 1.5, staConversionMult: 1.4 },
-    { id: 'mage', name: '法师', desc: '攻击+18，生命+300，防御+14，技能伤害+32%；智力转化技能伤害+55%', bonus: { atk: 18, hp: 300, def: 14, skillDmg: 32 }, intToSkillDmgMult: 1.55 },
-    { id: 'archer', name: '射手', desc: '攻击+20，生命+260，防御+12，暴击率+10%，闪避+8%；敏捷转化暴击/闪避+30%', bonus: { atk: 20, hp: 260, def: 12, critRate: 10, dodge: 8 }, agiMult: 1.3 }
+    { id: 'warrior', name: '战士', desc: '攻击+30，生命+450，防御+28；力量转化攻击+50%，体力转化生命/防御+40%。专属被动：战意(普攻+15%伤害)、坚韧(单次伤害>20%最大生命时减伤15%)、怒战(半血以下伤害+25%/吸血+8%)、斩杀回血(击杀回复6%最大生命)', bonus: { atk: 30, hp: 450, def: 28 }, strConversionMult: 1.5, staConversionMult: 1.4 },
+    { id: 'mage', name: '法师', desc: '攻击+22，生命+340，防御+18，技能伤害+38%；智力转化技能伤害+55%。专属被动：奥术专注(技能伤害+15%)、法力护盾(魔法≥50%时每回合获得6%最大生命护盾)、法术穿透(技能无视12%怪物防御)、回响(击杀回复20%最大魔法)', bonus: { atk: 22, hp: 340, def: 18, skillDmg: 38 }, intToSkillDmgMult: 1.55 },
+    { id: 'archer', name: '射手', desc: '攻击+20，生命+260，防御+12，暴击率+10%，闪避+8%；敏捷转化暴击/闪避+30%', bonus: { atk: 20, hp: 260, def: 12, critRate: 10, dodge: 8 }, agiMult: 1.3 },
+    { id: 'tamer', name: '驯兽师', desc: '生命+320，防御+18；宠物攻击+15%、宠物生命+12%、宠物防御+10%；出战宠物属性额外+8%', bonus: { hp: 320, def: 18 }, petAtkPct: 15, petHpPct: 12, petDefPct: 10, petBonusMult: 1.08 }
 ];
 // 每职业1转通用称号，2~4转按分支（共4个分支）
 var ABYSS_ZHUAN_TITLES = {
     warrior: { 1: '战士', branchA: { 2: '破军·战将', 3: '破军·战神', 4: '破军·武帝' }, branchB: { 2: '铁壁·战将', 3: '铁壁·战神', 4: '铁壁·武帝' }, branchC: { 2: '狂战·战将', 3: '狂战·战神', 4: '狂战·武帝' }, branchD: { 2: '控场·战将', 3: '控场·战神', 4: '控场·武帝' } },
     mage: { 1: '法师', branchA: { 2: '元素·魔导师', 3: '元素·大魔导', 4: '元素·法圣' }, branchB: { 2: '虚空·魔导师', 3: '虚空·大魔导', 4: '虚空·法圣' }, branchC: { 2: '圣愈·魔导师', 3: '圣愈·大魔导', 4: '圣愈·法圣' }, branchD: { 2: '诅咒·魔导师', 3: '诅咒·大魔导', 4: '诅咒·法圣' } },
-    archer: { 1: '射手', branchA: { 2: '狩魂·神射', 3: '狩魂·箭神', 4: '狩魂·狩天' }, branchB: { 2: '神射·神射', 3: '神射·箭神', 4: '神射·狩天' }, branchC: { 2: '陷阱·神射', 3: '陷阱·箭神', 4: '陷阱·狩天' }, branchD: { 2: '疾风·神射', 3: '疾风·箭神', 4: '疾风·狩天' } }
+    archer: { 1: '射手', branchA: { 2: '狩魂·神射', 3: '狩魂·箭神', 4: '狩魂·狩天' }, branchB: { 2: '神射·神射', 3: '神射·箭神', 4: '神射·狩天' }, branchC: { 2: '陷阱·神射', 3: '陷阱·箭神', 4: '陷阱·狩天' }, branchD: { 2: '疾风·神射', 3: '疾风·箭神', 4: '疾风·狩天' } },
+    tamer: { 1: '驯兽师', branchA: { 2: '御兽·驯兽使', 3: '御兽·兽王', 4: '御兽·万兽尊' }, branchB: { 2: '护主·驯兽使', 3: '护主·兽王', 4: '护主·万兽尊' }, branchC: { 2: '兽群·驯兽使', 3: '兽群·兽王', 4: '兽群·万兽尊' }, branchD: { 2: '兽魂·驯兽使', 3: '兽魂·兽王', 4: '兽魂·万兽尊' } }
 };
 // 二转分支名称与描述（用于选择弹窗，共4个分支）
 var ABYSS_BRANCH_INFO = {
     warrior: { branchA: { name: '破军', desc: '偏爆发与破甲，单体高伤、破防与吸血' }, branchB: { name: '铁壁', desc: '偏生存与反伤，减伤、反伤与群体控场' }, branchC: { name: '狂战', desc: '偏嗜血与连击，高攻、吸血与多段打击' }, branchD: { name: '控场', desc: '偏眩晕与群体，控场、AOE与减速' } },
     mage: { branchA: { name: '元素', desc: '偏元素与AOE，群体伤害、控制与护盾' }, branchB: { name: '虚空', desc: '偏虚空与穿透，无视魔抗、单体爆发' }, branchC: { name: '圣愈', desc: '偏治疗与护盾，回复、增益与生存' }, branchD: { name: '诅咒', desc: '偏减益与持续伤害，虚弱、侵蚀与削弱' } },
-    archer: { branchA: { name: '狩魂', desc: '偏召唤与多目标，召唤兽、箭雨与持续输出' }, branchB: { name: '神射', desc: '偏暴击与单体，必暴、穿甲与斩杀' }, branchC: { name: '陷阱', desc: '偏陷阱与控场，定身、眩晕与持续伤' }, branchD: { name: '疾风', desc: '偏连击与闪避，多段、疾射与身法' } }
+    archer: { branchA: { name: '狩魂', desc: '偏召唤与多目标，召唤兽、箭雨与持续输出' }, branchB: { name: '神射', desc: '偏暴击与单体，必暴、穿甲与斩杀' }, branchC: { name: '陷阱', desc: '偏陷阱与控场，定身、眩晕与持续伤' }, branchD: { name: '疾风', desc: '偏连击与闪避，多段、疾射与身法' } },
+    tamer: { branchA: { name: '御兽', desc: '偏宠物攻击，宠物攻加成、破甲与爆发' }, branchB: { name: '护主', desc: '偏宠物生存，宠物血防、减伤与回复' }, branchC: { name: '兽群', desc: '偏多宠协同，群体宠物增益与连携' }, branchD: { name: '兽魂', desc: '偏宠物爆发，暴击、斩杀与短时强化' } }
 };
 function abyssZhuanTitle(classId, zhuan, branch) {
     var t = ABYSS_ZHUAN_TITLES[classId || 'warrior'];
@@ -75463,13 +75483,13 @@ function abyssGetSkillList(classId, branch) {
 var ABYSS_CLASS_SKILLS = {
     warrior: {
         base: [
-            { id: 'war_heavy', name: '重击', desc: '本次伤害190%', cooldown: 2, dmgMult: 1.9, mpCost: 14, zhuan: 1 },
-            { id: 'war_armorBreak', name: '破甲一击', desc: '本次无视怪物50%防御', cooldown: 3, ignoreDefPct: 50, mpCost: 18, zhuan: 1 },
-            { id: 'war_roar', name: '战吼', desc: '本次伤害130%，3回合攻击+35%', cooldown: 4, dmgMult: 1.3, buffAtkPct: 35, buffRounds: 3, mpCost: 22, zhuan: 1 },
-            { id: 'war_slam', name: '猛击', desc: '本次伤害230%', cooldown: 5, dmgMult: 2.3, mpCost: 26, zhuan: 1 },
-            { id: 'war_iron', name: '铁壁', desc: '本回合受到伤害减少40%', cooldown: 4, reduceDmgPct: 40, mpCost: 20, zhuan: 1 },
-            { id: 'war_blood', name: '嗜血斩', desc: '本次伤害150%，回复30%伤害生命', cooldown: 3, dmgMult: 1.5, lifestealPct: 0.3, mpCost: 16, zhuan: 1 },
-            { id: 'war_cleave', name: '裂地斩', desc: '群体100%伤害', cooldown: 4, aoe: true, aoePct: 1, mpCost: 24, zhuan: 1 }
+            { id: 'war_heavy', name: '重击', desc: '本次伤害200%', cooldown: 2, dmgMult: 2, mpCost: 14, zhuan: 1 },
+            { id: 'war_armorBreak', name: '破甲一击', desc: '本次无视怪物50%防御，伤害140%', cooldown: 3, ignoreDefPct: 50, dmgMult: 1.4, mpCost: 18, zhuan: 1 },
+            { id: 'war_roar', name: '战吼', desc: '本次伤害150%，3回合攻击+40%', cooldown: 4, dmgMult: 1.5, buffAtkPct: 40, buffRounds: 3, mpCost: 22, zhuan: 1 },
+            { id: 'war_slam', name: '猛击', desc: '本次伤害250%', cooldown: 5, dmgMult: 2.5, mpCost: 26, zhuan: 1 },
+            { id: 'war_iron', name: '铁壁', desc: '本回合受到伤害减少45%', cooldown: 4, reduceDmgPct: 45, mpCost: 20, zhuan: 1 },
+            { id: 'war_blood', name: '嗜血斩', desc: '本次伤害170%，回复35%伤害生命', cooldown: 3, dmgMult: 1.7, lifestealPct: 0.35, mpCost: 16, zhuan: 1 },
+            { id: 'war_cleave', name: '裂地斩', desc: '群体110%伤害', cooldown: 4, aoe: true, aoePct: 1.1, mpCost: 24, zhuan: 1 }
         ],
         // 破军：爆发/破甲/单体高伤
         branchA: [
@@ -75758,6 +75778,87 @@ var ABYSS_CLASS_SKILLS = {
             { id: 'archer_wind_d18', name: '疾风·神影', desc: '4转·本回合闪避+85%', cooldown: 9, dodgeBonus: 85, mpCost: 54, zhuan: 4 },
             { id: 'archer_wind_d19', name: '疾风·万箭', desc: '4转·群体80%伤害', cooldown: 8, aoe: true, aoePct: 0.8, mpCost: 55, zhuan: 4 },
             { id: 'archer_wind_d20', name: '疾风·无极', desc: '4转·12次40%伤害', cooldown: 10, multiHit: 12, multiHitPct: 0.4, mpCost: 60, zhuan: 4 }
+        ]
+    },
+    tamer: {
+        base: [
+            { id: 'tamer_fury', name: '野兽之怒', desc: '宠物攻击+18%，持续3回合', cooldown: 3, petAtkPct: 18, buffRounds: 3, mpCost: 14, zhuan: 1 },
+            { id: 'tamer_pact', name: '坚韧契约', desc: '宠物生命+16%，持续3回合', cooldown: 3, petHpPct: 16, buffRounds: 3, mpCost: 14, zhuan: 1 },
+            { id: 'tamer_claw', name: '利爪', desc: '本次伤害150%，宠物攻击+14%持续2回合', cooldown: 2, dmgMult: 1.5, petAtkPct: 14, buffRounds: 2, mpCost: 12, zhuan: 1 },
+            { id: 'tamer_call', name: '野性呼唤', desc: '宠物攻击+16%、防御+12%，持续3回合', cooldown: 4, petAtkPct: 16, petDefPct: 12, buffRounds: 3, mpCost: 20, zhuan: 1 },
+            { id: 'tamer_heal', name: '治疗宠物', desc: '回复出战宠物22%最大生命', cooldown: 4, healPetPct: 0.22, mpCost: 18, zhuan: 1 },
+            { id: 'tamer_lead', name: '兽群领袖', desc: '宠物攻击+22%，持续2回合', cooldown: 3, petAtkPct: 22, buffRounds: 2, mpCost: 16, zhuan: 1 },
+            { id: 'tamer_guard', name: '护主', desc: '宠物防御+18%，持续3回合', cooldown: 3, petDefPct: 18, buffRounds: 3, mpCost: 14, zhuan: 1 },
+            { id: 'tamer_aura', name: '兽威', desc: '本次伤害140%，宠物攻击+20%持续2回合', cooldown: 3, dmgMult: 1.4, petAtkPct: 20, buffRounds: 2, mpCost: 16, zhuan: 1 },
+            { id: 'tamer_revive_pet', name: '复活宠物', desc: '驯兽师专属·复活一只已出战的死亡宠物（绑定技能，冷却6回合）', cooldown: 6, reviveDeployedPet: true, mpCost: 0, zhuan: 1, boundSkill: true }
+        ],
+        branchA: [
+            { id: 'tamer_a_slash', name: '御兽·撕咬', desc: '2转·伤害165%，宠物攻击+26%持续2回合', cooldown: 3, dmgMult: 1.65, petAtkPct: 26, buffRounds: 2, mpCost: 22, zhuan: 2 },
+            { id: 'tamer_a_ferocity', name: '御兽·凶性', desc: '2转·宠物攻击+30%，持续3回合', cooldown: 4, petAtkPct: 30, buffRounds: 3, mpCost: 26, zhuan: 2 },
+            { id: 'tamer_a_break', name: '御兽·破甲', desc: '2转·本次无视35%防御，宠物攻击+18%持续2回合', cooldown: 4, ignoreDefPct: 35, petAtkPct: 18, buffRounds: 2, mpCost: 24, zhuan: 2 },
+            { id: 'tamer_a_roar', name: '御兽·咆哮', desc: '2转·伤害175%，宠物攻击+28%持续3回合', cooldown: 5, dmgMult: 1.75, petAtkPct: 28, buffRounds: 3, mpCost: 28, zhuan: 2 },
+            { id: 'tamer_a_fang', name: '御兽·利齿', desc: '2转·宠物攻击+32%，持续2回合', cooldown: 3, petAtkPct: 32, buffRounds: 2, mpCost: 24, zhuan: 2 },
+            { id: 'tamer_a_blood', name: '御兽·嗜血', desc: '2转·伤害190%+宠物攻击+22%持续3回合', cooldown: 4, dmgMult: 1.9, petAtkPct: 22, buffRounds: 3, mpCost: 26, zhuan: 2 },
+            { id: 'tamer_a_savage', name: '御兽·野蛮', desc: '2转·宠物攻击+36%，持续3回合', cooldown: 5, petAtkPct: 36, buffRounds: 3, mpCost: 30, zhuan: 2 },
+            { id: 'tamer_a_maul', name: '御兽·猛扑', desc: '3转·伤害250%，宠物攻击+35%持续3回合', cooldown: 5, dmgMult: 2.5, petAtkPct: 35, buffRounds: 3, mpCost: 36, zhuan: 3 },
+            { id: 'tamer_a_rage', name: '御兽·狂怒', desc: '3转·宠物攻击+46%，持续3回合', cooldown: 6, petAtkPct: 46, buffRounds: 3, mpCost: 40, zhuan: 3 },
+            { id: 'tamer_a_rend', name: '御兽·撕裂', desc: '3转·无视45%防御，宠物攻击+30%持续2回合', cooldown: 4, ignoreDefPct: 45, petAtkPct: 30, buffRounds: 2, mpCost: 34, zhuan: 3 },
+            { id: 'tamer_a_alpha', name: '御兽·兽王', desc: '3转·伤害230%，宠物攻击+42%持续4回合', cooldown: 6, dmgMult: 2.3, petAtkPct: 42, buffRounds: 4, mpCost: 42, zhuan: 3 },
+            { id: 'tamer_a_titan', name: '御兽·泰坦', desc: '3转·宠物攻击+52%，持续4回合', cooldown: 7, petAtkPct: 52, buffRounds: 4, mpCost: 44, zhuan: 3 },
+            { id: 'tamer_a_onslaught', name: '御兽·碾压', desc: '4转·伤害310%，宠物攻击+50%持续3回合', cooldown: 7, dmgMult: 3.1, petAtkPct: 50, buffRounds: 3, mpCost: 48, zhuan: 4 },
+            { id: 'tamer_a_tyrant', name: '御兽·暴君', desc: '4转·宠物攻击+62%，持续4回合', cooldown: 8, petAtkPct: 62, buffRounds: 4, mpCost: 52, zhuan: 4 },
+            { id: 'tamer_a_apocalypse', name: '御兽·万兽朝宗', desc: '4转·伤害280%，宠物攻击+58%持续5回合', cooldown: 9, dmgMult: 2.8, petAtkPct: 58, buffRounds: 5, mpCost: 56, zhuan: 4 }
+        ],
+        branchB: [
+            { id: 'tamer_b_shell', name: '护主·龟甲', desc: '2转·宠物防御+26%，持续3回合', cooldown: 3, petDefPct: 26, buffRounds: 3, mpCost: 22, zhuan: 2 },
+            { id: 'tamer_b_vital', name: '护主·生机', desc: '2转·宠物生命+22%，持续3回合', cooldown: 3, petHpPct: 22, buffRounds: 3, mpCost: 22, zhuan: 2 },
+            { id: 'tamer_b_ward', name: '护主·护盾', desc: '2转·宠物防御+22%、生命+16%，持续3回合', cooldown: 4, petDefPct: 22, petHpPct: 16, buffRounds: 3, mpCost: 26, zhuan: 2 },
+            { id: 'tamer_b_heal2', name: '护主·治愈', desc: '2转·回复出战宠物32%最大生命', cooldown: 4, healPetPct: 0.32, mpCost: 24, zhuan: 2 },
+            { id: 'tamer_b_fortress', name: '护主·壁垒', desc: '2转·宠物防御+30%，持续3回合', cooldown: 4, petDefPct: 30, buffRounds: 3, mpCost: 28, zhuan: 2 },
+            { id: 'tamer_b_life', name: '护主·生命', desc: '2转·宠物生命+26%，持续3回合', cooldown: 4, petHpPct: 26, buffRounds: 3, mpCost: 26, zhuan: 2 },
+            { id: 'tamer_b_guardian', name: '护主·守护', desc: '2转·宠物防御+18%、生命+22%，持续4回合', cooldown: 5, petDefPct: 18, petHpPct: 22, buffRounds: 4, mpCost: 30, zhuan: 2 },
+            { id: 'tamer_b_bulwark', name: '护主·铁壁', desc: '3转·宠物防御+38%，持续4回合', cooldown: 5, petDefPct: 38, buffRounds: 4, mpCost: 36, zhuan: 3 },
+            { id: 'tamer_b_vigor', name: '护主·活力', desc: '3转·宠物生命+34%，持续4回合', cooldown: 5, petHpPct: 34, buffRounds: 4, mpCost: 36, zhuan: 3 },
+            { id: 'tamer_b_heal3', name: '护主·大治愈', desc: '3转·回复出战宠物45%最大生命', cooldown: 5, healPetPct: 0.45, mpCost: 34, zhuan: 3 },
+            { id: 'tamer_b_tower', name: '护主·坚城', desc: '3转·宠物防御+28%、生命+28%，持续4回合', cooldown: 6, petDefPct: 28, petHpPct: 28, buffRounds: 4, mpCost: 40, zhuan: 3 },
+            { id: 'tamer_b_immortal', name: '护主·不灭', desc: '3转·宠物防御+42%、生命+26%，持续4回合', cooldown: 6, petDefPct: 42, petHpPct: 26, buffRounds: 4, mpCost: 42, zhuan: 3 },
+            { id: 'tamer_b_sanctuary', name: '护主·圣所', desc: '4转·宠物防御+50%、生命+38%，持续5回合', cooldown: 7, petDefPct: 50, petHpPct: 38, buffRounds: 5, mpCost: 48, zhuan: 4 },
+            { id: 'tamer_b_heal4', name: '护主·神愈', desc: '4转·回复出战宠物60%最大生命', cooldown: 6, healPetPct: 0.6, mpCost: 46, zhuan: 4 },
+            { id: 'tamer_b_eternal', name: '护主·永恒', desc: '4转·宠物防御+58%、生命+46%，持续5回合', cooldown: 8, petDefPct: 58, petHpPct: 46, buffRounds: 5, mpCost: 54, zhuan: 4 }
+        ],
+        branchC: [
+            { id: 'tamer_c_pack', name: '兽群·集结', desc: '2转·宠物攻+16%、防+16%、生命+16%持续3回合', cooldown: 4, petAtkPct: 16, petDefPct: 16, petHpPct: 16, buffRounds: 3, mpCost: 26, zhuan: 2 },
+            { id: 'tamer_c_chorus', name: '兽群·共鸣', desc: '2转·宠物攻击+18%、防御+18%持续3回合', cooldown: 4, petAtkPct: 18, petDefPct: 18, buffRounds: 3, mpCost: 28, zhuan: 2 },
+            { id: 'tamer_c_chain', name: '兽群·连携', desc: '2转·伤害165%，宠物攻防+14%持续3回合', cooldown: 3, dmgMult: 1.65, petAtkPct: 14, petDefPct: 14, buffRounds: 3, mpCost: 24, zhuan: 2 },
+            { id: 'tamer_c_howl', name: '兽群·群嚎', desc: '2转·宠物攻击+22%、生命+18%持续3回合', cooldown: 5, petAtkPct: 22, petHpPct: 18, buffRounds: 3, mpCost: 30, zhuan: 2 },
+            { id: 'tamer_c_swarm', name: '兽群·蜂拥', desc: '2转·宠物攻+20%、防+20%持续3回合', cooldown: 4, petAtkPct: 20, petDefPct: 20, buffRounds: 3, mpCost: 28, zhuan: 2 },
+            { id: 'tamer_c_bond', name: '兽群·羁绊', desc: '2转·宠物生命+22%、防御+18%持续4回合', cooldown: 5, petHpPct: 22, petDefPct: 18, buffRounds: 4, mpCost: 30, zhuan: 2 },
+            { id: 'tamer_c_legion', name: '兽群·军团', desc: '2转·宠物攻防生命各+18%持续4回合', cooldown: 6, petAtkPct: 18, petDefPct: 18, petHpPct: 18, buffRounds: 4, mpCost: 34, zhuan: 2 },
+            { id: 'tamer_c_unity', name: '兽群·一心', desc: '3转·宠物攻+26%、防+26%、生命+22%持续4回合', cooldown: 5, petAtkPct: 26, petDefPct: 26, petHpPct: 22, buffRounds: 4, mpCost: 38, zhuan: 3 },
+            { id: 'tamer_c_heal', name: '兽群·群疗', desc: '3转·回复出战宠物38%最大生命，宠物生命+16%持续2回合', cooldown: 5, healPetPct: 0.38, petHpPct: 16, buffRounds: 2, mpCost: 36, zhuan: 3 },
+            { id: 'tamer_c_synergy', name: '兽群·协同', desc: '3转·伤害205%，宠物攻防+22%持续4回合', cooldown: 5, dmgMult: 2.05, petAtkPct: 22, petDefPct: 22, buffRounds: 4, mpCost: 40, zhuan: 3 },
+            { id: 'tamer_c_phalanx', name: '兽群·方阵', desc: '3转·宠物防御+32%、生命+30%持续4回合', cooldown: 6, petDefPct: 32, petHpPct: 30, buffRounds: 4, mpCost: 42, zhuan: 3 },
+            { id: 'tamer_c_convoy', name: '兽群·护卫', desc: '3转·宠物攻+28%、防+28%、生命+26%持续4回合', cooldown: 6, petAtkPct: 28, petDefPct: 28, petHpPct: 26, buffRounds: 4, mpCost: 44, zhuan: 3 },
+            { id: 'tamer_c_legion2', name: '兽群·万兽', desc: '4转·宠物攻防生命各+30%持续5回合', cooldown: 7, petAtkPct: 30, petDefPct: 30, petHpPct: 30, buffRounds: 5, mpCost: 50, zhuan: 4 },
+            { id: 'tamer_c_harmony', name: '兽群·和谐', desc: '4转·宠物攻+34%、防+34%、生命+34%持续5回合', cooldown: 8, petAtkPct: 34, petDefPct: 34, petHpPct: 34, buffRounds: 5, mpCost: 54, zhuan: 4 },
+            { id: 'tamer_c_sovereign', name: '兽群·兽皇', desc: '4转·伤害260%，宠物全属性+28%持续5回合', cooldown: 8, dmgMult: 2.6, petAtkPct: 28, petDefPct: 28, petHpPct: 28, buffRounds: 5, mpCost: 56, zhuan: 4 }
+        ],
+        branchD: [
+            { id: 'tamer_d_soul', name: '兽魂·觉醒', desc: '2转·宠物攻击+28%持续2回合', cooldown: 2, petAtkPct: 28, buffRounds: 2, mpCost: 20, zhuan: 2 },
+            { id: 'tamer_d_burst', name: '兽魂·爆发', desc: '2转·伤害190%，宠物攻击+26%持续1回合', cooldown: 3, dmgMult: 1.9, petAtkPct: 26, buffRounds: 1, mpCost: 24, zhuan: 2 },
+            { id: 'tamer_d_frenzy', name: '兽魂·狂乱', desc: '2转·宠物攻击+34%持续2回合', cooldown: 3, petAtkPct: 34, buffRounds: 2, mpCost: 26, zhuan: 2 },
+            { id: 'tamer_d_strike', name: '兽魂·猛击', desc: '2转·伤害220%，宠物攻击+22%持续2回合', cooldown: 4, dmgMult: 2.2, petAtkPct: 22, buffRounds: 2, mpCost: 28, zhuan: 2 },
+            { id: 'tamer_d_rage', name: '兽魂·暴怒', desc: '2转·宠物攻击+38%持续2回合', cooldown: 3, petAtkPct: 38, buffRounds: 2, mpCost: 28, zhuan: 2 },
+            { id: 'tamer_d_execute', name: '兽魂·斩杀', desc: '2转·伤害200%，目标生命<50%时+25%伤害，宠物攻击+20%持续2回合', cooldown: 4, dmgMult: 2, lowHpThreshold: 0.5, dmgBonus: 0.25, petAtkPct: 20, buffRounds: 2, mpCost: 26, zhuan: 2 },
+            { id: 'tamer_d_spirit', name: '兽魂·魂力', desc: '2转·宠物攻击+42%持续2回合', cooldown: 4, petAtkPct: 42, buffRounds: 2, mpCost: 30, zhuan: 2 },
+            { id: 'tamer_d_overdrive', name: '兽魂·过载', desc: '3转·宠物攻击+50%持续2回合', cooldown: 3, petAtkPct: 50, buffRounds: 2, mpCost: 36, zhuan: 3 },
+            { id: 'tamer_d_annihilate', name: '兽魂·湮灭', desc: '3转·伤害280%，宠物攻击+36%持续2回合', cooldown: 5, dmgMult: 2.8, petAtkPct: 36, buffRounds: 2, mpCost: 40, zhuan: 3 },
+            { id: 'tamer_d_vengeance', name: '兽魂·复仇', desc: '3转·宠物攻击+54%持续2回合', cooldown: 4, petAtkPct: 54, buffRounds: 2, mpCost: 42, zhuan: 3 },
+            { id: 'tamer_d_finisher', name: '兽魂·终结', desc: '3转·伤害310%，目标生命<40%时+30%，宠物攻击+30%持续2回合', cooldown: 5, dmgMult: 3.1, lowHpThreshold: 0.4, dmgBonus: 0.3, petAtkPct: 30, buffRounds: 2, mpCost: 44, zhuan: 3 },
+            { id: 'tamer_d_apotheosis', name: '兽魂·神化', desc: '3转·宠物攻击+62%持续3回合', cooldown: 6, petAtkPct: 62, buffRounds: 3, mpCost: 46, zhuan: 3 },
+            { id: 'tamer_d_doom', name: '兽魂·末日', desc: '4转·伤害350%，宠物攻击+58%持续3回合', cooldown: 6, dmgMult: 3.5, petAtkPct: 58, buffRounds: 3, mpCost: 52, zhuan: 4 },
+            { id: 'tamer_d_avatar', name: '兽魂·化身', desc: '4转·宠物攻击+68%持续3回合', cooldown: 7, petAtkPct: 68, buffRounds: 3, mpCost: 54, zhuan: 4 },
+            { id: 'tamer_d_judgment', name: '兽魂·天罚', desc: '4转·伤害380%，目标生命<30%时+40%，宠物攻击+62%持续3回合', cooldown: 8, dmgMult: 3.8, lowHpThreshold: 0.3, dmgBonus: 0.4, petAtkPct: 62, buffRounds: 3, mpCost: 58, zhuan: 4 }
         ]
     }
 };
@@ -76338,8 +76439,8 @@ function abyssSelectClass(classId) {
         var c = ABYSS_CLASSES.find(function(x) { return x.id === classId; });
         descEl.textContent = c ? c.desc : '';
     }
-    var ids = ['Warrior','Mage','Archer'];
-    var map = { warrior: 'Warrior', mage: 'Mage', archer: 'Archer' };
+    var ids = ['Warrior','Mage','Archer','Tamer'];
+    var map = { warrior: 'Warrior', mage: 'Mage', archer: 'Archer', tamer: 'Tamer' };
     ids.forEach(function(cap) {
         var btn = document.getElementById('abyssClass' + cap);
         if (btn) {
@@ -76429,11 +76530,15 @@ function startAbyssRun() {
         petGuard: false,
         playerTargetIndex: 0,
         learnedSkillIds: [],
-        equippedSkillIds: [null, null, null],
+        equippedSkillIds: (abyssSelectedClass === 'tamer') ? [null, null, null, ABYSS_TAMER_BOUND_SKILL_ID] : [null, null, null],
         beastSummons: [],
         classBranch: null,
         triggeredBuffs: []
     };
+    if (abyssSelectedClass === 'tamer') {
+        abyssRun.learnedSkillIds = abyssRun.learnedSkillIds || [];
+        if (abyssRun.learnedSkillIds.indexOf(ABYSS_TAMER_BOUND_SKILL_ID) < 0) abyssRun.learnedSkillIds.push(ABYSS_TAMER_BOUND_SKILL_ID);
+    }
     var at = getAbyssTower();
     var pb = at.permanentBonuses || {};
     abyssRun.player.hp += (pb.hp || 0);
@@ -76476,6 +76581,7 @@ function startAbyssRun() {
     giveAbyssStartGearFromShop();
     var at1 = getAbyssTower();
     var startPetCount = Math.min(5, at1.startPetCount || 0);
+    if (abyssSelectedClass === 'tamer') startPetCount = Math.min(5, startPetCount + 1);
     for (var spi = 0; spi < startPetCount; spi++) {
         var mName = ABYSS_NORMAL_MONSTER_NAMES[Math.floor(Math.random() * ABYSS_NORMAL_MONSTER_NAMES.length)];
         var newPet = abyssGenPet(mName, 1);
@@ -77304,9 +77410,12 @@ function abyssCalcPetStats(pet) {
         }
     }
     if (abyssRun && abyssRun.buffs) {
-        if (abyssRun.buffs.petAtkPct != null) p.atk = Math.floor(p.atk * (1 + abyssRun.buffs.petAtkPct / 100));
-        if (abyssRun.buffs.petDefPct != null) p.def = Math.floor(p.def * (1 + abyssRun.buffs.petDefPct / 100));
-        if (abyssRun.buffs.petHpPct != null) p.maxHp = Math.floor(p.maxHp * (1 + abyssRun.buffs.petHpPct / 100));
+        var petAtkPct = (abyssRun.buffs.petAtkPct || 0) + (abyssRun.buffs.petTemp && abyssRun.buffs.petTemp.atkPct ? abyssRun.buffs.petTemp.atkPct : 0);
+        var petDefPct = (abyssRun.buffs.petDefPct || 0) + (abyssRun.buffs.petTemp && abyssRun.buffs.petTemp.defPct ? abyssRun.buffs.petTemp.defPct : 0);
+        var petHpPct = (abyssRun.buffs.petHpPct || 0) + (abyssRun.buffs.petTemp && abyssRun.buffs.petTemp.hpPct ? abyssRun.buffs.petTemp.hpPct : 0);
+        if (petAtkPct !== 0) p.atk = Math.floor(p.atk * (1 + petAtkPct / 100));
+        if (petDefPct !== 0) p.def = Math.floor(p.def * (1 + petDefPct / 100));
+        if (petHpPct !== 0) p.maxHp = Math.floor(p.maxHp * (1 + petHpPct / 100));
     }
     var vB = abyssCalcVaultBonuses();
     if (vB.petAtkPct) p.atk = Math.floor(p.atk * (1 + vB.petAtkPct / 100));
@@ -77344,6 +77453,15 @@ function abyssCalcPetStats(pet) {
             if (sk.defBonus) p.def = Math.floor(p.def * (1 + sk.defBonus));
         }
     }
+    if (abyssRun && abyssRun.playerClass === 'tamer') {
+        var cls = ABYSS_CLASSES.find(function(x) { return x.id === 'tamer'; });
+        if (cls) {
+            if (cls.petAtkPct) p.atk = Math.floor(p.atk * (1 + cls.petAtkPct / 100));
+            if (cls.petDefPct) p.def = Math.floor(p.def * (1 + cls.petDefPct / 100));
+            if (cls.petHpPct) p.maxHp = Math.floor(p.maxHp * (1 + cls.petHpPct / 100));
+            if (cls.petBonusMult) { p.atk = Math.floor(p.atk * cls.petBonusMult); p.def = Math.floor(p.def * cls.petBonusMult); p.maxHp = Math.floor(p.maxHp * cls.petBonusMult); }
+        }
+    }
     p.atk = Math.max(1, p.atk);
     p.def = Math.max(0, p.def);
     p.maxHp = Math.max(50, p.maxHp);
@@ -77352,9 +77470,18 @@ function abyssCalcPetStats(pet) {
     return p;
 }
 
+var ABYSS_TAMER_BOUND_SKILL_ID = 'tamer_revive_pet';
+function abyssGetSkillSlotCount() {
+    return (abyssRun && abyssRun.playerClass === 'tamer') ? 4 : 3;
+}
+function abyssIsBoundSkillSlot(slotIndex) {
+    return (abyssRun && abyssRun.playerClass === 'tamer') && slotIndex === 3;
+}
 function abyssGetMaxDeployedSlots() {
     var at = getAbyssTower();
-    return 1 + Math.min(3, at.deployedSlotsPurchases || 0);
+    var base = 1 + Math.min(3, at.deployedSlotsPurchases || 0);
+    if (abyssRun && abyssRun.playerClass === 'tamer') base += 1;
+    return base;
 }
 function abyssGetDeployedPets() {
     if (!abyssRun) return [];
@@ -77992,6 +78119,23 @@ function updateAbyssRunUI() {
             container.innerHTML = '';
         }
     }
+    var beastContainer = document.getElementById('abyssBeastSummonsContainer');
+    if (beastContainer) {
+        var beasts = abyssRun.beastSummons || [];
+        beastContainer.innerHTML = '';
+        for (var bi = 0; bi < beasts.length; bi++) {
+            var b = beasts[bi];
+            if (!b) continue;
+            var isAlive = b.hp > 0;
+            var card = document.createElement('div');
+            card.style.cssText = 'min-width:120px;padding:8px;border-radius:8px;border:2px solid ' + (isAlive ? '#4caf50' : '#666') + ';background:rgba(76,175,80,' + (isAlive ? 0.15 : 0.05) + ');opacity:' + (isAlive ? 1 : 0.6) + ';';
+            var hpPct = (b.maxHp > 0 ? Math.max(0, (b.hp / b.maxHp) * 100) : 0);
+            card.innerHTML = '<div style="color:#81c784;font-weight:bold;font-size:11px;margin-bottom:4px;">' + (b.name || '召唤兽') + (isAlive ? '' : ' 已消散') + '</div>' +
+                '<div style="font-size:11px;">生命: ' + formatNumber(b.hp) + '/' + formatNumber(b.maxHp) + '</div>' +
+                '<div style="height:6px;background:#333;border-radius:3px;margin-top:4px;overflow:hidden;"><div style="height:100%;background:linear-gradient(90deg,#4caf50,#81c784);width:' + hpPct + '%;border-radius:3px;"></div></div>';
+            beastContainer.appendChild(card);
+        }
+    }
     var autoStatusEl = document.getElementById('abyssAutoAttackStatus');
     if (autoStatusEl) autoStatusEl.textContent = abyssRun.autoAttack ? '开' : '关';
     var triggeredEl = document.getElementById('abyssTriggeredBuffs');
@@ -78006,16 +78150,23 @@ function updateAbyssRunUI() {
         skillRow.innerHTML = '';
         var classId = abyssRun.playerClass || 'warrior';
         var equipped = abyssRun.equippedSkillIds || [null, null, null];
+        if (classId === 'tamer' && equipped.length < 4) {
+            while (equipped.length < 3) equipped.push(null);
+            equipped.push(ABYSS_TAMER_BOUND_SKILL_ID);
+            abyssRun.equippedSkillIds = equipped;
+        }
+        var slotCount = abyssGetSkillSlotCount();
         var learned = abyssRun.learnedSkillIds || [];
         var currentMp = abyssRun.player.mp != null ? abyssRun.player.mp : 50;
-        for (var ei = 0; ei < equipped.length; ei++) {
+        for (var ei = 0; ei < slotCount; ei++) {
             var sid = equipped[ei];
+            if (abyssIsBoundSkillSlot(ei)) sid = ABYSS_TAMER_BOUND_SKILL_ID;
             if (sid == null || sid === '' || learned.indexOf(sid) < 0) {
                 var emptyBtn = document.createElement('button');
                 emptyBtn.type = 'button';
-                emptyBtn.textContent = '空';
+                emptyBtn.textContent = abyssIsBoundSkillSlot(ei) ? '复活宠物(绑定)' : '空';
                 emptyBtn.style.cssText = 'background:#333;color:#666;border:1px solid #555;padding:8px 14px;border-radius:6px;cursor:default;font-size:12px;';
-                emptyBtn.title = '在技能界面学习并装备技能';
+                emptyBtn.title = abyssIsBoundSkillSlot(ei) ? '驯兽师专属绑定技能' : '在技能界面学习并装备技能';
                 skillRow.appendChild(emptyBtn);
                 continue;
             }
@@ -78124,13 +78275,26 @@ function abyssAttack() {
         if (abyssRun.skillCooldowns[sid] <= 0) delete abyssRun.skillCooldowns[sid];
     }
     abyssRun.roundCount = (abyssRun.roundCount || 0) + 1;
+    if (abyssRun.buffs && abyssRun.buffs.petTemp && abyssRun.buffs.petTemp.roundsLeft != null) {
+        abyssRun.buffs.petTemp.roundsLeft--;
+        if (abyssRun.buffs.petTemp.roundsLeft <= 0) abyssRun.buffs.petTemp = { atkPct: 0, defPct: 0, hpPct: 0, roundsLeft: 0 };
+    }
     if (abyssRun.skipPlayerTurn > 0) { abyssRun.skipPlayerTurn--; abyssRun._skipThisTurn = true; abyssLog('时空凝滞！你本回合无法行动'); }
     abyssRun.thisRoundDodgeBonus = 0;
     abyssRun.thisRoundReduceDmg = 0;
     abyssRun.thisRoundCounterPct = 0;
     if (abyssRun.buffs && abyssRun.buffs.roundsLeft > 0 && abyssRun.buffs.reduceDmgPct != null) abyssRun.thisRoundReduceDmg = abyssRun.buffs.reduceDmgPct;
-    var useSkill = null;
     var classId = abyssRun.playerClass || 'warrior';
+    if (classId === 'mage') {
+        var stMage = abyssCalcPlayerStats();
+        var maxMpMage = abyssMaxMpForLevel(Math.floor((abyssRun.exp || 0) / 100));
+        if (stMage && (abyssRun.player.mp != null ? abyssRun.player.mp : 50) >= maxMpMage * 0.5) {
+            var shieldGain = Math.floor(stMage.maxHp * 0.06);
+            abyssRun.player.shield = (abyssRun.player.shield || 0) + shieldGain;
+            if (shieldGain > 0) abyssLog('法师·法力护盾 获得 ' + formatNumber(shieldGain) + ' 护盾');
+        }
+    }
+    var useSkill = null;
     var skillList = abyssGetSkillList(classId, abyssRun.classBranch);
     var currentMp = abyssRun.player.mp != null ? abyssRun.player.mp : 50;
     var equipped = abyssRun.equippedSkillIds || [null, null, null];
@@ -78185,6 +78349,47 @@ function abyssAttack() {
                         abyssRun.buffs.reduceDmgPct = useSkill.reduceDmgPct;
                         abyssRun.buffs.roundsLeft = Math.max(abyssRun.buffs.roundsLeft || 0, useSkill.buffRounds);
                     }
+                    if (useSkill.petAtkPct != null || useSkill.petDefPct != null || useSkill.petHpPct != null) {
+                        abyssRun.buffs = abyssRun.buffs || {};
+                        abyssRun.buffs.petTemp = abyssRun.buffs.petTemp || { atkPct: 0, defPct: 0, hpPct: 0, roundsLeft: 0 };
+                        var pt = abyssRun.buffs.petTemp;
+                        if (useSkill.petAtkPct != null) pt.atkPct = (pt.atkPct || 0) + useSkill.petAtkPct;
+                        if (useSkill.petDefPct != null) pt.defPct = (pt.defPct || 0) + useSkill.petDefPct;
+                        if (useSkill.petHpPct != null) pt.hpPct = (pt.hpPct || 0) + useSkill.petHpPct;
+                        if (useSkill.buffRounds != null) pt.roundsLeft = Math.max(pt.roundsLeft || 0, useSkill.buffRounds);
+                    }
+                    if (useSkill.healPetPct != null) {
+                        var deployed = abyssGetDeployedPets();
+                        for (var hpi = 0; hpi < deployed.length; hpi++) {
+                            var hpPet = deployed[hpi];
+                            if (hpPet && hpPet.hp != null && hpPet.hp > 0) {
+                                var hpSt = abyssCalcPetStats(hpPet);
+                                if (hpSt && hpSt.maxHp > 0) {
+                                    var healAmt = Math.floor(hpSt.maxHp * useSkill.healPetPct);
+                                    hpPet.hp = Math.min(hpSt.maxHp, (hpPet.hp || 0) + healAmt);
+                                    abyssLog('宠物【' + (hpPet.name || '') + '】恢复 ' + formatNumber(healAmt) + ' 生命');
+                                }
+                            }
+                        }
+                    }
+                    if (useSkill.reviveDeployedPet) {
+                        abyssRun._skipThisTurn = true;
+                        var deployed = abyssGetDeployedPets();
+                        var revived = false;
+                        for (var rvi = 0; rvi < deployed.length; rvi++) {
+                            var rp = deployed[rvi];
+                            if (rp && (rp.hp == null || rp.hp <= 0)) {
+                                var rpSt = abyssCalcPetStats(rp);
+                                if (rpSt && rpSt.maxHp > 0) {
+                                    rp.hp = rpSt.maxHp;
+                                    abyssLog('【复活宠物】' + (rp.name || '') + ' 已复活！');
+                                    revived = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!revived) abyssLog('【复活宠物】没有已死亡的出战宠物可复活');
+                    }
                 } else if (currentMp < mpCost) {
                     abyssLog('魔法值不足，需要' + mpCost + '点');
                 }
@@ -78213,14 +78418,16 @@ function abyssAttack() {
     }
     var m = abyssRun.monster;
     var effDef = m.def * (1 - (stats.reduceMonsterDef || 0) / 100);
+    if ((abyssRun.playerClass || 'warrior') === 'mage' && useSkill) effDef = effDef * 0.88;
     if (useSkill && useSkill.ignoreDefPct) effDef = effDef * (1 - useSkill.ignoreDefPct / 100);
     var baseDmg = abyssRun._skipThisTurn ? (abyssRun._skipThisTurn = false, 0) : Math.max(1, stats.atk - Math.floor(effDef * 0.5));
-    // 战士职业被动：半血以下怒战，提升输出与吸血
+    // 战士职业被动：战意(普攻+15%)、怒战(半血以下伤害+25%/吸血+8%)
     if ((abyssRun.playerClass || 'warrior') === 'warrior' && stats.maxHp > 0) {
+        if (!useSkill) baseDmg = Math.floor(baseDmg * 1.15);  // 战意：普攻伤害+15%
         var curHpRatio = (abyssRun.player.hp || stats.maxHp) / stats.maxHp;
         if (curHpRatio <= 0.5) {
-            baseDmg = Math.floor(baseDmg * 1.2);      // 低血时伤害+20%
-            stats.lifesteal = (stats.lifesteal || 0) + 5; // 技能吸血+5%
+            baseDmg = Math.floor(baseDmg * 1.25);      // 怒战：半血以下伤害+25%
+            stats.lifesteal = (stats.lifesteal || 0) + 8; // 怒战：吸血+8%
         }
     }
     var crit = (useSkill && useSkill.forceCrit) || (Math.random() * 100 < stats.critRate);
@@ -78229,8 +78436,10 @@ function abyssAttack() {
     if (combo) baseDmg = Math.floor(baseDmg * 1.5);
     var skillBonus = 1 + ((stats.skillDmg || 0) + (abyssRun.buffs && abyssRun.buffs.skillDmgBonus ? abyssRun.buffs.skillDmgBonus : 0)) / 100;
     if (useSkill && useSkill.skillDmgBonus) skillBonus = 1 + (stats.skillDmg + useSkill.skillDmgBonus) / 100;
+    if ((abyssRun.playerClass || 'warrior') === 'mage' && useSkill) skillBonus = skillBonus * 1.15;
     baseDmg = Math.floor(baseDmg * skillBonus);
     if (useSkill && useSkill.dmgMult && !useSkill.multiHit && !(useSkill.aoe)) baseDmg = Math.floor(baseDmg * useSkill.dmgMult);
+    if (useSkill && useSkill.lowHpThreshold != null && m && m.maxHp > 0 && (m.hp / m.maxHp) < useSkill.lowHpThreshold) baseDmg = Math.floor(baseDmg * (1 + (useSkill.dmgBonus || 0)));
     var playerMainElement = null;
     if (stats.elementAtk) {
         var maxAtk = 0;
@@ -78996,6 +79205,7 @@ function abyssAttack() {
             taken = Math.floor(taken * (1 - myRes / 100));
         }
         taken = Math.max(1, taken);
+        if ((abyssRun.playerClass || 'warrior') === 'warrior' && stats.maxHp > 0 && taken > Math.floor(stats.maxHp * 0.2)) taken = Math.floor(taken * 0.85);
         if (abyssRun.thisRoundReduceDmg) taken = Math.floor(taken * (1 - (abyssRun.thisRoundReduceDmg || 0) / 100));
         var dodgeCheck = (stats.dodge || 0) + (abyssRun.thisRoundDodgeBonus || 0);
         if (Math.random() * 100 < dodgeCheck) { taken = 0; abyssLog(m.name + ' 攻击被闪避！'); continue; }
@@ -79266,6 +79476,17 @@ function abyssProcessMonsterDeath(m) {
                 break;
             }
         }
+    }
+    if ((abyssRun.playerClass || 'warrior') === 'warrior' && stats && stats.maxHp > 0) {
+        var healKill = Math.floor(stats.maxHp * 0.06);
+        abyssRun.player.hp = Math.min(stats.maxHp, (abyssRun.player.hp || 0) + healKill);
+        if (healKill > 0) abyssLog('战士·斩杀回血 恢复 ' + formatNumber(healKill) + ' 生命');
+    }
+    if ((abyssRun.playerClass || 'warrior') === 'mage' && stats && stats.maxMp > 0) {
+        var mpRestore = Math.floor(stats.maxMp * 0.2);
+        var maxMpCur = abyssMaxMpForLevel(Math.floor((abyssRun.exp || 0) / 100));
+        abyssRun.player.mp = Math.min(maxMpCur, (abyssRun.player.mp != null ? abyssRun.player.mp : 50) + mpRestore);
+        if (mpRestore > 0) abyssLog('法师·回响 恢复 ' + formatNumber(mpRestore) + ' 魔法');
     }
     var expGain = m.isBoss ? 35 : (12 + Math.floor(Math.random() * 5));
     abyssPetGainExp(Math.floor(expGain));
@@ -82035,19 +82256,27 @@ function openAbyssSkillPanel() {
     var currentZhuan = abyssZhuan(runLevel);
     var classId = abyssRun.playerClass || 'warrior';
     abyssRun.learnedSkillIds = abyssRun.learnedSkillIds || [];
+    var slotCount = abyssGetSkillSlotCount();
+    if (classId === 'tamer' && (!abyssRun.equippedSkillIds || abyssRun.equippedSkillIds.length < 4)) {
+        abyssRun.equippedSkillIds = abyssRun.equippedSkillIds || [null, null, null];
+        while (abyssRun.equippedSkillIds.length < 3) abyssRun.equippedSkillIds.push(null);
+        abyssRun.equippedSkillIds.push(ABYSS_TAMER_BOUND_SKILL_ID);
+    }
     abyssRun.equippedSkillIds = abyssRun.equippedSkillIds || [null, null, null];
     var slotsEl = document.getElementById('abyssEquippedSkillSlots');
     slotsEl.innerHTML = '';
-    for (var slotIdx = 0; slotIdx < 3; slotIdx++) {
+    for (var slotIdx = 0; slotIdx < slotCount; slotIdx++) {
         var sid = (abyssRun.equippedSkillIds[slotIdx] != null && abyssRun.equippedSkillIds[slotIdx] !== '') ? abyssRun.equippedSkillIds[slotIdx] : null;
+        if (abyssIsBoundSkillSlot(slotIdx)) sid = ABYSS_TAMER_BOUND_SKILL_ID;
         var sk = sid ? abyssGetSkillById(classId, sid) : null;
         var box = document.createElement('div');
         box.style.cssText = 'width:140px;min-height:50px;background:rgba(106,13,173,0.3);border:2px solid #9c27b0;border-radius:8px;padding:8px;text-align:center;';
         if (sk) {
-            box.innerHTML = '<div style="color:#ce93d8;font-weight:bold;">' + sk.name + '</div><div style="font-size:11px;color:#888;">' + (sk.zhuan || 1) + '转</div><button type="button" style="margin-top:4px;background:#555;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px;">卸下</button>';
-            box.querySelector('button').onclick = (function(sl) { return function() { abyssUnequipSkill(sl); openAbyssSkillPanel(); if (abyssRun && abyssRun.active) updateAbyssRunUI(); }; })(slotIdx);
+            var boundLabel = abyssIsBoundSkillSlot(slotIdx) ? '<div style="font-size:10px;color:#ff9800;">绑定·不可卸下</div>' : '';
+            box.innerHTML = '<div style="color:#ce93d8;font-weight:bold;">' + sk.name + '</div><div style="font-size:11px;color:#888;">' + (sk.zhuan || 1) + '转</div>' + boundLabel + (abyssIsBoundSkillSlot(slotIdx) ? '' : '<button type="button" style="margin-top:4px;background:#555;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px;">卸下</button>');
+            if (!abyssIsBoundSkillSlot(slotIdx) && box.querySelector('button')) box.querySelector('button').onclick = (function(sl) { return function() { abyssUnequipSkill(sl); openAbyssSkillPanel(); if (abyssRun && abyssRun.active) updateAbyssRunUI(); }; })(slotIdx);
         } else {
-            box.innerHTML = '<div style="color:#666;font-size:12px;">空槽位 ' + (slotIdx + 1) + '</div>';
+            box.innerHTML = '<div style="color:#666;font-size:12px;">' + (abyssIsBoundSkillSlot(slotIdx) ? '复活宠物(绑定)' : '空槽位 ' + (slotIdx + 1)) + '</div>';
         }
         slotsEl.appendChild(box);
     }
@@ -82072,9 +82301,15 @@ function openAbyssSkillPanel() {
                 row.innerHTML = '<div><span style="color:#ce93d8;">' + s.name + '</span> <span style="color:#888;font-size:12px;">' + (s.desc || '') + '</span> <span style="color:#ffd700;font-size:11px;">' + z + '转</span></div>';
                 var btnWrap = document.createElement('div');
                 if (learned) {
+                    var equipSlotsMax = (classId === 'tamer') ? 3 : 3;
                     var slotsFull = true;
-                    for (var k = 0; k < 3; k++) { if (abyssRun.equippedSkillIds[k] == null || abyssRun.equippedSkillIds[k] === '') { slotsFull = false; break; } }
-                    if (!slotsFull) {
+                    for (var k = 0; k < equipSlotsMax; k++) { if (abyssRun.equippedSkillIds[k] == null || abyssRun.equippedSkillIds[k] === '') { slotsFull = false; break; } }
+                    if (s.id === ABYSS_TAMER_BOUND_SKILL_ID) {
+                        var boundSpan = document.createElement('span');
+                        boundSpan.style.color = '#ff9800';
+                        boundSpan.textContent = '绑定技能·已固定在第4槽';
+                        btnWrap.appendChild(boundSpan);
+                    } else if (!slotsFull) {
                         var equipBtn = document.createElement('button');
                         equipBtn.textContent = '装备';
                         equipBtn.style.cssText = 'background:#9c27b0;color:#fff;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;font-size:12px;';
@@ -82126,20 +82361,26 @@ function abyssLearnSkill(skillId, cost) {
 }
 function abyssEquipSkill(skillId) {
     if (!abyssRun || !abyssRun.active) return;
+    if (skillId === ABYSS_TAMER_BOUND_SKILL_ID) return;
     var learned = (abyssRun.learnedSkillIds || []).indexOf(skillId) >= 0;
     if (!learned) return;
+    var maxEquip = (abyssRun.playerClass === 'tamer') ? 3 : 3;
     abyssRun.equippedSkillIds = abyssRun.equippedSkillIds || [null, null, null];
-    for (var i = 0; i < 3; i++) {
+    if (abyssRun.playerClass === 'tamer' && abyssRun.equippedSkillIds.length < 4) { while (abyssRun.equippedSkillIds.length < 3) abyssRun.equippedSkillIds.push(null); abyssRun.equippedSkillIds.push(ABYSS_TAMER_BOUND_SKILL_ID); }
+    for (var i = 0; i < maxEquip; i++) {
         if (abyssRun.equippedSkillIds[i] === skillId) return;
     }
     var firstEmpty = -1;
-    for (var j = 0; j < 3; j++) {
+    for (var j = 0; j < maxEquip; j++) {
         if (abyssRun.equippedSkillIds[j] == null || abyssRun.equippedSkillIds[j] === '') { firstEmpty = j; break; }
     }
     if (firstEmpty >= 0) abyssRun.equippedSkillIds[firstEmpty] = skillId;
 }
 function abyssUnequipSkill(slotIndex) {
-    if (!abyssRun || slotIndex < 0 || slotIndex > 2) return;
+    if (!abyssRun || slotIndex < 0) return;
+    if (abyssIsBoundSkillSlot(slotIndex)) return;
+    var maxSlot = abyssGetSkillSlotCount() - 1;
+    if (slotIndex > maxSlot) return;
     abyssRun.equippedSkillIds = abyssRun.equippedSkillIds || [null, null, null];
     abyssRun.equippedSkillIds[slotIndex] = null;
 }
