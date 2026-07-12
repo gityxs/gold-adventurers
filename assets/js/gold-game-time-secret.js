@@ -2105,6 +2105,16 @@ function buyTsrShopItem(itemKey) {
             "黄皮": { price: 1500000000, minWeight: 0.1, maxWeight: 65, color: "#DAA520" }
         };
 
+        /** 种子商店刷新库存：按种子价格分档随机数量 */
+        function rollLandlordSeedStoreStock(seedName) {
+            const price = seedProperties[seedName] ? seedProperties[seedName].price : 0;
+            if (price >= 100000001) return 1;
+            if (price < 100000) return 1 + Math.floor(Math.random() * 10);
+            if (price < 1000000) return 1 + Math.floor(Math.random() * 5);
+            if (price < 10000000) return 1 + Math.floor(Math.random() * 3);
+            return 1 + Math.floor(Math.random() * 2);
+        }
+
         // 种子刷新概率
         const refreshProbabilities = {
             "土豆": 100,
@@ -2684,6 +2694,127 @@ const seedSynthesisRules = {
         description: "黄皮是最高级种子，无法继续合成"
     }
 };
+
+/** 基因合成变异：彩光2×、炫彩3×、琉璃5×、琥珀10× 果实基础价 */
+const LANDLORD_GENE_VARIANTS = {
+    '彩光': { multiplier: 2, color: '#00cec9', cssClass: 'landlord-gene-caiguang' },
+    '炫彩': { multiplier: 3, color: '#1e90ff', cssClass: 'landlord-gene-xuancai' },
+    '琉璃': { multiplier: 5, color: '#74b9ff', cssClass: 'landlord-gene-liuli' },
+    '琥珀': { multiplier: 10, color: '#fdcb6e', cssClass: 'landlord-gene-hupo' }
+};
+const LANDLORD_GENE_VARIANT_ORDER = ['彩光', '炫彩', '琉璃', '琥珀'];
+const LANDLORD_GENE_VARIANT_WEIGHTS = [80, 14, 5, 1];
+const LANDLORD_GENE_SYNTHESIS_VARIANT_CHANCE = 0.4;
+
+function parseLandlordSeedKey(seedKey) {
+    if (!seedKey || typeof seedKey !== 'string') {
+        return { baseName: seedKey, variant: null, displayName: seedKey };
+    }
+    const match = seedKey.match(/^(.+?)（(彩光|炫彩|琉璃|琥珀)）$/);
+    if (match && LANDLORD_GENE_VARIANTS[match[2]]) {
+        return { baseName: match[1], variant: match[2], displayName: seedKey };
+    }
+    return { baseName: seedKey, variant: null, displayName: seedKey };
+}
+
+function formatLandlordVariantSeedName(baseName, variant) {
+    return baseName + '（' + variant + '）';
+}
+
+function getLandlordSeedProperties(seedKey) {
+    const parsed = parseLandlordSeedKey(seedKey);
+    const base = seedProperties[parsed.baseName];
+    if (!base) return null;
+    if (!parsed.variant) return Object.assign({}, base);
+    const vd = LANDLORD_GENE_VARIANTS[parsed.variant];
+    return Object.assign({}, base, {
+        price: base.price * vd.multiplier,
+        color: vd.color,
+        geneVariant: parsed.variant,
+        geneMultiplier: vd.multiplier
+    });
+}
+
+function getLandlordSeedBaseName(seedKey) {
+    return parseLandlordSeedKey(seedKey).baseName;
+}
+
+function getLandlordGeneVariantLabelHtml(seedKey) {
+    const parsed = parseLandlordSeedKey(seedKey);
+    if (!parsed.variant) return parsed.displayName;
+    const vd = LANDLORD_GENE_VARIANTS[parsed.variant];
+    return '<span class="' + vd.cssClass + '">' + parsed.displayName + '</span>';
+}
+
+function rollLandlordGeneVariant() {
+    const total = LANDLORD_GENE_VARIANT_WEIGHTS.reduce(function (a, b) { return a + b; }, 0);
+    let r = Math.random() * total;
+    for (let i = 0; i < LANDLORD_GENE_VARIANT_ORDER.length; i++) {
+        r -= LANDLORD_GENE_VARIANT_WEIGHTS[i];
+        if (r <= 0) return LANDLORD_GENE_VARIANT_ORDER[i];
+    }
+    return '彩光';
+}
+
+function getLandlordSeedsInPriceRange(minPrice, maxPrice) {
+    const lo = Math.min(minPrice, maxPrice);
+    const hi = Math.max(minPrice, maxPrice);
+    const order = typeof LANDLORD_SKY_VINE_FRUIT_ORDER !== 'undefined'
+        ? LANDLORD_SKY_VINE_FRUIT_ORDER
+        : Object.keys(seedProperties);
+    return order.filter(function (name) {
+        const p = seedProperties[name];
+        return p && p.price >= lo && p.price <= hi;
+    });
+}
+
+function performLandlordGeneSynthesis(selectedSeeds) {
+    if (!selectedSeeds || selectedSeeds.length !== 3) {
+        return { ok: false, message: '请选择3个种子！' };
+    }
+    for (let i = 0; i < selectedSeeds.length; i++) {
+        const s = selectedSeeds[i];
+        if (!getLandlordSeedProperties(s)) {
+            return { ok: false, message: '种子「' + s + '」无效！' };
+        }
+        if (!player.landlord.seedStorage[s] || player.landlord.seedStorage[s] < 1) {
+            return { ok: false, message: '种子「' + s + '」数量不足！' };
+        }
+    }
+    const usage = {};
+    for (let j = 0; j < selectedSeeds.length; j++) {
+        const key = selectedSeeds[j];
+        usage[key] = (usage[key] || 0) + 1;
+    }
+    for (const key in usage) {
+        if ((player.landlord.seedStorage[key] || 0) < usage[key]) {
+            return { ok: false, message: '种子「' + key + '」数量不足！' };
+        }
+    }
+    for (const key in usage) {
+        player.landlord.seedStorage[key] -= usage[key];
+        if (player.landlord.seedStorage[key] <= 0) delete player.landlord.seedStorage[key];
+    }
+    const prices = selectedSeeds.map(function (s) {
+        return seedProperties[getLandlordSeedBaseName(s)].price;
+    });
+    const candidates = getLandlordSeedsInPriceRange(Math.min.apply(null, prices), Math.max.apply(null, prices));
+    if (!candidates.length) {
+        return { ok: false, message: '无法确定合成结果！' };
+    }
+    const outputBase = candidates[Math.floor(Math.random() * candidates.length)];
+    let outputSeed = outputBase;
+    let variant = null;
+    if (Math.random() < LANDLORD_GENE_SYNTHESIS_VARIANT_CHANCE) {
+        variant = rollLandlordGeneVariant();
+        outputSeed = formatLandlordVariantSeedName(outputBase, variant);
+    }
+    if (!player.landlord.seedStorage[outputSeed]) player.landlord.seedStorage[outputSeed] = 0;
+    player.landlord.seedStorage[outputSeed]++;
+    player.landlord.stats.geneSynthesisCount = (player.landlord.stats.geneSynthesisCount || 0) + 1;
+    player.landlord.stats.synthesisCount = (player.landlord.stats.synthesisCount || 0) + 1;
+    return { ok: true, outputSeed: outputSeed, outputBase: outputBase, variant: variant };
+}
 
 const lotterySystem = {
     // 可抽奖的词条

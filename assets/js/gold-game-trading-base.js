@@ -636,6 +636,8 @@ function simulateOfflineAutoTrade(offlineMs) {
 
 // 统一执行离线跑商结算（在 loadSave 之后调用；会清空 window._tradingOfflineMs）
 function runTradingOfflineIfNeeded() {
+    if (window._tradingOfflineCheckedThisSession) return;
+    window._tradingOfflineCheckedThisSession = true;
     var offMs = 0;
     // 最高优先级：页面加载时 head 里抢先读的 lastUpdate（在任何写存档之前），保证离线时长不被覆盖
     if (window.__goldGameSaveLastUpdate != null) {

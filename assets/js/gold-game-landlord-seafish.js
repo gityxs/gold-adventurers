@@ -2110,14 +2110,14 @@
                 
                 // 特殊突变标签
                 if (plant.specialMutation) {
-                    const specialName = specialMutations[plant.type] || '特殊突变';
+                    const specialName = specialMutations[getLandlordSeedBaseName(plant.type)] || '特殊突变';
                     mutationTags += `<span class="landlord-mutation-tag landlord-mutation-rainbow">${specialName}</span>`;
                 }
                 
                 fieldDiv.className = `landlord-field ${player.landlord.lockedFields[fieldIndex] ? 'locked' : ''}`;
                 fieldDiv.innerHTML = `
             <div class="landlord-field-header">
-                <div class="landlord-field-status">${plant.type}${player.landlord.lockedFields[fieldIndex] ? ' 🔒' : ''}</div>
+                <div class="landlord-field-status">${getLandlordGeneVariantLabelHtml(plant.type)}${player.landlord.lockedFields[fieldIndex] ? ' 🔒' : ''}</div>
                 <label class="field-lock-toggle">
                     <input type="checkbox" ${player.landlord.lockedFields[fieldIndex] ? 'checked' : ''} 
                            onchange="toggleFieldLock(${fieldIndex})">
@@ -2439,8 +2439,8 @@
 
         // 修改原有的loadGame函数（地主数据已在 loadSave 末尾 loadLandlordGameData 统一初始化）
         const originalLoadGame = loadGame;
-        loadGame = function() {
-            originalLoadGame();
+        loadGame = function(opts) {
+            originalLoadGame(opts);
         };
 
         // 修改原有的saveGame函数，添加疯狂地主数据保存（保存前移除定时器 id 避免写入存档）

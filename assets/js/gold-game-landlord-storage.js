@@ -314,8 +314,8 @@
                 mutationTags += `<span class="landlord-mutation-tag ${colorClass}">${mutation}</span>`;
             });
             
-            if (plant.specialMutation) {
-                const specialName = specialMutations[plant.type] || '特殊突变';
+                    if (plant.specialMutation) {
+                const specialName = specialMutations[getLandlordSeedBaseName(plant.type)] || '特殊突变';
                 mutationTags += `<span class="landlord-mutation-tag landlord-mutation-rainbow">${specialName}</span>`;
             }
             
@@ -325,7 +325,7 @@
                         <div class="landlord-field-number">田地 ${i + 1}</div>
                         ${tierLabel}
                         <div class="landlord-field-status">
-                            <span class="plant-name">${plant.type}</span>
+                            <span class="plant-name">${getLandlordGeneVariantLabelHtml(plant.type)}</span>
                             ${plant.isMature ? '<span class="mature-badge">已成熟</span>' : ''}
                             ${isLocked ? '<span class="lock-badge">已锁定</span>' : ''}
                         </div>
@@ -423,16 +423,26 @@
     synthesisHeader.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #3498db;">
             <h3 style="margin: 0; color: #2c3e50;">种子仓库</h3>
-            <button onclick="toggleSynthesisMode()" class="synthesis-toggle-button" style="background: #9b59b6; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
-                ${player.landlord.synthesisMode ? '退出合成' : '种子合成'}
-            </button>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                ${player.landlord.synthesisMode ? `
+                    <button onclick="setLandlordSynthesisSubMode('linear')" class="synthesis-sub-tab" style="background: ${player.landlord.synthesisSubMode === 'linear' ? '#3498db' : '#bdc3c7'}; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer;">线性合成</button>
+                    <button onclick="setLandlordSynthesisSubMode('gene')" class="synthesis-sub-tab" style="background: ${player.landlord.synthesisSubMode === 'gene' ? '#e67e22' : '#bdc3c7'}; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer;">基因合成</button>
+                ` : ''}
+                <button onclick="toggleSynthesisMode()" class="synthesis-toggle-button" style="background: #9b59b6; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                    ${player.landlord.synthesisMode ? '退出合成' : '种子合成'}
+                </button>
+            </div>
         </div>
     `;
     storageContainer.appendChild(synthesisHeader);
     
     // 合成模式下的界面
     if (player.landlord.synthesisMode) {
-        renderSynthesisInterface(storageContainer);
+        if (player.landlord.synthesisSubMode === 'gene') {
+            renderGeneSynthesisInterface(storageContainer);
+        } else {
+            renderSynthesisInterface(storageContainer);
+        }
         return;
     }
     
@@ -444,12 +454,13 @@
             hasSeeds = true;
             const seedDiv = document.createElement('div');
             seedDiv.className = 'landlord-storage-item';
+            const seedProps = getLandlordSeedProperties(seedName);
             seedDiv.innerHTML = `
                 <div class="landlord-item-info">
-                    <div style="font-weight: bold;">${seedName}</div>
-                    <div>价格: ${formatNumber(seedProperties[seedName].price)}</div>
-                    ${seedSynthesisRules[seedName] && seedSynthesisRules[seedName].nextLevel ? 
-                        `<div style="font-size: 0.8em; color: #9b59b6;">可合成: ${seedSynthesisRules[seedName].nextLevel}</div>` : 
+                    <div style="font-weight: bold;">${getLandlordGeneVariantLabelHtml(seedName)}</div>
+                    <div>价格: ${formatNumber(seedProps ? seedProps.price : 0)}</div>
+                    ${seedSynthesisRules[getLandlordSeedBaseName(seedName)] && seedSynthesisRules[getLandlordSeedBaseName(seedName)].nextLevel ? 
+                        `<div style="font-size: 0.8em; color: #9b59b6;">可合成: ${seedSynthesisRules[getLandlordSeedBaseName(seedName)].nextLevel}</div>` : 
                         ''}
                 </div>
                 <div style="font-weight: bold; color: #3498db; font-size: 1.2em;">${player.landlord.seedStorage[seedName]}</div>
@@ -543,14 +554,14 @@
                     
                     // 特殊突变标签
                     if (fruit.specialMutation) {
-                        const specialName = specialMutations[fruit.type] || '特殊';
+                        const specialName = specialMutations[getLandlordSeedBaseName(fruit.type)] || '特殊';
                         mutationTags += `<span class="landlord-mutation-tag landlord-mutation-rainbow" style="font-size: 0.7em; margin-right: 2px;">${specialName}</span>`;
                     }
                     
                     fruitDiv.innerHTML = `
                         <div class="landlord-item-info" style="flex: 1;">
                             <div style="font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
-                                <span>${fruit.type} ${fruit.isLocked ? '🔒' : ''}</span>
+                                <span>${getLandlordGeneVariantLabelHtml(fruit.type)} ${fruit.isLocked ? '🔒' : ''}</span>
                                 <span>${fruit.weight.toFixed(2)}kg</span>
                             </div>
                             <div style="color: #27ae60; font-weight: bold; font-size: 1.1em;">
@@ -858,6 +869,187 @@ window.addEventListener('load', function() {
         console.log('抽奖系统已初始化');
     }, 1000);
 });
+function renderGeneSynthesisInterface(container) {
+    if (!player.landlord.geneSynthesisSelection) player.landlord.geneSynthesisSelection = [];
+    const selection = player.landlord.geneSynthesisSelection;
+
+    const infoDiv = document.createElement('div');
+    infoDiv.style.background = '#fff8e8';
+    infoDiv.style.padding = '15px';
+    infoDiv.style.borderRadius = '5px';
+    infoDiv.style.marginBottom = '15px';
+    infoDiv.style.borderLeft = '4px solid #e67e22';
+    infoDiv.innerHTML = `
+        <h4 style="margin: 0 0 10px 0; color: #d35400;">基因合成规则</h4>
+        <div style="font-size: 0.9em; color: #34495e;">
+            <div>• 选择3个种子各消耗1个，按<strong>最低价～最高价</strong>区间随机产出一种种子</div>
+            <div>• 例：土豆+金桔+牵牛花 → 可出土豆、金桔或牵牛花</div>
+            <div>• <strong>40%</strong>几率产出基因变异种子：彩光80%、炫彩14%、琉璃5%、琥珀1%</div>
+            <div>• 变异果实基础价：彩光×2、炫彩×3、琉璃×5、琥珀×10（如牵牛花3000→牵牛花（琥珀）30000）</div>
+        </div>
+    `;
+    container.appendChild(infoDiv);
+
+    const slotsDiv = document.createElement('div');
+    slotsDiv.style.display = 'flex';
+    slotsDiv.style.gap = '10px';
+    slotsDiv.style.marginBottom = '15px';
+    slotsDiv.style.flexWrap = 'wrap';
+    for (let i = 0; i < 3; i++) {
+        const slot = document.createElement('div');
+        slot.style.flex = '1';
+        slot.style.minWidth = '100px';
+        slot.style.padding = '12px';
+        slot.style.border = '2px dashed ' + (selection[i] ? '#e67e22' : '#bdc3c7');
+        slot.style.borderRadius = '8px';
+        slot.style.textAlign = 'center';
+        slot.style.background = selection[i] ? '#fffaf0' : '#f8f9fa';
+        if (selection[i]) {
+            slot.innerHTML = `
+                <div style="font-size: 0.8em; color: #7f8c8d; margin-bottom: 5px;">材料 ${i + 1}</div>
+                <div style="font-weight: bold; margin-bottom: 8px;">${getLandlordGeneVariantLabelHtml(selection[i])}</div>
+                <button onclick="removeGeneSynthesisSlot(${i})" style="background:#e74c3c;color:white;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.8em;">移除</button>
+            `;
+        } else {
+            slot.innerHTML = `
+                <div style="font-size: 0.8em; color: #95a5a6; margin-bottom: 5px;">材料 ${i + 1}</div>
+                <div style="color: #bdc3c7; font-size: 1.5em;">+</div>
+                <div style="font-size: 0.75em; color: #95a5a6;">点击下方种子</div>
+            `;
+        }
+        slotsDiv.appendChild(slot);
+    }
+    container.appendChild(slotsDiv);
+
+    const actionDiv = document.createElement('div');
+    actionDiv.style.display = 'flex';
+    actionDiv.style.justifyContent = 'space-between';
+    actionDiv.style.alignItems = 'center';
+    actionDiv.style.marginBottom = '15px';
+    actionDiv.style.gap = '10px';
+    actionDiv.style.flexWrap = 'wrap';
+    const canSynth = selection.length === 3;
+    actionDiv.innerHTML = `
+        <div style="font-size: 0.9em; color: #7f8c8d;">已选 <strong style="color:#e67e22;">${selection.length}</strong> / 3</div>
+        <div style="display:flex;gap:8px;">
+            <button onclick="clearGeneSynthesisSelection()" style="background:#95a5a6;color:white;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;">清空选择</button>
+            <button onclick="executeGeneSynthesis()" ${canSynth ? '' : 'disabled'}
+                    style="background:${canSynth ? '#e67e22' : '#bdc3c7'};color:white;border:none;padding:8px 20px;border-radius:5px;cursor:pointer;font-weight:bold;min-width:100px;">
+                ${canSynth ? '基因合成' : '需选满3个'}
+            </button>
+        </div>
+    `;
+    container.appendChild(actionDiv);
+
+    const listDiv = document.createElement('div');
+    listDiv.className = 'gene-synthesis-seed-list';
+    let hasSeeds = false;
+    const seedKeys = Object.keys(player.landlord.seedStorage).sort(function (a, b) {
+        const pa = getLandlordSeedProperties(a);
+        const pb = getLandlordSeedProperties(b);
+        return (pa ? pa.price : 0) - (pb ? pb.price : 0);
+    });
+    for (let si = 0; si < seedKeys.length; si++) {
+        const seedName = seedKeys[si];
+        const count = player.landlord.seedStorage[seedName] || 0;
+        if (count <= 0) continue;
+        hasSeeds = true;
+        const selectedCount = selection.filter(function (s) { return s === seedName; }).length;
+        const available = count - selectedCount;
+        const canAdd = available > 0 && selection.length < 3;
+        const seedProps = getLandlordSeedProperties(seedName);
+        const item = document.createElement('div');
+        item.className = 'synthesis-item';
+        item.style.background = canAdd ? '#fffaf0' : '#f8f9fa';
+        item.style.border = canAdd ? '1px solid #f5cba7' : '1px solid #ddd';
+        item.style.padding = '12px';
+        item.style.borderRadius = '8px';
+        item.style.marginBottom = '8px';
+        item.style.display = 'flex';
+        item.style.justifyContent = 'space-between';
+        item.style.alignItems = 'center';
+        item.innerHTML = `
+            <div>
+                <div style="font-weight:bold;">${getLandlordGeneVariantLabelHtml(seedName)}</div>
+                <div style="font-size:0.85em;color:#7f8c8d;">价格 ${formatNumber(seedProps ? seedProps.price : 0)} · 库存 ${count}${selectedCount > 0 ? '（已选' + selectedCount + '）' : ''}</div>
+            </div>
+            <button onclick="addGeneSynthesisSeed('${seedName.replace(/'/g, "\\'")}')" ${canAdd ? '' : 'disabled'}
+                    style="background:${canAdd ? '#e67e22' : '#bdc3c7'};color:white;border:none;padding:6px 14px;border-radius:5px;cursor:pointer;">
+                ${canAdd ? '选择' : (selection.length >= 3 ? '已满' : '不足')}
+            </button>
+        `;
+        listDiv.appendChild(item);
+    }
+    if (!hasSeeds) {
+        listDiv.innerHTML = '<div style="text-align:center;padding:30px;color:#7f8c8d;">种子仓库为空，无法进行基因合成</div>';
+    }
+    container.appendChild(listDiv);
+
+    const statsDiv = document.createElement('div');
+    statsDiv.style.background = '#f8f9fa';
+    statsDiv.style.padding = '10px';
+    statsDiv.style.borderRadius = '5px';
+    statsDiv.style.marginTop = '15px';
+    statsDiv.style.textAlign = 'center';
+    statsDiv.innerHTML = `
+        <div style="font-size: 0.9em; color: #7f8c8d;">基因合成次数: <strong style="color:#e67e22;">${player.landlord.stats.geneSynthesisCount || 0}</strong></div>
+    `;
+    container.appendChild(statsDiv);
+}
+
+function setLandlordSynthesisSubMode(mode) {
+    player.landlord.synthesisSubMode = mode;
+    if (mode === 'gene' && !player.landlord.geneSynthesisSelection) {
+        player.landlord.geneSynthesisSelection = [];
+    }
+    renderLandlordSeedStorage();
+}
+
+function addGeneSynthesisSeed(seedName) {
+    if (!player.landlord.geneSynthesisSelection) player.landlord.geneSynthesisSelection = [];
+    if (player.landlord.geneSynthesisSelection.length >= 3) {
+        showLandlordNotification('已选满3个种子！', 'info');
+        return;
+    }
+    const count = player.landlord.seedStorage[seedName] || 0;
+    const selectedCount = player.landlord.geneSynthesisSelection.filter(function (s) { return s === seedName; }).length;
+    if (selectedCount >= count) {
+        showLandlordNotification('该种子库存不足！', 'error');
+        return;
+    }
+    player.landlord.geneSynthesisSelection.push(seedName);
+    renderLandlordSeedStorage();
+}
+
+function removeGeneSynthesisSlot(index) {
+    if (!player.landlord.geneSynthesisSelection) return;
+    player.landlord.geneSynthesisSelection.splice(index, 1);
+    renderLandlordSeedStorage();
+}
+
+function clearGeneSynthesisSelection() {
+    player.landlord.geneSynthesisSelection = [];
+    renderLandlordSeedStorage();
+}
+
+function executeGeneSynthesis() {
+    const selection = player.landlord.geneSynthesisSelection || [];
+    const result = performLandlordGeneSynthesis(selection);
+    if (!result.ok) {
+        showLandlordNotification(result.message, 'error');
+        return;
+    }
+    player.landlord.geneSynthesisSelection = [];
+    showSynthesisAnimation('基因融合', result.outputSeed);
+    renderLandlordSeedStorage();
+    let msg = '基因合成成功！获得 ' + result.outputSeed;
+    if (result.variant) {
+        msg = '基因合成大成功！获得变异种子「' + result.outputSeed + '」';
+    }
+    showLandlordNotification(msg, result.variant ? 'success' : 'info');
+    saveGame();
+}
+
 function renderSynthesisInterface(container) {
     // 合成说明
     const infoDiv = document.createElement('div');
@@ -1103,9 +1295,16 @@ function autoSynthesizeAll() {
 }
 function toggleSynthesisMode() {
     player.landlord.synthesisMode = !player.landlord.synthesisMode;
+    if (player.landlord.synthesisMode && !player.landlord.synthesisSubMode) {
+        player.landlord.synthesisSubMode = 'linear';
+    }
+    if (!player.landlord.synthesisMode) {
+        player.landlord.geneSynthesisSelection = [];
+    }
     renderLandlordSeedStorage();
 }
 function showSynthesisAnimation(fromSeed, toSeed) {
+    const toLabel = typeof getLandlordGeneVariantLabelHtml === 'function' ? getLandlordGeneVariantLabelHtml(toSeed) : toSeed;
     const animationContainer = document.createElement('div');
     animationContainer.style.position = 'fixed';
     animationContainer.style.top = '50%';
@@ -1118,7 +1317,7 @@ function showSynthesisAnimation(fromSeed, toSeed) {
         <div style="background: rgba(39, 174, 96, 0.9); color: white; padding: 20px; border-radius: 10px; text-align: center; animation: synthesisPop 0.5s ease-out;">
             <div style="font-size: 2em; margin-bottom: 10px;">✨</div>
             <div style="font-weight: bold; font-size: 1.2em;">合成成功！</div>
-            <div style="margin: 10px 0;">${fromSeed} → ${toSeed}</div>
+            <div style="margin: 10px 0;">${fromSeed} → ${toLabel}</div>
         </div>
     `;
     
@@ -1160,6 +1359,50 @@ const synthesisStyles = `
         70% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
         100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     }
+
+    .landlord-gene-caiguang {
+        font-weight: bold;
+        background: linear-gradient(90deg, #00b894, #55efc4, #ffffff, #f9ca24, #00cec9, #10ac84, #7bed9f, #00b894);
+        background-size: 300% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: landlordGeneShine 2s linear infinite;
+        filter: drop-shadow(0 0 4px rgba(0, 206, 201, 0.65));
+    }
+    .landlord-gene-xuancai {
+        font-weight: bold;
+        background: linear-gradient(90deg, #1e90ff, #70a1ff, #3742fa, #ff6b81, #1e90ff);
+        background-size: 300% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: landlordGeneShine 2.5s linear infinite;
+    }
+    .landlord-gene-liuli {
+        font-weight: bold;
+        background: linear-gradient(90deg, #6c5ce7, #a29bfe, #dfe6e9, #74b9ff, #81ecec, #b8e994, #a29bfe, #6c5ce7);
+        background-size: 300% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: landlordGeneShine 2.2s linear infinite;
+        filter: drop-shadow(0 0 3px rgba(116, 185, 255, 0.45));
+    }
+    .landlord-gene-hupo {
+        font-weight: bold;
+        background: linear-gradient(90deg, #e17055, #fdcb6e, #fff8e7, #f39c12, #ffeaa7, #fab1a0, #fdcb6e, #e17055);
+        background-size: 300% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: landlordGeneShine 1.8s linear infinite;
+        filter: drop-shadow(0 0 3px rgba(253, 203, 110, 0.55));
+    }
+    @keyframes landlordGeneShine {
+        0% { background-position: 0% center; }
+        100% { background-position: 200% center; }
+    }
 `;
 
 // 添加样式到页面
@@ -1170,6 +1413,12 @@ document.head.appendChild(styleSheet);
 // 9. 初始化合成模式状态
 if (typeof player.landlord.synthesisMode === 'undefined') {
     player.landlord.synthesisMode = false;
+}
+if (typeof player.landlord.synthesisSubMode === 'undefined') {
+    player.landlord.synthesisSubMode = 'linear';
+}
+if (typeof player.landlord.geneSynthesisSelection === 'undefined') {
+    player.landlord.geneSynthesisSelection = [];
 }
         // 检查离线收益
         function checkLandlordOfflineEarnings() {
@@ -1217,7 +1466,7 @@ if (typeof player.landlord.synthesisMode === 'undefined') {
                     // 刷新种子商店
                     for (const seed in refreshProbabilities) {
                         if (Math.random() * 100 < refreshProbabilities[seed]) {
-                            player.landlord.storeItems[seed] = 1;
+                            player.landlord.storeItems[seed] = rollLandlordSeedStoreStock(seed);
                         } else {
                             player.landlord.storeItems[seed] = 0;
                         }

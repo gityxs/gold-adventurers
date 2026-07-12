@@ -46,18 +46,9 @@ window.addEventListener('load', function goldGameRetryLoadAfterRefresh() {
     var needRetry = window._goldGameSaveLoadBlocked || !window._goldGameSaveLoadedOk;
     if (!needRetry) return;
     if (!window._goldGameBootLoadAttempted && !hasLocalSave) return;
-    if (typeof loadGame === 'function') {
-        loadGame();
-        goldGameMarkSaveReadyIfLoaded();
-        if (typeof updateDisplay === 'function') updateDisplay();
-        return;
-    }
     goldGameBootLoadSave();
     if (typeof updateDisplay === 'function') updateDisplay();
 });
-setTimeout(function () {
-    if (typeof runTradingOfflineIfNeeded === 'function') runTradingOfflineIfNeeded();
-}, 800);
 if (typeof updateDisplay === 'function') updateDisplay();
 
 // 联网时检测 API 静态资源版本，与当前 ?b= 不一致则自动刷新拉新 JS

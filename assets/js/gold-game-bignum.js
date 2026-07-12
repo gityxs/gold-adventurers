@@ -96,6 +96,27 @@ function toBigSciString(value, digits) {
     let m = x.m.toFixed(fracDigits).replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
     return m + 'e' + x.e.toString();
 }
+// 资产详情大数格式化，避免界面被撑破（≥1e12 用科学计数法）
+// zeroMode: 'money' 显示 0.000；'shares' 股数显示 0（避免持仓/数量像金额）
+function formatInvestmentNumber(val, zeroMode) {
+    const x = parseBigSci(val);
+    if (x.m === 0) return zeroMode === 'shares' ? '0' : '0.000';
+    if (x.e >= 12n || x.e <= -6n) return toBigSciString(x, zeroMode === 'shares' ? 6 : 3);
+    const n = Number(x.m + 'e' + x.e.toString());
+    if (Number.isFinite(n)) {
+        if (zeroMode === 'shares') {
+            if (Math.abs(n) < 1e-6) return n.toExponential(4);
+            if (Number.isInteger(n)) {
+                return n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+            }
+            let s = n.toLocaleString(undefined, { maximumFractionDigits: 12, useGrouping: true });
+            if (s.includes('.')) s = s.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
+            return s;
+        }
+        return n.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    }
+    return toBigSciString(x, zeroMode === 'shares' ? 6 : 3);
+}
 function bigSciToStorageValue(value) {
     const x = parseBigSci(value);
     if (x.m === 0) return 0;

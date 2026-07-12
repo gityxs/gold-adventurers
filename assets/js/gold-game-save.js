@@ -1256,6 +1256,7 @@ function formatTime(milliseconds) {
                 if (typeof saveGame === 'function') saveGame({ silent: true });
             } else if (document.visibilityState === 'visible') {
                 window._tradingOfflineRunThisSession = false; // 切回标签允许本次离线结算
+                window._tradingOfflineCheckedThisSession = false;
                 // loadSave 会替换 player，必须先停掉旧定时器，否则每次切回都会多挂一套后台战斗
                 if (typeof stopAllWorldMapBattles === 'function') stopAllWorldMapBattles();
                 loadSave();

@@ -2061,26 +2061,6 @@ function updatePlayerClassNameDisplay() {
         classNameElement.textContent = '';
     }
 }
-// 新增：计算魂环总加成（含职业分支乘数）
-function getTotalSoulRingBonus() {
-  let total = 0;
-  player.soulRings.forEach(ring => {
-    // 基础加成：等级 × 单级倍率
-    total += ring.level * ring.multiplier;
-  });
-  // 应用职业分支的魂环加成乘数
-  return total * player.classBonuses.soulRingMultiplier;
-}
-// 新增：计算副本装备总加成（含职业分支乘数）
-function getTotalDungeonEquipBonus() {
-  let total = 0;
-  player.dungeonEquipment.forEach(eq => {
-    // 基础加成：等级 × 成长率（示例，需结合实际装备效果逻辑）
-    total += eq.level * eq.growthRate;
-  });
-  // 应用职业分支的副本装备加成乘数
-  return total * player.classBonuses.dungeonEquipMultiplier;
-}
 // 计算职业加成 (需要在战斗计算相关函数中调用)
 function calculateClassBonuses() {
     const bonuses = {

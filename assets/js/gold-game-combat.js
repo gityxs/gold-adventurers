@@ -3206,7 +3206,7 @@ const liveStreamSystem = {
     ],
     // 7. 直播成就（扩充）
     achievements: [
-        { id: "first_1k", name: "百人主播", desc: "单次直播观众破百", reward: 5000, check: () => player.liveStream.viewers.length >= 100 },
+        { id: "first_1k", name: "百人主播", desc: "单次直播观众破百", reward: 5000, check: () => getLiveDisplayViewerCount() >= 100 },
         { id: "live_10h", name: "劳模主播", desc: "累计直播10小时", reward: 10000, check: () => (player.liveStream.totalLiveTime || 0) >= 36000000 },
         { id: "combo_10", name: "礼物连击王", desc: "达成10连击", reward: 8000, check: () => (player.liveStream.giftCombo || 0) >= 10 },
         { id: "earn_1m", name: "百万粉丝", desc: "粉丝数破百万", reward: 20000, check: () => (player.liveStream.totalEarnings || 0) >= 10000000 },
@@ -3231,7 +3231,7 @@ const liveStreamSystem = {
     // 每日直播任务（每日重置，完成给经验+玫瑰花）
     dailyTasks: [
         { id: "live_30m", name: "直播30分钟", desc: "单次直播满30分钟", target: 30*60*1000, rewardExp: 2000, rewardRose: 500, check: function() { return (player.liveStream.lastLiveStart && (Date.now() - player.liveStream.lastLiveStart) >= 30*60*1000); } },
-        { id: "viewer_50", name: "观众破50", desc: "单次直播观众数达到50", target: 50, rewardExp: 3000, rewardRose: 800, check: function() { return player.liveStream.viewers.length >= 50; } },
+        { id: "viewer_50", name: "观众破50", desc: "单次直播观众数达到50", target: 50, rewardExp: 3000, rewardRose: 800, check: function() { return getLiveDisplayViewerCount() >= 50; } },
         { id: "gift_10", name: "收到10次打赏", desc: "单次直播收到至少10次打赏", target: 10, rewardExp: 2500, rewardRose: 600, check: function() { return (player.liveStream.donationCountThisLive || 0) >= 10; } },
         { id: "combo_5", name: "礼物5连击", desc: "达成5连击", target: 5, rewardExp: 1500, rewardRose: 400, check: function() { return (player.liveStream.giftCombo || 0) >= 5; } },
         { id: "heat_50", name: "热度达50", desc: "直播间热度达到50", target: 50, rewardExp: 1800, rewardRose: 450, check: function() { return (player.liveStream.heat || 0) >= 50; } },
@@ -3626,7 +3626,9 @@ function updateLiveStreamOverlay() {
         return;
     }
     const ls = player.liveStream;
-    const liveViewerCount = Array.isArray(ls.viewers) ? ls.viewers.length : 0;
+    const liveViewerCount = typeof getLiveDisplayViewerCount === 'function'
+        ? getLiveDisplayViewerCount()
+        : (Array.isArray(ls.viewers) ? ls.viewers.length : 0);
     const now = Date.now();
     
     pkEl.style.display = 'none';
@@ -3719,10 +3721,14 @@ function updateLiveStreamUI() {
     document.getElementById('liveStreamNextExp').textContent = expArr[lsLevel - 1] != null ? expArr[lsLevel - 1] : 10000000000;
     const earnShow = Number(ls.totalEarnings);
     document.getElementById('totalLiveEarnings').textContent = Number.isFinite(earnShow) ? (earnShow / 10).toFixed(0) : '0';
+    if (typeof syncLiveDisplayViewerCount === 'function') syncLiveDisplayViewerCount();
     const viewers = Array.isArray(ls.viewers) ? ls.viewers : [];
-    document.getElementById('liveViewerCount').textContent = viewers.length;
+    const displayViewerCount = typeof getLiveDisplayViewerCount === 'function'
+        ? getLiveDisplayViewerCount()
+        : viewers.length;
+    document.getElementById('liveViewerCount').textContent = displayViewerCount;
     const liveViewerCountSideEl = document.getElementById('liveViewerCountSide');
-    if (liveViewerCountSideEl) liveViewerCountSideEl.textContent = viewers.length;
+    if (liveViewerCountSideEl) liveViewerCountSideEl.textContent = displayViewerCount;
     var effectiveHeat = (ls.heat || 0) + (ls.promotionHotEndTime && Date.now() < ls.promotionHotEndTime ? 500 : 0);
     const heat = Math.floor(effectiveHeat);
     document.getElementById('liveHeat').textContent = heat;
@@ -3764,7 +3770,7 @@ function updateLiveStreamUI() {
     const pkBtn = document.getElementById('pkBtn');
     if (pkBtn) {
         var pkCd = ls.pkCooldownEndTime && now < ls.pkCooldownEndTime;
-        pkBtn.disabled = ls.pkActive || ls.viewers.length < 5 || pkCd;
+        pkBtn.disabled = ls.pkActive || (typeof getLiveDisplayViewerCount === 'function' ? getLiveDisplayViewerCount() : ls.viewers.length) < 5 || pkCd;
         if (ls.pkActive) pkBtn.textContent = 'PK进行中';
         else if (pkCd) pkBtn.textContent = 'PK冷却' + Math.ceil((ls.pkCooldownEndTime - now) / 60000) + '分';
         else pkBtn.textContent = 'PK对战';
@@ -3855,11 +3861,11 @@ function updateLiveStreamUI() {
     
     const viewerList = document.getElementById('viewerList');
     viewerList.innerHTML = '';
-    
-    if (player.liveStream.viewers.length === 0) {
+
+    if (displayViewerCount === 0) {
         viewerList.innerHTML = '<div style="text-align: center; color: #666; padding: 20px 0;">暂无观众</div>';
     } else {
-        player.liveStream.viewers.forEach(viewer => {
+        viewers.forEach(viewer => {
             const viewerElement = document.createElement('div');
             viewerElement.style.marginBottom = '5px';
             viewerElement.style.padding = '5px';
@@ -3868,6 +3874,10 @@ function updateLiveStreamUI() {
             viewerElement.innerHTML = (viewer.isVip ? '👑' : '👤') + ' ' + viewer.name + (viewer.isVip ? ' <span style="color:#FFD700;font-size:10px;">VIP</span>' : '');
             viewerList.appendChild(viewerElement);
         });
+    }
+    const viewerListHint = document.getElementById('viewerListHint');
+    if (viewerListHint) {
+        viewerListHint.style.display = displayViewerCount > 0 ? 'block' : 'none';
     }
     
     // 更新打赏记录
@@ -4008,6 +4018,7 @@ function startLiveStream() {
     player.liveStream.isLive = true;
     player.liveStream.lastLiveStart = Date.now();
     player.liveStream.viewers = [];
+    player.liveStream.displayViewerCount = 0;
     player.liveStream.donationCountThisLive = 0;
     player.liveStream.guardList = [];
     player.liveStream.roseThisLive = 0;
@@ -4100,6 +4111,7 @@ function stopLiveStream() {
     player.liveStream.guessActive = false;
     // 清空观众
     player.liveStream.viewers = [];
+    player.liveStream.displayViewerCount = 0;
     clearDanmaku();
     
     updateLiveStreamUI();

@@ -21,7 +21,7 @@ function checkLiveChallenge() {
     var current = 0;
     if (ch.type === "rose") current = ls.roseThisLive || 0;
     else if (ch.type === "heat") current = Math.floor(ls.heat || 0);
-    else if (ch.type === "viewer") current = ls.viewers.length;
+    else if (ch.type === "viewer") current = typeof getLiveDisplayViewerCount === 'function' ? getLiveDisplayViewerCount() : ls.viewers.length;
     else if (ch.type === "donation") current = ls.donationCountThisLive || 0;
     if (current >= ch.target) {
         player.items.rose += ch.rewardRose;
@@ -414,7 +414,7 @@ function startConnectMc() {
         logAction("连麦冷却中，还需 " + minLeft + " 分钟", "error");
         return;
     }
-    if (ls.viewers.length === 0) {
+    if (getLiveDisplayViewerCount() === 0 || ls.viewers.length === 0) {
         logAction("暂无观众，无法连麦", "error");
         return;
     }

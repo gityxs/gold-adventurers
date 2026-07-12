@@ -8,7 +8,7 @@
     <script>
         (function () {
             /** 与 gold-game-core.js 的 GAME_VERSION 对齐；发版时同步修改 */
-            var build = "2.0.34";
+            var build = "2.0.35";
             try {
                 var qs = location.search || "";
                 var m = /[?&]v=([^&]+)/.exec(qs);
@@ -115,8 +115,15 @@
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>2.033更新日志</h4>
+            <h4>2.035更新日志</h4>
             <h4>QQ群：902481027    有问题可以进群问（存档异常联系群管理修复）</h4>
+            <p>2026/07/12:洞天劫模式装备增加大量强力新神性词条，
+                    修改直播人数上限限制。
+                    疯狂地主增加新种子基因合成：基因合成规则
+                   • 选择3个种子各消耗1个，按最低价～最高价区间随机产出一种种子
+                   • 例：土豆+金桔+牵牛花 → 可出土豆、金桔或牵牛花
+                   • 40%几率产出基因变异种子：彩光80%、炫彩14%、琉璃5%、琥珀1%
+                   • 变异果实基础价：彩光×2、炫彩×3、琉璃×5、琥珀×10（如牵牛花3000→牵牛花（琥珀）30000）。<p>
             <p>2026/07/10:洞天劫模式新增：
              1：增加摸金模式20层解锁：找到出口才能带出物品：解锁图鉴可以获得大量独立总加成（自行探索）。
              2：师徒加成修改：原来是普通机缘加成，修改为独立总机缘加成。
@@ -648,7 +655,7 @@
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v2.0.34</div>
+  <div id="footer">版本号: v2.0.35</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -1186,8 +1193,6 @@
         <button onclick="clearAvatar()" style="padding: 12px 20px; font-size: 16px;">清除头像</button>
         <button onclick="showActivationCodeDialog()" style="padding: 12px 20px; font-size: 16px;">激活码兑换</button>
         <button onclick="saveGame()" style="padding: 12px 20px; font-size: 16px;">保存游戏</button>
-        <button onclick="downloadSave()" style="padding: 12px 20px; font-size: 16px;">下载TXT存档</button>
-        <button onclick="importEncryptedSave()" style="padding: 12px 20px; font-size: 16px;">导入TXT存档</button>
         <button onclick="resetGame()" style="padding: 12px 20px; font-size: 16px; background-color: #ff4444; color: white; border: none;">重置游戏</button>
     </div>
     <button onclick="toggleSettingsUI()" style="margin-top: 20px; padding: 10px 28px; font-size: 15px;">关闭设置</button>
@@ -3552,6 +3557,7 @@
                 <div id="viewerList" style="flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 8px; font-size: 12px;">
                     <div style="text-align: center; color: #555; padding: 16px 0;">暂无观众</div>
                 </div>
+                <div id="viewerListHint" style="display: none; padding: 6px 12px; font-size: 11px; color: #555; text-align: center; flex-shrink: 0; border-top: 1px solid #2a2a2a;">只显示前100名</div>
             </div>
             <div style="padding: 6px 10px; font-size: 11px; color: #666; border-bottom: 1px solid #2a2a2a;">本场守护榜</div>
             <div id="guardListBox" style="max-height: 70px; overflow-y: auto; padding: 6px 10px; font-size: 11px; color: #aaa;">

@@ -20,7 +20,7 @@
                 
                 for (const seed in refreshProbabilities) {
                     if (Math.random() * 100 < refreshProbabilities[seed]) {
-                        player.landlord.storeItems[seed] = 1; // 库存1个
+                        player.landlord.storeItems[seed] = rollLandlordSeedStoreStock(seed);
                     } else {
                         player.landlord.storeItems[seed] = 0; // 无库存
                     }
@@ -60,7 +60,7 @@
 
         // 购买种子
         function buyLandlordSeed(seedName) {
-            const seed = seedProperties[seedName];
+            const seed = getLandlordSeedProperties(seedName) || seedProperties[seedName];
             
             if (!seed) {
                 showLandlordNotification("种子不存在！", "error");
@@ -156,12 +156,14 @@
                     seedDiv.style.marginBottom = '10px';
                     seedDiv.onclick = () => plantLandlordSeed(fieldIndex, seedName);
                     
-                    const seedColor = seedProperties[seedName].color;
+                    const seedProps = getLandlordSeedProperties(seedName);
+                    const seedColor = seedProps ? seedProps.color : '#8B4513';
                     
                     seedDiv.innerHTML = `
-                        <div class="landlord-seed-icon" style="background: ${seedColor};">${seedName.charAt(0)}</div>
-                        <div>${seedName}</div>
+                        <div class="landlord-seed-icon" style="background: ${seedColor};">${getLandlordSeedBaseName(seedName).charAt(0)}</div>
+                        <div>${getLandlordGeneVariantLabelHtml(seedName)}</div>
                         <div>库存: ${player.landlord.seedStorage[seedName]}</div>
+                        <div style="font-size:0.85em;color:#7f8c8d;">价格: ${formatNumber(seedProps ? seedProps.price : 0)}</div>
                     `;
                     
                     content.appendChild(seedDiv);
@@ -245,6 +247,10 @@
             
             // 创建新植物
             const plant = createNewLandlordPlant(seedName, fieldIndex);
+            if (!plant) {
+                closeLandlordSeedModal();
+                return;
+            }
             
             // 放置到田地
             player.landlord.fields[fieldIndex] = plant;
@@ -726,6 +732,10 @@
 
         var LANDLORD_RANCH_MAX_SLOTS = 40;
         var LANDLORD_RANCH_STOCKPILE_CAP = 10;
+        /** 牧场仓库·待售产出：累计批数上限（+100 → 200） */
+        var LANDLORD_RANCH_PRODUCE_WAREHOUSE_MAX_BATCHES = 200;
+        /** 牧场仓库·动物库存：累计头数上限（+100 → 200） */
+        var LANDLORD_RANCH_ANIMAL_INVENTORY_MAX = 200;
         var LANDLORD_RANCH_HOUR_MS = 60 * 60 * 1000;
         var LANDLORD_RANCH_QUALITY_NAMES = ['凡品', '良品', '精品', '珍品', '灵品', '玄品', '天品', '圣品'];
         var LANDLORD_RANCH_QUALITY_MULT = [1, 1.08, 1.18, 1.32, 1.5, 1.75, 2.05, 2.45];
@@ -1100,6 +1110,37 @@
             return animalId + ':' + q;
         }
 
+        function landlordRanchSumProduceWarehouseBatches(r) {
+            var arr = r && r.ranchProduceWarehouse;
+            if (!Array.isArray(arr)) return 0;
+            var s = 0;
+            for (var i = 0; i < arr.length; i++) {
+                var row = arr[i];
+                if (!row) continue;
+                s += Math.max(0, Math.floor(Number(row.batches) || 0));
+            }
+            return s;
+        }
+
+        function landlordRanchSumAnimalInventory(r) {
+            var inv = r && r.animalInventory;
+            if (!inv || typeof inv !== 'object') return 0;
+            var keys = Object.keys(inv);
+            var s = 0;
+            for (var i = 0; i < keys.length; i++) {
+                s += Math.max(0, Math.floor(Number(inv[keys[i]]) || 0));
+            }
+            return s;
+        }
+
+        function landlordRanchProduceWarehouseSpace(r) {
+            return Math.max(0, LANDLORD_RANCH_PRODUCE_WAREHOUSE_MAX_BATCHES - landlordRanchSumProduceWarehouseBatches(r));
+        }
+
+        function landlordRanchAnimalInventorySpace(r) {
+            return Math.max(0, LANDLORD_RANCH_ANIMAL_INVENTORY_MAX - landlordRanchSumAnimalInventory(r));
+        }
+
         function landlordRanchNormalizeInventoryAndDex(r) {
             var inv = r.animalInventory;
             if (!inv || typeof inv !== 'object') return;
@@ -1172,17 +1213,24 @@
         }
 
         function landlordRanchAddAnimalInventory(animalId, amount, quality) {
-            if (typeof player === 'undefined' || !player.landlord || !animalId) return;
+            if (typeof player === 'undefined' || !player.landlord || !animalId) return false;
             ensureLandlordRanch(player.landlord);
             var r = player.landlord.ranch;
             if (!r.animalInventory) r.animalInventory = {};
             var n = Math.max(1, Math.floor(Number(amount) || 1));
+            var space = landlordRanchAnimalInventorySpace(r);
+            if (space < 1) {
+                showLandlordNotification('动物库存已满（' + LANDLORD_RANCH_ANIMAL_INVENTORY_MAX + ' 头），请先卖出或放养后再来。', 'warning');
+                return false;
+            }
+            n = Math.min(n, space);
             var q = quality != null ? parseInt(quality, 10) : pickRanchAnimalQualityTier();
             if (!Number.isFinite(q) || q < 1) q = 1;
             if (q > 8) q = 8;
             var key = landlordRanchInvKey(animalId, q);
             r.animalInventory[key] = (r.animalInventory[key] || 0) + n;
             landlordRanchMarkDex(animalId, q);
+            return true;
         }
 
         /** 牧场仓库：按份出售库存动物（与放养共用 animalInventory），单价≈基础每批×品质×全局牧场加成 */
@@ -1361,13 +1409,22 @@
         }
 
         function landlordRanchPushProduceWarehouse(animalId, quality, batches, coinValue, pastureMoodsAtHarvest) {
-            if (typeof player === 'undefined' || !player.landlord) return;
+            if (typeof player === 'undefined' || !player.landlord) return false;
             ensureLandlordRanch(player.landlord);
             var r = player.landlord.ranch;
             if (!Array.isArray(r.ranchProduceWarehouse)) r.ranchProduceWarehouse = [];
             var b = Math.floor(Number(batches) || 0);
             var c = Math.floor(Number(coinValue) || 0);
-            if (b < 1 || c < 1) return;
+            if (b < 1 || c < 1) return false;
+            var space = landlordRanchProduceWarehouseSpace(r);
+            if (space < 1) {
+                showLandlordNotification('待售产出已满（' + LANDLORD_RANCH_PRODUCE_WAREHOUSE_MAX_BATCHES + ' 批），请先卖出后再收取。', 'warning');
+                return false;
+            }
+            if (b > space) {
+                showLandlordNotification('待售产出仅剩 ' + space + ' 批空间（上限 ' + LANDLORD_RANCH_PRODUCE_WAREHOUSE_MAX_BATCHES + ' 批），请先卖出部分后再收取。', 'warning');
+                return false;
+            }
             var q = Math.min(8, Math.max(1, parseInt(quality, 10) || 1));
             var moodArr = [];
             if (Array.isArray(pastureMoodsAtHarvest)) {
@@ -1384,6 +1441,7 @@
                 coinValue: c,
                 pastureMoods: moodArr
             });
+            return true;
         }
 
         function landlordRanchSellProduceWarehouseAt(idx, modeAll) {
@@ -1488,10 +1546,13 @@
             var tMult = landlordRanchPendingTreatMult(slot);
             var coins = Math.floor(n * def.reward * mult * pastureMult * gMult * tMult);
             var moodSnap = Array.isArray(slot.pastureMood) ? slot.pastureMood.slice() : [];
+            if (!landlordRanchPushProduceWarehouse(slot.animalId, q, n, coins, moodSnap)) {
+                renderLandlordRanch();
+                return;
+            }
             slot.stockpile = 0;
             slot.pendingTreatMult = 1;
             slot.pastureMood = [];
-            landlordRanchPushProduceWarehouse(slot.animalId, q, n, coins, moodSnap);
             landlordRanchGrantCoins(0, n);
             var qn = LANDLORD_RANCH_QUALITY_NAMES[q - 1] || '';
             showLandlordNotification('栏位' + (slotIndex + 1) + ' 已收取 ' + n + ' 批「' + def.name + '·' + qn + '」至牧场仓库（待售约 ' + formatNumber(coins) + ' 地主币），草场合鸣已清空', 'success');
@@ -1508,6 +1569,7 @@
             var r = player.landlord.ranch;
             var totalCoins = 0;
             var totalN = 0;
+            var blocked = false;
             for (var si = 0; si < r.unlockedSlots; si++) {
                 var slot = r.slots[si];
                 if (!slot || !slot.animalId) continue;
@@ -1521,20 +1583,27 @@
                 var gMult2 = landlordRanchGlobalYieldMult(r);
                 var tMult2 = landlordRanchPendingTreatMult(slot);
                 var lineCoins = Math.floor(n * def.reward * mult2 * pastureMult2 * gMult2 * tMult2);
+                var moodSnapAll = Array.isArray(slot.pastureMood) ? slot.pastureMood.slice() : [];
+                if (!landlordRanchPushProduceWarehouse(slot.animalId, q2, n, lineCoins, moodSnapAll)) {
+                    blocked = true;
+                    break;
+                }
                 totalCoins += lineCoins;
                 totalN += n;
-                var moodSnapAll = Array.isArray(slot.pastureMood) ? slot.pastureMood.slice() : [];
                 slot.stockpile = 0;
                 slot.pendingTreatMult = 1;
                 slot.pastureMood = [];
-                landlordRanchPushProduceWarehouse(slot.animalId, q2, n, lineCoins, moodSnapAll);
             }
             if (totalN <= 0) {
-                showLandlordNotification('当前没有可收取的牧场产出。', 'info');
+                if (!blocked) showLandlordNotification('当前没有可收取的牧场产出。', 'info');
                 return;
             }
             landlordRanchGrantCoins(0, totalN);
-            showLandlordNotification('一键收取：共 ' + totalN + ' 批产出已进入牧场仓库（待售约 ' + formatNumber(totalCoins) + ' 地主币），各栏草场合鸣已清空', 'success');
+            if (blocked) {
+                showLandlordNotification('一键收取：已收取 ' + totalN + ' 批（待售约 ' + formatNumber(totalCoins) + ' 地主币）；待售仓库已满，其余请先卖出后再收。', 'warning');
+            } else {
+                showLandlordNotification('一键收取：共 ' + totalN + ' 批产出已进入牧场仓库（待售约 ' + formatNumber(totalCoins) + ' 地主币），各栏草场合鸣已清空', 'success');
+            }
             updateLandlordCoinDisplay();
             updateLandlordStats();
             renderLandlordRanch();
@@ -1604,7 +1673,7 @@
             var aid = slot.animalId;
             var qv = Math.min(8, Math.max(1, parseInt(slot.quality, 10) || 1));
             var def = getLandlordRanchAnimalDef(aid);
-            landlordRanchAddAnimalInventory(aid, 1, qv);
+            if (!landlordRanchAddAnimalInventory(aid, 1, qv)) return;
             r.slots[slotIndex] = null;
             var qn2 = LANDLORD_RANCH_QUALITY_NAMES[qv - 1] || '';
             showLandlordNotification('已迁出' + (def ? '「' + def.name + '·' + qn2 + '」' : '') + '，已退回同品质库存 ×1', 'info');
@@ -1938,7 +2007,7 @@
             html += '<div class="ranch-dash-col">';
             html += '<div class="ranch-dash-title">栏位概览</div>';
             html += '<div class="ranch-dash-value">饲养 <strong>' + activePn + '</strong> / ' + r.unlockedSlots + '</div>';
-            html += '<div class="ranch-dash-sub">可收栏 <strong>' + readyPn + '</strong> · 动物库存 <strong>' + invSum + '</strong> 头 · 待售产出 <strong>' + produceBatches + '</strong> 批（约 ' + formatNumber(produceVal) + ' 币）</div>';
+            html += '<div class="ranch-dash-sub">可收栏 <strong>' + readyPn + '</strong> · 动物库存 <strong>' + invSum + '</strong>/' + LANDLORD_RANCH_ANIMAL_INVENTORY_MAX + ' 头 · 待售产出 <strong>' + produceBatches + '</strong>/' + LANDLORD_RANCH_PRODUCE_WAREHOUSE_MAX_BATCHES + ' 批（约 ' + formatNumber(produceVal) + ' 币）</div>';
             html += '<div class="ranch-filter-row">';
             html += '<button type="button" class="ranch-filter-chip ranch-filter-chip--active" data-ranch-filter="all" onclick="landlordRanchSetPenFilter(\'all\')">全部栏位</button>';
             html += '<button type="button" class="ranch-filter-chip" data-ranch-filter="harvest" onclick="landlordRanchSetPenFilter(\'harvest\')">可收取</button>';
@@ -1988,8 +2057,8 @@
             html += '<div class="ranch-warehouse-head">';
             html += '<span class="ranch-warehouse-title">牧场仓库</span>';
             html += '</div>';
-            html += '<p class="ranch-warehouse-desc"><strong>待售栏内产出</strong>：收取栏位产出后先进入此处，卖出后才入地主币（与果实仓库类似）。<strong>动物库存</strong>：与栏位<strong>放养</strong>共用，抽奖获得的动物；卖出规则见下区。两行均可<strong>锁定</strong>以防误卖。</p>';
-            html += '<div class="ranch-warehouse-subhead">已收取产出（待售）</div>';
+            html += '<p class="ranch-warehouse-desc"><strong>待售栏内产出</strong>：收取栏位产出后先进入此处，卖出后才入地主币（与果实仓库类似），<strong>累计上限 ' + LANDLORD_RANCH_PRODUCE_WAREHOUSE_MAX_BATCHES + ' 批</strong>。<strong>动物库存</strong>：与栏位<strong>放养</strong>共用，抽奖获得的动物，<strong>累计上限 ' + LANDLORD_RANCH_ANIMAL_INVENTORY_MAX + ' 头</strong>；卖出规则见下区。两行均可<strong>锁定</strong>以防误卖。</p>';
+            html += '<div class="ranch-warehouse-subhead">已收取产出（待售） · ' + produceBatches + '/' + LANDLORD_RANCH_PRODUCE_WAREHOUSE_MAX_BATCHES + ' 批</div>';
             if (!Array.isArray(r.ranchProduceWarehouse) || r.ranchProduceWarehouse.length < 1) {
                 html += '<div class="ranch-warehouse-empty" style="margin-bottom:14px">暂无待售产出；栏位点「收取产出」或一键收取后，对应批次会出现在这里。</div>';
             } else {
@@ -2063,13 +2132,10 @@
                 }
                 html += '</div>';
             }
-            html += '<div class="ranch-warehouse-subhead">动物库存（放养用）</div>';
+            html += '<div class="ranch-warehouse-subhead">动物库存（放养用） · ' + invSum + '/' + LANDLORD_RANCH_ANIMAL_INVENTORY_MAX + ' 头</div>';
             html += '<p class="ranch-warehouse-desc" style="margin-top:4px">单价 = 基础每批 × 品质 × 当前全局牧场加成（与栏内实收含草场合鸣、逗乐<strong>不同</strong>）。</p>';
             var whKeys = r.animalInventory ? Object.keys(r.animalInventory) : [];
-            var whCount = 0;
-            for (var whi = 0; whi < whKeys.length; whi++) {
-                whCount += Math.floor(Number(r.animalInventory[whKeys[whi]]) || 0);
-            }
+            var whCount = invSum;
             if (whCount < 1) {
                 html += '<div class="ranch-warehouse-empty">暂无动物库存；果实抽奖可获得动物。</div>';
             } else {
@@ -2246,7 +2312,7 @@
             var n = 0;
             for (var i = 0; i < player.landlord.fruitStorage.length; i++) {
                 var f = player.landlord.fruitStorage[i];
-                if (f && !f.isLocked && f.type === fruitType) n++;
+                if (f && !f.isLocked && getLandlordSeedBaseName(f.type) === fruitType) n++;
             }
             return n;
         }
@@ -2256,7 +2322,7 @@
             if (typeof player === 'undefined' || !player.landlord || !Array.isArray(player.landlord.fruitStorage)) return 0;
             for (var i = player.landlord.fruitStorage.length - 1; i >= 0 && removed < amount; i--) {
                 var fr = player.landlord.fruitStorage[i];
-                if (fr && !fr.isLocked && fr.type === fruitType) {
+                if (fr && !fr.isLocked && getLandlordSeedBaseName(fr.type) === fruitType) {
                     player.landlord.fruitStorage.splice(i, 1);
                     removed++;
                 }
@@ -2427,8 +2493,13 @@
 
         // 创建新植物
         function createNewLandlordPlant(seedName, fieldIndex) {
+            const seedProps = getLandlordSeedProperties(seedName);
+            if (!seedProps) {
+                showLandlordNotification('种子数据异常：' + seedName, 'error');
+                return null;
+            }
             // 计算重量
-            const maxWeight = seedProperties[seedName].maxWeight;
+            const maxWeight = seedProps.maxWeight;
             let weight = calculateLandlordWeight(maxWeight);
             
             // 计算生长时间（10分钟基础 + 每kg加1分钟）
@@ -2616,7 +2687,8 @@
 
         // 计算植物价值
         function calculateLandlordPlantValue(plant) {
-            const seedPrice = seedProperties[plant.type].price;
+            const seedProps = getLandlordSeedProperties(plant.type);
+            const seedPrice = seedProps ? seedProps.price : 0;
             
             // 基础价格
             const basePrice = (1 + (seedPrice / 100)) * plant.weight;
@@ -2641,7 +2713,7 @@
             let finalPrice = basePrice * basicMultiplier * weatherMultiplier * specialMultiplier;
             
             // 如果是特殊突变植物，应用额外的5倍倍率
-            if (plant.specialMutation && specialMutations[plant.type]) {
+            if (plant.specialMutation && specialMutations[getLandlordSeedBaseName(plant.type)]) {
                 finalPrice *= 5;
             }
 

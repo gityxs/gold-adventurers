@@ -1,4 +1,4 @@
-        const GAME_VERSION = "2.0.34";
+        const GAME_VERSION = "2.0.35";
         const GAME_INVENTORY_MAX = 100;
         var WING_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
         var MOUNT_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
@@ -532,6 +532,7 @@ liveStream: {
             totalLiveTime: 0,
             expMultiplier: 1,
             viewers: [],
+            displayViewerCount: 0,
             donationHistory: [],
            lastDanmaku: null
         },
@@ -4372,15 +4373,31 @@ function handleVipPowerGain() {
             return sciFromLog10(log10Value);
         }
 
+        // 魂环/副本装备总加成（须在 save 主循环调用 getTotalGPS 前可用，故放在 core）
+        function getTotalSoulRingBonus() {
+            let total = 0;
+            (player.soulRings || []).forEach(ring => {
+                total += (Number(ring.level) || 0) * (Number(ring.multiplier) || 0);
+            });
+            const mult = (player.classBonuses && Number(player.classBonuses.soulRingMultiplier)) || 1;
+            return total * mult;
+        }
+        function getTotalDungeonEquipBonus() {
+            let total = 0;
+            (player.dungeonEquipment || []).forEach(eq => {
+                total += (Number(eq.level) || 0) * (Number(eq.growthRate) || 0);
+            });
+            const mult = (player.classBonuses && Number(player.classBonuses.dungeonEquipMultiplier)) || 1;
+            return total * mult;
+        }
+
         // 核心游戏逻辑
         function getTotalGPS() {
     const towerMultiplier = 1 + (Number(player.tower && player.tower.currentFloor) || 0) * 0.01;
     const gpsBonus = (Number(player.reincarnationStats && player.reincarnationStats.gpsBonus && player.reincarnationStats.gpsBonus.level) || 0) * 1.00; // 每级增加100% GPS
     const petMultiplier = Object.values(player.pets || {}).reduce((sum, pet) => sum + (Number(pet.level) || 0) * (Number(pet.multiplier) || 0), 1);
 
-    // 改为使用带职业加成的总装备加成
     const dungeonBonus = getTotalDungeonEquipBonus();
-    // 改为使用带职业加成的总魂环加成
     const soulRingBonus = getTotalSoulRingBonus();
  const mysteryBonus = player.mystery.bonus || 1;
 const cultivationBonus = player.cultivation.bonus || 1;

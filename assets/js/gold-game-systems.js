@@ -755,9 +755,13 @@ seed_herb5: itemCounts.seed_herb5 || 0
 }
 
  window._startGameAfterLogin = function() {
-    if (typeof loadGame === 'function') loadGame();
-    else loadSave();
-    if (typeof runTradingOfflineIfNeeded === 'function') runTradingOfflineIfNeeded();
+    if (window._goldGameStartAfterLoginDone) return;
+    window._goldGameStartAfterLoginDone = true;
+    if (typeof loadGame === 'function') {
+        loadGame({ skipLoadSave: !!window._goldGameSaveLoadedOk });
+    } else {
+        loadSave();
+    }
     // 跑商：初始化主循环（更新城市价格、旅行状态）并启动自动贸易定时器
     if (player && player.reincarnationCount >= 1000) {
         if (!player.trading && typeof initTradingData === 'function') initTradingData();
@@ -2157,6 +2161,7 @@ function confirmRename() {
     // 直播中完全保留观众列表，不截断不清空，避免保存后人数变少
     if (player.liveStream && player.liveStream.viewers && !player.liveStream.isLive) {
         player.liveStream.viewers = [];
+        player.liveStream.displayViewerCount = 0;
     }
     if (player.reincarnationEquipment) {
         player.reincarnationEquipment.inventory = player.reincarnationEquipment.inventory.filter(eq => eq);
@@ -2177,8 +2182,8 @@ function confirmRename() {
         delete player.liveStream.danmakuPasswordInterval;
         delete player.liveStream.wishListInterval;
         delete player.liveStream.danmakuPasswordTimer;
-        if (player.liveStream.isLive && player.liveStream.viewers && player.liveStream.viewers.length > 150) {
-            player.liveStream.viewers = player.liveStream.viewers.slice(-150);
+        if (player.liveStream.isLive && player.liveStream.viewers && player.liveStream.viewers.length > 100) {
+            player.liveStream.viewers = player.liveStream.viewers.slice(-100);
         }
     }
     if (player.trading && player.trading.autoTrade && player.trading.autoTrade.logs && player.trading.autoTrade.logs.length > 10) {
@@ -2310,8 +2315,14 @@ function confirmRename() {
                     }
                     if (!ls.isLive && Array.isArray(ls.viewers)) ls.viewers = [];
                     else if (Array.isArray(ls.viewers)) {
-                        var maxV = aggressive ? 80 : 150;
+                        var maxV = aggressive ? 80 : 100;
                         if (ls.viewers.length > maxV) ls.viewers = ls.viewers.slice(-maxV);
+                    }
+                    if (typeof ls.displayViewerCount !== 'number' || ls.displayViewerCount < 0) {
+                        ls.displayViewerCount = Array.isArray(ls.viewers) ? ls.viewers.length : 0;
+                    }
+                    if (ls.displayViewerCount < ls.viewers.length) {
+                        ls.displayViewerCount = ls.viewers.length;
                     }
                 }
                 if (p.trading && p.trading.autoTrade && Array.isArray(p.trading.autoTrade.logs)) {
@@ -4688,12 +4699,14 @@ function confirmRename() {
         })();
 
         // 加载游戏
-        function loadGame() {
+        function loadGame(opts) {
+    opts = opts || {};
     window._tradingOfflineRunThisSession = false; // 主动加载存档时允许本次离线结算
+    window._tradingOfflineCheckedThisSession = false;
     if (window._goldGameCloudLoadActive && typeof window.updateGoldGameCloudLoadProgress === 'function') {
         window.updateGoldGameCloudLoadProgress('正在初始化游戏界面…', 88, 'init');
     }
-    loadSave();
+    if (!opts.skipLoadSave) loadSave();
     if (typeof getGoldGameAuthToken === 'function' && getGoldGameAuthToken() && typeof goldGameGetNetworkArtifacts === 'function') {
         goldGameGetNetworkArtifacts().catch(function() {});
         if (typeof goldGameGetNetworkAbyssDivine === 'function') goldGameGetNetworkAbyssDivine().catch(function() {});

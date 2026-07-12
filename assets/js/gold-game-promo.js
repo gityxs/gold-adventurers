@@ -6,6 +6,41 @@ var PROMO_BANNER_COST = 30000;
 var PROMO_FEATURED_COST = 50000;
 var PROMO_BIGV_COST = 40000;
 var PROMO_SPLASH_COST = 80000;
+/** 观众名单最多展示/保留的不同名字数量 */
+var LIVE_VIEWER_LIST_MAX = 100;
+
+function getLiveDisplayViewerCount() {
+    var ls = player && player.liveStream;
+    if (!ls) return 0;
+    if (typeof ls.displayViewerCount === 'number' && ls.displayViewerCount >= 0) {
+        return Math.floor(ls.displayViewerCount);
+    }
+    return Array.isArray(ls.viewers) ? ls.viewers.length : 0;
+}
+
+function syncLiveDisplayViewerCount() {
+    var ls = player && player.liveStream;
+    if (!ls) return;
+    if (typeof ls.displayViewerCount !== 'number' || ls.displayViewerCount < 0) {
+        ls.displayViewerCount = Array.isArray(ls.viewers) ? ls.viewers.length : 0;
+    }
+    ls.displayViewerCount = Math.max(0, Math.floor(ls.displayViewerCount));
+}
+
+function pickUniqueViewerName(isVip) {
+    var pool = isVip ? liveStreamSystem.vipNames : liveStreamSystem.aiNames;
+    if (!pool || pool.length === 0) return '观众' + Math.floor(Math.random() * 10000);
+    var used = {};
+    (player.liveStream.viewers || []).forEach(function(v) { if (v && v.name) used[v.name] = true; });
+    for (var t = 0; t < 50; t++) {
+        var name = pool[Math.floor(Math.random() * pool.length)];
+        if (!used[name]) return name;
+    }
+    for (var i = 0; i < pool.length; i++) {
+        if (!used[pool[i]]) return pool[i];
+    }
+    return pool[Math.floor(Math.random() * pool.length)] + String(Math.floor(Math.random() * 9000) + 1000);
+}
 
 function openPromotionEntryModal() {
     var modal = document.getElementById('promotionEntryModal');
@@ -120,26 +155,29 @@ function boostLiveStream() {
 function addViewers(count) {
     if (!player.liveStream.isLive) return;
     liveStreamSystem.maxViewers = getEffectiveMaxViewers();
+    syncLiveDisplayViewerCount();
     var vipRate = 0.03;
     if (player.liveStream.promotionBigvEndTime && Date.now() < player.liveStream.promotionBigvEndTime) vipRate = 0.06;
     for (let i = 0; i < count; i++) {
-        if (player.liveStream.viewers.length >= liveStreamSystem.maxViewers) break;
-        
-        const isVip = Math.random() < vipRate;
-        const viewerName = isVip 
-            ? liveStreamSystem.vipNames[Math.floor(Math.random() * liveStreamSystem.vipNames.length)]
-            : liveStreamSystem.aiNames[Math.floor(Math.random() * liveStreamSystem.aiNames.length)];
-        var v = {
-            id: Date.now() + Math.random(),
-            name: viewerName,
-            joinTime: Date.now(),
-            activity: Math.random(),
-            isVip: isVip
-        };
-        player.liveStream.viewers.push(v);
-        if (isVip) tryNobleEnterEffect(v);
+        if (getLiveDisplayViewerCount() >= liveStreamSystem.maxViewers) break;
+
+        player.liveStream.displayViewerCount = getLiveDisplayViewerCount() + 1;
+
+        if (player.liveStream.viewers.length < LIVE_VIEWER_LIST_MAX) {
+            const isVip = Math.random() < vipRate;
+            const viewerName = pickUniqueViewerName(isVip);
+            var v = {
+                id: Date.now() + Math.random(),
+                name: viewerName,
+                joinTime: Date.now(),
+                activity: Math.random(),
+                isVip: isVip
+            };
+            player.liveStream.viewers.push(v);
+            if (isVip) tryNobleEnterEffect(v);
+        }
     }
-    
+
     updateLiveStreamUI();
 }
 
@@ -147,30 +185,41 @@ function addViewers(count) {
 function updateViewers() {
     if (!player.liveStream.isLive) return;
     liveStreamSystem.maxViewers = getEffectiveMaxViewers();
+    syncLiveDisplayViewerCount();
     const max = liveStreamSystem.maxViewers;
-    const len = player.liveStream.viewers.length;
-    
+    const displayCount = getLiveDisplayViewerCount();
+    const listLen = player.liveStream.viewers.length;
+
     // 随机有观众离开（降低到12%，避免流失过快）
-    if (len > 0 && Math.random() < 0.12) {
-        const leaveIndex = Math.floor(Math.random() * len);
-        const leaveViewer = player.liveStream.viewers[leaveIndex];
-        player.liveStream.viewers.splice(leaveIndex, 1);
-        addDanmakuMessageq("系统", `${leaveViewer.name} 离开了直播间`, "system");
+    if (displayCount > 0 && Math.random() < 0.12) {
+        player.liveStream.displayViewerCount = displayCount - 1;
+        if (listLen > 0) {
+            const leaveIndex = Math.floor(Math.random() * listLen);
+            const leaveViewer = player.liveStream.viewers[leaveIndex];
+            player.liveStream.viewers.splice(leaveIndex, 1);
+            addDanmakuMessageq("系统", `${leaveViewer.name} 离开了直播间`, "system");
+        } else {
+            addDanmakuMessageq("系统", "一位观众 离开了直播间", "system");
+        }
     }
-    
+
     // 随机有新观众加入（提高至88%，确保人数倾向于增长）
-    if (player.liveStream.viewers.length < max && Math.random() < 0.88) {
+    if (getLiveDisplayViewerCount() < max && Math.random() < 0.88) {
+        const listBefore = player.liveStream.viewers.length;
         addViewers(1);
-        const newViewer = player.liveStream.viewers[player.liveStream.viewers.length - 1];
-        addDanmakuMessageq("系统", `${newViewer.name} 进入了直播间`, "system");
+        if (getLiveDisplayViewerCount() > displayCount) {
+            const viewers = player.liveStream.viewers;
+            const joinName = viewers.length > listBefore ? viewers[viewers.length - 1].name : "一位观众";
+            addDanmakuMessageq("系统", `${joinName} 进入了直播间`, "system");
+        }
     }
-    
+
     updateLiveStreamUI();
 }
 
 // 生成互动消息
 function generateInteractions() {
-    if (!player.liveStream.isLive || player.liveStream.viewers.length === 0) return;
+    if (!player.liveStream.isLive || getLiveDisplayViewerCount() === 0 || player.liveStream.viewers.length === 0) return;
     
     // 随机生成1-8条互动消息（使用智能情境化发言）
     const messageCount = Math.floor(Math.random() * 7) + 1;
@@ -396,7 +445,7 @@ function decayHeat() {
 
 // 4. 福袋抽奖
 function triggerFortuneBag() {
-    if (!player.liveStream.isLive || player.liveStream.viewers.length < 3) return;
+    if (!player.liveStream.isLive || getLiveDisplayViewerCount() < 3 || player.liveStream.viewers.length === 0) return;
     player.liveStream.fortuneBagNextTime = Date.now() + 90000; // 下次福袋90秒后
     const viewers = player.liveStream.viewers;
     const winner = viewers[Math.floor(Math.random() * viewers.length)];
@@ -460,7 +509,7 @@ function startLivePk() {
         logAction("PK冷却中，还需 " + minLeft + " 分钟", "error");
         return;
     }
-    if (player.liveStream.viewers.length < 5) {
+    if (getLiveDisplayViewerCount() < 5) {
         logAction("观众太少，无法发起PK！", "error");
         return;
     }
@@ -513,12 +562,17 @@ function triggerRandomLiveEvent() {
             player.liveStream.eventCooldown = Date.now() + 120000;
             const vb = ev.viewerBonus;
             if (vb > 0) addViewers(vb);
-            else if (vb < 0 && player.liveStream.viewers.length > 5) {
-                for (let i = 0; i < Math.min(-vb, player.liveStream.viewers.length - 3); i++) {
-                    const idx = Math.floor(Math.random() * player.liveStream.viewers.length);
-                    const v = player.liveStream.viewers[idx];
-                    player.liveStream.viewers.splice(idx, 1);
-                    addDanmakuMessageq("系统", `${v.name} 离开了直播间`, "system");
+            else if (vb < 0 && getLiveDisplayViewerCount() > 5) {
+                for (let i = 0; i < Math.min(-vb, getLiveDisplayViewerCount() - 3); i++) {
+                    player.liveStream.displayViewerCount = Math.max(0, getLiveDisplayViewerCount() - 1);
+                    if (player.liveStream.viewers.length > 0) {
+                        const idx = Math.floor(Math.random() * player.liveStream.viewers.length);
+                        const v = player.liveStream.viewers[idx];
+                        player.liveStream.viewers.splice(idx, 1);
+                        addDanmakuMessageq("系统", `${v.name} 离开了直播间`, "system");
+                    } else {
+                        addDanmakuMessageq("系统", "一位观众 离开了直播间", "system");
+                    }
                 }
             }
             if (ev.earnBonus > 1 && Math.random() < 0.5) {
