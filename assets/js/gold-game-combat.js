@@ -414,6 +414,25 @@ function dropItemsAfterBattle() {
     // 其他道具掉落逻辑可以在这里添加
 }
 
+// 道具名彩字档位（每档一套不同七彩）
+const ITEM_NAME_TONE_MAP = {
+    primaryGem: 'tone-gem1', advancedGem: 'tone-gem2', superiorGem: 'tone-gem3', divineGem: 'tone-gem4',
+    vipPower: 'tone-vip', refineStone: 'tone-stone', rose: 'tone-rose', companionKey: 'tone-key',
+    rebornDan: 'tone-dan', baitCount: 'tone-bait', rootDetector: 'tone-root', bloodlineDetector: 'tone-blood',
+    advanceStone: 'tone-advance', primaryGemq: 'tone-coin', zongmen: 'tone-token', roseq: 'tone-sachet',
+    yuzhou1: 'tone-invoice1', yuzhou2: 'tone-invoice2', yuzhou3: 'tone-invoice3', yuzhou4: 'tone-invoice4',
+    banlv1: 'tone-soul1', banlv2: 'tone-soul2', banlv3: 'tone-soul3', banlv4: 'tone-soul4',
+    banlv5: 'tone-soul5', banlv6: 'tone-soul6', banlv7: 'tone-soul7', banlv8: 'tone-soul8', banlv9: 'tone-soul9',
+    zhiye1: 'tone-job', chiban1: 'tone-wing', zuoqi1: 'tone-mount', fuben1: 'tone-dungeon',
+    shenshou1: 'tone-beast', lawPowerMaterial: 'tone-law', fuwen1: 'tone-rune', fuben2: 'tone-secret',
+    danyao1: 'tone-pill1', danyao2: 'tone-pill2', danyao3: 'tone-pill3', danyao4: 'tone-pill4', danyao5: 'tone-pill5',
+    fubeng1: 'tone-abyss', cultivationpill: 'tone-cult',
+    seed_herb1: 'tone-seed1', seed_herb2: 'tone-seed2', seed_herb3: 'tone-seed3', seed_herb4: 'tone-seed4', seed_herb5: 'tone-seed5'
+};
+function getItemNameTone(key) {
+    return ITEM_NAME_TONE_MAP[key] || 'tone-default';
+}
+
 // 更新道具显示
 function updateItemDisplay() {
     const container = document.getElementById('itemContainer');
@@ -421,12 +440,13 @@ function updateItemDisplay() {
     container.innerHTML = Object.entries(player.items || {})
         .map(([key, value]) => {
             const item = itemEffects[key];
+            const tone = getItemNameTone(key);
             if (!item) {
-                return `<div>${key}: ${value}（未知道具，无配置）</div>`;
+                return `<div class="item-card item-${tone}"><div class="item-name">${key}</div><div class="item-desc">未知道具</div><span class="item-qty">${value}</span></div>`;
             }
-            return `<div>${item.name}: ${value} - ${item.description}</div>`;
+            return `<div class="item-card item-${tone}"><div class="item-name">${item.name}</div><div class="item-desc">${item.description}</div><span class="item-qty">${value}</span></div>`;
         })
-        .join('');
+        .join('') || '<div class="main-muted">背包空空如也</div>';
 }
         function dropDungeonEquipment(stage) {
             const dropRates = getDropRatesByStage(stage);
@@ -497,7 +517,27 @@ function updateItemDisplay() {
         { minStage: 4280, type: 'year34', chance: 0.01 },
         { minStage: 4300, type: 'year35', chance: 0.01 },
         { minStage: 4420, type: 'year36', chance: 0.01 },
-        { minStage: 4550, type: 'year37', chance: 0.01 }
+        { minStage: 4550, type: 'year37', chance: 0.01 },
+        { minStage: 4680, type: 'year38', chance: 0.01 },
+        { minStage: 4800, type: 'year39', chance: 0.01 },
+        { minStage: 4920, type: 'year40', chance: 0.01 },
+        { minStage: 5040, type: 'year41', chance: 0.01 },
+        { minStage: 5160, type: 'year42', chance: 0.01 },
+        { minStage: 5280, type: 'year43', chance: 0.01 },
+        { minStage: 5400, type: 'year44', chance: 0.01 },
+        { minStage: 5520, type: 'year45', chance: 0.01 },
+        { minStage: 5640, type: 'year46', chance: 0.01 },
+        { minStage: 5760, type: 'year47', chance: 0.01 },
+        { minStage: 5880, type: 'year48', chance: 0.01 },
+        { minStage: 6000, type: 'year49', chance: 0.01 },
+        { minStage: 6120, type: 'year50', chance: 0.01 },
+        { minStage: 6240, type: 'year51', chance: 0.01 },
+        { minStage: 6360, type: 'year52', chance: 0.01 },
+        { minStage: 6480, type: 'year53', chance: 0.01 },
+        { minStage: 6600, type: 'year54', chance: 0.01 },
+        { minStage: 6720, type: 'year55', chance: 0.01 },
+        { minStage: 6840, type: 'year56', chance: 0.01 },
+        { minStage: 6960, type: 'year57', chance: 0.01 }
     ];
 
     soulRingDrops.forEach(drop => {
@@ -580,8 +620,26 @@ function updateItemDisplay() {
                 return { common: 0.8, ultimate39: 0.03, ultimate40: 0.06, ultimate41: 0.04, ultimate42: 0.02, ultimate43: 0.02, ultimate44: 0.01, ultimate45: 0.01, ultimate46: 0.01 };
             } else if (stage <= 4500) {
                 return { common: 0.8, ultimate41: 0.03, ultimate42: 0.06, ultimate43: 0.04, ultimate44: 0.02, ultimate45: 0.02, ultimate46: 0.01, ultimate47: 0.01, ultimate48: 0.01 };
+            } else if (stage <= 4650) {
+                return { common: 0.8, ultimate45: 0.03, ultimate46: 0.06, ultimate47: 0.04, ultimate48: 0.02, ultimate49: 0.02, ultimate50: 0.01, ultimate51: 0.01, ultimate52: 0.01 };
+            } else if (stage <= 4800) {
+                return { common: 0.8, ultimate47: 0.03, ultimate48: 0.06, ultimate49: 0.04, ultimate50: 0.02, ultimate51: 0.02, ultimate52: 0.01, ultimate53: 0.01, ultimate54: 0.01 };
+            } else if (stage <= 4950) {
+                return { common: 0.8, ultimate49: 0.03, ultimate50: 0.06, ultimate51: 0.04, ultimate52: 0.02, ultimate53: 0.02, ultimate54: 0.01, ultimate55: 0.01, ultimate56: 0.01 };
+            } else if (stage <= 5100) {
+                return { common: 0.8, ultimate51: 0.03, ultimate52: 0.06, ultimate53: 0.04, ultimate54: 0.02, ultimate55: 0.02, ultimate56: 0.01, ultimate57: 0.01, ultimate58: 0.01 };
+            } else if (stage <= 5250) {
+                return { common: 0.8, ultimate53: 0.03, ultimate54: 0.06, ultimate55: 0.04, ultimate56: 0.02, ultimate57: 0.02, ultimate58: 0.01, ultimate59: 0.01, ultimate60: 0.01 };
+            } else if (stage <= 5400) {
+                return { common: 0.8, ultimate55: 0.03, ultimate56: 0.06, ultimate57: 0.04, ultimate58: 0.02, ultimate59: 0.02, ultimate60: 0.01, ultimate61: 0.01, ultimate62: 0.01 };
+            } else if (stage <= 5550) {
+                return { common: 0.8, ultimate57: 0.03, ultimate58: 0.06, ultimate59: 0.04, ultimate60: 0.02, ultimate61: 0.02, ultimate62: 0.01, ultimate63: 0.01, ultimate64: 0.01 };
+            } else if (stage <= 5700) {
+                return { common: 0.8, ultimate59: 0.03, ultimate60: 0.06, ultimate61: 0.04, ultimate62: 0.02, ultimate63: 0.02, ultimate64: 0.01, ultimate65: 0.01, ultimate66: 0.01 };
+            } else if (stage <= 5850) {
+                return { common: 0.8, ultimate61: 0.03, ultimate62: 0.06, ultimate63: 0.04, ultimate64: 0.02, ultimate65: 0.02, ultimate66: 0.01, ultimate67: 0.01, ultimate68: 0.01 };
             } else {
-                return { common: 0.8, ultimate43: 0.03, ultimate44: 0.06, ultimate45: 0.04, ultimate46: 0.02, ultimate47: 0.02, ultimate48: 0.01, ultimate49: 0.01, ultimate50: 0.01 };
+                return { common: 0.8, ultimate63: 0.03, ultimate64: 0.06, ultimate65: 0.04, ultimate66: 0.02, ultimate67: 0.02, ultimate68: 0.01, ultimate69: 0.01, ultimate70: 0.01 };
             }
         }
 
@@ -729,7 +787,27 @@ function simulateSoulRingDrop(stage) {
         { minStage: 4280, type: 'year34', chance: 0.01 },
         { minStage: 4300, type: 'year35', chance: 0.01 },
         { minStage: 4420, type: 'year36', chance: 0.01 },
-        { minStage: 4550, type: 'year37', chance: 0.01 }
+        { minStage: 4550, type: 'year37', chance: 0.01 },
+        { minStage: 4680, type: 'year38', chance: 0.01 },
+        { minStage: 4800, type: 'year39', chance: 0.01 },
+        { minStage: 4920, type: 'year40', chance: 0.01 },
+        { minStage: 5040, type: 'year41', chance: 0.01 },
+        { minStage: 5160, type: 'year42', chance: 0.01 },
+        { minStage: 5280, type: 'year43', chance: 0.01 },
+        { minStage: 5400, type: 'year44', chance: 0.01 },
+        { minStage: 5520, type: 'year45', chance: 0.01 },
+        { minStage: 5640, type: 'year46', chance: 0.01 },
+        { minStage: 5760, type: 'year47', chance: 0.01 },
+        { minStage: 5880, type: 'year48', chance: 0.01 },
+        { minStage: 6000, type: 'year49', chance: 0.01 },
+        { minStage: 6120, type: 'year50', chance: 0.01 },
+        { minStage: 6240, type: 'year51', chance: 0.01 },
+        { minStage: 6360, type: 'year52', chance: 0.01 },
+        { minStage: 6480, type: 'year53', chance: 0.01 },
+        { minStage: 6600, type: 'year54', chance: 0.01 },
+        { minStage: 6720, type: 'year55', chance: 0.01 },
+        { minStage: 6840, type: 'year56', chance: 0.01 },
+        { minStage: 6960, type: 'year57', chance: 0.01 }
     ];
     
     for (const drop of soulRingDrops) {
@@ -859,7 +937,8 @@ function startAutoSweep() {
 // 停止自动扫荡
 function stopAutoSweep() {
     if (player.battle.autoSweepInterval) {
-        clearInterval(player.battle.autoSweepInterval);
+        if (typeof unregisterInterval === 'function') unregisterInterval(player.battle.autoSweepInterval);
+        else clearInterval(player.battle.autoSweepInterval);
         player.battle.autoSweepInterval = null;
     }
 }
@@ -1017,7 +1096,27 @@ function simulateSoulRingDropSilent(stage) {
         { minStage: 4280, type: 'year34', chance: 0.01 },
         { minStage: 4300, type: 'year35', chance: 0.01 },
         { minStage: 4420, type: 'year36', chance: 0.01 },
-        { minStage: 4550, type: 'year37', chance: 0.01 }
+        { minStage: 4550, type: 'year37', chance: 0.01 },
+        { minStage: 4680, type: 'year38', chance: 0.01 },
+        { minStage: 4800, type: 'year39', chance: 0.01 },
+        { minStage: 4920, type: 'year40', chance: 0.01 },
+        { minStage: 5040, type: 'year41', chance: 0.01 },
+        { minStage: 5160, type: 'year42', chance: 0.01 },
+        { minStage: 5280, type: 'year43', chance: 0.01 },
+        { minStage: 5400, type: 'year44', chance: 0.01 },
+        { minStage: 5520, type: 'year45', chance: 0.01 },
+        { minStage: 5640, type: 'year46', chance: 0.01 },
+        { minStage: 5760, type: 'year47', chance: 0.01 },
+        { minStage: 5880, type: 'year48', chance: 0.01 },
+        { minStage: 6000, type: 'year49', chance: 0.01 },
+        { minStage: 6120, type: 'year50', chance: 0.01 },
+        { minStage: 6240, type: 'year51', chance: 0.01 },
+        { minStage: 6360, type: 'year52', chance: 0.01 },
+        { minStage: 6480, type: 'year53', chance: 0.01 },
+        { minStage: 6600, type: 'year54', chance: 0.01 },
+        { minStage: 6720, type: 'year55', chance: 0.01 },
+        { minStage: 6840, type: 'year56', chance: 0.01 },
+        { minStage: 6960, type: 'year57', chance: 0.01 }
     ];
     
     for (const drop of soulRingDrops) {
@@ -1199,6 +1298,8 @@ function updateTechniqueBonuses() {
         }
     });
     
+    applyTsrEternalRuneBonuses();
+    
     // 更新玩家战斗属性
     updatePlayerBattleStats();
      updateOfficialSystemDisplay();
@@ -1263,6 +1364,12 @@ let wingHealthBonus = 0;
     var worldMapAbyssFloorMul = (typeof getWorldMapAbyssBestFloorStatMultiplier === 'function') ? getWorldMapAbyssBestFloorStatMultiplier() : 1;
     var worldMapDivineCodexMul = (typeof getNetworkAbyssDivineCodexWorldMapMultiplier === 'function') ? getNetworkAbyssDivineCodexWorldMapMultiplier() : 1;
     var worldMapAbyssCombinedMul = worldMapAbyssFloorMul * worldMapDivineCodexMul;
+    var geneTreeBonuses = (typeof getLandlordGeneTreeWorldMapBonuses === 'function')
+        ? getLandlordGeneTreeWorldMapBonuses()
+        : { attack: 1, health: 1, critDamage: 1, exp: 1 };
+    var geneTreeAtkMul = Number(geneTreeBonuses.attack) || 1;
+    var geneTreeHpMul = Number(geneTreeBonuses.health) || 1;
+    var geneTreeCritMul = Number(geneTreeBonuses.critDamage) || 1;
 
     // 2. 计算玩家生命（大数安全）
     player.battle.playerHealth = multiplyBigByFactors(player.reincarnationCount, [
@@ -1289,6 +1396,7 @@ let wingHealthBonus = 0;
         (1 + (lawBonuses.health || 0)),
         getDongtianAnnihilationHpAtkMultiplier(),
         worldMapAbyssCombinedMul,
+        geneTreeHpMul,
     ]);
 
     // 3. 计算玩家攻击（大数安全）
@@ -1314,6 +1422,7 @@ let wingHealthBonus = 0;
         (1 + (lawBonuses.attack || 0)),
         getDongtianAnnihilationHpAtkMultiplier(),
         worldMapAbyssCombinedMul,
+        geneTreeAtkMul,
     ]);
 
     // 4. 计算暴击率（应用伴侣暴击率加成）
@@ -1333,7 +1442,7 @@ let wingHealthBonus = 0;
         classBonuses.critMultiplier * titleBonuses.critMultiplier *
         companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100) *  (1 + techBonuses.critDamage* 10)  *  (1 + mountCritDamageBonus) *
         (1 + runeBonuses.critDamage)*         (1 + (player.mining.gems.amethyst*0.05)) * (1+player.marriage.marriageBonuses.critDamageBonus) *
-       (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage) * (1 + supremeBonus.critDamage) * (1 + pixelBonus.critDamage) * (1+player.fiveElements.water.level * 3.00) * (1 + networkPetCritDmgPct) * (1 + (lawBonuses.critDamage || 0)) * worldMapAbyssCombinedMul; // 应用伴侣爆伤加成 + 无限深渊最佳层数 + 神兽图鉴（世界地图）
+       (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage) * (1 + supremeBonus.critDamage) * (1 + pixelBonus.critDamage) * (1+player.fiveElements.water.level * 3.00) * (1 + networkPetCritDmgPct) * (1 + (lawBonuses.critDamage || 0)) * worldMapAbyssCombinedMul * geneTreeCritMul; // 应用伴侣爆伤加成 + 无限深渊最佳层数 + 神兽图鉴 + 地主基因树（世界地图）
 
     // 6. 计算连击次数（应用伴侣连击加成）
     player.battle.playerMultiAttack = Math.max(1,
@@ -2459,7 +2568,8 @@ function toggleFarmSystem() {
         
         // 关闭界面时清除自动化检查
         if (window.farmAutoCheckInterval) {
-            clearInterval(window.farmAutoCheckInterval);
+            if (typeof unregisterInterval === 'function') unregisterInterval(window.farmAutoCheckInterval);
+            else clearInterval(window.farmAutoCheckInterval);
             window.farmAutoCheckInterval = null;
         }
     } else {
@@ -2480,6 +2590,11 @@ function toggleFarmSystem() {
 function closeFarmSystem() {
     document.getElementById('farmSystemUI').style.display = 'none';
     document.getElementById('farmSystemOverlay').style.display = 'none';
+    if (window.farmAutoCheckInterval) {
+        if (typeof unregisterInterval === 'function') unregisterInterval(window.farmAutoCheckInterval);
+        else clearInterval(window.farmAutoCheckInterval);
+        window.farmAutoCheckInterval = null;
+    }
 }
 
 // 更新农场显示

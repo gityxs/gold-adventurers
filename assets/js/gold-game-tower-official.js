@@ -470,8 +470,48 @@ function toggleSlotMachine() {
         overlay.style.display = "block";
         updateSlotMachineUI();
         
-        // 初始化转轴符号
-        initReels();
+        // 有上次结果时恢复画面，避免与「最近结果」不一致
+        if (player.slotMachine.lastResult && player.slotMachine.lastResult.length === 3) {
+            setReelSymbols(player.slotMachine.lastResult);
+        } else {
+            initReels();
+        }
+    }
+}
+
+function createReelSymbolElement(text) {
+    const symbol = document.createElement("div");
+    symbol.style.height = "100px";
+    symbol.style.display = "flex";
+    symbol.style.alignItems = "center";
+    symbol.style.justifyContent = "center";
+    symbol.style.fontSize = "40px";
+    symbol.textContent = text;
+    return symbol;
+}
+
+function pickRandomSlotSymbol() {
+    const idx = Math.floor(Math.random() * slotMachineConfig.symbols.length);
+    return slotMachineConfig.symbols[idx];
+}
+
+// 将 3 个结果符号停在中间线（视窗第 2 行），上下用随机符号填充
+function setReelSymbols(results) {
+    const stopIndex = 0; // top=0 时中间线对应 index 1
+    const paylineOffset = 1;
+
+    for (let i = 1; i <= 3; i++) {
+        const reel = document.getElementById(`reel${i}`);
+        reel.style.transition = "none";
+        reel.style.top = "0px";
+        reel.innerHTML = "";
+
+        for (let j = 0; j < 3; j++) {
+            const text = (j === stopIndex + paylineOffset)
+                ? results[i - 1]
+                : pickRandomSlotSymbol();
+            reel.appendChild(createReelSymbolElement(text));
+        }
     }
 }
 
@@ -480,19 +520,11 @@ function initReels() {
     for (let i = 1; i <= 3; i++) {
         const reel = document.getElementById(`reel${i}`);
         reel.innerHTML = "";
+        reel.style.transition = "none";
         reel.style.top = "0px";
-        
-        // 为每个转轴添加符号
+
         for (let j = 0; j < 20; j++) {
-            const symbolIndex = Math.floor(Math.random() * slotMachineConfig.symbols.length);
-            const symbol = document.createElement("div");
-            symbol.style.height = "100px";
-            symbol.style.display = "flex";
-            symbol.style.alignItems = "center";
-            symbol.style.justifyContent = "center";
-            symbol.style.fontSize = "40px";
-            symbol.textContent = slotMachineConfig.symbols[symbolIndex];
-            reel.appendChild(symbol);
+            reel.appendChild(createReelSymbolElement(pickRandomSlotSymbol()));
         }
     }
 }
@@ -553,32 +585,34 @@ function spinSlotMachine() {
     spinButton.disabled = true;
     spinButton.textContent = "旋转中...";
     
-    // 生成随机结果
+    // 生成随机结果（与转轴最终停轮符号一致）
     const results = [];
     for (let i = 0; i < 3; i++) {
         const rand = Math.random();
         let cumulativeProb = 0;
-        
+        let picked = null;
+
         for (let j = 0; j < slotMachineConfig.symbolProbabilities.length; j++) {
             cumulativeProb += slotMachineConfig.symbolProbabilities[j];
             if (rand <= cumulativeProb) {
-                results.push(slotMachineConfig.symbols[j]);
+                picked = slotMachineConfig.symbols[j];
                 break;
             }
         }
+        results.push(picked || slotMachineConfig.symbols[slotMachineConfig.symbols.length - 1]);
     }
-    
-    // 动画效果
-    animateReels(results);
-    
+
+    // 动画效果：停轮后中间线 = results
+    const animMs = animateReels(results);
+
     // 检查中奖
     setTimeout(() => {
         checkWin(results);
-        
+
         // 重新启用旋转按钮
         spinButton.disabled = false;
         spinButton.textContent = "旋转";
-        
+
         // 如果自动旋转开启，继续旋转
         if (player.slotMachine.autoSpin) {
             setTimeout(() => {
@@ -590,22 +624,41 @@ function spinSlotMachine() {
                 }
             }, slotMachineConfig.autoSpinDelay);
         }
-    }, 3500); // 等待动画完成
+    }, animMs + 100);
 }
 
-// 转轴动画
+// 转轴动画：把 results 停在每个转轴的中间线
 function animateReels(results) {
+    const symbolHeight = 100;
+    const paylineOffset = 1; // 视窗高 300px，中间行
+    let maxDurationMs = 0;
+
     for (let i = 1; i <= 3; i++) {
         const reel = document.getElementById(`reel${i}`);
-        const symbolHeight = 100; // 每个符号的高度
-        
-        // 随机停止位置，确保显示正确的符号
-        const targetPosition = -((Math.floor(Math.random() * 5) + 5) * symbolHeight);
-        
-        // 设置动画
-        reel.style.transition = "top 3s cubic-bezier(0.17, 0.67, 0.83, 0.67)";
-        reel.style.top = `${targetPosition}px`;
+        const targetSymbol = results[i - 1];
+        const stopIndex = 6 + i * 2; // 各轴停轮距离不同，形成先后停下
+        const totalSymbols = stopIndex + 3;
+        const durationSec = 2.2 + i * 0.4;
+        maxDurationMs = Math.max(maxDurationMs, durationSec * 1000);
+
+        reel.style.transition = "none";
+        reel.style.top = "0px";
+        reel.innerHTML = "";
+
+        for (let j = 0; j < totalSymbols; j++) {
+            const text = (j === stopIndex + paylineOffset)
+                ? targetSymbol
+                : pickRandomSlotSymbol();
+            reel.appendChild(createReelSymbolElement(text));
+        }
+
+        // 强制回流后再开过渡，否则二次旋转可能无动画
+        void reel.offsetHeight;
+        reel.style.transition = `top ${durationSec}s cubic-bezier(0.17, 0.67, 0.83, 0.67)`;
+        reel.style.top = `${-(stopIndex * symbolHeight)}px`;
     }
+
+    return maxDurationMs;
 }
 
 // 检查中奖
@@ -643,18 +696,19 @@ function checkWin(results) {
         logAction(`水果机未中奖：${combination}`, "info");
     }
     
-    // 保存结果历史
+    // 保存结果历史（与画面中间线一致）
+    player.slotMachine.lastResult = results.slice();
     player.slotMachine.history.push({
-        combination: combination,
+        combination: results.join(""),
         win: winAmount,
         timestamp: Date.now()
     });
-    
+
     // 限制历史记录数量
     if (player.slotMachine.history.length > 10) {
         player.slotMachine.history.shift();
     }
-    
+
     updateSlotMachineUI();
     updateDisplay();
 }

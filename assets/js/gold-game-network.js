@@ -146,16 +146,18 @@ window.formatAbyssOnlineChatTime = function(ts) {
     var ss = sec < 10 ? ('0' + sec) : String(sec);
     return y + '-' + mm + '-' + dd + ' ' + hh + ':' + mi + ':' + ss;
 };
-window.renderAbyssOnlineChat = function(list) {
-    var box = document.getElementById('abyssOnlineChatList');
-    if (!box) return;
+window._abyssOnlineChatListIds = ['abyssOnlineChatList', 'gameLogAbyssChatList'];
+window._buildAbyssOnlineChatHtml = function(list, theme) {
     var arr = Array.isArray(list) ? list : [];
+    var maxId = window._abyssOnlineChatLastRenderedId || 0;
     if (arr.length <= 0) {
-        box.innerHTML = '<div style="color:#9e9e9e;padding:8px 2px;">暂无聊天消息</div>';
-        return;
+        var emptyTone = theme === 'light' ? '#9ca3af' : '#9e9e9e';
+        return {
+            html: '<div style="color:' + emptyTone + ';padding:8px 2px;">暂无聊天消息</div>',
+            maxId: maxId
+        };
     }
     var html = [];
-    var maxId = window._abyssOnlineChatLastRenderedId || 0;
     for (var i = 0; i < arr.length; i++) {
         var row = arr[i] || {};
         var idNum = Number(row.id || 0);
@@ -163,26 +165,73 @@ window.renderAbyssOnlineChat = function(list) {
         var timeText = window._networkFloatEscapeHtml(window.formatAbyssOnlineChatTime(row.ts));
         var playerName = window._networkFloatEscapeHtml((row.playerName != null && String(row.playerName).trim()) ? String(row.playerName).trim() : '神秘玩家');
         var familyName = (row.familyName != null && String(row.familyName).trim()) ? String(row.familyName).trim() : '';
-        var familyPart = familyName ? (' <span style="color:#80cbc4;">[' + window._networkFloatEscapeHtml(familyName) + ']</span>') : '';
         var msg = window._networkFloatEscapeHtml((row.message != null) ? String(row.message) : '');
-        html.push('<div style="margin-bottom:6px;border-bottom:1px dashed rgba(179,157,219,.18);padding-bottom:5px;">'
-            + '<div style="font-size:11px;color:#b39ddb;">[' + timeText + '] <span style="color:#ce93d8;">' + playerName + '</span>' + familyPart + '</div>'
-            + '<div style="color:#f3e5f5;word-break:break-all;">' + msg + '</div>'
-            + '</div>');
+        if (theme === 'light') {
+            var familyLight = familyName ? (' <span class="gl-chat-family">[' + window._networkFloatEscapeHtml(familyName) + ']</span>') : '';
+            html.push('<div class="gl-chat-row">'
+                + '<div class="gl-chat-meta">[' + timeText + '] <span class="gl-chat-name">' + playerName + '</span>' + familyLight + '</div>'
+                + '<div class="gl-chat-msg">' + msg + '</div>'
+                + '</div>');
+        } else {
+            var familyPart = familyName ? (' <span style="color:#80cbc4;">[' + window._networkFloatEscapeHtml(familyName) + ']</span>') : '';
+            html.push('<div style="margin-bottom:6px;border-bottom:1px dashed rgba(179,157,219,.18);padding-bottom:5px;">'
+                + '<div style="font-size:11px;color:#b39ddb;">[' + timeText + '] <span style="color:#ce93d8;">' + playerName + '</span>' + familyPart + '</div>'
+                + '<div style="color:#f3e5f5;word-break:break-all;">' + msg + '</div>'
+                + '</div>');
+        }
     }
-    window._abyssOnlineChatLastRenderedId = maxId;
-    box.innerHTML = html.join('');
-    box.scrollTop = box.scrollHeight;
+    return { html: html.join(''), maxId: maxId };
+};
+window.renderAbyssOnlineChat = function(list) {
+    var floatBox = document.getElementById('abyssOnlineChatList');
+    var logBox = document.getElementById('gameLogAbyssChatList');
+    if (!floatBox && !logBox) return;
+    var dark = window._buildAbyssOnlineChatHtml(list, 'dark');
+    var light = window._buildAbyssOnlineChatHtml(list, 'light');
+    window._abyssOnlineChatLastRenderedId = Math.max(dark.maxId, light.maxId);
+    if (floatBox) {
+        floatBox.innerHTML = dark.html;
+        floatBox.scrollTop = floatBox.scrollHeight;
+    }
+    if (logBox) {
+        logBox.innerHTML = light.html;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
 };
 window.pollAbyssOnlineChat = function() {
     if (typeof goldGameGetAbyssChat !== 'function') return;
+    if (!window._abyssOnlineChatVisible && !window._gameLogAbyssChatVisible) return;
     goldGameGetAbyssChat().then(function(res) {
         if (!res || !res.ok) return;
         window.renderAbyssOnlineChat(res.list || []);
     }).catch(function() {});
 };
-window.sendAbyssOnlineChat = function() {
-    var input = document.getElementById('abyssOnlineChatInput');
+window._ensureAbyssOnlineChatLoop = function(needPoll) {
+    if (needPoll) {
+        if (!window._abyssOnlineChatLoopTimer) {
+            window.pollAbyssOnlineChat();
+            window._abyssOnlineChatLoopTimer = setInterval(function() { window.pollAbyssOnlineChat(); }, 4000);
+        }
+    } else if (window._abyssOnlineChatLoopTimer) {
+        clearInterval(window._abyssOnlineChatLoopTimer);
+        window._abyssOnlineChatLoopTimer = null;
+    }
+};
+window._resolveAbyssOnlineChatInput = function(sourceInputId) {
+    if (sourceInputId) {
+        var preferred = document.getElementById(sourceInputId);
+        if (preferred) return preferred;
+    }
+    var floatInput = document.getElementById('abyssOnlineChatInput');
+    var logInput = document.getElementById('gameLogAbyssChatInput');
+    if (document.activeElement === floatInput) return floatInput;
+    if (document.activeElement === logInput) return logInput;
+    if (logInput && String(logInput.value || '').trim()) return logInput;
+    if (floatInput && String(floatInput.value || '').trim()) return floatInput;
+    return logInput || floatInput || null;
+};
+window.sendAbyssOnlineChat = function(sourceInputId) {
+    var input = window._resolveAbyssOnlineChatInput(sourceInputId);
     if (!input) return;
     var text = String(input.value || '').trim();
     if (!text) return;
@@ -199,39 +248,56 @@ window.sendAbyssOnlineChat = function() {
         alert((e && e.message) || '发送失败');
     });
 };
+window.updateGameLogAbyssChatVisibility = function(isNetworking) {
+    var section = document.querySelector('.game-log-section');
+    var pane = document.getElementById('gameLogAbyssChatPane');
+    var status = document.getElementById('gameLogChatStatus');
+    var shouldShow = !!isNetworking;
+    if (section) section.classList.toggle('is-online-chat', shouldShow);
+    if (pane) {
+        if (shouldShow) pane.removeAttribute('hidden');
+        else pane.setAttribute('hidden', '');
+    }
+    if (status) status.style.display = shouldShow ? '' : 'none';
+    if (shouldShow && !window._gameLogAbyssChatVisible) {
+        window._gameLogAbyssChatVisible = true;
+        window.pollAbyssOnlineChat();
+    } else if (!shouldShow && window._gameLogAbyssChatVisible) {
+        window._gameLogAbyssChatVisible = false;
+    }
+};
 window.updateAbyssOnlineChatVisibility = function() {
     var panel = document.getElementById('abyssOnlineChatPanel');
     var codexBtn = document.getElementById('abyssRunSpeciesCodexBtn');
-    var isNetworking = (typeof getGoldGameAuthToken === 'function' && !!getGoldGameAuthToken());
+    var isNetworking = (typeof getGoldGameAuthToken === 'function' && !!getGoldGameAuthToken())
+        && !(typeof hasApi === 'function' && !hasApi());
     var inAbyssBattle = !!(window.abyssRun && window.abyssRun.active);
     var abyssUiVisible = false;
     var abyssUi = document.getElementById('abyssTowerUI');
     if (abyssUi && abyssUi.style && abyssUi.style.display !== 'none') abyssUiVisible = true;
-    var shouldShow = isNetworking && inAbyssBattle && abyssUiVisible;
-    if (codexBtn) codexBtn.style.display = shouldShow ? '' : 'none';
-    if (!panel) return;
-    if (shouldShow) {
-        if (!window._abyssOnlineChatVisible) {
-            panel.style.display = 'block';
-            window._abyssOnlineChatVisible = true;
-            if (typeof window.initAbyssOnlineChatDraggable === 'function') window.initAbyssOnlineChatDraggable();
-            if (typeof window.applyAbyssOnlineChatPanelPos === 'function') window.applyAbyssOnlineChatPanelPos();
-            window.applyAbyssOnlineChatCollapsed();
-            if (typeof window.lockAbyssChatViewportNoZoom === 'function') window.lockAbyssChatViewportNoZoom();
-            window.pollAbyssOnlineChat();
-            if (!window._abyssOnlineChatLoopTimer) {
-                window._abyssOnlineChatLoopTimer = setInterval(function() { window.pollAbyssOnlineChat(); }, 4000);
+    var shouldShowFloat = isNetworking && inAbyssBattle && abyssUiVisible;
+
+    window.updateGameLogAbyssChatVisibility(isNetworking);
+
+    if (codexBtn) codexBtn.style.display = shouldShowFloat ? '' : 'none';
+    if (panel) {
+        if (shouldShowFloat) {
+            if (!window._abyssOnlineChatVisible) {
+                panel.style.display = 'block';
+                window._abyssOnlineChatVisible = true;
+                if (typeof window.initAbyssOnlineChatDraggable === 'function') window.initAbyssOnlineChatDraggable();
+                if (typeof window.applyAbyssOnlineChatPanelPos === 'function') window.applyAbyssOnlineChatPanelPos();
+                if (typeof window.applyAbyssOnlineChatCollapsed === 'function') window.applyAbyssOnlineChatCollapsed();
+                if (typeof window.lockAbyssChatViewportNoZoom === 'function') window.lockAbyssChatViewportNoZoom();
+                window.pollAbyssOnlineChat();
             }
-        }
-    } else if (window._abyssOnlineChatVisible) {
-        panel.style.display = 'none';
-        window._abyssOnlineChatVisible = false;
-        if (typeof window.unlockAbyssChatViewportNoZoom === 'function') window.unlockAbyssChatViewportNoZoom();
-        if (window._abyssOnlineChatLoopTimer) {
-            clearInterval(window._abyssOnlineChatLoopTimer);
-            window._abyssOnlineChatLoopTimer = null;
+        } else if (window._abyssOnlineChatVisible) {
+            panel.style.display = 'none';
+            window._abyssOnlineChatVisible = false;
+            if (typeof window.unlockAbyssChatViewportNoZoom === 'function') window.unlockAbyssChatViewportNoZoom();
         }
     }
+    window._ensureAbyssOnlineChatLoop(!!(window._abyssOnlineChatVisible || window._gameLogAbyssChatVisible));
 };
 // 纳入 registerInterval，与 beforeunload 中 _gameIntervals 统一清理，避免与其它裸 setInterval 一样遗漏
 if (typeof registerInterval === 'function') {
@@ -240,12 +306,16 @@ if (typeof registerInterval === 'function') {
     window._abyssOnlineChatVisibilityTimer = setInterval(function() { window.updateAbyssOnlineChatVisibility(); }, 1000);
 }
 document.addEventListener('keydown', function(e) {
-    if (!window._abyssOnlineChatVisible) return;
     if (e.key !== 'Enter') return;
-    var input = document.getElementById('abyssOnlineChatInput');
-    if (!input || document.activeElement !== input) return;
+    if (!window._abyssOnlineChatVisible && !window._gameLogAbyssChatVisible) return;
+    var floatInput = document.getElementById('abyssOnlineChatInput');
+    var logInput = document.getElementById('gameLogAbyssChatInput');
+    var sourceId = null;
+    if (floatInput && document.activeElement === floatInput) sourceId = 'abyssOnlineChatInput';
+    else if (logInput && document.activeElement === logInput) sourceId = 'gameLogAbyssChatInput';
+    if (!sourceId) return;
     e.preventDefault();
-    if (typeof window.sendAbyssOnlineChat === 'function') window.sendAbyssOnlineChat();
+    if (typeof window.sendAbyssOnlineChat === 'function') window.sendAbyssOnlineChat(sourceId);
 });
 
 function abyssRunResolveBeastSpeciesId(beast, catalog) {
@@ -1336,9 +1406,12 @@ function closeNetworkMarketDialog() {
     document.getElementById('networkMarketOverlay').style.display = 'none';
     document.getElementById('networkMarketDialog').style.display = 'none';
     if (typeof window._networkMarketCountdownTimer !== 'undefined' && window._networkMarketCountdownTimer) {
-        clearInterval(window._networkMarketCountdownTimer);
+        if (typeof unregisterInterval === 'function') unregisterInterval(window._networkMarketCountdownTimer);
+        else clearInterval(window._networkMarketCountdownTimer);
         window._networkMarketCountdownTimer = null;
     }
+    // 关闭市场时清空至尊神器挂单缓存，避免长会话只增不减
+    window._marketSupremeArtifactCache = {};
 }
 /** 市场挂单自动下架倒计时：按小时、分钟显示，剩余不足1分钟显示「不足1分钟」 */
 function formatMarketCountdown(expiresAtMs) {
@@ -1554,6 +1627,12 @@ function refreshNetworkMarketDialog() {
                 var sa = row.supremeArtifact || {};
                 window._marketSupremeArtifactCache = window._marketSupremeArtifactCache || {};
                 window._marketSupremeArtifactCache[row.listingId] = sa;
+                var saKeys = Object.keys(window._marketSupremeArtifactCache);
+                if (saKeys.length > 200) {
+                    for (var ski = 0; ski < saKeys.length - 200; ski++) {
+                        delete window._marketSupremeArtifactCache[saKeys[ski]];
+                    }
+                }
                 var lidEsc = String(row.listingId || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
                 var infoBtnSup = '<button type="button" onclick="openNetworkMarketSupremeArtifactInfoDialog(\'' + lidEsc + '\')" style="margin-right:6px;padding:4px 10px;background:linear-gradient(180deg,#5e35b1,#4527a0);color:#fff;border:1px solid rgba(255,213,128,0.35);border-radius:6px;cursor:pointer;font-size:12px;">信息</button>';
                 var aff = '';
@@ -1612,8 +1691,14 @@ function refreshNetworkMarketDialog() {
         }
         if (list.length > 0) {
             updateNetworkMarketCountdowns();
-            if (window._networkMarketCountdownTimer) clearInterval(window._networkMarketCountdownTimer);
-            window._networkMarketCountdownTimer = setInterval(updateNetworkMarketCountdowns, 30000);
+            if (window._networkMarketCountdownTimer) {
+                if (typeof unregisterInterval === 'function') unregisterInterval(window._networkMarketCountdownTimer);
+                else clearInterval(window._networkMarketCountdownTimer);
+                window._networkMarketCountdownTimer = null;
+            }
+            window._networkMarketCountdownTimer = (typeof registerInterval === 'function')
+                ? registerInterval(updateNetworkMarketCountdowns, 30000)
+                : setInterval(updateNetworkMarketCountdowns, 30000);
         }
         if (soldEl) {
             var soldHistory = (res && res.soldHistory) ? res.soldHistory : [];

@@ -702,7 +702,7 @@
         function ensureLandlordSkyVine(ll) {
             if (!ll) return;
             var maxLv = window.__landlordSkyVineConstantsReady
-                ? LANDLORD_SKY_VINE_FRUIT_ORDER.length : 50;
+                ? LANDLORD_SKY_VINE_FRUIT_ORDER.length : 80;
             var lv = Number(ll.skyVineLevel);
             if (!Number.isFinite(lv) || lv < 0) lv = 0;
             if (lv > maxLv) lv = maxLv;
@@ -728,6 +728,71 @@
             var perLevel = window.__landlordSkyVineConstantsReady
                 ? LANDLORD_SKY_VINE_WORLD_EXP_PER_LEVEL : 0.05;
             return 1 + player.landlord.skyVineLevel * perLevel;
+        }
+
+        function ensureLandlordGeneTrees(ll) {
+            if (!ll) return;
+            if (!ll.geneTrees || typeof ll.geneTrees !== 'object') ll.geneTrees = {};
+            var order = (window.__landlordGeneTreeConstantsReady && typeof LANDLORD_GENE_TREE_ORDER !== 'undefined')
+                ? LANDLORD_GENE_TREE_ORDER : ['彩光', '炫彩', '琉璃', '琥珀'];
+            var maxLv = window.__landlordSkyVineConstantsReady
+                ? LANDLORD_SKY_VINE_FRUIT_ORDER.length : 80;
+            var perLevel = window.__landlordGeneTreeConstantsReady
+                ? LANDLORD_GENE_TREE_FRUIT_PER_LEVEL : 500;
+            for (var i = 0; i < order.length; i++) {
+                var key = order[i];
+                var node = ll.geneTrees[key];
+                if (!node || typeof node !== 'object') node = { level: 0, progress: 0 };
+                var lv = Number(node.level);
+                if (!Number.isFinite(lv) || lv < 0) lv = 0;
+                if (lv > maxLv) lv = maxLv;
+                lv = Math.floor(lv);
+                var pr = Number(node.progress);
+                if (!Number.isFinite(pr) || pr < 0) pr = 0;
+                pr = Math.floor(pr);
+                if (lv >= maxLv) {
+                    ll.geneTrees[key] = { level: maxLv, progress: 0 };
+                    continue;
+                }
+                while (pr >= perLevel && lv < maxLv) {
+                    pr -= perLevel;
+                    lv++;
+                }
+                ll.geneTrees[key] = {
+                    level: lv,
+                    progress: lv >= maxLv ? 0 : Math.min(perLevel - 1, Math.max(0, pr))
+                };
+            }
+        }
+
+        /** 基因树世界地图乘区：攻击/生命/爆伤/经验（与其它乘区叠乘） */
+        function getLandlordGeneTreeWorldMapBonuses() {
+            var out = { attack: 1, health: 1, critDamage: 1, exp: 1 };
+            if (typeof player === 'undefined' || !player.landlord) return out;
+            ensureLandlordGeneTrees(player.landlord);
+            var defs = (window.__landlordGeneTreeConstantsReady && typeof LANDLORD_GENE_TREE_DEFS !== 'undefined')
+                ? LANDLORD_GENE_TREE_DEFS : null;
+            var order = (window.__landlordGeneTreeConstantsReady && typeof LANDLORD_GENE_TREE_ORDER !== 'undefined')
+                ? LANDLORD_GENE_TREE_ORDER : ['彩光', '炫彩', '琉璃', '琥珀'];
+            if (!defs) {
+                defs = {
+                    '彩光': { attackPerLevel: 1, healthPerLevel: 0, critDamagePerLevel: 0, expPerLevel: 0 },
+                    '炫彩': { attackPerLevel: 0, healthPerLevel: 1, critDamagePerLevel: 0, expPerLevel: 0 },
+                    '琉璃': { attackPerLevel: 3, healthPerLevel: 3, critDamagePerLevel: 3, expPerLevel: 0 },
+                    '琥珀': { attackPerLevel: 0, healthPerLevel: 0, critDamagePerLevel: 0, expPerLevel: 0.1 }
+                };
+            }
+            for (var i = 0; i < order.length; i++) {
+                var key = order[i];
+                var def = defs[key] || {};
+                var lv = Number(player.landlord.geneTrees[key] && player.landlord.geneTrees[key].level) || 0;
+                if (lv <= 0) continue;
+                out.attack *= 1 + lv * (Number(def.attackPerLevel) || 0);
+                out.health *= 1 + lv * (Number(def.healthPerLevel) || 0);
+                out.critDamage *= 1 + lv * (Number(def.critDamagePerLevel) || 0);
+                out.exp *= 1 + lv * (Number(def.expPerLevel) || 0);
+            }
+            return out;
         }
 
         var LANDLORD_RANCH_MAX_SLOTS = 40;
@@ -2330,6 +2395,29 @@
             return removed;
         }
 
+        function countLandlordUnlockedFruitsByExactType(fruitKey) {
+            if (typeof player === 'undefined' || !player.landlord || !Array.isArray(player.landlord.fruitStorage)) return 0;
+            var n = 0;
+            for (var i = 0; i < player.landlord.fruitStorage.length; i++) {
+                var f = player.landlord.fruitStorage[i];
+                if (f && !f.isLocked && f.type === fruitKey) n++;
+            }
+            return n;
+        }
+
+        function removeLandlordFruitsOfExactTypeUnlocked(fruitKey, amount) {
+            var removed = 0;
+            if (typeof player === 'undefined' || !player.landlord || !Array.isArray(player.landlord.fruitStorage)) return 0;
+            for (var i = player.landlord.fruitStorage.length - 1; i >= 0 && removed < amount; i--) {
+                var fr = player.landlord.fruitStorage[i];
+                if (fr && !fr.isLocked && fr.type === fruitKey) {
+                    player.landlord.fruitStorage.splice(i, 1);
+                    removed++;
+                }
+            }
+            return removed;
+        }
+
         function renderLandlordSkyVine() {
             var el = document.getElementById('landlordSkyVineContent');
             if (!el || typeof player === 'undefined' || !player.landlord) return;
@@ -2349,7 +2437,8 @@
             html += '<div class="landlord-sky-vine-card">';
             html += '<p style="margin-top:0;">等级 <strong>' + lv + '</strong> / ' + maxLv + '</p>';
             if (lv >= maxLv) {
-                html += '<p class="landlord-sky-vine-max" style="color:#e1bee7;">已达最高级（黄皮），藤已通天。</p>';
+                var topFruit = LANDLORD_SKY_VINE_FRUIT_ORDER[maxLv - 1] || '大道果';
+                html += '<p class="landlord-sky-vine-max" style="color:#e1bee7;">已达最高级（' + topFruit + '），藤已通天。</p>';
             } else {
                 var needFruit = LANDLORD_SKY_VINE_FRUIT_ORDER[lv];
                 var have = countLandlordUnlockedFruitsByType(needFruit);
@@ -2408,6 +2497,158 @@
                 showLandlordNotification('已上交 ' + rm + ' 个「' + needFruit + '」，当前进度 ' + player.landlord.skyVineProgress + ' / ' + LANDLORD_SKY_VINE_FRUIT_PER_LEVEL, 'success');
             }
             renderLandlordSkyVine();
+            if (typeof renderLandlordFruitStorage === 'function') renderLandlordFruitStorage();
+            if (typeof updateLandlordStats === 'function') updateLandlordStats();
+            saveGame();
+        }
+
+        function selectLandlordGeneTreeVariant(variant) {
+            if (!variant || !LANDLORD_GENE_TREE_DEFS[variant]) return;
+            window._landlordGeneTreeSelected = variant;
+            renderLandlordGeneTree();
+        }
+
+        function landlordGeneTreeBonusShort(def, lv) {
+            var parts = [];
+            if (def.attackPerLevel) parts.push('攻击+' + (lv * def.attackPerLevel * 100).toFixed(0) + '%');
+            if (def.healthPerLevel) parts.push('生命+' + (lv * def.healthPerLevel * 100).toFixed(0) + '%');
+            if (def.critDamagePerLevel) parts.push('爆伤+' + (lv * def.critDamagePerLevel * 100).toFixed(0) + '%');
+            if (def.expPerLevel) parts.push('经验+' + (lv * def.expPerLevel * 100).toFixed(0) + '%');
+            return parts.length ? parts.join(' · ') : '暂无加成';
+        }
+
+        function renderLandlordGeneTree() {
+            var el = document.getElementById('landlordGeneTreeContent');
+            if (!el || typeof player === 'undefined' || !player.landlord) return;
+            ensureLandlordGeneTrees(player.landlord);
+            var maxLv = LANDLORD_SKY_VINE_FRUIT_ORDER.length;
+            var perLevel = LANDLORD_GENE_TREE_FRUIT_PER_LEVEL;
+            var slugMap = { '彩光': 'caiguang', '炫彩': 'xuancai', '琉璃': 'liuli', '琥珀': 'hupo' };
+            var sel = window._landlordGeneTreeSelected;
+            if (!sel || !LANDLORD_GENE_TREE_DEFS[sel]) sel = LANDLORD_GENE_TREE_ORDER[0];
+            window._landlordGeneTreeSelected = sel;
+
+            var html = '<div class="landlord-gene-tree-wrap">';
+            html += '<div class="landlord-gene-tree-head">';
+            html += '<div class="landlord-gene-tree-head-title">基因树</div>';
+            html += '<div class="landlord-gene-tree-head-desc">上交基因突变果实升级 · 每级需 ' + perLevel + ' 个</div>';
+            html += '</div>';
+
+            html += '<div class="landlord-gene-tree-switch" role="tablist">';
+            for (var ti = 0; ti < LANDLORD_GENE_TREE_ORDER.length; ti++) {
+                var v = LANDLORD_GENE_TREE_ORDER[ti];
+                var d = LANDLORD_GENE_TREE_DEFS[v];
+                var n = player.landlord.geneTrees[v] || { level: 0, progress: 0 };
+                var lvShort = Number(n.level) || 0;
+                var active = v === sel ? ' is-active' : '';
+                html += '<button type="button" class="landlord-gene-tree-switch-btn landlord-gene-tree-' + (slugMap[v] || 'caiguang') + active + '" onclick="selectLandlordGeneTreeVariant(\'' + v + '\')">';
+                html += '<span class="gt-ico">' + d.icon + '</span>';
+                html += '<span class="gt-name">' + v + '</span>';
+                html += '<span class="gt-lv">Lv.' + lvShort + '</span>';
+                html += '</button>';
+            }
+            html += '</div>';
+
+            var def = LANDLORD_GENE_TREE_DEFS[sel];
+            var node = player.landlord.geneTrees[sel] || { level: 0, progress: 0 };
+            var lv = Number(node.level) || 0;
+            var prog = Number(node.progress) || 0;
+            var slug = slugMap[sel] || 'caiguang';
+
+            html += '<div class="landlord-gene-tree-detail landlord-gene-tree-' + slug + '">';
+            html += '<div class="landlord-gene-tree-detail-top">';
+            html += '<div class="landlord-gene-tree-detail-icon">' + def.icon + '</div>';
+            html += '<div class="landlord-gene-tree-detail-meta">';
+            html += '<div class="landlord-gene-tree-detail-name">' + sel + '基因树</div>';
+            html += '<div class="landlord-gene-tree-detail-rule">' + def.sub + '</div>';
+            html += '<div class="landlord-gene-tree-detail-bonus">' + landlordGeneTreeBonusShort(def, lv) + '</div>';
+            html += '</div>';
+            html += '<div class="landlord-gene-tree-detail-lv"><span class="gt-num">' + lv + '</span><span class="gt-den">/' + maxLv + '</span></div>';
+            html += '</div>';
+
+            if (lv >= maxLv) {
+                var topFruit = LANDLORD_SKY_VINE_FRUIT_ORDER[maxLv - 1] || '大道果';
+                html += '<div class="landlord-gene-tree-max">已圆满 · 最高级果实「' + formatLandlordVariantSeedName(topFruit, sel) + '」</div>';
+            } else {
+                var needBase = LANDLORD_SKY_VINE_FRUIT_ORDER[lv];
+                var needFruit = formatLandlordVariantSeedName(needBase, sel);
+                var have = countLandlordUnlockedFruitsByExactType(needFruit);
+                var stillNeed = perLevel - prog;
+                var pctFill = (prog / perLevel) * 100;
+                var needLabel = (typeof getLandlordGeneVariantLabelHtml === 'function')
+                    ? getLandlordGeneVariantLabelHtml(needFruit) : needFruit;
+                html += '<div class="landlord-gene-tree-body">';
+                html += '<div class="landlord-gene-tree-row"><span class="gt-k">本级需求</span><span class="gt-v">' + needLabel + ' ×' + perLevel + '</span></div>';
+                html += '<div class="landlord-gene-tree-progress"><div class="landlord-gene-tree-progress-fill" style="width:' + pctFill.toFixed(1) + '%;"></div></div>';
+                html += '<div class="landlord-gene-tree-row gt-muted"><span class="gt-k">进度</span><span class="gt-v">' + prog + ' / ' + perLevel + '</span></div>';
+                html += '<div class="landlord-gene-tree-row gt-muted"><span class="gt-k">仓库可交</span><span class="gt-v">' + have + ' 个（本次最多 ' + Math.min(have, stillNeed) + '）</span></div>';
+                html += '<button type="button" class="landlord-gene-tree-submit" onclick="submitLandlordGeneTreeFruits(\'' + sel + '\')" ' + (have > 0 ? '' : 'disabled') + '>一键上交</button>';
+                html += '</div>';
+            }
+            html += '</div></div>';
+            el.innerHTML = html;
+        }
+
+        function submitLandlordGeneTreeFruits(variant) {
+            if (typeof player === 'undefined' || !player.landlord) return;
+            if (!variant || !LANDLORD_GENE_TREE_DEFS[variant]) {
+                showLandlordNotification('未知基因树！', 'error');
+                return;
+            }
+            ensureLandlordGeneTrees(player.landlord);
+            var maxLv = LANDLORD_SKY_VINE_FRUIT_ORDER.length;
+            var perLevel = LANDLORD_GENE_TREE_FRUIT_PER_LEVEL;
+            var node = player.landlord.geneTrees[variant];
+            var lv = Number(node.level) || 0;
+            if (lv >= maxLv) {
+                showLandlordNotification(variant + '基因树已满级！', 'info');
+                return;
+            }
+            var needBase = LANDLORD_SKY_VINE_FRUIT_ORDER[lv];
+            var needFruit = formatLandlordVariantSeedName(needBase, variant);
+            var have = countLandlordUnlockedFruitsByExactType(needFruit);
+            if (have <= 0) {
+                showLandlordNotification('仓库里没有可上交的未锁定「' + needFruit + '」！', 'error');
+                return;
+            }
+            var prog = Number(node.progress) || 0;
+            var stillNeed = perLevel - prog;
+            var take = Math.min(have, stillNeed);
+            if (take <= 0) {
+                showLandlordNotification('本级进度异常，请重开界面或联系存档修复。', 'error');
+                return;
+            }
+            var rm = removeLandlordFruitsOfExactTypeUnlocked(needFruit, take);
+            if (rm < take) {
+                showLandlordNotification('上交失败，请重试！', 'error');
+                return;
+            }
+            prog += rm;
+            var leveled = false;
+            while (prog >= perLevel && lv < maxLv) {
+                prog -= perLevel;
+                lv++;
+                leveled = true;
+            }
+            player.landlord.geneTrees[variant] = {
+                level: lv,
+                progress: lv >= maxLv ? 0 : prog
+            };
+            ensureLandlordGeneTrees(player.landlord);
+            var def = LANDLORD_GENE_TREE_DEFS[variant];
+            var curLv = player.landlord.geneTrees[variant].level;
+            if (leveled) {
+                var msg = variant + '基因树升至 ' + curLv + ' 级！';
+                if (def.attackPerLevel) msg += '攻击累计 +' + (curLv * def.attackPerLevel * 100).toFixed(0) + '%';
+                if (def.healthPerLevel) msg += ' 生命累计 +' + (curLv * def.healthPerLevel * 100).toFixed(0) + '%';
+                if (def.critDamagePerLevel) msg += ' 爆伤累计 +' + (curLv * def.critDamagePerLevel * 100).toFixed(0) + '%';
+                if (def.expPerLevel) msg += ' 经验累计 +' + (curLv * def.expPerLevel * 100).toFixed(0) + '%';
+                showLandlordNotification(msg, 'success');
+                if (typeof updatePlayerBattleStats === 'function') updatePlayerBattleStats();
+            } else {
+                showLandlordNotification('已上交 ' + rm + ' 个「' + needFruit + '」，当前进度 ' + player.landlord.geneTrees[variant].progress + ' / ' + perLevel, 'success');
+            }
+            renderLandlordGeneTree();
             if (typeof renderLandlordFruitStorage === 'function') renderLandlordFruitStorage();
             if (typeof updateLandlordStats === 'function') updateLandlordStats();
             saveGame();

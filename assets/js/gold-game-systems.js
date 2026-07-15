@@ -24,7 +24,7 @@
      'ancient', 'divine', 'arcane', 'celestial',
      'infernal', 'astral', 'primeval', 'transcendental',
      'quantum', 'ultimate', 'chaos', 'eternal',
-     'void', 'genesis', 'divineRealm', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6','yeyu7', 'yeyu8', 'yeyu9', 'yeyu10', 'yeyu11', 'yeyu12','yeyu13', 'yeyu14', 'yeyu15', 'yeyu16', 'yeyu17', 'yeyu18','yeyu19', 'yeyu20', 'yeyu21', 'yeyu22', 'yeyu23', 'yeyu24', 
+     'void', 'genesis', 'divineRealm', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6','yeyu7', 'yeyu8', 'yeyu9', 'yeyu10', 'yeyu11', 'yeyu12','yeyu13', 'yeyu14', 'yeyu15', 'yeyu16', 'yeyu17', 'yeyu18','yeyu19', 'yeyu20', 'yeyu21', 'yeyu22', 'yeyu23', 'yeyu24', 'yeyu25', 'yeyu26', 'yeyu27', 'yeyu28', 'yeyu29', 'yeyu30', 'yeyu31', 'yeyu32', 'yeyu33', 
     'common_chest_100',
     'common_chest_10000',
     'common_chest_1000000',
@@ -100,6 +100,21 @@
     'yeyu8_chest_1000000',
     'yeyu8_chest_10000000',
     'yeyu8_chest_100000000',
+    'yeyu9_chest_100',
+    'yeyu9_chest_10000',
+    'yeyu9_chest_1000000',
+    'yeyu9_chest_10000000',
+    'yeyu9_chest_100000000',
+    'yeyu10_chest_100',
+    'yeyu10_chest_10000',
+    'yeyu10_chest_1000000',
+    'yeyu10_chest_10000000',
+    'yeyu10_chest_100000000',
+    'yeyu11_chest_100',
+    'yeyu11_chest_10000',
+    'yeyu11_chest_1000000',
+    'yeyu11_chest_10000000',
+    'yeyu11_chest_100000000',
   'max_stage_10', 'max_stage_30', 'max_stage_60', 'max_stage_90',
    'max_stage_120', 'max_stage_200', 'max_stage_300', 'max_stage_400',
    'max_stage_500', 'max_stage_600', 'max_stage_700', 'max_stage_800',
@@ -149,6 +164,15 @@
     'yuyu8_10',
     'yuyu8_50',
     'yuyu8_100',
+    'yuyu9_10',
+    'yuyu9_50',
+    'yuyu9_100',
+    'yuyu10_10',
+    'yuyu10_50',
+    'yuyu10_100',
+    'yuyu11_10',
+    'yuyu11_50',
+    'yuyu11_100',
      'year1_10',
     'year10_10',
     'year100_10',
@@ -325,6 +349,86 @@
     'year37_100',
     'year37_1000',
     'year37_10000',
+    'year38_10',
+    'year38_100',
+    'year38_1000',
+    'year38_10000',
+    'year39_10',
+    'year39_100',
+    'year39_1000',
+    'year39_10000',
+    'year40_10',
+    'year40_100',
+    'year40_1000',
+    'year40_10000',
+    'year41_10',
+    'year41_100',
+    'year41_1000',
+    'year41_10000',
+    'year42_10',
+    'year42_100',
+    'year42_1000',
+    'year42_10000',
+    'year43_10',
+    'year43_100',
+    'year43_1000',
+    'year43_10000',
+    'year44_10',
+    'year44_100',
+    'year44_1000',
+    'year44_10000',
+    'year45_10',
+    'year45_100',
+    'year45_1000',
+    'year45_10000',
+    'year46_10',
+    'year46_100',
+    'year46_1000',
+    'year46_10000',
+    'year47_10',
+    'year47_100',
+    'year47_1000',
+    'year47_10000',
+    'year48_10',
+    'year48_100',
+    'year48_1000',
+    'year48_10000',
+    'year49_10',
+    'year49_100',
+    'year49_1000',
+    'year49_10000',
+    'year50_10',
+    'year50_100',
+    'year50_1000',
+    'year50_10000',
+    'year51_10',
+    'year51_100',
+    'year51_1000',
+    'year51_10000',
+    'year52_10',
+    'year52_100',
+    'year52_1000',
+    'year52_10000',
+    'year53_10',
+    'year53_100',
+    'year53_1000',
+    'year53_10000',
+    'year54_10',
+    'year54_100',
+    'year54_1000',
+    'year54_10000',
+    'year55_10',
+    'year55_100',
+    'year55_1000',
+    'year55_10000',
+    'year56_10',
+    'year56_100',
+    'year56_1000',
+    'year56_10000',
+    'year57_10',
+    'year57_100',
+    'year57_1000',
+    'year57_10000',
    'reincarnation_10', 'reincarnation_100', 
    'reincarnation_1000', 'reincarnation_10000', 'world_boss_1st', 'world_boss_top5', 'world_boss_top10', 'world_boss_participant'
     ];
@@ -348,32 +452,38 @@
 
         // 切换装备、道具和收藏物页面
         function switchTab(tab) {
-            document.getElementById('equipmentList').style.display = tab === 'equipment' ? 'block' : 'none';
-            document.getElementById('itemList').style.display = tab === 'items' ? 'block' : 'none';
-            document.getElementById('collectionList').style.display = tab === 'collections' ? 'block' : 'none';
-            document.getElementById('reincarnationList').style.display = tab === 'reincarnation' ? 'block' : 'none';
-            document.getElementById('petList').style.display = tab === 'pets' ? 'block' : 'none';
-            document.getElementById('stockList').style.display = tab === 'stocks' ? 'block' : 'none';
-            document.getElementById('lotteryList').style.display = tab === 'lottery' ? 'block' : 'none';
-            document.getElementById('bankList').style.display = tab === 'bank' ? 'block' : 'none';
-            document.getElementById('dungeonEquipmentList').style.display = tab === 'dungeonEquipment' ? 'block' : 'none'; // 新增副本装备页面
-            document.getElementById('soulRingList').style.display = tab === 'soulRings' ? 'block' : 'none'; // 新增魂环页面
-            document.getElementById('playerAttributesList').style.display = tab === 'playerAttributes' ? 'block' : 'none';
-            document.getElementById('techniquesList').style.display = tab === 'techniques' ? 'block' : 'none';
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            var oldTab = document.querySelector(`.tab[onclick="switchTab('${tab}')"]`);
-            if (oldTab) oldTab.classList.add('active');
-            document.querySelectorAll('.tab-item-new').forEach(t => t.classList.remove('active'));
-            var newTab = document.querySelector(`.tab-item-new[onclick="switchTab('${tab}')"]`);
-            if (newTab) newTab.classList.add('active');
+            var panelMap = {
+                equipment: 'equipmentList',
+                items: 'itemList',
+                collections: 'collectionList',
+                reincarnation: 'reincarnationList',
+                pets: 'petList',
+                stocks: 'stockList',
+                lottery: 'lotteryList',
+                bank: 'bankList',
+                dungeonEquipment: 'dungeonEquipmentList',
+                soulRings: 'soulRingList',
+                playerAttributes: 'playerAttributesList',
+                techniques: 'techniquesList'
+            };
+            Object.keys(panelMap).forEach(function (key) {
+                var el = document.getElementById(panelMap[key]);
+                if (!el) return;
+                var on = key === tab;
+                el.style.display = on ? 'block' : 'none';
+                el.classList.toggle('active', on);
+            });
+            document.querySelectorAll('.tab-item-new').forEach(function (t) {
+                t.classList.toggle('active', t.getAttribute('data-tab') === tab);
+            });
             if (tab === 'items') updateItemDisplay();
             if (tab === 'collections') updateCollectionDisplay();
             if (tab === 'reincarnation') updateReincarnationDisplay();
             if (tab === 'pets') updatePetDisplay();
             if (tab === 'stocks') updateStockDisplay();
             if (tab === 'bank') updateBankDisplay();
-            if (tab === 'dungeonEquipment') updateDungeonEquipmentDisplay(); // 新增：更新副本装备显示
-            if (tab === 'soulRings') updateSoulRingDisplay(); // 新增：更新魂环显示
+            if (tab === 'dungeonEquipment') updateDungeonEquipmentDisplay();
+            if (tab === 'soulRings') updateSoulRingDisplay();
             if (tab === 'techniques') updateTechniquesDisplay();
             if (tab === 'playerAttributes') updatePlayerAttributesDisplay();
         }
@@ -401,43 +511,65 @@ function resetCollectionDisplay() {
     logAction("已重置收藏物效果计算", "info");
 }
 
+// 收藏物品质档位（越高七彩越炫）
+const COLLECTION_RARITY_ORDER = [
+    'lightSpeedHand', 'empHand', 'godlyHand', 'quickHand',
+    'shadowHand', 'quantumHand', 'lightningHand', 'divineHand'
+];
+function getCollectionRarityClass(key) {
+    const idx = COLLECTION_RARITY_ORDER.indexOf(key);
+    if (idx < 0) return 'col-r0';
+    return 'col-r' + (idx + 1);
+}
+
 // 更新后的收藏物显示函数
 function updateCollectionDisplay() {
     const container = document.getElementById("collectionInfoContainer");
     if (!container) return;
-    
-    // 计算全部收藏物总加成
-    const totalEffect = player.equipment.length > 0 ? 
-        player.equipment[0].collectionMultiplier * 100 : 0;
-    
-    // 顶部总加成显示（保持不变）
-    container.innerHTML = `
-        <div style="margin-bottom: 15px; font-weight: bold;">
-            当前全部收藏物总加成: +${totalEffect.toFixed(0)}%
-        </div>
-    `;
-    
-    // 每个收藏物的详细显示（增加总效果）
-    container.innerHTML += Object.entries(player.collections)
-        .map(([key, value]) => {
+
+    const totalEffect = player.equipment.length > 0
+        ? player.equipment[0].collectionMultiplier * 100
+        : 0;
+
+    const owned = Object.entries(player.collections || {});
+    const cards = owned.length
+        ? owned.map(([key, value]) => {
             const collection = collectionEffects[key];
+            const rarity = getCollectionRarityClass(key);
             if (!collection) {
-                return `<div style="margin-bottom:10px;color:#f44336;">${key}: ${value}（未配置收藏物）</div>`;
+                return `<div class="collection-card col-r0 is-unknown">
+                  <div class="collection-card-main">
+                    <div class="collection-name">${key}</div>
+                    <div class="collection-desc">未配置的收藏物</div>
+                  </div>
+                  <div class="collection-stats">
+                    <div class="collection-stat"><span>数量</span><b>${value}</b></div>
+                  </div>
+                </div>`;
             }
             const singleEffect = collection.effect * 100;
-            const totalEffect = value * singleEffect;
-            
-            return `
-                <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #eee;">
-                    <strong>${collection.name}</strong>: 
-                    <span>数量: ${value}</span> | 
-                    <span>单个效果: +${singleEffect.toFixed(0)}%</span> |
-                    <span>总效果: +${totalEffect.toFixed(0)}%</span>
-                    <div style="color:#666; font-size:0.9em; margin-top: 3px;">${collection.description}</div>
-                </div>
-            `;
-        })
-        .join('');
+            const totalOne = value * singleEffect;
+            return `<div class="collection-card ${rarity}">
+              <div class="collection-card-main">
+                <div class="collection-name">${collection.name}</div>
+                <div class="collection-desc">${collection.description}</div>
+              </div>
+              <div class="collection-stats">
+                <div class="collection-stat"><span>数量</span><b>×${value}</b></div>
+                <div class="collection-stat"><span>单体</span><b>+${singleEffect.toFixed(0)}%</b></div>
+                <div class="collection-stat accent"><span>合计</span><b>+${totalOne.toFixed(0)}%</b></div>
+              </div>
+            </div>`;
+          }).join('')
+        : '<div class="main-muted">暂无收藏物</div>';
+
+    container.innerHTML = `
+        <div class="collection-summary">
+          <div class="collection-summary-label">全部收藏物总加成</div>
+          <div class="collection-summary-value">+${totalEffect.toFixed(0)}%</div>
+        </div>
+        <div class="collection-list">${cards}</div>
+    `;
 }
         // 按等级校准转生属性升级消耗，修复历史异常存档导致的“等级与消耗不匹配”
         function syncReincarnationStatsWithLevels() {
@@ -446,14 +578,14 @@ function updateCollectionDisplay() {
     if (!player.reincarnationStats || typeof player.reincarnationStats !== 'object') {
         player.reincarnationStats = {};
     }
-    const defaults = ['gpsBonus', 'equipmentLevelBonus', 'clickLimitBonus'];
+    const defaults = ['gpsBonus', 'equipmentLevelBonus', 'clickLimitBonus', 'reincarnationCoinBonus'];
     defaults.forEach((stat) => {
         if (!player.reincarnationStats[stat] || typeof player.reincarnationStats[stat] !== 'object') {
             player.reincarnationStats[stat] = { level: 0, cost: 1 };
         }
         const statData = player.reincarnationStats[stat];
         statData.level = Math.max(0, Math.floor(Number(statData.level) || 0));
-        const factor = stat === 'equipmentLevelBonus' ? 5 : 1.2;
+        const factor = stat === 'equipmentLevelBonus' ? 5 : (stat === 'reincarnationCoinBonus' ? 10 : 1.2);
         let expectedCost = 1;
         for (let i = 0; i < statData.level; i++) {
             expectedCost = multiplyBigByFinite(expectedCost, factor);
@@ -474,30 +606,62 @@ function updateCollectionDisplay() {
     const gpsCost = formatSci(bigSciToStorageValue(player.reincarnationStats.gpsBonus.cost));
     const eqCost = formatSci(bigSciToStorageValue(player.reincarnationStats.equipmentLevelBonus.cost));
     const clickCost = formatSci(bigSciToStorageValue(player.reincarnationStats.clickLimitBonus.cost));
+    const coinBonusCost = formatSci(bigSciToStorageValue(player.reincarnationStats.reincarnationCoinBonus.cost));
+    const coinBonusLv = player.reincarnationStats.reincarnationCoinBonus.level;
     reincarnationContainer.innerHTML = `
-        <div>
-            <h3>转生属性</h3>
-            <div>
-                <strong>收益加成</strong>: 每级装备属性 +${player.reincarnationStats.gpsBonus.level * 100}% (等级: ${player.reincarnationStats.gpsBonus.level})
-                <button onclick="upgradeReincarnationStat('gpsBonus')">升级 (消耗 ${gpsCost} 转生币)</button>
+        <div class="main-section-head"><h3>转生属性</h3><span class="main-section-sub">消耗转生币永久强化</span></div>
+        <div class="main-stack">
+            <div class="main-list-card">
+                <div>
+                  <div class="card-title">收益加成</div>
+                  <div class="card-desc">每级装备属性 +${player.reincarnationStats.gpsBonus.level * 100}% · Lv.${player.reincarnationStats.gpsBonus.level}</div>
+                </div>
+                <button type="button" class="main-action-btn" onclick="upgradeReincarnationStat('gpsBonus')">升级 · ${gpsCost}</button>
             </div>
-            <div>
-                <strong>装备等级</strong>: 全部装备初始等级 +${player.reincarnationStats.equipmentLevelBonus.level * 200} 级 (等级: ${player.reincarnationStats.equipmentLevelBonus.level})
-                <button onclick="upgradeReincarnationStat('equipmentLevelBonus')">升级 (消耗 ${eqCost} 转生币)</button>
+            <div class="main-list-card">
+                <div>
+                  <div class="card-title">装备等级</div>
+                  <div class="card-desc">全部装备初始 +${player.reincarnationStats.equipmentLevelBonus.level * 200} 级 · Lv.${player.reincarnationStats.equipmentLevelBonus.level}</div>
+                </div>
+                <button type="button" class="main-action-btn" onclick="upgradeReincarnationStat('equipmentLevelBonus')">升级 · ${eqCost}</button>
             </div>
-            <div>
-                <strong>点击上限</strong>: 每秒点击上限 +${player.reincarnationStats.clickLimitBonus.level} 次 (等级: ${player.reincarnationStats.clickLimitBonus.level})
-                <button onclick="upgradeReincarnationStat('clickLimitBonus')">升级 (消耗 ${clickCost} 转生币)</button>
+            <div class="main-list-card">
+                <div>
+                  <div class="card-title">点击上限</div>
+                  <div class="card-desc">每秒点击上限 +${player.reincarnationStats.clickLimitBonus.level} 次 · Lv.${player.reincarnationStats.clickLimitBonus.level}</div>
+                </div>
+                <button type="button" class="main-action-btn" onclick="upgradeReincarnationStat('clickLimitBonus')">升级 · ${clickCost}</button>
+            </div>
+            <div class="main-list-card">
+                <div>
+                  <div class="card-title">转生收益</div>
+                  <div class="card-desc">转生币总加成 +${coinBonusLv * 10}% · Lv.${coinBonusLv}</div>
+                </div>
+                <button type="button" class="main-action-btn" onclick="upgradeReincarnationStat('reincarnationCoinBonus')">升级 · ${coinBonusCost}</button>
             </div>
         </div>
     `;
 }
+   const TECH_TYPE_LABELS = {
+        health: '生命',
+        attack: '攻击',
+        critRate: '暴击',
+        critDamage: '爆伤',
+        multiAttack: '连击'
+    };
+   function getTechniqueFxTier(techId) {
+        const order = typeof TECHNIQUE_DISPLAY_ORDER !== 'undefined' ? TECHNIQUE_DISPLAY_ORDER : [];
+        const idx = order.indexOf(techId);
+        if (idx < 0) return 0;
+        const maxIdx = Math.max(1, order.length - 1);
+        return Math.min(20, Math.round((idx / maxIdx) * 20));
+   }
    function updateTechniquesDisplay() {
     const container = document.getElementById('techniquesContainer');
-    
-    // 按预定顺序筛选已获得的功法
-    const sortedTechniques = TECHNIQUE_DISPLAY_ORDER
-        .filter(id => player.techniques[id])
+    if (!container) return;
+
+    const sortedTechniques = (TECHNIQUE_DISPLAY_ORDER || [])
+        .filter(id => player.techniques && player.techniques[id])
         .map(id => {
             const tech = techniqueConfig[id];
             return {
@@ -510,20 +674,33 @@ function updateCollectionDisplay() {
             };
         });
 
-    // 生成HTML
-    container.innerHTML = sortedTechniques.map(tech => `
-        <div class="technique ${tech.type}">
-            <h4>${tech.name} [Lv.${tech.level}]</h4>
-            <p>${tech.description}</p>
-            <div class="tech-effect">
-                当前效果: ${
-                    tech.type === 'multiAttack' 
-                        ? `攻击次数+${tech.level * tech.effect}`
-                        : `${(tech.level * tech.effect * 100).toFixed(tech.type === 'critRate' ? 4 : 4)}%`
-                }
+    if (!sortedTechniques.length) {
+        container.innerHTML = '<div class="main-muted">尚未获得功法，开启功法秘籍宝箱试试。</div>';
+        return;
+    }
+
+    const cards = sortedTechniques.map(tech => {
+        const fxTier = getTechniqueFxTier(tech.id);
+        const typeLabel = TECH_TYPE_LABELS[tech.type] || tech.type;
+        const effectText = tech.type === 'multiAttack'
+            ? `攻击次数 +${tech.level * tech.effect}`
+            : `+${(tech.level * tech.effect * 100).toFixed(4)}%`;
+        return `
+          <div class="tech-card dungeon-fx-${fxTier} tech-type-${tech.type}">
+            <div class="tech-card-top">
+              <div class="tech-name">${tech.name}</div>
+              <div class="tech-type-badge">${typeLabel}</div>
             </div>
-        </div>
-    `).join('');
+            <div class="tech-lv">Lv.${tech.level}</div>
+            <div class="tech-desc">${tech.description}</div>
+            <div class="tech-effect-row">
+              <span>当前效果</span>
+              <b>${effectText}</b>
+            </div>
+          </div>`;
+    }).join('');
+
+    container.innerHTML = `<div class="tech-grid">${cards}</div>`;
 }
 
 // 添加功法秘笈获取函数
@@ -590,7 +767,10 @@ function resetPetDisplay() {
        yuyu5: { level: petData.yuyu5?.level || 0, cost: keepPetCost(petData.yuyu5?.cost), multiplier: 17714.70 },
        yuyu6: { level: petData.yuyu6?.level || 0, cost: keepPetCost(petData.yuyu6?.cost), multiplier: 53144.10 },
         yuyu7: { level: petData.yuyu7?.level || 0, cost: keepPetCost(petData.yuyu7?.cost), multiplier: 159432.30 },
-       yuyu8: { level: petData.yuyu8?.level || 0, cost: keepPetCost(petData.yuyu8?.cost), multiplier: 478296.90 }
+       yuyu8: { level: petData.yuyu8?.level || 0, cost: keepPetCost(petData.yuyu8?.cost), multiplier: 478296.90 },
+       yuyu9: { level: petData.yuyu9?.level || 0, cost: keepPetCost(petData.yuyu9?.cost), multiplier: 1434890.70 },
+       yuyu10: { level: petData.yuyu10?.level || 0, cost: keepPetCost(petData.yuyu10?.cost), multiplier: 4304672.10 },
+       yuyu11: { level: petData.yuyu11?.level || 0, cost: keepPetCost(petData.yuyu11?.cost), multiplier: 12914016.30 }
     };
 
     // 更新宠物页面显示
@@ -624,6 +804,16 @@ function syncPetCostsWithLevels() {
     });
 }
 
+const PET_TIER_ORDER = [
+    'thunderKirin', 'chaosTaotie', 'netherQiongqi', 'abyssKun', 'primordialZhuLong',
+    'wanJunSuanNi', 'yanYuBiAn', 'yuyu1', 'yuyu2', 'yuyu3', 'yuyu4', 'yuyu5',
+    'yuyu6', 'yuyu7', 'yuyu8', 'yuyu9', 'yuyu10', 'yuyu11'
+];
+function getPetTierClass(key) {
+    const idx = PET_TIER_ORDER.indexOf(key);
+    return idx < 0 ? 'pet-t1' : 'pet-t' + Math.min(idx + 1, 18);
+}
+
 // 更新宠物页面显示
 function updatePetDisplay() {
     syncPetCostsWithLevels();
@@ -632,8 +822,7 @@ function updatePetDisplay() {
         console.error('宠物容器未找到！');
         return;
     }
-    
-    // 货币类型到中文名称的映射
+
     const currencyNames = {
         gold: '金币',
         diamond: '钻石',
@@ -649,10 +838,13 @@ function updatePetDisplay() {
         mingtone: '冥源石',
         xutong: '虚空石',
         shitone: '时空石',
-        weitone: '未来石'  
+        weitone: '未来石',
+        yongtone: '永恒石',
+        wujitone: '无极石',
+        daotone: '大道石'
     };
-    
-    petContainer.innerHTML = Object.entries(player.pets)
+
+    petContainer.innerHTML = '<div class="pet-grid">' + Object.entries(player.pets)
         .map(([key, pet]) => {
             const config = petConfig[key];
             if (!config) {
@@ -661,18 +853,25 @@ function updatePetDisplay() {
             }
             const cost = bigSciToStorageValue(pet.cost);
             const formattedCost = formatSci(cost);
-            
-            // 获取货币中文名称
             const currencyName = currencyNames[config.currency] || config.currency;
-            
+            const bonusPct = (pet.level * pet.multiplier * 100).toFixed(2);
+            const tier = getPetTierClass(key);
+
             return `
-                <div>
-                    <strong>${config.name}</strong>: 等级 ${pet.level} - 装备属性加成 ${(pet.level * pet.multiplier * 100).toFixed(2)}%
-                    <button onclick="upgradePet('${key}')">升级 (消耗 ${formattedCost} ${currencyName})</button>
+                <div class="pet-card ${tier}">
+                  <div class="pet-card-top">
+                    <div class="pet-name">${config.name}</div>
+                    <div class="pet-lv">Lv.${pet.level}</div>
+                  </div>
+                  <div class="pet-bonus">装备属性 <b>+${bonusPct}%</b></div>
+                  <button type="button" class="pet-upgrade-btn" onclick="upgradePet('${key}')">
+                    <span class="pet-upgrade-label">升级</span>
+                    <span class="pet-upgrade-cost">${formattedCost} ${currencyName}</span>
+                  </button>
                 </div>
             `;
         })
-        .join('');
+        .join('') + '</div>';
 }
     // 如果需要真正的重置功能（保留等级但刷新效果），可以添加这个函数
 function resetTechniquesData() {
@@ -819,14 +1018,34 @@ function getBigLog10(value) {
         function updateStockDisplay() {
     normalizeBankAndStockState();
     const container = document.getElementById('stocksContainer');
-    container.innerHTML = player.stockData.stocks.map((stock, index) => `
-        <div class="stock-item" data-index="${index}" onclick="this.parentNode.querySelectorAll('.stock-item').forEach(e=>e.classList.remove('selected'));this.classList.add('selected')">
-            <strong>${stock.name}</strong><br>
-            当前价: ${stock.currentPrice.toFixed(2)} | 涨跌幅: ${((stock.currentPrice / stock.lastPrice - 1) * 100).toFixed(2)}%<br>
-            持有: ${formatSci(stock.shares)}股 | 均价: ${stock.avgCost.toFixed(2)}<br>
-            市值: ${formatSci(bigSciToStorageValue(mulBigSci(stock.shares, stock.currentPrice)))} | 收益率: ${stock.avgCost ? ((stock.currentPrice / stock.avgCost - 1) * 100).toFixed(2) + '%' : '-'}
-        </div>
-    `).join('');
+    if (!container) return;
+    const prevSelected = document.querySelector('#stocksContainer .stock-item.selected')?.dataset?.index;
+    container.innerHTML = '<div class="stock-grid">' + player.stockData.stocks.map((stock, index) => {
+        const changePct = stock.lastPrice ? ((stock.currentPrice / stock.lastPrice - 1) * 100) : 0;
+        const profitPct = stock.avgCost ? ((stock.currentPrice / stock.avgCost - 1) * 100) : null;
+        const changeCls = changePct > 0 ? 'is-up' : (changePct < 0 ? 'is-down' : 'is-flat');
+        const profitCls = profitPct == null ? 'is-flat' : (profitPct > 0 ? 'is-up' : (profitPct < 0 ? 'is-down' : 'is-flat'));
+        const tier = 'stock-t' + Math.min(index + 1, 5);
+        const selected = String(prevSelected) === String(index) ? ' selected' : '';
+        const marketValue = formatSci(bigSciToStorageValue(mulBigSci(stock.shares, stock.currentPrice)));
+        return `
+        <div class="stock-item ${tier}${selected}" data-index="${index}" onclick="document.querySelectorAll('#stocksContainer .stock-item').forEach(e=>e.classList.remove('selected'));this.classList.add('selected')">
+            <div class="stock-card-head">
+              <div class="stock-name">${stock.name}</div>
+              <div class="stock-change ${changeCls}">${changePct > 0 ? '+' : ''}${changePct.toFixed(2)}%</div>
+            </div>
+            <div class="stock-price-row">
+              <span class="stock-price-label">现价</span>
+              <b class="stock-price">${stock.currentPrice.toFixed(2)}</b>
+            </div>
+            <div class="stock-stats">
+              <div class="stock-stat"><span>持有</span><b>${formatSci(stock.shares)}</b></div>
+              <div class="stock-stat"><span>均价</span><b>${stock.avgCost.toFixed(2)}</b></div>
+              <div class="stock-stat"><span>市值</span><b>${marketValue}</b></div>
+              <div class="stock-stat"><span>收益</span><b class="${profitCls}">${profitPct == null ? '-' : ((profitPct > 0 ? '+' : '') + profitPct.toFixed(2) + '%')}</b></div>
+            </div>
+        </div>`;
+    }).join('') + '</div>';
 }
 /* 新手必看由顶栏「攻略」、更新日志由顶栏「日志」呼出，已移除原浮动按钮 */
         // 升级宠物
@@ -845,7 +1064,7 @@ function getBigLog10(value) {
         updatePetDisplay();
         updateDisplay();
     } else {
-        const currencyName = ({ gold:'金币', diamond:'钻石', titanium:'钛晶石', starstone:'星耀石', cosmicstone:'宇宙石', superstone:'超能石', otherworldstone:'异界石', xingjiestone:'星界石', hundunstone:'混沌石', lingtone:'灵髓石', huangtone:'幻空石', mingtone:'冥源石', xutong:'虚空石', shitone:'时空石', weitone:'未来石' })[config.currency] || config.currency;
+        const currencyName = ({ gold:'金币', diamond:'钻石', titanium:'钛晶石', starstone:'星耀石', cosmicstone:'宇宙石', superstone:'超能石', otherworldstone:'异界石', xingjiestone:'星界石', hundunstone:'混沌石', lingtone:'灵髓石', huangtone:'幻空石', mingtone:'冥源石', xutong:'虚空石', shitone:'时空石', weitone:'未来石', yongtone:'永恒石', wujitone:'无极石', daotone:'大道石' })[config.currency] || config.currency;
         logAction(`${currencyName}不足！`, "error");
     }
 }
@@ -883,6 +1102,8 @@ function checkPetAchievements(petKey, level) {
                 statData.level++;
                 if (stat === 'equipmentLevelBonus') {
                     statData.cost = multiplyBigByFinite(statData.cost, 5); // 装备等级加成每次升级消耗增加5倍（大数安全）
+                } else if (stat === 'reincarnationCoinBonus') {
+                    statData.cost = multiplyBigByFinite(statData.cost, 10); // 转生收益每次升级消耗增加10倍（1→10→100→1000）
                 } else {
                     statData.cost = multiplyBigByFinite(statData.cost, 1.2); // 其他属性每次升级消耗增加20%（大数安全）
                 }
@@ -921,21 +1142,38 @@ function resetGemEffects() {
 function useAllGems(index, gemType) {
     const eq = player.equipment[index];
     const gem = itemEffects[gemType];
-    const count = player.items[gemType];
-    
-    if (count > 0) {
-        // 计算总加成
-        const totalEffect = gem.effect * count;
-        // 减少宝石数量
-        player.items[gemType] = 0;
-        // 增加装备宝石加成
-        eq.gemMultiplier += totalEffect;
-        
-        logAction(`一键使用${count}个${gem.name}升级 ${eq.name}装备 (当前总加成: +${(eq.gemMultiplier * 100).toFixed(2)}%)`, 'success');
-        updateDisplay();
-    } else {
+    if (!eq || !gem) return;
+    const count = player.items[gemType] || 0;
+    if (!(count > 0)) {
         logAction(`${gem.name}不足！`, "error");
+        return;
     }
+
+    const equipName = (typeof getEquipmentName === 'function' ? getEquipmentName(eq) : eq.name) || eq.name || '装备';
+    const addPct = (gem.effect * count * 100).toFixed(2);
+    const curPct = ((eq.gemMultiplier || 0) * 100).toFixed(2);
+    showCustomConfirm(
+        `确定将全部 ${count} 个「${gem.name}」用于「${equipName}」吗？预计宝石加成 +${addPct}%（当前 +${curPct}%）。`,
+        (confirmed) => {
+            if (!confirmed) return;
+            const latestEq = player.equipment[index];
+            const latestCount = player.items[gemType] || 0;
+            if (!latestEq) {
+                logAction("装备已不存在", "error");
+                return;
+            }
+            if (!(latestCount > 0)) {
+                logAction(`${gem.name}不足！`, "error");
+                return;
+            }
+            const totalEffect = gem.effect * latestCount;
+            player.items[gemType] = 0;
+            latestEq.gemMultiplier = (latestEq.gemMultiplier || 0) + totalEffect;
+            logAction(`一键使用${latestCount}个${gem.name}升级 ${equipName}装备 (当前总加成: +${(latestEq.gemMultiplier * 100).toFixed(2)}%)`, 'success');
+            if (typeof updateItemDisplay === 'function') updateItemDisplay();
+            updateDisplay();
+        }
+    );
 }
         // 股票价格波动函数
         function updateStockPrices() {
@@ -1111,8 +1349,13 @@ function sellAllStock() {
         return;
     }
 
-    if (player.reincarnationCoin >= 10) {
-        player.reincarnationCoin -= 10;
+    const canAfford = typeof cmpBigSci === 'function'
+        ? cmpBigSci(player.reincarnationCoin, 10) >= 0
+        : Number(player.reincarnationCoin) >= 10;
+    if (canAfford) {
+        player.reincarnationCoin = typeof subBigSci === 'function'
+            ? (typeof bigSciToStorageValue === 'function' ? bigSciToStorageValue(subBigSci(player.reincarnationCoin, 10)) : subBigSci(player.reincarnationCoin, 10))
+            : (player.reincarnationCoin - 10);
         const numbers = generateTraditionalLotteryNumbers();
         player.traditionalLotteryNumbers = numbers;
         player.traditionalLotteryBought = true; // 设置购买标记
@@ -1122,7 +1365,6 @@ function sellAllStock() {
         
         setTimeout(() => {
             checkTraditionalLotteryResult();
-            resetTraditionalLottery(); // 开奖后重置状态
         }, 1800000);
     } else {
         logAction("转生币不足！无法购买传统数字彩票", "error");
@@ -1153,6 +1395,15 @@ function resetTraditionalLottery() {
 
         // 检查传统数字彩票结果
         function checkTraditionalLotteryResult() {
+    if (!player) return;
+    if (!Array.isArray(player.traditionalLotteryNumbers) || player.traditionalLotteryNumbers.length === 0) {
+        resetTraditionalLottery();
+        return;
+    }
+    if (!Array.isArray(player.lotteryResults)) player.lotteryResults = [];
+    if (!player.items) player.items = {};
+    if (player.items.yuzhou1 == null) player.items.yuzhou1 = 0;
+
     const winningNumbers = generateTraditionalLotteryNumbers();
     const matchedNumbers = player.traditionalLotteryNumbers.filter(num => winningNumbers.includes(num)).length;
     let reward = 0;
@@ -1197,7 +1448,7 @@ function resetTraditionalLottery() {
      resetTraditionalLottery();
     player.traditionalLotteryPurchased = false;
     updateLotteryResultsDisplay();
-    saveGame();
+    if (typeof saveGame === 'function') saveGame();
 
 }
 
@@ -1205,10 +1456,18 @@ function resetTraditionalLottery() {
 
         // 购买蛇年刮刮卡
         function buySnakeScratchCard() {
-            if (player.reincarnationCoin >= 50) {
-                player.reincarnationCoin -= 50;
+            const canAfford = typeof cmpBigSci === 'function'
+                ? cmpBigSci(player.reincarnationCoin, 50) >= 0
+                : Number(player.reincarnationCoin) >= 50;
+            if (canAfford) {
+                player.reincarnationCoin = typeof subBigSci === 'function'
+                    ? (typeof bigSciToStorageValue === 'function' ? bigSciToStorageValue(subBigSci(player.reincarnationCoin, 50)) : subBigSci(player.reincarnationCoin, 50))
+                    : (player.reincarnationCoin - 50);
                 const reward = getSnakeScratchCardReward();
-                player.reincarnationCoin += reward;
+                player.reincarnationCoin = typeof addBigSci === 'function'
+                    ? (typeof bigSciToStorageValue === 'function' ? bigSciToStorageValue(addBigSci(player.reincarnationCoin, reward)) : addBigSci(player.reincarnationCoin, reward))
+                    : (player.reincarnationCoin + reward);
+                if (!Array.isArray(player.lotteryResults)) player.lotteryResults = [];
 
               // 添加开奖结果
         player.lotteryResults.unshift({
@@ -1223,6 +1482,7 @@ function resetTraditionalLottery() {
         }
                 logAction(`购买了蛇年刮刮卡，获得 ${reward} 转生币`, 'info');
                 updateLotteryResultsDisplay();
+                if (typeof updateDisplay === 'function') updateDisplay();
             } else {
                 logAction("转生币不足！无法购买蛇年刮刮卡", "error");
             }
@@ -1240,10 +1500,18 @@ function resetTraditionalLottery() {
 
         // 购买发财刮刮卡
         function buyFortuneScratchCard() {
-            if (player.reincarnationCoin >= 500) {
-                player.reincarnationCoin -= 500;
+            const canAfford = typeof cmpBigSci === 'function'
+                ? cmpBigSci(player.reincarnationCoin, 500) >= 0
+                : Number(player.reincarnationCoin) >= 500;
+            if (canAfford) {
+                player.reincarnationCoin = typeof subBigSci === 'function'
+                    ? (typeof bigSciToStorageValue === 'function' ? bigSciToStorageValue(subBigSci(player.reincarnationCoin, 500)) : subBigSci(player.reincarnationCoin, 500))
+                    : (player.reincarnationCoin - 500);
                 const reward = getFortuneScratchCardReward();
-                player.reincarnationCoin += reward;
+                player.reincarnationCoin = typeof addBigSci === 'function'
+                    ? (typeof bigSciToStorageValue === 'function' ? bigSciToStorageValue(addBigSci(player.reincarnationCoin, reward)) : addBigSci(player.reincarnationCoin, reward))
+                    : (player.reincarnationCoin + reward);
+                if (!Array.isArray(player.lotteryResults)) player.lotteryResults = [];
 
                  // 添加开奖结果
         player.lotteryResults.unshift({
@@ -1258,6 +1526,7 @@ function resetTraditionalLottery() {
         }
                 logAction(`购买了发财刮刮卡，获得 ${reward} 转生币`, 'info');
                 updateLotteryResultsDisplay();
+                if (typeof updateDisplay === 'function') updateDisplay();
             } else {
                 logAction("转生币不足！无法购买发财刮刮卡", "error");
             }
@@ -1279,13 +1548,18 @@ function resetTraditionalLottery() {
             const buyBtn = document.querySelector('.buy-traditional-lottery-btn');
             if (!container) return;
             if (player.traditionalLotteryBought) {
-                container.textContent = `您的号码：${(player.traditionalLotteryNumbers || []).join(', ')} (已购买，等待开奖...)`;
+                const nums = (player.traditionalLotteryNumbers || []).map(n =>
+                    `<span class="lottery-ball">${n}</span>`
+                ).join('');
+                container.innerHTML = `
+                  <div class="lottery-status bought">已购买 · 等待开奖</div>
+                  <div class="lottery-balls">${nums || '<span class="lottery-empty">暂无号码</span>'}</div>
+                `;
                 if (buyBtn) buyBtn.style.display = 'none';
             } else {
-                container.textContent = "您还没有购买彩票";
-                if (buyBtn) buyBtn.style.display = 'block';
+                container.innerHTML = `<div class="lottery-status idle">您还没有购买彩票</div>`;
+                if (buyBtn) buyBtn.style.display = '';
             }
-            // 更新倒计时显示
             updateLotteryCountdown();
         }
       // 更新彩票倒计时
@@ -1314,16 +1588,29 @@ function resetTraditionalLottery() {
         // 更新开奖结果显示
         function updateLotteryResultsDisplay() {
     const container = document.getElementById('lotteryResults');
-    container.innerHTML = player.lotteryResults
-        .slice(0, 20)
-        .map(result => {
-            if (result.type === '传统数字彩票') {
-                return `<div>${result.type} - 中奖号码: ${result.numbers.join(', ')}，你中了 ${result.matched} 个号码，获得 ${result.reward} 星尘发票</div>`;
-            } else {
-                return `<div>${result.type} - 获得 ${result.reward} 转生币</div>`;
-            }
-        })
-        .join('');
+    if (!container || !player) return;
+    if (!Array.isArray(player.lotteryResults)) player.lotteryResults = [];
+
+    const rows = player.lotteryResults.slice(0, 20).map(function(result) {
+        if (!result) return '';
+        const ts = result.timestamp || result.time || '';
+        const prefix = ts ? `[${ts}] ` : '';
+        if (result.type === '传统数字彩票') {
+            const nums = Array.isArray(result.numbers) ? result.numbers.join(', ') : '-';
+            return `<div class="success">${prefix}${result.type} - 中奖号码: ${nums}，命中 ${result.matched || 0} 个，获得 ${result.reward || 0} 星尘发票</div>`;
+        }
+        if (result.type) {
+            return `<div class="success">${prefix}${result.type} - 获得 ${result.reward || 0} 转生币</div>`;
+        }
+        if (result.result) {
+            return `<div class="info">${prefix}${result.result}</div>`;
+        }
+        return '';
+    }).filter(Boolean);
+
+    container.innerHTML = rows.length
+        ? rows.join('')
+        : '<div class="info">暂无开奖记录。购买彩票或刮刮卡后，结果会显示在这里。</div>';
 }
 
         // 银行系统逻辑（使用 parseFloat 支持科学计数法如 1e24，避免 parseInt("1e24") 只得到 1）
@@ -1500,16 +1787,29 @@ function updateBankDisplay() {
 
         function refineDungeonEquipment(index) {
             const eq = player.dungeonEquipment[index];
-            if (player.items.refineStone > 0) {
-                player.items.refineStone--;
-                const config = dungeonEquipmentTypes[eq.rarity];
-                eq.growthRate = Math.random() * (config.growthRange[1] - config.growthRange[0]) + config.growthRange[0];
-                logAction(`洗炼副本装备：${eq.name}，新的成长属性为 ${(eq.growthRate * 100).toFixed(2)}%`, 'success');
-                updateDungeonEquipmentDisplay(); // 刷新副本装备页面
-                updateDisplay();
-            } else {
+            if (!eq) return;
+            if (!(player.items.refineStone > 0)) {
                 logAction("洗炼石不足！", "error");
+                return;
             }
+            const growthText = ((eq.growthRate || 0) * 100).toFixed(2);
+            showCustomConfirm(
+                `确定消耗 1 个洗炼石，洗炼「${eq.name}」吗？当前成长 +${growthText}%，洗炼后将重新随机。`,
+                (confirmed) => {
+                    if (!confirmed) return;
+                    if (!(player.items.refineStone > 0)) {
+                        logAction("洗炼石不足！", "error");
+                        return;
+                    }
+                    player.items.refineStone--;
+                    const config = dungeonEquipmentTypes[eq.rarity];
+                    eq.growthRate = Math.random() * (config.growthRange[1] - config.growthRange[0]) + config.growthRange[0];
+                    logAction(`洗炼副本装备：${eq.name}，新的成长属性为 ${(eq.growthRate * 100).toFixed(2)}%`, 'success');
+                    updateDungeonEquipmentDisplay();
+                    if (typeof updateItemDisplay === 'function') updateItemDisplay();
+                    updateDisplay();
+                }
+            );
         }
 
        function updateDungeonEquipmentDisplay() {
@@ -1579,37 +1879,94 @@ function updateBankDisplay() {
     'ultimate47', 
     'ultimate48',   
     'ultimate49', 
-    'ultimate50'
+    'ultimate50',
+    'ultimate51',
+    'ultimate52',
+    'ultimate53',
+    'ultimate54',
+    'ultimate55',
+    'ultimate56',
+    'ultimate57',
+    'ultimate58',
+    'ultimate59',
+    'ultimate60',
+    'ultimate61',
+    'ultimate62',
+    'ultimate63',
+    'ultimate64',
+    'ultimate65',
+    'ultimate66',
+    'ultimate67',
+    'ultimate68',
+    'ultimate69',
+    'ultimate70'
     ];
     
-    // 按品质排序
-    const sortedEquipment = player.dungeonEquipment.sort((a, b) => {
-        // 先按品质排序
+    const sortedEquipment = [...player.dungeonEquipment].sort((a, b) => {
         const rarityDiff = rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
         if (rarityDiff !== 0) return rarityDiff;
-        
-        // 同品质按成长属性降序
         return b.growthRate - a.growthRate;
     });
     const totalBonus = player.dungeonEquipment.reduce((sum, eq) => sum + eq.level * eq.growthRate, 0);
+    const cards = sortedEquipment.map((eq) => {
+        const index = player.dungeonEquipment.indexOf(eq);
+        const rarity = eq.rarity || 'common';
+        const rarityIdx = rarityOrder.indexOf(rarity);
+        const maxIdx = Math.max(1, rarityOrder.length - 1);
+        // 品质特效档 0~20，越高越炫，最高 20 色流光
+        const fxTier = rarityIdx < 0 ? 0 : Math.min(20, Math.round((rarityIdx / maxIdx) * 20));
+        const growth = (eq.growthRate * 100).toFixed(2);
+        return `
+            <div class="dungeon-card ${rarity} dungeon-fx-${fxTier}">
+              <div class="dungeon-card-top">
+                <div class="dungeon-name">${eq.name}</div>
+                <div class="dungeon-lv">Lv.${eq.level || 0}</div>
+              </div>
+              <div class="dungeon-stats">
+                <div class="dungeon-stat"><span>数量</span><b>${eq.quantity}/3</b></div>
+                <div class="dungeon-stat accent"><span>成长</span><b>+${growth}%</b></div>
+              </div>
+              <div class="dungeon-actions">
+                <button type="button" class="dungeon-btn" onclick="refineDungeonEquipment(${index})">洗炼</button>
+                <button type="button" class="dungeon-btn ghost" onclick="dismantleDungeonEquipment(${index})">分解</button>
+              </div>
+            </div>`;
+    }).join('');
     container.innerHTML = `
-        <div>总加成: +${(totalBonus * 100).toFixed(2)}%</div>
-        ${player.dungeonEquipment.map((eq, index) => `
-            <div class="equipment ${eq.rarity}">
-                ${eq.name} Lv.${eq.level} (数量: ${eq.quantity}/3, 成长属性: +${(eq.growthRate * 100).toFixed(2)}%)
-                <button onclick="refineDungeonEquipment(${index})">洗炼</button>
-                <button onclick="dismantleDungeonEquipment(${index})">分解</button>
-            </div>
-        `).join('')}
+        <div class="dungeon-summary">
+          <span class="dungeon-summary-label">总加成</span>
+          <b class="dungeon-summary-value">+${(totalBonus * 100).toFixed(2)}%</b>
+        </div>
+        <div class="dungeon-grid">${cards || '<div class="main-muted">暂无副本装备</div>'}</div>
     `;
 }
 
         // 分解副本装备
         function dismantleDungeonEquipment(index) {
             const eq = player.dungeonEquipment[index];
-            player.dungeonEquipment.splice(index, 1);
-            logAction(`分解了副本装备：${eq.name}`, 'success');
-            updateDungeonEquipmentDisplay();
+            if (!eq) return;
+            const growthText = ((eq.growthRate || 0) * 100).toFixed(2);
+            showCustomConfirm(
+                `确定分解「${eq.name}」吗？成长 +${growthText}% · 数量 ${eq.quantity}/3，分解后不可恢复。`,
+                (confirmed) => {
+                    if (!confirmed) return;
+                    const current = player.dungeonEquipment[index];
+                    if (!current || current !== eq) {
+                        // 列表可能已刷新，按对象重新定位
+                        const idx = player.dungeonEquipment.indexOf(eq);
+                        if (idx < 0) {
+                            logAction("装备已不存在", "error");
+                            updateDungeonEquipmentDisplay();
+                            return;
+                        }
+                        player.dungeonEquipment.splice(idx, 1);
+                    } else {
+                        player.dungeonEquipment.splice(index, 1);
+                    }
+                    logAction(`分解了副本装备：${eq.name}`, 'success');
+                    updateDungeonEquipmentDisplay();
+                }
+            );
         }
 
         // 新增：魂环系统
@@ -1663,16 +2020,47 @@ function checkSoulRingAchievements(type, level) {
         }
     });
 }
+        function getSoulRingFxTier(type) {
+            const order = Object.keys(typeof soulRingTypes !== 'undefined' ? soulRingTypes : {});
+            const idx = order.indexOf(type);
+            if (idx < 0) return 0;
+            const maxIdx = Math.max(1, order.length - 1);
+            return Math.min(20, Math.round((idx / maxIdx) * 20));
+        }
         function updateSoulRingDisplay() {
             const container = document.getElementById('soulRingsContainer');
-            container.innerHTML = player.soulRings.map(ring => `
-                <div class="equipment">
-                    ${soulRingTypes[ring.type].name} Lv.${ring.level}
-                    (全属性+${(ring.level * ring.multiplier * 100).toFixed(1)}%)
-
-                    </button>
-                </div>
-            `).join('');
+            if (!container) return;
+            const rings = Array.isArray(player.soulRings) ? player.soulRings : [];
+            if (!rings.length) {
+                container.innerHTML = '<div class="main-muted">暂无魂环</div>';
+                return;
+            }
+            const sorted = [...rings].sort((a, b) => {
+                return getSoulRingFxTier(a.type) - getSoulRingFxTier(b.type)
+                    || (b.level || 0) - (a.level || 0);
+            });
+            const totalBonus = rings.reduce((sum, ring) => sum + (ring.level || 0) * (ring.multiplier || 0), 0);
+            const cards = sorted.map((ring) => {
+                const cfg = soulRingTypes[ring.type];
+                if (!cfg) return '';
+                const fxTier = getSoulRingFxTier(ring.type);
+                const bonus = ((ring.level || 0) * (ring.multiplier || 0) * 100).toFixed(1);
+                return `
+                  <div class="soul-card dungeon-fx-${fxTier}">
+                    <div class="soul-card-top">
+                      <div class="soul-name">${cfg.name}</div>
+                      <div class="soul-lv">Lv.${ring.level || 0}</div>
+                    </div>
+                    <div class="soul-bonus">全属性 <b>+${bonus}%</b></div>
+                  </div>`;
+            }).join('');
+            container.innerHTML = `
+              <div class="soul-summary">
+                <span class="soul-summary-label">魂环总加成</span>
+                <b class="soul-summary-value">+${(totalBonus * 100).toFixed(1)}%</b>
+              </div>
+              <div class="soul-grid">${cards}</div>
+            `;
         }
       function showRenameDialog() {
     document.getElementById("renameDialog").style.display = "block";
@@ -1803,7 +2191,11 @@ function confirmRename() {
        if (!_cachedDOMElements.currentTitle) {
            _cachedDOMElements.currentTitle = document.getElementById("currentTitle");
        }
-    _cachedDOMElements.currentTitle.textContent = player.titles.current ? `[${player.titles.current}]` : "";
+    if (typeof applyCurrentTitleDisplay === 'function') {
+        applyCurrentTitleDisplay(_cachedDOMElements.currentTitle);
+    } else {
+        _cachedDOMElements.currentTitle.textContent = player.titles.current ? `[${player.titles.current}]` : "";
+    }
     const runeBonuses = typeof calculateRuneBonuses === 'function' ? calculateRuneBonuses() : {};
     let runeBonusText = '';
     
@@ -1853,7 +2245,8 @@ function confirmRename() {
     // 更新显示
    const currencies = ['gold', 'diamond', 'titanium', 'starstone', 'cosmicstone', 
                        'superstone', 'otherworldstone', 'xingjiestone', 'hundunstone', 
-                       'lingtone', 'huangtone', 'mingtone', 'xutong', 'shitone', 'weitone'];
+                       'lingtone', 'huangtone', 'mingtone', 'xutong', 'shitone', 'weitone',
+                       'yongtone', 'wujitone', 'daotone'];
     
     currencies.forEach(currency => {
         if (!_cachedDOMElements[currency]) {
@@ -1869,7 +2262,7 @@ function confirmRename() {
         }
     });
     // 钻石/钛晶石/星耀石等数量为0时隐藏对应货币卡片（金币、转生币始终显示）
-    const hideWhenZero = ['diamond', 'titanium', 'starstone', 'cosmicstone', 'superstone', 'otherworldstone', 'xingjiestone', 'hundunstone', 'lingtone', 'huangtone', 'mingtone', 'xutong', 'shitone', 'weitone'];
+    const hideWhenZero = ['diamond', 'titanium', 'starstone', 'cosmicstone', 'superstone', 'otherworldstone', 'xingjiestone', 'hundunstone', 'lingtone', 'huangtone', 'mingtone', 'xutong', 'shitone', 'weitone', 'yongtone', 'wujitone', 'daotone'];
     hideWhenZero.forEach(id => {
         if (!_cachedDOMElements[id]) {
             _cachedDOMElements[id] = document.getElementById(id);
@@ -1962,28 +2355,36 @@ function confirmRename() {
         // 装备/成就等重型 UI：仅在数据变化或低频节拍下调用
         function updateHeavyDisplay() {
             // 装备列表：仅当装备数量或等级等变化时重建，避免频繁大量 DOM 操作导致卡顿
-            var equipmentSignature = player.equipment.length + '-' + player.equipment.reduce(function(s, eq){
-                return s + (eq.level || 0) + String(bigSciToStorageValue(eq.gps)).length;
+            var equipmentSignature = 'v3|' + player.equipment.length + '-' + player.equipment.reduce(function(s, eq){
+                return s + (eq.level || 0) + String(bigSciToStorageValue(eq.gps)).length
+                    + Math.round((eq.gemMultiplier || 0) * 10000)
+                    + Math.round((eq.growthRate || 0) * 1000);
             }, 0);
             if (!window._equipmentListSignature || window._equipmentListSignature !== equipmentSignature) {
                 window._equipmentListSignature = equipmentSignature;
                 const fragment = document.createDocumentFragment();
                 player.equipment.forEach((eq, index) => {
                     const div = document.createElement("div");
-                    div.className = `equipment ${eq.rarity}`;
+                    const rarity = validateRarity(eq.rarity);
+                    div.className = `equipment equip-card ${rarity}`;
                     div.innerHTML = `
-                        ${getEquipmentName(eq)} Lv.${eq.level}
-                        (GPS +${formatSci(eq.gps)} 点击 +${formatSci(eq.click)})
-                        <button onclick="useAllGems(${index}, 'primaryGem')">一键使用初级宝石</button>
-                        <button onclick="useAllGems(${index}, 'advancedGem')">一键使用高级宝石</button>
-                        <button onclick="useAllGems(${index}, 'superiorGem')">一键使用极品宝石</button>
-                        <button onclick="useAllGems(${index}, 'divineGem')">一键使用神级宝石</button>
-                        <div class="tooltip">
-                                品质: ${eq.name}<br>
-                                等级: ${eq.level}<br>
-                                成长率: +${(eq.growthRate * 100).toFixed(1)}%/级<br>
-                                宝石加成: +${(eq.gemMultiplier * 100).toFixed(2)}%<br>
+                        <div class="equip-card-main">
+                          <div class="equip-card-info">
+                            <div class="equip-card-title">${getEquipmentName(eq)}<span class="equip-lv">Lv.${eq.level}</span></div>
+                            <div class="equip-card-stats">
+                              <span class="equip-stat-pill gps">GPS +${formatSci(eq.gps)}</span>
+                              <span class="equip-stat-pill click">点击 +${formatSci(eq.click)}</span>
+                              <span class="equip-stat-pill meta">成长率 +${(eq.growthRate * 100).toFixed(1)}%/级</span>
+                              <span class="equip-stat-pill meta">宝石加成 +${(eq.gemMultiplier * 100).toFixed(2)}%</span>
                             </div>
+                          </div>
+                          <div class="equip-card-actions">
+                            <button type="button" class="gem-btn gem-btn-primary" title="一键使用初级宝石" onclick="useAllGems(${index}, 'primaryGem')">初级</button>
+                            <button type="button" class="gem-btn gem-btn-advanced" title="一键使用高级宝石" onclick="useAllGems(${index}, 'advancedGem')">高级</button>
+                            <button type="button" class="gem-btn gem-btn-superior" title="一键使用极品宝石" onclick="useAllGems(${index}, 'superiorGem')">极品</button>
+                            <button type="button" class="gem-btn gem-btn-divine" title="一键使用神级宝石" onclick="useAllGems(${index}, 'divineGem')">神级</button>
+                          </div>
+                        </div>
                         `;
                     fragment.appendChild(div);
                 });
@@ -2150,7 +2551,8 @@ function confirmRename() {
         : '';
     normalizeMainCurrencies();
     player.actionLogs = player.actionLogs.slice(0, 5);
-    player.lotteryResults = player.lotteryResults.slice(0, 5);
+    if (!Array.isArray(player.lotteryResults)) player.lotteryResults = [];
+    player.lotteryResults = player.lotteryResults.slice(0, 20);
    
     if (player.liveStream && player.liveStream.donationHistory) {
         player.liveStream.donationHistory = player.liveStream.donationHistory.slice(-5);
@@ -2171,6 +2573,7 @@ function confirmRename() {
     saveInvestmentGameData();
     player.tower.lastUpdate = Date.now();
     syncExplorationDataToPlayer();
+    if (typeof pruneTimeSecretRealmForSave === 'function') pruneTimeSecretRealmForSave();
     
     if (player.battleLog && player.battleLog.length > 50) player.battleLog = player.battleLog.slice(0, 50);
     if (player.goldLogs && player.goldLogs.length > 20) player.goldLogs = player.goldLogs.slice(0, 20);
@@ -2206,7 +2609,12 @@ function confirmRename() {
         } else {
             throw saveErr;
         }
-    } finally { if (chartCache) player.investmentGame.chartHistoryCache = chartCache; }
+    } finally {
+        if (chartCache) player.investmentGame.chartHistoryCache = chartCache;
+        // 与 pruneTimeSecretRealmForSave 配对：恢复局内秒表引用，避免孤儿 interval 叠加速
+        if (typeof restoreTsrTimerAfterSave === 'function') restoreTsrTimerAfterSave();
+    }
+    if (typeof ensureTimeSecretRealmData === 'function') ensureTimeSecretRealmData();
     try { localStorage.setItem('traditionalLotteryPurchased', player.traditionalLotteryPurchased); } catch (eLot) {}
     // 不在 saveGame 里写 goldGameLastUnload，否则自动/手动保存会覆盖「离开时间」，导致重开时离线时长恒为 0；仅 beforeunload 写入
     if (typeof window.scheduleGoldGameCloudUpload === 'function') window.scheduleGoldGameCloudUpload();
@@ -2278,7 +2686,7 @@ function confirmRename() {
             function applyGoldGameSaveCompaction(p, aggressive) {
                 if (!p || typeof p !== 'object') return p;
                 if (Array.isArray(p.actionLogs) && p.actionLogs.length > 5) p.actionLogs = p.actionLogs.slice(0, 5);
-                if (Array.isArray(p.lotteryResults) && p.lotteryResults.length > 5) p.lotteryResults = p.lotteryResults.slice(0, 5);
+                if (Array.isArray(p.lotteryResults) && p.lotteryResults.length > 20) p.lotteryResults = p.lotteryResults.slice(0, 20);
                 if (Array.isArray(p.battleLog) && p.battleLog.length > (aggressive ? 15 : 50)) {
                     p.battleLog = p.battleLog.slice(0, aggressive ? 15 : 50);
                 }
@@ -2628,9 +3036,15 @@ function confirmRename() {
                         goldGameRefreshClientBuild();
                     }
                 });
-                setInterval(function () {
-                    if (typeof goldGameRefreshClientBuild === 'function') goldGameRefreshClientBuild();
-                }, 60000);
+                if (typeof registerInterval === 'function') {
+                    window.__goldGameMainBuildWatchIntervalId = registerInterval(function () {
+                        if (typeof goldGameRefreshClientBuild === 'function') goldGameRefreshClientBuild();
+                    }, 60000);
+                } else {
+                    window.__goldGameMainBuildWatchIntervalId = setInterval(function () {
+                        if (typeof goldGameRefreshClientBuild === 'function') goldGameRefreshClientBuild();
+                    }, 60000);
+                }
             }
             window.startGoldGameMainBuildWatch = startGoldGameMainBuildWatch;
 
@@ -2877,6 +3291,7 @@ function confirmRename() {
                             }
                             setToken(res.token); setAuthUser(res.username || username); setAccountId(nextAccountId);
                             if (typeof window.syncGoldGameAccountAuthButtons === 'function') window.syncGoldGameAccountAuthButtons();
+                            if (typeof window.updateAbyssOnlineChatVisibility === 'function') window.updateAbyssOnlineChatVisibility();
                             if (res.sessionNotice && typeof logAction === 'function') logAction(res.sessionNotice, 'common');
                             if (!opts.skipPostLoginLoops) startGoldGamePostLoginLoops();
                             return res;
@@ -2904,6 +3319,7 @@ function confirmRename() {
                             }
                             setToken(res.token); setAuthUser(res.username || username); setAccountId(nextAccountId);
                             if (typeof window.syncGoldGameAccountAuthButtons === 'function') window.syncGoldGameAccountAuthButtons();
+                            if (typeof window.updateAbyssOnlineChatVisibility === 'function') window.updateAbyssOnlineChatVisibility();
                             if (res.sessionNotice && typeof logAction === 'function') logAction(res.sessionNotice, 'common');
                             if (!opts.skipPostLoginLoops) startGoldGamePostLoginLoops();
                             return res;
@@ -2948,6 +3364,7 @@ function confirmRename() {
                         return;
                     }
                     if (typeof window.syncGoldGameAccountAuthButtons === 'function') window.syncGoldGameAccountAuthButtons();
+                    if (typeof window.updateAbyssOnlineChatVisibility === 'function') window.updateAbyssOnlineChatVisibility();
                     window._goldGameLogoutInProgress = false;
                 }
                 function doServerLogoutAndFinish() {
@@ -3716,6 +4133,25 @@ function confirmRename() {
             window._networkCoinCache = null;
             window._networkUpgradeStonesCache = 0;
             window._supremeArtifactsCache = null;
+            if (typeof window.goldGameAppendSessionBagItem !== 'function') {
+                window.goldGameAppendSessionBagItem = function(bag, item, maxLen) {
+                    if (!Array.isArray(bag) || !item) return bag || [];
+                    maxLen = maxLen || 300;
+                    var id = item.id != null ? item.id : item.artifactId;
+                    if (id != null) {
+                        for (var i = 0; i < bag.length; i++) {
+                            var b = bag[i];
+                            if (b && (b.id === id || b.artifactId === id)) {
+                                bag[i] = item;
+                                return bag;
+                            }
+                        }
+                    }
+                    bag.push(item);
+                    if (bag.length > maxLen) bag.splice(0, bag.length - maxLen);
+                    return bag;
+                };
+            }
 
             window.goldGameGetSupremeArtifacts = function() {
                 if (!hasApi()) return Promise.resolve({ ok: true, equipped: {}, bag: [] });
@@ -3735,7 +4171,7 @@ function confirmRename() {
                 return apiRequest('POST', '/api/supreme-artifacts/try-drop', { dimensionLevel: dimensionLevel, playerName: playerName }, true).then(function(res) {
                     if (res.ok && res.dropped && res.supremeArtifact && window._supremeArtifactsCache) {
                         window._supremeArtifactsCache.bag = window._supremeArtifactsCache.bag || [];
-                        window._supremeArtifactsCache.bag.push(res.supremeArtifact);
+                        window.goldGameAppendSessionBagItem(window._supremeArtifactsCache.bag, res.supremeArtifact);
                     }
                     return res;
                 }).catch(function() { return { ok: false, dropped: false }; });
@@ -3816,7 +4252,7 @@ function confirmRename() {
                     if (res.ok && res.dropped && res.artifact) {
                         if (window._networkArtifactsCache) {
                             window._networkArtifactsCache.bag = window._networkArtifactsCache.bag || [];
-                            window._networkArtifactsCache.bag.push(res.artifact);
+                            window.goldGameAppendSessionBagItem(window._networkArtifactsCache.bag, res.artifact);
                         }
                         return res;
                     }
@@ -4010,6 +4446,25 @@ function confirmRename() {
             window._networkCoinCache = null;
             window._networkUpgradeStonesCache = 0;
             window._supremeArtifactsCache = null;
+            if (typeof window.goldGameAppendSessionBagItem !== 'function') {
+                window.goldGameAppendSessionBagItem = function(bag, item, maxLen) {
+                    if (!Array.isArray(bag) || !item) return bag || [];
+                    maxLen = maxLen || 300;
+                    var id = item.id != null ? item.id : item.artifactId;
+                    if (id != null) {
+                        for (var i = 0; i < bag.length; i++) {
+                            var b = bag[i];
+                            if (b && (b.id === id || b.artifactId === id)) {
+                                bag[i] = item;
+                                return bag;
+                            }
+                        }
+                    }
+                    bag.push(item);
+                    if (bag.length > maxLen) bag.splice(0, bag.length - maxLen);
+                    return bag;
+                };
+            }
 
             window.goldGameGetSupremeArtifacts = function() {
                 if (!hasApi()) return Promise.resolve({ ok: true, equipped: {}, bag: [] });
@@ -4029,7 +4484,7 @@ function confirmRename() {
                 return apiRequest('POST', '/api/supreme-artifacts/try-drop', { dimensionLevel: dimensionLevel, playerName: playerName }, true).then(function(res) {
                     if (res.ok && res.dropped && res.supremeArtifact && window._supremeArtifactsCache) {
                         window._supremeArtifactsCache.bag = window._supremeArtifactsCache.bag || [];
-                        window._supremeArtifactsCache.bag.push(res.supremeArtifact);
+                        window.goldGameAppendSessionBagItem(window._supremeArtifactsCache.bag, res.supremeArtifact);
                     }
                     return res;
                 }).catch(function() { return { ok: false, dropped: false }; });
@@ -4110,7 +4565,7 @@ function confirmRename() {
                     if (res.ok && res.dropped && res.artifact) {
                         if (window._networkArtifactsCache) {
                             window._networkArtifactsCache.bag = window._networkArtifactsCache.bag || [];
-                            window._networkArtifactsCache.bag.push(res.artifact);
+                            window.goldGameAppendSessionBagItem(window._networkArtifactsCache.bag, res.artifact);
                         }
                         return res;
                     }
@@ -4324,10 +4779,10 @@ function confirmRename() {
                 var playerName = getCurrentPlayerDisplayName();
                 return apiRequest('POST', '/api/network-abyss-divine/try-drop', { floor: nf, playerName: playerName }, true).then(function(res) {
                     if (res.ok && res.dropped && window._networkAbyssDivineCache) {
-                        if (res.dropType === 'abyssBeast' && res.beast) { window._networkAbyssDivineCache.beasts = window._networkAbyssDivineCache.beasts || []; window._networkAbyssDivineCache.beasts.push(res.beast); }
-                        else if (res.dropType === 'abyssPetEquip' && res.item) { window._networkAbyssDivineCache.petEquip = window._networkAbyssDivineCache.petEquip || []; window._networkAbyssDivineCache.petEquip.push(res.item); }
-                        else if (res.dropType === 'abyssPetNeidan' && res.item) { window._networkAbyssDivineCache.petNeidan = window._networkAbyssDivineCache.petNeidan || []; window._networkAbyssDivineCache.petNeidan.push(res.item); }
-                        else if (res.dropType === 'abyssPetShoujue' && res.item) { window._networkAbyssDivineCache.petShoujue = window._networkAbyssDivineCache.petShoujue || []; window._networkAbyssDivineCache.petShoujue.push(res.item); }
+                        if (res.dropType === 'abyssBeast' && res.beast) { window._networkAbyssDivineCache.beasts = window._networkAbyssDivineCache.beasts || []; window.goldGameAppendSessionBagItem(window._networkAbyssDivineCache.beasts, res.beast); }
+                        else if (res.dropType === 'abyssPetEquip' && res.item) { window._networkAbyssDivineCache.petEquip = window._networkAbyssDivineCache.petEquip || []; window.goldGameAppendSessionBagItem(window._networkAbyssDivineCache.petEquip, res.item); }
+                        else if (res.dropType === 'abyssPetNeidan' && res.item) { window._networkAbyssDivineCache.petNeidan = window._networkAbyssDivineCache.petNeidan || []; window.goldGameAppendSessionBagItem(window._networkAbyssDivineCache.petNeidan, res.item); }
+                        else if (res.dropType === 'abyssPetShoujue' && res.item) { window._networkAbyssDivineCache.petShoujue = window._networkAbyssDivineCache.petShoujue || []; window.goldGameAppendSessionBagItem(window._networkAbyssDivineCache.petShoujue, res.item); }
                     }
                     return res;
                 }).catch(function() { return { ok: false, dropped: false }; });
@@ -4638,13 +5093,17 @@ function confirmRename() {
                     buffStatusEl.textContent = parts.join(' ｜ ');
                 }
                 if (window._goldGameFamilyBuffTimer) {
-                    clearInterval(window._goldGameFamilyBuffTimer);
+                    if (typeof unregisterInterval === 'function') unregisterInterval(window._goldGameFamilyBuffTimer);
+                    else clearInterval(window._goldGameFamilyBuffTimer);
                     window._goldGameFamilyBuffTimer = null;
                 }
                 if (buffs && ((buffs.exp && buffs.exp.expiresAt) || (buffs.gps && buffs.gps.expiresAt) || (buffs.click && buffs.click.expiresAt) || (buffs.cultivation && buffs.cultivation.expiresAt))) {
-                    window._goldGameFamilyBuffTimer = setInterval(function() {
+                    var buffTick = function() {
                         window.updateGoldGameFamilyBuffUI({ totalContribution: total, buffs: window._goldGameFamilyBuffs, inFamily: window._goldGameFamilyInFamily });
-                    }, 1000);
+                    };
+                    window._goldGameFamilyBuffTimer = (typeof registerInterval === 'function')
+                        ? registerInterval(buffTick, 1000)
+                        : setInterval(buffTick, 1000);
                 }
             };
             window.goldGameFamilyDailyReport = function(floor) {
@@ -4653,7 +5112,7 @@ function confirmRename() {
                 return apiRequest('POST', '/api/family/daily-report', { floor: floor, playerName: playerName }, true).then(function(res) {
                     if (res.ok && res.artifactDropped && res.artifact && window._networkArtifactsCache) {
                         window._networkArtifactsCache.bag = window._networkArtifactsCache.bag || [];
-                        window._networkArtifactsCache.bag.push(res.artifact);
+                        window.goldGameAppendSessionBagItem(window._networkArtifactsCache.bag, res.artifact);
                     }
                     if (res.ok && res.networkCoinGranted > 0 && typeof goldGameGetNetworkCoin === 'function') {
                         goldGameGetNetworkCoin().catch(function() {});
@@ -4733,240 +5192,23 @@ addChildSystemToGameLoop();
         // 先模拟离线变化
         simulateOfflinePriceChanges();
         
-        // 再启动实时模拟
+        // 仅在投资面板已打开时启动实时模拟，避免后台常驻双 interval
         setTimeout(() => {
-            startPriceSimulation();
+            var invUi = document.getElementById('investmentGameUI');
+            if (invUi && invUi.style.display === 'block' && typeof startPriceSimulation === 'function') {
+                startPriceSimulation();
+            }
         }, 1000);
     }
   if (!player.timeSecretRealm) {
-        player.timeSecretRealm = {
-            currency: 0,
-            bestFloor: 0,
-            clearCount: 0,
-            unlockedItems: [],
-            currentRun: {
-                isActive: false,
-                currentFloor: 1,
-                timeLeft: 300,
-                tempBuffs: [],
-                currentRoom: null,
-                exploredRooms: 0,
-                currencyEarned: 0,
-                playerHealth: 0,
-                playerAttack: 0
-            },
-         difficulty: {
-   levels: {
-        easy: { 
-            name: '简单', 
-            multiplier: 0.8, 
-            rewardMultiplier: 0.7, 
-            description: '适合新手玩家', 
-            unlockCondition: '无',
-            clearFloor: 10  // 通关层数要求
-        },
-        normal: { 
-            name: '普通', 
-            multiplier: 1.0, 
-            rewardMultiplier: 1.0, 
-            description: '标准难度', 
-            unlockCondition: '通关简单难度3次',
-            clearFloor: 15
-        },
-        hard: { 
-            name: '困难', 
-            multiplier: 1.5, 
-            rewardMultiplier: 1.5, 
-            description: '更具挑战性', 
-            unlockCondition: '通关普通难度5次',
-            clearFloor: 20
-        },
-        nightmare: { 
-            name: '噩梦', 
-            multiplier: 2.0, 
-            rewardMultiplier: 2.5, 
-            description: '极限挑战', 
-            unlockCondition: '通关困难难度10次',
-            clearFloor: 25
-        },
-        hell: { 
-            name: '地狱', 
-            multiplier: 3.0, 
-            rewardMultiplier: 4.0, 
-            description: '终极考验', 
-            unlockCondition: '通关噩梦难度20次',
-            clearFloor: 30
-        }
-    },
-    current: 'easy',
-    unlocked: ['easy']
-},
-            roomTypes: {
-                battle: { weight: 40, name: '战斗房间' },
-                event: { weight: 25, name: '事件房间' },
-                treasure: { weight: 20, name: '宝箱房间' },
-                rest: { weight: 10, name: '休息房间' },
-                shop: { weight: 5, name: '商店房间' }
-            },
-            tempBuffs: {
-                attack: { 
-        name: '攻击强化', 
-        description: '攻击力提升50%，探索时间+30秒', 
-        effect: 'attack', 
-        value: 0.5, 
-        duration: 0,
-        timeBonus: 30  // 新增：增加20秒探索时间
-    },
-    health: { 
-        name: '生命强化', 
-        description: '生命值提升50%，探索时间+60秒', 
-        effect: 'health', 
-        value: 0.5, 
-        duration: 0,
-        timeBonus: 60  // 新增：增加40秒探索时间
-    },
-    critRate: { 
-        name: '暴击强化', 
-        description: '暴击率提升10%，探索时间+90秒', 
-        effect: 'critRate', 
-        value: 0.1, 
-        duration: 0,
-        timeBonus: 90  // 新增：增加60秒探索时间
-    },
-    critDamage: { 
-        name: '爆伤强化', 
-        description: '爆伤提升50%，探索时间+120秒', 
-        effect: 'critDamage', 
-        value: 0.5, 
-        duration: 0,
-        timeBonus: 120  // 新增：增加80秒探索时间
-    },
-    speed: { 
-        name: '速度强化', 
-        description: '探索速度提升，探索时间+150秒', 
-        effect: 'speed', 
-        value: 10, 
-        duration: 0,
-        timeBonus: 150  // 新增：增加100秒探索时间
-    },
-                luck: { name: '幸运强化', description: '获得双倍秘境币', effect: 'luck', value: 1, duration: 0  }
-            },
-            shopItems: {
-                permanentAttack: { 
-                    name: '永恒攻击符文', 
-                    description: '临时提升现有攻击力50%可以叠加（转生失效)', 
-                    cost: 100000, 
-                    type: 'permanent',
-                    effect: 'attack'
-                },
-                permanentHealth: { 
-                    name: '永恒生命符文', 
-                    description: '临时提升现有生命值50%可以叠加（转生失效)', 
-                    cost: 100000, 
-                    type: 'permanent',
-                    effect: 'health'
-                },
-                timeExtension: { 
-        name: '时间沙漏', 
-        description: '永久增加探索时间60秒（限购50个）', 
-        cost: 500000, 
-        type: 'permanent',
-        effect: 'time',
-        maxPurchase: 50, // 限购50个
-        purchased: 0, // 已购买数量
-        permanentEffect: true // 永久效果
-    },
-    startingBuff: { 
-        name: '起始祝福', 
-        description: '每次冒险开始时永久获得1个随机增益效果（限购2个）', 
-        cost: 800000, 
-        type: 'permanent',
-        effect: 'startingBuff',
-        maxPurchase: 2, // 限购2个
-        purchased: 0, // 已购买数量
-        permanentEffect: true // 永久效果
-    },
-           trapSkillBook1: {
-    name: '侦查技能书·初级',
-    description: '提升陷阱侦查成功率到60%',
-    cost: 500000,
-    type: 'permanent',
-    effect: 'detection_advanced'
-},
- trapSkillBook2: {
-    name: '侦查技能书·高级',
-    description: '提升陷阱侦查成功率到80%',
-    cost: 800000,
-    type: 'permanent',
-    effect: 'detection_expert'
-},
- trapSkillBook3: {
-    name: '解除技能书·初级',
-    description: '提升陷阱解除成功率到70%',
-    cost: 500000,
-    type: 'permanent',
-    effect: 'disarm_advanced'
-},
- trapSkillBook4: {
-    name: '解除技能书·高级',
-    description: '提升陷阱解除成功率到85%',
-    cost: 800000,
-    type: 'permanent',
-    effect: 'disarm_expert'
-},
- trapSense: {
-    name: '陷阱感知药水',
-    description: '下次冒险陷阱侦查成功率提升30%',
-    cost: 10000,
-    type: 'consumable',
-    effect: 'detection_boost'
-},
-                rareMaterial: { 
-                    name: '秘境结晶', 
-                    description: '神器碎片1000个', 
-                    cost: 100000, 
-                    type: 'material',
-                    effect: 'material'
-                }
-            },
-traps: {
-    // 陷阱类型配置
-    types: {
-        poison: { weight: 20, name: '毒液陷阱', damageType: 'percentage', damage: 0.15, duration: 3 },
-        spike: { weight: 15, name: '尖刺陷阱', damageType: 'fixed', damage: 1000, duration: 1 },
-        curse: { weight: 10, name: '诅咒陷阱', damageType: 'debuff', effect: 'attack', value: -0.3, duration: 5 },
-        slow: { weight: 12, name: '迟缓陷阱', damageType: 'time', damage: 30, duration: 0 },
-        confusion: { weight: 8, name: '混乱陷阱', damageType: 'random', damage: 0.2, duration: 2 },
-        disarm: { weight: 5, name: '缴械陷阱', damageType: 'debuff', effect: 'critRate', value: -0.5, duration: 4 }
-    },
-    
-    // 陷阱检测技能
-    detectionSkills: {
-        basic: { name: '基础侦查', successRate: 0.3, cost: 5 },
-        advanced: { name: '高级侦查', successRate: 0.6, cost: 15 },
-        expert: { name: '专家侦查', successRate: 0.8, cost: 25 },
-        master: { name: '大师侦查', successRate: 0.95, cost: 40 }
-    },
-    
-    // 陷阱解除技能
-    disarmSkills: {
-        basic: { name: '基础解除', successRate: 0.4, cost: 10 },
-        advanced: { name: '高级解除', successRate: 0.7, cost: 20 },
-        expert: { name: '专家解除', successRate: 0.85, cost: 35 },
-        master: { name: '大师解除', successRate: 1.0, cost: 50 }
-    },
-    
-    // 玩家掌握的陷阱技能
-    playerSkills: {
-        detection: 'basic',
-        disarm: 'basic'
+    player.timeSecretRealm = {};
+  }
+    if (typeof initTimeSecretRealm === 'function') {
+        initTimeSecretRealm();
     }
- }
-        };
-    
-    
-    updateTimeSecretRealmUI();
-}
+    if (typeof updateTimeSecretRealmUI === 'function') {
+        updateTimeSecretRealmUI();
+    }
  player.traditionalLotteryPurchased = localStorage.getItem('traditionalLotteryPurchased') === 'true';
  if (player.parking) {
         calculateOfflineParkingIncome();
@@ -4978,12 +5220,13 @@ traps: {
         function exportSave() {
         try {
             // 转换玩家数据为JSON字符串
-            const saveData = JSON.stringify(player);
+            var saveData = JSON.stringify(player);
             // 使用AES加密
-            const encryptedData = CryptoJS.AES.encrypt(
+            var encryptedData = CryptoJS.AES.encrypt(
                 saveData,
                 ENCRYPTION_KEY
             ).toString();
+            saveData = null;
             
             // 复制加密后的数据到剪贴板
             const textArea = document.createElement('textarea');
@@ -4992,6 +5235,7 @@ traps: {
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
+            encryptedData = null;
             logAction('加密存档已复制到剪贴板', 'success');
         } catch (error) {
             logAction('存档导出失败', 'error');
@@ -5001,16 +5245,18 @@ traps: {
 function downloadSave() {
     try {
         // 获取当前存档数据
-        const saveData = JSON.stringify(player);
+        var saveData = JSON.stringify(player);
         
         // 使用AES加密存档
-        const encryptedData = CryptoJS.AES.encrypt(
+        var encryptedData = CryptoJS.AES.encrypt(
             saveData,
             ENCRYPTION_KEY
         ).toString();
+        saveData = null;
         
         // 创建Blob对象
         const blob = new Blob([encryptedData], { type: 'text/plain' });
+        encryptedData = null;
         
         // 创建下载链接
         const url = URL.createObjectURL(blob);
@@ -5048,10 +5294,13 @@ function importEncryptedSave() {
         }
     }
     
-    // 触发文件选择器
-    document.getElementById('fileInput').click();
-    
-    // 添加文件选择事件监听
-    document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+    var fileInput = document.getElementById('fileInput');
+    if (!fileInput) return;
+    // 只绑定一次，避免多次导入叠加 change 监听器
+    if (!fileInput._importBound) {
+        fileInput._importBound = true;
+        fileInput.addEventListener('change', handleFileSelect);
+    }
+    fileInput.click();
 }
 

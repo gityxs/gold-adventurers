@@ -180,14 +180,16 @@ function closeInvestmentGame() {
     const ui = document.getElementById('investmentGameUI');
     ui.style.display = 'none';
     
-    // 清理定时器
+    // 清理定时器（须 unregister，避免 _gameIntervals 僵尸条目）
     const game = player.investmentGame;
     if (game.priceUpdateTimer) {
-        clearInterval(game.priceUpdateTimer);
+        if (typeof unregisterInterval === 'function') unregisterInterval(game.priceUpdateTimer);
+        else clearInterval(game.priceUpdateTimer);
         game.priceUpdateTimer = null;
     }
     if (game.chartUpdateTimer) {
-        clearInterval(game.chartUpdateTimer);
+        if (typeof unregisterInterval === 'function') unregisterInterval(game.chartUpdateTimer);
+        else clearInterval(game.chartUpdateTimer);
         game.chartUpdateTimer = null;
     }
     
@@ -2326,10 +2328,14 @@ function startPriceSimulation() {
     
     // 清除之前的定时器
     if (game.priceUpdateTimer) {
-        clearInterval(game.priceUpdateTimer);
+        if (typeof unregisterInterval === 'function') unregisterInterval(game.priceUpdateTimer);
+        else clearInterval(game.priceUpdateTimer);
+        game.priceUpdateTimer = null;
     }
     if (game.chartUpdateTimer) {
-        clearInterval(game.chartUpdateTimer);
+        if (typeof unregisterInterval === 'function') unregisterInterval(game.chartUpdateTimer);
+        else clearInterval(game.chartUpdateTimer);
+        game.chartUpdateTimer = null;
     }
     
     // 设置游戏开始时间（只在第一次启动时）
@@ -3625,8 +3631,11 @@ function loadInvestmentGameData() {
             }
         }
  function addHouseSystemToGameLoop() {
-            // 在现有的游戏循环中添加房屋收益计算
-            registerInterval(() => {
+            // 在现有的游戏循环中添加房屋收益计算（单例，避免重复注册）
+            var start = (typeof registerSingletonInterval === 'function')
+                ? function(fn, ms) { return registerSingletonInterval('_houseSystemLoopId', fn, ms); }
+                : registerInterval;
+            start(() => {
                 if (player.houses && player.houses.rentedHouses.length > 0) {
                     // 每秒计算一次收益（实际收益按小时计算，这里只是累加）
                     const incomePerSecond = player.houses.rentedHouses.reduce((sum, house) => 

@@ -175,16 +175,44 @@
             }
         }
 
+        function isLandlordShopInStockOnly() {
+            return !!(player && player.landlord && player.landlord.shopShowInStockOnly);
+        }
+
+        function syncLandlordShopStockFilterButtons() {
+            var on = isLandlordShopInStockOnly();
+            ['landlordSeedStockFilterBtn', 'landlordItemStockFilterBtn'].forEach(function (id) {
+                var btn = document.getElementById(id);
+                if (!btn) return;
+                btn.classList.toggle('is-active', on);
+                btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+                btn.textContent = on ? '有货显示 · 开' : '只显示有货';
+            });
+        }
+
+        function toggleLandlordShopInStockOnly() {
+            if (!player || !player.landlord) return;
+            player.landlord.shopShowInStockOnly = !player.landlord.shopShowInStockOnly;
+            syncLandlordShopStockFilterButtons();
+            renderLandlordStore();
+            renderLandlordItemStore();
+            if (typeof saveGame === 'function') saveGame();
+        }
+
         // 渲染种子商店
         function renderLandlordStore() {
             const storeContainer = document.getElementById('landlordStoreItems');
             if (!storeContainer) return;
             
             storeContainer.innerHTML = '';
+            syncLandlordShopStockFilterButtons();
+            const inStockOnly = isLandlordShopInStockOnly();
+            let shown = 0;
             
             for (const seedName in seedProperties) {
                 const seed = seedProperties[seedName];
                 const stock = player.landlord.storeItems[seedName] || 0;
+                if (inStockOnly && stock <= 0) continue;
                 const canAfford = player.landlord.coins >= seed.price;
                 
                 const seedDiv = document.createElement('div');
@@ -204,6 +232,13 @@
                 `;
                 
                 storeContainer.appendChild(seedDiv);
+                shown++;
+            }
+            if (shown === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'landlord-store-empty';
+                empty.textContent = inStockOnly ? '当前没有有库存的种子' : '商店暂无商品';
+                storeContainer.appendChild(empty);
             }
             
             // 更新刷新计时器
@@ -216,10 +251,14 @@
             if (!storeContainer) return;
             
             storeContainer.innerHTML = '';
+            syncLandlordShopStockFilterButtons();
+            const inStockOnly = isLandlordShopInStockOnly();
+            let shown = 0;
             
             for (const itemName in itemProperties) {
                 const item = itemProperties[itemName];
                 const stock = player.landlord.itemStoreItems[itemName] || 0;
+                if (inStockOnly && stock <= 0) continue;
                 const canAfford = player.landlord.coins >= item.price;
                 
                 const itemDiv = document.createElement('div');
@@ -237,6 +276,13 @@
                 `;
                 
                 storeContainer.appendChild(itemDiv);
+                shown++;
+            }
+            if (shown === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'landlord-store-empty';
+                empty.textContent = inStockOnly ? '当前没有有库存的道具' : '商店暂无商品';
+                storeContainer.appendChild(empty);
             }
             
             // 更新刷新计时器
@@ -1536,6 +1582,9 @@ if (typeof player.landlord.geneSynthesisSelection === 'undefined') {
             break;
         case 'skyVine':
             renderLandlordSkyVine();
+            break;
+        case 'geneTree':
+            renderLandlordGeneTree();
             break;
         case 'storage':
             renderLandlordSeedStorage();

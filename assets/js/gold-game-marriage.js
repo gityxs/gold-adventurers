@@ -308,7 +308,11 @@ function updateMarriageBonuses() {
 }
 
 function addMarriageSystemToGameLoop() {
-    registerInterval(() => {
+    var reg = typeof registerSingletonInterval === 'function' ? registerSingletonInterval : null;
+    var start = function(fn, ms) {
+        return reg ? reg('_marriageSystemLoopId', fn, ms) : registerInterval(fn, ms);
+    };
+    start(() => {
         if (player.marriage && player.marriage.isMarried) {
             // 每分钟自动增加少量恩爱经验（离线收益）
             const now = Date.now();
@@ -1060,8 +1064,13 @@ function addWorkAndInteractionSections() {
 }
 
 function startGrowthCountdownTimer() {
-    registerInterval(() => {
-        if (document.getElementById('childSystemUI').style.display === 'block') {
+    var reg = typeof registerSingletonInterval === 'function' ? registerSingletonInterval : null;
+    var start = function(fn, ms) {
+        return reg ? reg('_childGrowthCountdownId', fn, ms) : registerInterval(fn, ms);
+    };
+    start(() => {
+        var ui = document.getElementById('childSystemUI');
+        if (ui && ui.style.display === 'block') {
             updateChildrenList(); // 每分钟更新一次倒计时
             updateGrowthOverview();
         }
@@ -1293,7 +1302,9 @@ function conceiveChild() {
 // 开始怀孕计时器
 function startPregnancyTimer() {
     if (player.children.pregnancyTimer) {
-        clearInterval(player.children.pregnancyTimer);
+        if (typeof unregisterInterval === 'function') unregisterInterval(player.children.pregnancyTimer);
+        else clearInterval(player.children.pregnancyTimer);
+        player.children.pregnancyTimer = null;
     }
     
     player.children.pregnancyTimer = registerInterval(() => {
@@ -1313,7 +1324,8 @@ function startPregnancyTimer() {
             }
         } else {
             // 怀孕结束，清除计时器
-            clearInterval(player.children.pregnancyTimer);
+            if (typeof unregisterInterval === 'function') unregisterInterval(player.children.pregnancyTimer);
+            else clearInterval(player.children.pregnancyTimer);
             player.children.pregnancyTimer = null;
         }
     }, 30000); // 每30秒检查一次（更频繁的检查）
@@ -1369,7 +1381,8 @@ function giveBirth() {
         
         // 清除计时器
         if (player.children.pregnancyTimer) {
-            clearInterval(player.children.pregnancyTimer);
+            if (typeof unregisterInterval === 'function') unregisterInterval(player.children.pregnancyTimer);
+            else clearInterval(player.children.pregnancyTimer);
             player.children.pregnancyTimer = null;
         }
         
@@ -3157,8 +3170,13 @@ function showTrainingSelection(childIndex) {
     });
 }
 function startChildCooldownTimer() {
-    registerInterval(() => {
-        if (document.getElementById('childSystemUI').style.display === 'block') {
+    var reg = typeof registerSingletonInterval === 'function' ? registerSingletonInterval : null;
+    var start = function(fn, ms) {
+        return reg ? reg('_childCooldownTimerId', fn, ms) : registerInterval(fn, ms);
+    };
+    start(() => {
+        var ui = document.getElementById('childSystemUI');
+        if (ui && ui.style.display === 'block') {
             updateChildrenList(); // 每分钟更新一次冷却时间显示
         }
     }, 60000); // 每分钟更新一次
@@ -3166,7 +3184,11 @@ function startChildCooldownTimer() {
 
 // 在游戏主循环中添加孩子系统检查
 function addChildSystemToGameLoop() {
-    registerInterval(() => {
+    var reg = typeof registerSingletonInterval === 'function' ? registerSingletonInterval : null;
+    var start = function(fn, ms) {
+        return reg ? reg('_childSystemLoopId', fn, ms) : registerInterval(fn, ms);
+    };
+    start(() => {
         if (player.children) {
             // 检查怀孕状态
             if (player.children.isPregnant) {
@@ -4400,13 +4422,20 @@ function showExportDialog(equipmentId) {
 }
 function startExportCountdown(expireTime) {
     const countdownElement = document.getElementById('remainingTime');
+    if (window.exportCountdownInterval) {
+        if (typeof unregisterInterval === 'function') unregisterInterval(window.exportCountdownInterval);
+        else clearInterval(window.exportCountdownInterval);
+        window.exportCountdownInterval = null;
+    }
     
     const countdownInterval = registerInterval(() => {
         const remaining = calculateRemainingTime(expireTime);
         countdownElement.textContent = `剩余时间: ${remaining}`;
         
         if (remaining === '已过期') {
-            clearInterval(countdownInterval);
+            if (typeof unregisterInterval === 'function') unregisterInterval(countdownInterval);
+            else clearInterval(countdownInterval);
+            if (window.exportCountdownInterval === countdownInterval) window.exportCountdownInterval = null;
             countdownElement.style.color = '#f44336';
             document.getElementById('copyExportBtn').disabled = true;
         }
@@ -4418,7 +4447,8 @@ function startExportCountdown(expireTime) {
 // 隐藏导出对话框
 function hideExportDialog() {
     if (window.exportCountdownInterval) {
-        clearInterval(window.exportCountdownInterval);
+        if (typeof unregisterInterval === 'function') unregisterInterval(window.exportCountdownInterval);
+        else clearInterval(window.exportCountdownInterval);
         window.exportCountdownInterval = null;
     }
     document.getElementById('exportDialog').style.display = 'none';

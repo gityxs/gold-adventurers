@@ -1,4 +1,5 @@
-// 启动初始化
+// 启动初始化（本文件为 asset-boot 最后一环；标记资源就绪，允许主循环跑修仙/夜店等依赖）
+window.__GOLD_GAME_ASSETS_READY = true;
 
 function goldGamePlayerLooksFresh() {
     return (
@@ -2466,6 +2467,7 @@ function abyssOnPlayerDeath() {
     abyssRun.active = false;
     var at = getAbyssTower();
     if (abyssRun.floor > (at.bestFloor || 0)) at.bestFloor = abyssRun.floor;
+    if (typeof checkTitleUnlocks === 'function') checkTitleUnlocks();
     // 深渊币 = 层数×倍数：基础2倍，每10层多1倍
     // 原规则：1-10层×1，11-20层×2，21-30层×3 ...
     // 现规则：1-10层×2，11-20层×3，21-30层×4 ...（每10层多1倍不变）
@@ -2935,13 +2937,17 @@ function calculateOfflineVirtualDamage() {
         function startVirtualPlayerAttacks() {
             // 清除之前的攻击间隔
             if (worldBossData.virtualAttackInterval) {
-                clearInterval(worldBossData.virtualAttackInterval);
+                if (typeof unregisterInterval === 'function') unregisterInterval(worldBossData.virtualAttackInterval);
+                else clearInterval(worldBossData.virtualAttackInterval);
+                worldBossData.virtualAttackInterval = null;
             }
             
             // 设置新的攻击间隔 (每秒攻击一次)
             worldBossData.virtualAttackInterval = registerInterval(() => {
                 if (!worldBossData.isBossActive) {
-                    clearInterval(worldBossData.virtualAttackInterval);
+                    if (typeof unregisterInterval === 'function') unregisterInterval(worldBossData.virtualAttackInterval);
+                    else clearInterval(worldBossData.virtualAttackInterval);
+                    worldBossData.virtualAttackInterval = null;
                     return;
                 }
                 
@@ -3080,7 +3086,8 @@ function startAutoAttack() {
 
         function stopAutoAttack() {
             if (worldBossData.attackInterval) {
-                clearInterval(worldBossData.attackInterval);
+                if (typeof unregisterInterval === 'function') unregisterInterval(worldBossData.attackInterval);
+                else clearInterval(worldBossData.attackInterval);
                 worldBossData.attackInterval = null;
             }
         }
@@ -3164,11 +3171,15 @@ function updateRankings() {
         // 结束BOSS战斗
         function endBossFight(isDefeated) {
             worldBossData.isBossActive = false;
-            clearInterval(worldBossData.virtualAttackInterval);
-            worldBossData.virtualAttackInterval = null;
+            if (worldBossData.virtualAttackInterval) {
+                if (typeof unregisterInterval === 'function') unregisterInterval(worldBossData.virtualAttackInterval);
+                else clearInterval(worldBossData.virtualAttackInterval);
+                worldBossData.virtualAttackInterval = null;
+            }
             // 停止自动攻击（无论是否开启都清除定时器，防止泄漏）
             if (worldBossData.attackInterval) {
-                clearInterval(worldBossData.attackInterval);
+                if (typeof unregisterInterval === 'function') unregisterInterval(worldBossData.attackInterval);
+                else clearInterval(worldBossData.attackInterval);
                 worldBossData.attackInterval = null;
             }
             if (worldBossData.isAutoAttacking) {
@@ -3258,18 +3269,19 @@ function updateRankings() {
         function recordBossResult() {
             const top3 = worldBossData.rankings.slice(0, 3).map(p => p.name).join(", ");
             const result = `世界BOSS ${worldBossData.bossName} 结束，前三名: ${top3}`;
+            if (!Array.isArray(player.lotteryResults)) player.lotteryResults = [];
             
             player.lotteryResults.unshift({
                 time: new Date().toLocaleString(),
                 result: result
             });
             
-            if (player.lotteryResults.length > 5) {
+            if (player.lotteryResults.length > 20) {
                 player.lotteryResults.pop();
             }
             
             // 更新彩票结果显示
-            updateLotteryResultsDisplay();
+            if (typeof updateLotteryResultsDisplay === 'function') updateLotteryResultsDisplay();
         }
 
        // 格式化数字显示

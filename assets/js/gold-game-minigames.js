@@ -1719,6 +1719,8 @@ function calculateWorldMapExpReward(zone, dimension) {
     const lawBonusObj = (typeof getLawPowerBonuses === 'function') ? getLawPowerBonuses() : { worldExp: 0 };
     const lawWorldExpMultiplier = 1 + (Number(lawBonusObj.worldExp) || 0);
     const skyVineMultiplier = (typeof getLandlordSkyVineWorldExpMultiplier === 'function') ? getLandlordSkyVineWorldExpMultiplier() : 1;
+    const geneTreeExpMultiplier = (typeof getLandlordGeneTreeWorldMapBonuses === 'function')
+        ? (Number(getLandlordGeneTreeWorldMapBonuses().exp) || 1) : 1;
     const seaFishingDexMultiplier = (typeof getSeaFishingDexWorldExpMultiplier === 'function') ? getSeaFishingDexWorldExpMultiplier() : 1;
     const dongtianWorldExpMul = typeof getDongtianWorldMapExpMultiplier === "function" ? getDongtianWorldMapExpMultiplier() : 1;
     const totalMultiplier =
@@ -1732,6 +1734,7 @@ function calculateWorldMapExpReward(zone, dimension) {
         rubyMultiplier *
         lawWorldExpMultiplier *
         skyVineMultiplier *
+        geneTreeExpMultiplier *
         seaFishingDexMultiplier *
         dongtianWorldExpMul;
     const finalExp = Math.floor(baseExp * totalMultiplier);
@@ -3627,10 +3630,19 @@ function getArtifactInventoryFreeSlots() {
 function ensureArtifactAutoDecomposeSettings() {
     if (!player.artifacts) return;
     if (!player.artifacts.autoDecompose) {
-        player.artifacts.autoDecompose = { enabled: false, belowQuality: 'common', keepSets: [] };
+        player.artifacts.autoDecompose = {
+            enabled: false,
+            belowQuality: 'common',
+            keepSets: [],
+            setFilterMode: 'target'
+        };
     }
-    if (!Array.isArray(player.artifacts.autoDecompose.keepSets)) {
-        player.artifacts.autoDecompose.keepSets = [];
+    var cfg = player.artifacts.autoDecompose;
+    if (!Array.isArray(cfg.keepSets)) cfg.keepSets = [];
+    // 旧版 keepSets=保留豁免，会挡住品阶分解；迁移为「限定套装」且清空旧勾选
+    if (cfg.setFilterMode !== 'target') {
+        cfg.keepSets = [];
+        cfg.setFilterMode = 'target';
     }
     if (player.artifacts.inventoryPage == null) player.artifacts.inventoryPage = 0;
 }
@@ -3642,9 +3654,14 @@ function shouldArtifactAutoDecompose(artifact) {
     if (!artifact || artifact.locked) return false;
     ensureArtifactAutoDecomposeSettings();
     var cfg = player.artifacts.autoDecompose;
-    if (cfg.keepSets && cfg.keepSets.indexOf(artifact.set) >= 0) return false;
     var threshold = getArtifactQualityIndex(cfg.belowQuality || 'common');
-    return getArtifactQualityIndex(artifact.quality) <= threshold;
+    // 先按品阶：高于阈值一律不分解
+    if (getArtifactQualityIndex(artifact.quality) > threshold) return false;
+    // 再与套装同步：勾选了套装则只分解这些套装；全不勾选=全部套装都按品阶分解
+    if (cfg.keepSets && cfg.keepSets.length > 0) {
+        return cfg.keepSets.indexOf(artifact.set) >= 0;
+    }
+    return true;
 }
 function applyArtifactDecomposeRewards(artifact) {
     var rewards = calculateDecompositionReward(artifact);
@@ -3709,7 +3726,7 @@ function trimArtifactInventoryOverCap() {
     }
     if (trimmed > 0) {
         cleanupArtifactAdvanceLevels();
-        logAction('仓库超过上限，已自动分解 ' + trimmed + ' 件低品阶神器（请开启自动分解并保留套装）', 'info');
+        logAction('仓库超过上限，已自动分解 ' + trimmed + ' 件低品阶神器（建议开启自动分解并设置品阶/套装范围）', 'info');
     }
     return trimmed;
 }
@@ -3726,7 +3743,8 @@ function toggleArtifactAutoDecompose() {
     var btn = document.getElementById('toggleArtifactAutoDecompose');
     if (btn) {
         btn.textContent = '自动分解：' + (player.artifacts.autoDecompose.enabled ? '开' : '关');
-        btn.style.background = player.artifacts.autoDecompose.enabled ? '#4CAF50' : '#ff9800';
+        btn.classList.toggle('is-on', !!player.artifacts.autoDecompose.enabled);
+        btn.style.background = '';
     }
     logAction((player.artifacts.autoDecompose.enabled ? '开启' : '关闭') + '神器自动分解', 'info');
     if (player.artifacts.autoDecompose.enabled) runArtifactAutoDecompose(false);
@@ -3736,6 +3754,8 @@ function setArtifactAutoDecomposeQuality() {
     if (!sel) return;
     ensureArtifactAutoDecomposeSettings();
     player.artifacts.autoDecompose.belowQuality = sel.value;
+    updateArtifactAutoDecomposeHint();
+    if (player.artifacts.autoDecompose.enabled) runArtifactAutoDecompose(false);
 }
 function toggleArtifactKeepSet(setName, checked) {
     ensureArtifactAutoDecomposeSettings();
@@ -3743,6 +3763,31 @@ function toggleArtifactKeepSet(setName, checked) {
     var idx = list.indexOf(setName);
     if (checked && idx < 0) list.push(setName);
     else if (!checked && idx >= 0) list.splice(idx, 1);
+    updateArtifactAutoDecomposeHint();
+    if (player.artifacts.autoDecompose.enabled) runArtifactAutoDecompose(false);
+}
+function selectAllArtifactDecomposeSets(selectAll) {
+    ensureArtifactAutoDecomposeSettings();
+    player.artifacts.autoDecompose.keepSets = selectAll
+        ? artifactSets.map(function (s) { return s.name; })
+        : [];
+    initArtifactKeepSetsUI();
+    updateArtifactAutoDecomposeHint();
+    if (player.artifacts.autoDecompose.enabled) runArtifactAutoDecompose(false);
+}
+function updateArtifactAutoDecomposeHint() {
+    var hint = document.getElementById('artifactAutoDecomposeHint');
+    if (!hint) return;
+    ensureArtifactAutoDecomposeSettings();
+    var cfg = player.artifacts.autoDecompose;
+    var q = artifactQualities.find(function (x) { return x.id === (cfg.belowQuality || 'common'); });
+    var qName = q ? q.name : '普通';
+    var n = (cfg.keepSets && cfg.keepSets.length) || 0;
+    if (n > 0) {
+        hint.textContent = '规则：分解「' + qName + '」及以下，且仅限已勾选的 ' + n + ' 个套装；锁定的不分解。';
+    } else {
+        hint.textContent = '规则：分解全部套装中「' + qName + '」及以下；锁定的不分解。未勾选套装=不限定套装。';
+    }
 }
 function initArtifactKeepSetsUI() {
     var box = document.getElementById('artifactKeepSetsBox');
@@ -3753,7 +3798,7 @@ function initArtifactKeepSetsUI() {
     box.innerHTML = setNames.map(function (name) {
         var checked = keep.indexOf(name) >= 0 ? ' checked' : '';
         var safe = name.replace(/'/g, "\\'");
-        return '<label style="cursor:pointer;color:#ccc;white-space:nowrap;"><input type="checkbox"' + checked + ' onchange="toggleArtifactKeepSet(\'' + safe + '\', this.checked)" style="vertical-align:middle;margin-right:3px;">' + name + '</label>';
+        return '<label class="artifact-set-chip"><input type="checkbox"' + checked + ' onchange="toggleArtifactKeepSet(\'' + safe + '\', this.checked)">' + name + '</label>';
     }).join('');
 }
 function initArtifactAutoDecomposeUI() {
@@ -3763,9 +3808,10 @@ function initArtifactAutoDecomposeUI() {
     var btn = document.getElementById('toggleArtifactAutoDecompose');
     if (btn) {
         btn.textContent = '自动分解：' + (player.artifacts.autoDecompose.enabled ? '开' : '关');
-        btn.style.background = player.artifacts.autoDecompose.enabled ? '#4CAF50' : '#ff9800';
+        btn.classList.toggle('is-on', !!player.artifacts.autoDecompose.enabled);
     }
     initArtifactKeepSetsUI();
+    updateArtifactAutoDecomposeHint();
 }
 function changeArtifactInventoryPage(delta) {
     var filtered = getFilteredArtifacts();
@@ -4114,6 +4160,75 @@ function toggleSetGroup(setName) {
     group.classList.toggle('set-collapsed');
 }
 
+function getEquippedArtifactByPart(partId) {
+    if (!player.artifacts || !player.artifacts.equipped) return null;
+    return player.artifacts.equipped[partId] || null;
+}
+
+function formatArtifactStatCompareHtml(artifact) {
+    var equipped = getEquippedArtifactByPart(artifact.part);
+    var stats = [
+        { key: 'health', label: '生命' },
+        { key: 'attack', label: '攻击' },
+        { key: 'critDamage', label: '爆伤' }
+    ];
+    return stats.map(function (s) {
+        var val = (artifact.bonuses[s.key] || 0) * 100;
+        var badge;
+        if (!equipped) {
+            badge = '<span class="artifact-cmp artifact-cmp-new">新</span>';
+        } else if (equipped.id === artifact.id) {
+            badge = '<span class="artifact-cmp artifact-cmp-eq">穿戴中</span>';
+        } else {
+            var diff = val - ((equipped.bonuses[s.key] || 0) * 100);
+            if (Math.abs(diff) < 0.05) {
+                badge = '<span class="artifact-cmp artifact-cmp-eq">持平</span>';
+            } else if (diff > 0) {
+                badge = '<span class="artifact-cmp artifact-cmp-up">+' + diff.toFixed(1) + '</span>';
+            } else {
+                badge = '<span class="artifact-cmp artifact-cmp-down">' + diff.toFixed(1) + '</span>';
+            }
+        }
+        return '<div class="artifact-stat-row"><span>' + s.label + ': +' + val.toFixed(1) + '%</span>' + badge + '</div>';
+    }).join('');
+}
+
+function closeArtifactDecomposeConfirm() {
+    var el = document.getElementById('artifactDecomposeConfirmOverlay');
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+}
+
+function showArtifactDecomposeConfirm(opts) {
+    closeArtifactDecomposeConfirm();
+    var overlay = document.createElement('div');
+    overlay.id = 'artifactDecomposeConfirmOverlay';
+    overlay.className = 'artifact-decomp-confirm-overlay';
+    overlay.innerHTML =
+        '<div class="artifact-decomp-confirm-card" role="dialog" aria-modal="true">' +
+            '<div class="artifact-decomp-confirm-title">' + (opts.title || '确认分解') + '</div>' +
+            '<div class="artifact-decomp-confirm-body">' + (opts.bodyHtml || '') + '</div>' +
+            '<div class="artifact-decomp-confirm-actions">' +
+                '<button type="button" class="artifact-decomp-cancel" id="artifactDecompCancelBtn">取消</button>' +
+                '<button type="button" class="artifact-decomp-ok" id="artifactDecompOkBtn">确认分解</button>' +
+            '</div>' +
+        '</div>';
+    document.body.appendChild(overlay);
+    document.getElementById('artifactDecompCancelBtn').onclick = function () {
+        closeArtifactDecomposeConfirm();
+        if (opts.onCancel) opts.onCancel();
+    };
+    document.getElementById('artifactDecompOkBtn').onclick = function () {
+        closeArtifactDecomposeConfirm();
+        if (opts.onConfirm) opts.onConfirm();
+    };
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) {
+            closeArtifactDecomposeConfirm();
+            if (opts.onCancel) opts.onCancel();
+        }
+    });
+}
+
 // 创建神器卡片HTML（复用原有函数或创建新函数）
 function createArtifactCardHTML(artifact) {
     const quality = artifactQualities.find(q => q.id === artifact.quality);
@@ -4125,9 +4240,7 @@ function createArtifactCardHTML(artifact) {
             <div>${part.name}</div>
             <div style="font-size: 0.8em;">
                 <div>等级: ${artifact.upgradeLevel}</div>
-                <div>生命: +${(artifact.bonuses.health * 100).toFixed(1)}%</div>
-                <div>攻击: +${(artifact.bonuses.attack * 100).toFixed(1)}%</div>
-                <div>爆伤: +${(artifact.bonuses.critDamage * 100).toFixed(1)}%</div>
+                ${formatArtifactStatCompareHtml(artifact)}
             </div>
             <div style="margin-top: 10px;">
                 <button onclick="equipArtifact('${artifact.id}')" style="background: #4CAF50; color: white; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8em; margin-right: 5px;">装备</button>
@@ -4157,6 +4270,7 @@ function toggleArtifactSystem() {
         ui.style.display = 'block';
         overlay.style.display = 'block';
         updateArtifactUI();
+        switchArtifactForgeView('equip');
     }
 }
 
@@ -4323,9 +4437,7 @@ function updateArtifactInventory() {
             <div style="font-size: 0.8em; margin-top: 5px;">
                 <div>等级: ${artifact.upgradeLevel}</div>
                 <div>套装: <span style="color: #d4af37;">${artifact.set}</span></div>
-                <div>生命: +${(artifact.bonuses.health * 100).toFixed(1)}%</div>
-                <div>攻击: +${(artifact.bonuses.attack * 100).toFixed(1)}%</div>
-                <div>爆伤: +${(artifact.bonuses.critDamage * 100).toFixed(1)}%</div>
+                ${formatArtifactStatCompareHtml(artifact)}
             </div>
             <div style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
                 <button onclick="event.stopPropagation(); toggleArtifactLock('${artifact.id}')" 
@@ -4353,36 +4465,32 @@ function updateArtifactInventory() {
     const anchor = document.getElementById('artifactFilterUIAnchor') || document.getElementById('artifactSystemUI');
     
     const filterHTML = `
-        <div id="artifactFilterUI" style="margin-bottom: 20px; padding: 15px; background: #333; border-radius: 8px;">
-            <h4 style="color: #d4af37; margin-top: 0;">筛选条件</h4>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-                <div>
-                    <label>品质筛选:</label>
-                    <select id="qualityFilter" onchange="updateArtifactFilter('quality', this.value)" style="width: 100%; padding: 5px;">
+        <section id="artifactFilterUI" class="artifact-forge-block artifact-filter-card">
+            <div class="artifact-filter-grid">
+                <label>品质
+                    <select id="qualityFilter" onchange="updateArtifactFilter('quality', this.value)">
                         <option value="all">全部品质</option>
                         ${artifactQualities.map(q => `<option value="${q.id}">${q.name}</option>`).join('')}
                     </select>
-                </div>
-                <div>
-                    <label>套装筛选:</label>
-                    <select id="setFilter" onchange="updateArtifactFilter('set', this.value)" style="width: 100%; padding: 5px;">
+                </label>
+                <label>套装
+                    <select id="setFilter" onchange="updateArtifactFilter('set', this.value)">
                         <option value="all">全部套装</option>
                         ${[...new Set(artifactSets.map(s => s.name))].map(set => `<option value="${set}">${set}</option>`).join('')}
                     </select>
-                </div>
-                <div>
-                    <label>部位筛选:</label>
-                    <select id="partFilter" onchange="updateArtifactFilter('part', this.value)" style="width: 100%; padding: 5px;">
+                </label>
+                <label>部位
+                    <select id="partFilter" onchange="updateArtifactFilter('part', this.value)">
                         <option value="all">全部部位</option>
                         ${artifactParts.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
                     </select>
-                </div>
+                </label>
             </div>
-            <div style="margin-top: 10px;">
-                <button onclick="clearArtifactFilters()" style="background: #666; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 10px;">清除筛选</button>
-                <span style="color: #888;">当前显示: <span id="filteredCount">0</span> 个神器</span>
+            <div class="artifact-filter-foot">
+                <button type="button" class="artifact-btn-ghost" onclick="clearArtifactFilters()">清除筛选</button>
+                <span>显示 <span id="filteredCount">0</span> 件</span>
             </div>
-        </div>
+        </section>
     `;
     
     anchor.insertAdjacentHTML('afterbegin', filterHTML);
@@ -4549,69 +4657,79 @@ function deselectAllArtifacts() {
     updateArtifactInventory();
 }
 
+function executeBatchDecomposeArtifacts(decomposableIds) {
+    let totalFragments = 0;
+    let totalCrystals = 0;
+    let decomposedCount = 0;
+
+    decomposableIds.forEach(artifactId => {
+        const artifactIndex = player.artifacts.inventory.findIndex(a => a.id === artifactId);
+        if (artifactIndex > -1) {
+            const artifact = player.artifacts.inventory[artifactIndex];
+            const rewards = calculateDecompositionReward(artifact);
+            totalFragments += rewards.fragments;
+            totalCrystals += rewards.crystals;
+            decomposedCount++;
+            player.artifacts.inventory.splice(artifactIndex, 1);
+        }
+    });
+
+    var expRes = getExplorationResources();
+    expRes.artifactFragment = (expRes.artifactFragment || 0) + totalFragments;
+    expRes.cosmicCrystal = (expRes.cosmicCrystal || 0) + totalCrystals;
+    syncExplorationDataToPlayer();
+    cleanupArtifactAdvanceLevels();
+    player.artifacts.batchSelection.selectedIds = [];
+    updateArtifactUI();
+    updateExplorationUI();
+    showBatchDecompositionResult(decomposedCount, totalFragments, totalCrystals);
+}
+
 // 批量分解选中的神器
 function batchDecomposeArtifacts() {
     const selectedIds = player.artifacts.batchSelection.selectedIds;
-    
+
     if (selectedIds.length === 0) {
         logAction("请先选择要分解的神器", "error");
         return;
     }
-    
-    // 过滤掉被锁定的神器
+
     const decomposableIds = selectedIds.filter(id => {
         const artifact = player.artifacts.inventory.find(a => a.id === id);
         return artifact && !artifact.locked;
     });
-    
+
     const lockedCount = selectedIds.length - decomposableIds.length;
-    
-    if (lockedCount > 0) {
-        logAction(`跳过 ${lockedCount} 个被锁定的神器`, "info");
-    }
-    
+
     if (decomposableIds.length === 0) {
         logAction("没有可分解的神器（所有选中的神器都被锁定）", "error");
         return;
     }
-    
-    showCustomConfirm(`确定要批量分解 ${decomposableIds.length} 个神器吗？${lockedCount > 0 ? `（跳过 ${lockedCount} 个被锁定的神器）` : ''}此操作不可撤销！`, (confirmed) => {
-        if (confirmed) {
-            let totalFragments = 0;
-            let totalCrystals = 0;
-            let decomposedCount = 0;
-            
-            // 分解选中的神器（只分解未锁定的）
-            decomposableIds.forEach(artifactId => {
-                const artifactIndex = player.artifacts.inventory.findIndex(a => a.id === artifactId);
-                if (artifactIndex > -1) {
-                    const artifact = player.artifacts.inventory[artifactIndex];
-                    const rewards = calculateDecompositionReward(artifact);
-                    
-                    totalFragments += rewards.fragments;
-                    totalCrystals += rewards.crystals;
-                    decomposedCount++;
-                    
-                    // 从仓库中移除
-                    player.artifacts.inventory.splice(artifactIndex, 1);
-                }
-            });
-            
-            // 添加资源
-            var expRes = getExplorationResources();
-            expRes.artifactFragment = (expRes.artifactFragment || 0) + totalFragments;
-            expRes.cosmicCrystal = (expRes.cosmicCrystal || 0) + totalCrystals;
-            syncExplorationDataToPlayer();
-            
-            // 清空选择
-            player.artifacts.batchSelection.selectedIds = [];
-            
-            // 更新显示
-            updateArtifactUI();
-            updateExplorationUI();
-            
-            // 显示分解结果
-            showBatchDecompositionResult(decomposedCount, totalFragments, totalCrystals);
+
+    let previewFragments = 0;
+    let previewCrystals = 0;
+    const previewNames = [];
+    decomposableIds.forEach(id => {
+        const artifact = player.artifacts.inventory.find(a => a.id === id);
+        if (!artifact) return;
+        const r = calculateDecompositionReward(artifact);
+        previewFragments += r.fragments;
+        previewCrystals += r.crystals;
+        if (previewNames.length < 6) previewNames.push(artifact.name);
+    });
+
+    showArtifactDecomposeConfirm({
+        title: '确认批量分解',
+        bodyHtml:
+            '<p>将分解 <strong>' + decomposableIds.length + '</strong> 件神器' +
+            (lockedCount > 0 ? '（已跳过锁定 ' + lockedCount + ' 件）' : '') + '。</p>' +
+            '<p class="artifact-decomp-preview-names">' + previewNames.join('、') +
+            (decomposableIds.length > previewNames.length ? ' 等' : '') + '</p>' +
+            '<div class="artifact-decomp-reward">预计获得：碎片 <strong>' + previewFragments +
+            '</strong> · 晶体 <strong>' + previewCrystals + '</strong></div>' +
+            '<p class="artifact-decomp-warn">此操作不可撤销</p>',
+        onConfirm: function () {
+            executeBatchDecomposeArtifacts(decomposableIds);
         }
     });
 }
@@ -4672,51 +4790,42 @@ function showBatchDecompositionResult(count, fragments, crystals) {
 // 更新套装效果显示
 function updateSetBonuses() {
     const setContainer = document.getElementById('setBonuses');
+    if (!setContainer) return;
     setContainer.innerHTML = '';
-    
-    // 计算当前装备的套装数量
+    setContainer.className = 'artifact-set-bonus-grid';
+
     const setCounts = {};
     Object.values(player.artifacts.equipped).forEach(artifact => {
         if (artifact) {
-            if (!setCounts[artifact.set]) {
-                setCounts[artifact.set] = 0;
-            }
+            if (!setCounts[artifact.set]) setCounts[artifact.set] = 0;
             setCounts[artifact.set]++;
         }
     });
-    
-    // 显示激活的套装效果
+
     Object.entries(setCounts).forEach(([setName, count]) => {
         const set = artifactSets.find(s => s.name === setName);
         if (!set) return;
-        
+
         const setDiv = document.createElement('div');
-        setDiv.style.marginBottom = '15px';
-        setDiv.style.padding = '15px';
-        setDiv.style.border = '1px solid #d4af37';
-        setDiv.style.borderRadius = '5px';
-        setDiv.style.backgroundColor = '#1a1a1a';
-        
-        let bonusesHtml = `<div style="font-weight: bold; color: #d4af37; font-size: 1.1em; margin-bottom: 10px;">${setName} (${count}/6)</div>`;
-        
-        // 显示已激活的效果
+        setDiv.className = 'artifact-set-bonus-card';
+
+        let bonusesHtml = `<div class="artifact-set-bonus-title">${setName} <span>${count}/6</span></div>`;
         Object.entries(set.bonuses).forEach(([pieceCount, bonus]) => {
-            const pieceNum = parseInt(pieceCount);
-            const isActive = count >= pieceNum;
-            
+            const isActive = count >= parseInt(pieceCount, 10);
             bonusesHtml += `
-                <div style="margin-top: 8px; ${isActive ? 'color: #4CAF50;' : 'color: #888;'}">
-                    ${isActive ? '✓ ' : ''}${pieceCount}件: ${bonus.description}
+                <div class="artifact-set-bonus-line ${isActive ? 'is-active' : ''}">
+                    ${isActive ? '✓ ' : ''}${pieceCount}件：${bonus.description}
                 </div>
             `;
         });
-        
+
         setDiv.innerHTML = bonusesHtml;
         setContainer.appendChild(setDiv);
     });
-    
+
     if (Object.keys(setCounts).length === 0) {
-        setContainer.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">未装备任何套装神器</div>';
+        setContainer.className = '';
+        setContainer.innerHTML = '<div class="artifact-set-bonus-empty">未装备任何套装神器</div>';
     }
 }
 function showArtifactDetails(artifactId) {
@@ -4730,123 +4839,89 @@ function showArtifactDetails(artifactId) {
     
     const quality = artifactQualities.find(q => q.id === artifact.quality);
     const part = artifactParts.find(p => p.id === artifact.part);
-    
-    // 创建详情弹窗
-    const detailOverlay = document.createElement('div');
-    detailOverlay.id = 'artifactDetailOverlay';
-    detailOverlay.style.position = 'fixed';
-    detailOverlay.style.top = '0';
-    detailOverlay.style.left = '0';
-    detailOverlay.style.width = '100%';
-    detailOverlay.style.height = '100%';
-    detailOverlay.style.backgroundColor = 'rgba(0,0,0,0.7)';
-    detailOverlay.style.zIndex = '2000';
-    detailOverlay.style.display = 'flex';
-    detailOverlay.style.justifyContent = 'center';
-    detailOverlay.style.alignItems = 'center';
-    
-    const detailCard = document.createElement('div');
-    detailCard.style.backgroundColor = '#1a1a1a';
-    detailCard.style.padding = '20px';
-    detailCard.style.borderRadius = '10px';
-    detailCard.style.border = `3px solid ${quality.color}`;
-    detailCard.style.width = '400px';
-    detailCard.style.maxWidth = '90%';
-    
-
-     // 在详情页面添加锁定按钮
     const isLocked = artifact.locked;
-    
-    detailCard.innerHTML = `
-        <div style="text-align: right;">
-            <button onclick="document.body.removeChild(document.getElementById('artifactDetailOverlay'))" style="background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">关闭</button>
-        </div>
-        <div style="text-align: center; margin-bottom: 15px;">
-            <div style="color: ${quality.color}; font-size: 1.2em; font-weight: bold;">${artifact.name} ${isLocked ? '🔒' : '🔓'}</div>
-            <div> ${part.name}</div>
-            <div style="margin-top: 10px; font-size: 1.1em; color: #d4af37;">${artifact.set}套装</div>
-        </div>
-        <div style="margin-bottom: 15px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                <span>品质:</span>
-                <span style="color: ${quality.color};">${quality.name}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                <span>升级等级:</span>
-                <span>${artifact.upgradeLevel}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                <span>锁定状态:</span>
-                <span style="color: ${isLocked ? '#FFD700' : '#666'};">${isLocked ? '已锁定' : '未锁定'}</span>
-            </div>
-        </div>
-        <div style="background: #333; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
-            <div style="font-weight: bold; margin-bottom: 10px; color: #d4af37;">属性加成</div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                <span>生命加成:</span>
-                <span>+${(artifact.bonuses.health * 100).toFixed(1)}%</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                <span>攻击加成:</span>
-                <span>+${(artifact.bonuses.attack * 100).toFixed(1)}%</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span>爆伤加成:</span>
-                <span>+${(artifact.bonuses.critDamage * 100).toFixed(1)}%</span>
-            </div>
-        </div>
-        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-            <button onclick="toggleArtifactLock('${artifact.id}'); showArtifactDetails('${artifact.id}')" 
-                    style="background: ${isLocked ? '#FF9800' : '#666'}; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
-                ${isLocked ? '解锁神器' : '锁定神器'}
-            </button>
-            <button onclick="equipArtifact('${artifact.id}')" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">装备</button>
-            <button onclick="upgradeArtifact('${artifact.id}')" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">升级</button>
-            <button onclick="decomposeArtifactItem('${artifact.id}')" 
-                    style="background: #f44336; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;"
-                    ${isLocked ? 'disabled' : ''}>分解</button>
-        </div>
-    `;
-     // 获取进阶等级
-     const baseName = artifact.baseName || artifact.name;
+    const baseName = artifact.baseName || artifact.name;
     const advanceLevel = player.artifacts.advanceLevels[artifactId] || 0;
-    
-    // 更新进阶信息显示
-    const advanceInfo = document.getElementById('artifactAdvanceInfo');
-    const advanceBtn = document.getElementById('advanceArtifactBtn');
-    advanceBtn.onclick = function() {
-        advanceArtifact(artifactId);
-    };
-    
+
+    let advanceBlock = '';
+    let advanceBtnLabel = '已达最高进阶';
+    let advanceBtnDisabled = true;
     if (advanceLevel < 7) {
         const cost = advanceCosts[advanceLevel];
-        advanceInfo.innerHTML = `
-            <div>当前进阶: ${advanceLevel}级 (${advancePrefixes[advanceLevel]}${baseName})</div>
-            <div>下一进阶: ${advanceLevel + 1}级 (${advancePrefixes[advanceLevel + 1]}${baseName})</div>
-            <div>消耗: ${cost} 进阶神石</div>
-            <div>属性提升: ${Math.pow(2, advanceLevel + 1).toFixed(1)}倍</div>
+        advanceBtnDisabled = !(player.items.advanceStone >= cost);
+        advanceBtnLabel = advanceBtnDisabled ? '进阶神石不足' : '确认进阶';
+        advanceBlock = `
+            <div>当前：${advanceLevel}级（${advancePrefixes[advanceLevel]}${baseName}）</div>
+            <div>下一阶：${advanceLevel + 1}级（${advancePrefixes[advanceLevel + 1]}${baseName}）</div>
+            <div>消耗：${cost} 进阶神石 · 属性×${Math.pow(2, advanceLevel + 1).toFixed(1)}</div>
         `;
-        
-        // 检查是否有足够进阶神石
-        if (player.items.advanceStone >= cost) {
-            advanceBtn.disabled = false;
-            advanceBtn.textContent = "进阶神器";
-        } else {
-            advanceBtn.disabled = true;
-            advanceBtn.textContent = "进阶神石不足";
-        }
     } else {
-        advanceInfo.innerHTML = `
-            <div>当前进阶: 7级 (${advancePrefixes[7]}${baseName})</div>
-            <div>已达最高进阶等级</div>
-            <div>属性加成: ${Math.pow(2, 7).toFixed(1)}倍</div>
+        advanceBlock = `
+            <div>当前：7级（${advancePrefixes[7]}${baseName}）</div>
+            <div>已达最高进阶 · 属性×${Math.pow(2, 7).toFixed(1)}</div>
         `;
-        advanceBtn.disabled = true;
-        advanceBtn.textContent = "已达最高进阶";
     }
+    
+    const detailOverlay = document.createElement('div');
+    detailOverlay.id = 'artifactDetailOverlay';
+    detailOverlay.className = 'artifact-detail-overlay';
+    
+    const detailCard = document.createElement('div');
+    detailCard.className = 'artifact-detail-card';
+    detailCard.style.borderColor = quality.color;
+    
+    detailCard.innerHTML = `
+        <div class="artifact-detail-top">
+            <div>
+                <div class="artifact-detail-name" style="color:${quality.color};">${artifact.name} ${isLocked ? '🔒' : ''}</div>
+                <div class="artifact-detail-meta">${part.name} · <span style="color:#d4af37;">${artifact.set}</span> · ${quality.name}</div>
+            </div>
+            <button type="button" class="artifact-forge-close" onclick="document.body.removeChild(document.getElementById('artifactDetailOverlay'))">关闭</button>
+        </div>
+        <div class="artifact-detail-rows">
+            <div><span>升级等级</span><strong>${artifact.upgradeLevel}</strong></div>
+            <div><span>锁定</span><strong style="color:${isLocked ? '#d4af37' : '#888'};">${isLocked ? '已锁定' : '未锁定'}</strong></div>
+        </div>
+        <div class="artifact-detail-compare">${formatArtifactStatCompareHtml(artifact)}</div>
+        <div class="artifact-detail-advance">
+            <div class="artifact-detail-advance-title">进阶</div>
+            <div id="artifactAdvanceInfo">${advanceBlock}</div>
+            <button type="button" id="advanceArtifactBtn" class="artifact-btn-advance" ${advanceBtnDisabled ? 'disabled' : ''}
+                onclick="advanceArtifact('${artifactId}')">${advanceBtnLabel}</button>
+        </div>
+        <div class="artifact-detail-actions">
+            <button type="button" onclick="toggleArtifactLock('${artifact.id}'); showArtifactDetails('${artifact.id}')"
+                style="background:${isLocked ? '#b07a20' : '#555'};">${isLocked ? '解锁' : '锁定'}</button>
+            <button type="button" style="background:#3d7a45;" onclick="equipArtifact('${artifact.id}')">装备</button>
+            <button type="button" style="background:#2f6f9a;" onclick="upgradeArtifact('${artifact.id}')">升级</button>
+            <button type="button" style="background:#8b2e2e;" onclick="decomposeArtifactItem('${artifact.id}')" ${isLocked ? 'disabled' : ''}>分解</button>
+        </div>
+    `;
 
     detailOverlay.appendChild(detailCard);
     document.body.appendChild(detailOverlay);
+}
+
+function switchArtifactForgeView(viewName) {
+    var views = {
+        equip: document.getElementById('artifactForgeViewEquip'),
+        bag: document.getElementById('artifactForgeViewBag'),
+        decompose: document.getElementById('artifactForgeViewDecompose')
+    };
+    Object.keys(views).forEach(function (key) {
+        if (views[key]) views[key].style.display = key === viewName ? 'block' : 'none';
+    });
+    document.querySelectorAll('.artifact-forge-navbtn').forEach(function (btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-forge-view') === viewName);
+    });
+    if (viewName === 'bag') {
+        updateArtifactInventory();
+    } else if (viewName === 'decompose') {
+        initArtifactAutoDecomposeUI();
+    } else if (viewName === 'equip') {
+        updateArtifactSlots();
+        updateSetBonuses();
+    }
 }
 function advanceArtifact(artifactId) {
     const artifact = player.artifacts.inventory.find(a => a.id === artifactId);
@@ -4877,12 +4952,16 @@ function advanceArtifact(artifactId) {
     showArtifactDetails(artifactId); // 重新加载详情页面
 }
 
-function decomposeArtifactItem(artifactId) {
+function executeDecomposeArtifactItem(artifactId) {
     const artifact = player.artifacts.inventory.find(a => a.id === artifactId);
     if (!artifact) return;
     if (artifact.locked) {
         logAction('无法分解被锁定的神器：' + artifact.name, 'error');
         return;
+    }
+    const existingDetail = document.getElementById('artifactDetailOverlay');
+    if (existingDetail && existingDetail.parentNode) {
+        existingDetail.parentNode.removeChild(existingDetail);
     }
     const decompositionRewards = applyArtifactDecomposeRewards(artifact);
     removeArtifactFromInventoryById(artifactId);
@@ -4891,6 +4970,32 @@ function decomposeArtifactItem(artifactId) {
     updateExplorationUI();
     updateArtifactSetsView();
     showDecompositionResult(artifact, decompositionRewards);
+}
+
+function decomposeArtifactItem(artifactId) {
+    const artifact = player.artifacts.inventory.find(a => a.id === artifactId);
+    if (!artifact) return;
+    if (artifact.locked) {
+        logAction('无法分解被锁定的神器：' + artifact.name, 'error');
+        return;
+    }
+    const quality = artifactQualities.find(q => q.id === artifact.quality);
+    const part = artifactParts.find(p => p.id === artifact.part);
+    const rewards = calculateDecompositionReward(artifact);
+    showArtifactDecomposeConfirm({
+        title: '确认分解',
+        bodyHtml:
+            '<p>确定分解 <strong style="color:' + (quality ? quality.color : '#e0c36a') + ';">' + artifact.name +
+            '</strong>？</p>' +
+            '<p class="artifact-decomp-meta">' + (part ? part.name : '') + ' · ' +
+            (quality ? quality.name : '') + ' · ' + artifact.set + ' · 等级 ' + artifact.upgradeLevel + '</p>' +
+            '<div class="artifact-decomp-reward">预计获得：碎片 <strong>' + rewards.fragments +
+            '</strong> · 晶体 <strong>' + rewards.crystals + '</strong></div>' +
+            '<p class="artifact-decomp-warn">此操作不可撤销</p>',
+        onConfirm: function () {
+            executeDecomposeArtifactItem(artifactId);
+        }
+    });
 }
 
 // 计算分解收益
@@ -5329,6 +5434,28 @@ function getIdleMembers(includePlayer = true) {
         return true;
     });
 }
+// 未创建宗门时隐藏标签栏与各功能页
+function setSectTabsVisible(visible) {
+    const tabsNav = document.querySelector('#sectSystemUI .sect-tabs');
+    if (tabsNav) tabsNav.style.display = visible ? 'flex' : 'none';
+    if (!visible) {
+        document.querySelectorAll('#sectSystemUI .sect-tabcontent').forEach(el => {
+            el.style.display = 'none';
+        });
+        return;
+    }
+    // 创建后恢复默认「成员管理」页（若当前没有任何页签可见）
+    const anyVisible = Array.from(document.querySelectorAll('#sectSystemUI .sect-tabcontent'))
+        .some(el => el.style.display === 'block');
+    if (!anyVisible) {
+        document.querySelectorAll('#sectSystemUI .sect-tablink').forEach(tab => tab.classList.remove('active'));
+        const membersLink = document.querySelector('#sectSystemUI .sect-tablink');
+        if (membersLink) membersLink.classList.add('active');
+        const membersPane = document.getElementById('sectMembers');
+        if (membersPane) membersPane.style.display = 'block';
+    }
+}
+
 // 更新宗门界面
 function updateSectUI() {
     // 打开/刷新界面时，优先检查一次是否满足升级条件（防止读档后声望已超阈值但未升级）
@@ -5343,9 +5470,12 @@ function updateSectUI() {
                 <button onclick="createSect()" style="background: #8B4513; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">创建宗门</button>
             </div>
         `;
+        setSectTabsVisible(false);
         return;
     }
-    
+
+    setSectTabsVisible(true);
+
     // 更新宗门信息
     document.getElementById('sectInfoContainer').innerHTML = `
         <div style="display: flex; justify-content: space-between;">

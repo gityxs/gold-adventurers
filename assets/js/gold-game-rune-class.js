@@ -985,6 +985,94 @@ const classConfig = {
                     {desc: "玩家爆伤总和提升2500倍", type: "critMultiplier", value: {chance: 0.01, multiplier: 2500}},
                     {desc: "玩家生命加成总和提升35倍", type: "healthMultiplier", value: 35}
                 ]
+            },
+            {
+                requiredStage: 5000,
+                options: [
+                    {desc: "玩家攻击加成总和提升4000倍", type: "attackMultiplier", value: 4000},
+                    {desc: "玩家爆伤总和提升4500倍", type: "critMultiplier", value: {chance: 0.01, multiplier: 4500}},
+                    {desc: "玩家生命加成总和提升42倍", type: "healthMultiplier", value: 42}
+                ]
+            },
+            {
+                requiredStage: 5500,
+                options: [
+                    {desc: "玩家攻击加成总和提升7000倍", type: "attackMultiplier", value: 7000},
+                    {desc: "玩家爆伤总和提升8000倍", type: "critMultiplier", value: {chance: 0.01, multiplier: 8000}},
+                    {desc: "玩家生命加成总和提升50倍", type: "healthMultiplier", value: 50}
+                ]
+            },
+            {
+                requiredStage: 6000,
+                options: [
+                    {desc: "玩家攻击加成总和提升12000倍", type: "attackMultiplier", value: 12000},
+                    {desc: "玩家爆伤总和提升14000倍", type: "critMultiplier", value: {chance: 0.01, multiplier: 14000}},
+                    {desc: "玩家生命加成总和提升60倍", type: "healthMultiplier", value: 60}
+                ]
+            },
+            {
+                requiredStage: 6500,
+                options: [
+                    {desc: "玩家攻击加成总和提升22000倍", type: "attackMultiplier", value: 22000},
+                    {desc: "玩家爆伤总和提升25000倍", type: "critMultiplier", value: {chance: 0.01, multiplier: 25000}},
+                    {desc: "玩家生命加成总和提升72倍", type: "healthMultiplier", value: 72}
+                ]
+            },
+            {
+                requiredStage: 7000,
+                options: [
+                    {desc: "玩家攻击加成总和提升40000倍", type: "attackMultiplier", value: 40000},
+                    {desc: "玩家爆伤总和提升45000倍", type: "critMultiplier", value: {chance: 0.01, multiplier: 45000}},
+                    {desc: "玩家生命加成总和提升85倍", type: "healthMultiplier", value: 85}
+                ]
+            },
+            {
+                requiredStage: 7500,
+                options: [
+                    {desc: "玩家攻击加成总和提升70000倍", type: "attackMultiplier", value: 70000},
+                    {desc: "玩家爆伤总和提升80000倍", type: "critMultiplier", value: {chance: 0.01, multiplier: 80000}},
+                    {desc: "玩家生命加成总和提升100倍", type: "healthMultiplier", value: 100}
+                ]
+            },
+            {
+                requiredStage: 8000,
+                options: [
+                    {desc: "玩家攻击加成总和提升120000倍", type: "attackMultiplier", value: 120000},
+                    {desc: "玩家爆伤总和提升140000倍", type: "critMultiplier", value: {chance: 0.01, multiplier: 140000}},
+                    {desc: "玩家生命加成总和提升120倍", type: "healthMultiplier", value: 120}
+                ]
+            },
+            {
+                requiredStage: 8500,
+                options: [
+                    {desc: "玩家攻击加成总和提升220000倍", type: "attackMultiplier", value: 220000},
+                    {desc: "玩家爆伤总和提升250000倍", type: "critMultiplier", value: {chance: 0.01, multiplier: 250000}},
+                    {desc: "玩家生命加成总和提升145倍", type: "healthMultiplier", value: 145}
+                ]
+            },
+            {
+                requiredStage: 9000,
+                options: [
+                    {desc: "玩家攻击加成总和提升400000倍", type: "attackMultiplier", value: 400000},
+                    {desc: "玩家爆伤总和提升450000倍", type: "critMultiplier", value: {chance: 0.01, multiplier: 450000}},
+                    {desc: "玩家生命加成总和提升175倍", type: "healthMultiplier", value: 175}
+                ]
+            },
+            {
+                requiredStage: 9500,
+                options: [
+                    {desc: "玩家攻击加成总和提升700000倍", type: "attackMultiplier", value: 700000},
+                    {desc: "玩家爆伤总和提升800000倍", type: "critMultiplier", value: {chance: 0.01, multiplier: 800000}},
+                    {desc: "玩家生命加成总和提升210倍", type: "healthMultiplier", value: 210}
+                ]
+            },
+            {
+                requiredStage: 10000,
+                options: [
+                    {desc: "玩家攻击加成总和提升1200000倍", type: "attackMultiplier", value: 1200000},
+                    {desc: "玩家爆伤总和提升1400000倍", type: "critMultiplier", value: {chance: 0.01, multiplier: 1400000}},
+                    {desc: "玩家生命加成总和提升250倍", type: "healthMultiplier", value: 250}
+                ]
             }
         ],
         // 二转职业配置
@@ -1197,6 +1285,94 @@ const classConfig = {
                     {desc: "玩家生命加成总和提升25倍", type: "healthMultiplier", value: 25},
                     {desc: "副本装备加成总和提升80倍", type: "dungeonEquipMultiplier", value: 80},
                     {desc: "魂环加成总和提升100倍", type: "soulRingMultiplier", value: 100}
+                ]
+            },
+            {
+                requiredStage: 5000,
+                options: [
+                    {desc: "玩家生命加成总和提升30倍", type: "healthMultiplier", value: 30},
+                    {desc: "副本装备加成总和提升100倍", type: "dungeonEquipMultiplier", value: 100},
+                    {desc: "魂环加成总和提升130倍", type: "soulRingMultiplier", value: 130}
+                ]
+            },
+            {
+                requiredStage: 5500,
+                options: [
+                    {desc: "玩家生命加成总和提升36倍", type: "healthMultiplier", value: 36},
+                    {desc: "副本装备加成总和提升130倍", type: "dungeonEquipMultiplier", value: 130},
+                    {desc: "魂环加成总和提升170倍", type: "soulRingMultiplier", value: 170}
+                ]
+            },
+            {
+                requiredStage: 6000,
+                options: [
+                    {desc: "玩家生命加成总和提升42倍", type: "healthMultiplier", value: 42},
+                    {desc: "副本装备加成总和提升170倍", type: "dungeonEquipMultiplier", value: 170},
+                    {desc: "魂环加成总和提升220倍", type: "soulRingMultiplier", value: 220}
+                ]
+            },
+            {
+                requiredStage: 6500,
+                options: [
+                    {desc: "玩家生命加成总和提升50倍", type: "healthMultiplier", value: 50},
+                    {desc: "副本装备加成总和提升220倍", type: "dungeonEquipMultiplier", value: 220},
+                    {desc: "魂环加成总和提升280倍", type: "soulRingMultiplier", value: 280}
+                ]
+            },
+            {
+                requiredStage: 7000,
+                options: [
+                    {desc: "玩家生命加成总和提升60倍", type: "healthMultiplier", value: 60},
+                    {desc: "副本装备加成总和提升280倍", type: "dungeonEquipMultiplier", value: 280},
+                    {desc: "魂环加成总和提升360倍", type: "soulRingMultiplier", value: 360}
+                ]
+            },
+            {
+                requiredStage: 7500,
+                options: [
+                    {desc: "玩家生命加成总和提升72倍", type: "healthMultiplier", value: 72},
+                    {desc: "副本装备加成总和提升360倍", type: "dungeonEquipMultiplier", value: 360},
+                    {desc: "魂环加成总和提升460倍", type: "soulRingMultiplier", value: 460}
+                ]
+            },
+            {
+                requiredStage: 8000,
+                options: [
+                    {desc: "玩家生命加成总和提升85倍", type: "healthMultiplier", value: 85},
+                    {desc: "副本装备加成总和提升460倍", type: "dungeonEquipMultiplier", value: 460},
+                    {desc: "魂环加成总和提升600倍", type: "soulRingMultiplier", value: 600}
+                ]
+            },
+            {
+                requiredStage: 8500,
+                options: [
+                    {desc: "玩家生命加成总和提升100倍", type: "healthMultiplier", value: 100},
+                    {desc: "副本装备加成总和提升600倍", type: "dungeonEquipMultiplier", value: 600},
+                    {desc: "魂环加成总和提升780倍", type: "soulRingMultiplier", value: 780}
+                ]
+            },
+            {
+                requiredStage: 9000,
+                options: [
+                    {desc: "玩家生命加成总和提升120倍", type: "healthMultiplier", value: 120},
+                    {desc: "副本装备加成总和提升780倍", type: "dungeonEquipMultiplier", value: 780},
+                    {desc: "魂环加成总和提升1000倍", type: "soulRingMultiplier", value: 1000}
+                ]
+            },
+            {
+                requiredStage: 9500,
+                options: [
+                    {desc: "玩家生命加成总和提升145倍", type: "healthMultiplier", value: 145},
+                    {desc: "副本装备加成总和提升1000倍", type: "dungeonEquipMultiplier", value: 1000},
+                    {desc: "魂环加成总和提升1300倍", type: "soulRingMultiplier", value: 1300}
+                ]
+            },
+            {
+                requiredStage: 10000,
+                options: [
+                    {desc: "玩家生命加成总和提升175倍", type: "healthMultiplier", value: 175},
+                    {desc: "副本装备加成总和提升1300倍", type: "dungeonEquipMultiplier", value: 1300},
+                    {desc: "魂环加成总和提升1700倍", type: "soulRingMultiplier", value: 1700}
                 ]
             }
         ],
@@ -1411,6 +1587,94 @@ const classConfig = {
                     {desc: "修仙系统经验获取提升30%", type: "cultivationExpMultiplier", value: 0.30},
                     {desc: "奥秘系统经验获取提升30%", type: "mysteryExpMultiplier", value: 0.30}
                 ]
+            },
+            {
+                requiredStage: 5000,
+                options: [
+                    {desc: "世界地图经验获取提升35%", type: "worldExpMultiplier", value: 0.35},
+                    {desc: "修仙系统经验获取提升35%", type: "cultivationExpMultiplier", value: 0.35},
+                    {desc: "奥秘系统经验获取提升35%", type: "mysteryExpMultiplier", value: 0.35}
+                ]
+            },
+            {
+                requiredStage: 5500,
+                options: [
+                    {desc: "世界地图经验获取提升40%", type: "worldExpMultiplier", value: 0.40},
+                    {desc: "修仙系统经验获取提升40%", type: "cultivationExpMultiplier", value: 0.40},
+                    {desc: "奥秘系统经验获取提升40%", type: "mysteryExpMultiplier", value: 0.40}
+                ]
+            },
+            {
+                requiredStage: 6000,
+                options: [
+                    {desc: "世界地图经验获取提升45%", type: "worldExpMultiplier", value: 0.45},
+                    {desc: "修仙系统经验获取提升45%", type: "cultivationExpMultiplier", value: 0.45},
+                    {desc: "奥秘系统经验获取提升45%", type: "mysteryExpMultiplier", value: 0.45}
+                ]
+            },
+            {
+                requiredStage: 6500,
+                options: [
+                    {desc: "世界地图经验获取提升50%", type: "worldExpMultiplier", value: 0.50},
+                    {desc: "修仙系统经验获取提升50%", type: "cultivationExpMultiplier", value: 0.50},
+                    {desc: "奥秘系统经验获取提升50%", type: "mysteryExpMultiplier", value: 0.50}
+                ]
+            },
+            {
+                requiredStage: 7000,
+                options: [
+                    {desc: "世界地图经验获取提升55%", type: "worldExpMultiplier", value: 0.55},
+                    {desc: "修仙系统经验获取提升55%", type: "cultivationExpMultiplier", value: 0.55},
+                    {desc: "奥秘系统经验获取提升55%", type: "mysteryExpMultiplier", value: 0.55}
+                ]
+            },
+            {
+                requiredStage: 7500,
+                options: [
+                    {desc: "世界地图经验获取提升60%", type: "worldExpMultiplier", value: 0.60},
+                    {desc: "修仙系统经验获取提升60%", type: "cultivationExpMultiplier", value: 0.60},
+                    {desc: "奥秘系统经验获取提升60%", type: "mysteryExpMultiplier", value: 0.60}
+                ]
+            },
+            {
+                requiredStage: 8000,
+                options: [
+                    {desc: "世界地图经验获取提升65%", type: "worldExpMultiplier", value: 0.65},
+                    {desc: "修仙系统经验获取提升65%", type: "cultivationExpMultiplier", value: 0.65},
+                    {desc: "奥秘系统经验获取提升65%", type: "mysteryExpMultiplier", value: 0.65}
+                ]
+            },
+            {
+                requiredStage: 8500,
+                options: [
+                    {desc: "世界地图经验获取提升70%", type: "worldExpMultiplier", value: 0.70},
+                    {desc: "修仙系统经验获取提升70%", type: "cultivationExpMultiplier", value: 0.70},
+                    {desc: "奥秘系统经验获取提升70%", type: "mysteryExpMultiplier", value: 0.70}
+                ]
+            },
+            {
+                requiredStage: 9000,
+                options: [
+                    {desc: "世界地图经验获取提升75%", type: "worldExpMultiplier", value: 0.75},
+                    {desc: "修仙系统经验获取提升75%", type: "cultivationExpMultiplier", value: 0.75},
+                    {desc: "奥秘系统经验获取提升75%", type: "mysteryExpMultiplier", value: 0.75}
+                ]
+            },
+            {
+                requiredStage: 9500,
+                options: [
+                    {desc: "世界地图经验获取提升80%", type: "worldExpMultiplier", value: 0.80},
+                    {desc: "修仙系统经验获取提升80%", type: "cultivationExpMultiplier", value: 0.80},
+                    {desc: "奥秘系统经验获取提升80%", type: "mysteryExpMultiplier", value: 0.80}
+                ]
+            },
+            {
+                requiredStage: 10000,
+                options: [
+                    {desc: "世界地图经验获取提升90%", type: "worldExpMultiplier", value: 0.90},
+                    {desc: "修仙系统经验获取提升90%", type: "cultivationExpMultiplier", value: 0.90},
+                    {desc: "奥秘系统经验获取提升90%", type: "mysteryExpMultiplier", value: 0.90}
+                ]
             }
         ],
         // 二转职业配置
@@ -1538,21 +1802,92 @@ const classConfig = {
 
 // 切换职业系统界面显示
 function toggleClassSystem() {
- if (player.reincarnationCount < 20) {
+    if (player.reincarnationCount < 20) {
         alert("需要达到20转才能开启职业系统！");
         return;
     }
     const ui = document.getElementById('classSystemUI');
     const overlay = document.getElementById('classSystemOverlay');
-    
-    if (ui.style.display === 'block') {
-        ui.style.display = 'none';
-        overlay.style.display = 'none';
+    const isOpen = ui && (ui.style.display === 'flex' || ui.style.display === 'block');
+
+    if (isOpen) {
+        if (ui) ui.style.display = 'none';
+        if (overlay) overlay.style.display = 'none';
     } else {
-        ui.style.display = 'block';
-        overlay.style.display = 'block';
+        if (typeof window.__classBranchTab !== 'string') window.__classBranchTab = 'all';
         updateClassSystemDisplay();
+        if (ui) ui.style.display = 'flex';
+        if (overlay) overlay.style.display = 'block';
     }
+}
+
+function switchClassBranchTab(branchKey) {
+    window.__classBranchTab = branchKey || 'all';
+    document.querySelectorAll('#classBranchTabs .title-tab').forEach((tab) => {
+        tab.classList.toggle('active', tab.getAttribute('data-branch') === window.__classBranchTab);
+    });
+    document.querySelectorAll('#classBranchesBody .titleBranch, #classBranchesBody .class-section').forEach((section) => {
+        const key = section.getAttribute('data-branch');
+        const show = window.__classBranchTab === 'all' || window.__classBranchTab === key;
+        section.classList.toggle('is-hidden', !show);
+    });
+}
+
+function getFullClassDisplayName() {
+    if (!player.class) return '';
+    let fullClassName = classConfig[player.class].name;
+    if (player.classSeventh) {
+        fullClassName += `·${classConfig[player.class].seventhJobs[player.classSeventh].name}`;
+    } else if (player.classSixth) {
+        fullClassName += `·${classConfig[player.class].sixthJobs[player.classSixth].name}`;
+    } else if (player.classFifth) {
+        fullClassName += `·${classConfig[player.class].fifthJobs[player.classFifth].name}`;
+    } else if (player.classFourth) {
+        fullClassName += `·${classConfig[player.class].fourthJobs[player.classFourth].name}`;
+    } else if (player.classThird) {
+        fullClassName += `·${classConfig[player.class].thirdJobs[player.classThird].name}`;
+    } else if (player.classSecond) {
+        fullClassName += `·${classConfig[player.class].secondJobs[player.classSecond].name}`;
+    }
+    return fullClassName;
+}
+
+function getClassBranchCounts() {
+    if (!player.class) return { selected: 0, total: 0 };
+    const branches = classConfig[player.class].branches;
+    const total = branches.length;
+    let selected = 0;
+    branches.forEach((branch, index) => {
+        const opt = player.classBranches[index];
+        if (opt !== undefined && opt !== -1) selected += 1;
+    });
+    return { selected, total };
+}
+
+function updateClassModalSummary() {
+    const tier = getClassAdvancementTier();
+    const nameEl = document.getElementById('currentClassName');
+    if (nameEl) {
+        if (!player.class) {
+            nameEl.className = 'title-hero-name is-empty';
+            nameEl.textContent = '未选择职业';
+        } else {
+            nameEl.className = 'title-hero-name ' + getClassNameTierClass(tier);
+            nameEl.textContent = getFullClassDisplayName();
+        }
+    }
+    const branchCounts = getClassBranchCounts();
+    const setText = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+    };
+    setText('classTierStat', `${tier}/7`);
+    setText('classBranchStat', `${branchCounts.selected}/${branchCounts.total}`);
+    setText('classStageStat', String(player.battle.maxStage || 0));
+    setText('classTowerStat', String(player.tower.currentFloor || 0));
+    setText('classBookStat', String((player.items && player.items.zhiye1) || 0));
+    setText('classBranchCountBadge', `${branchCounts.selected}/${branchCounts.total}`);
+    setText('classJobsCountBadge', `${tier}/7`);
 }
 
 // 选择职业（更换职业需确认后消耗职业转换书）
@@ -1620,257 +1955,277 @@ function selectClass(classType) {
     performSelectClass(classType, false);
 }
 
+function getClassAdvancementTier() {
+    if (player.classSeventh) return 7;
+    if (player.classSixth) return 6;
+    if (player.classFifth) return 5;
+    if (player.classFourth) return 4;
+    if (player.classThird) return 3;
+    if (player.classSecond) return 2;
+    if (player.class) return 1;
+    return 0;
+}
+
+/** 转职阶数越高，职业名渐变彩字越炫（0~7，对齐称号品阶观感） */
+function getClassNameTierClass(tier) {
+    var t = Math.max(0, Math.min(7, Number(tier) || 0));
+    return 'class-name-tier-' + t;
+}
+
+function updateClassPathTrack() {
+    const track = document.getElementById('classPathTrack');
+    if (!track) return;
+    const tier = getClassAdvancementTier();
+    const labels = ['一转', '二转', '三转', '四转', '五转', '六转', '七转'];
+    let html = '';
+    for (let i = 1; i <= 7; i++) {
+        let state = 'is-locked';
+        if (tier > i) state = 'is-done';
+        else if (tier === i) state = 'is-current';
+        else if (!player.class && i === 1) state = 'is-locked';
+        const mark = tier > i ? '✓' : String(i);
+        html += `<div class="class-path-step ${state}">
+            <span class="class-path-dot">${mark}</span>
+            <span class="class-path-label">${labels[i - 1]}</span>
+        </div>`;
+    }
+    track.innerHTML = html;
+}
+
+function updateClassSelectionActive() {
+    const map = { warrior: 'class-btn-warrior', mage: 'class-btn-mage', explorer: 'class-btn-explorer' };
+    Object.keys(map).forEach(function (key) {
+        const btn = document.querySelector('#classSelection .' + map[key]);
+        if (!btn) return;
+        if (player.class === key) btn.classList.add('is-active');
+        else btn.classList.remove('is-active');
+    });
+}
+
+function buildDoneJobBox(tierLabel, jobName, bonusText, jobTier) {
+    const nameTierClass = getClassNameTierClass(jobTier || 1);
+    return `<div class="class-job-box class-job-box-done">
+        <div class="class-job-box-head">
+            <h4>${tierLabel}</h4>
+            <span class="class-job-tier">已完成</span>
+        </div>
+        <div class="class-job-box-body">
+            <div class="class-job-cards class-job-cards-single">
+                <div class="class-job-card is-done">
+                    <div class="class-job-card-name ${nameTierClass}">${jobName}</div>
+                    <div class="class-job-card-desc">加成：${bonusText}</div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function buildPromoteJobBox(boxClass, title, tierBadge, jobName, bonusText, btnClass, btnLabel, onclickAttr, jobTier) {
+    const nameTierClass = getClassNameTierClass(jobTier || 1);
+    return `<div class="class-job-box ${boxClass}">
+        <div class="class-job-box-head">
+            <h4>${title}</h4>
+            <span class="class-job-tier">${tierBadge}</span>
+        </div>
+        <div class="class-job-box-body">
+            <div class="class-job-cards class-job-cards-single">
+                <div class="class-job-card">
+                    <div class="class-job-card-name ${nameTierClass}">${jobName}</div>
+                    <div class="class-job-card-desc">${bonusText}</div>
+                    <button type="button" class="class-job-btn ${btnClass}" onclick="${onclickAttr}">${btnLabel}</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function findJobByBase(jobs, baseKey) {
+    for (const [key, job] of Object.entries(jobs)) {
+        if (job.baseJob === baseKey) return { key: key, job: job };
+    }
+    return null;
+}
+
 // 更新职业系统界面显示
 function updateClassSystemDisplay() {
-    const className = player.class ? classConfig[player.class].name : "无";
-    let fullClassName = className;
-    
-    // 构建完整的职业名称
-    if (player.classSeventh) {
-        fullClassName += `·${classConfig[player.class].seventhJobs[player.classSeventh].name}`;
-    } else if (player.classSixth) {
-        fullClassName += `·${classConfig[player.class].sixthJobs[player.classSixth].name}`;
-    } else if (player.classFifth) {
-        fullClassName += `·${classConfig[player.class].fifthJobs[player.classFifth].name}`;
-    } else if (player.classFourth) {
-        fullClassName += `·${classConfig[player.class].fourthJobs[player.classFourth].name}`;
-    } else if (player.classThird) {
-        fullClassName += `·${classConfig[player.class].thirdJobs[player.classThird].name}`;
-    } else if (player.classSecond) {
-        fullClassName += `·${classConfig[player.class].secondJobs[player.classSecond].name}`;
-    }
-    
-    document.getElementById('currentClassName').textContent = fullClassName;
-    
-    const branchesContainer = document.getElementById('classBranches');
+    updateClassModalSummary();
+    updateClassPathTrack();
+    updateClassSelectionActive();
+
     const branchPointsContainer = document.getElementById('branchPointsContainer');
-    
-    if (player.class) {
-        branchesContainer.style.display = 'block';
-        branchPointsContainer.innerHTML = '';
-        
-        // 显示一转分支（原有逻辑）
-        const branches = classConfig[player.class].branches;
-        branches.forEach((branch, index) => {
-            const isUnlocked = player.battle.maxStage >= branch.requiredStage;
-            const selectedOption = player.classBranches[index] !== undefined ? player.classBranches[index] : -1;
-            
-            const rowClass = isUnlocked ? 'class-branch-row' : 'class-branch-row class-branch-locked';
-            let branchHtml = `<div class="${rowClass}">`;
-            branchHtml += `<div class="class-branch-title">第${index + 1}排 (需要最高关卡: ${branch.requiredStage})</div>`;
-            
-            if (!isUnlocked) {
-                branchHtml += `<div style="color: #94a3b8; font-size: 0.9rem;">未解锁，需要达到${branch.requiredStage}关</div>`;
-            } else {
-                branch.options.forEach((option, optIndex) => {
-                    const isSelected = selectedOption === optIndex;
-                    const optClass = isSelected ? 'class-branch-option class-branch-selected' : 'class-branch-option';
-                    branchHtml += `
-                        <div class="${optClass}">
-                            <button type="button" onclick="selectBranch(${index}, ${optIndex})">${isSelected ? '✓ ' : ''}选择</button>
-                            <span>${option.desc}</span>
-                        </div>
-                    `;
-                });
-            }
-            
-            branchHtml += `</div>`;
-            branchPointsContainer.innerHTML += branchHtml;
-        });
-        
-        // 新增：显示二转职业选择
-        if (player.tower.currentFloor >= 100000 && !player.classSecond) {
-            let secondJobHtml = `<div class="class-job-box class-job-box-2">`;
-            secondJobHtml += `<h4>二转职业选择（需要通天塔10万层）</h4>`;
-            
-            Object.entries(classConfig[player.class].secondJobs).forEach(([key, job]) => {
-                secondJobHtml += `
-                    <div class="class-job-card">
-                        <strong>${job.name}</strong><br>
-                        <span style="font-size: 0.9rem; color: #64748b;">${getJobBonusDescription(job.bonus)}</span><br>
-                        <button type="button" class="class-job-btn class-job-btn-2" onclick="selectSecondJob('${key}')">选择此职业</button>
+    const jobsContainer = document.getElementById('classJobsContainer');
+
+    if (!branchPointsContainer || !jobsContainer) {
+        updatePlayerClassNameDisplay();
+        return;
+    }
+
+    if (!player.class) {
+        branchPointsContainer.innerHTML = '<div class="class-branch-empty">请先选择本命职业，一转后可在此加点分支</div>';
+        jobsContainer.innerHTML = '<div class="class-jobs-empty">请先选择本命职业，通天塔达标后可逐阶转职晋升</div>';
+        switchClassBranchTab(window.__classBranchTab || 'all');
+        updatePlayerClassNameDisplay();
+        return;
+    }
+
+    branchPointsContainer.innerHTML = '';
+    jobsContainer.innerHTML = '';
+
+    const branches = classConfig[player.class].branches;
+    // 已解锁全显示；未解锁只显示紧挨着的下一档，更后面的隐藏
+    for (let index = 0; index < branches.length; index++) {
+        const branch = branches[index];
+        const isUnlocked = player.battle.maxStage >= branch.requiredStage;
+        const selectedOption = player.classBranches[index] !== undefined ? player.classBranches[index] : -1;
+
+        const rowClass = isUnlocked ? 'class-branch-row' : 'class-branch-row class-branch-locked';
+        let branchHtml = `<div class="${rowClass}">`;
+        branchHtml += `<div class="class-branch-title">
+            <span class="class-branch-index">${index + 1}</span>
+            <span>第${index + 1}排加点</span>
+            <span class="class-branch-req">关卡 ${branch.requiredStage}</span>
+        </div>`;
+
+        if (!isUnlocked) {
+            branchHtml += `<div class="class-branch-locked-msg">未解锁，需最高关卡达到 ${branch.requiredStage}</div>`;
+        } else {
+            branchHtml += `<div class="class-branch-options">`;
+            branch.options.forEach((option, optIndex) => {
+                const isSelected = selectedOption === optIndex;
+                const optClass = isSelected ? 'class-branch-option class-branch-selected' : 'class-branch-option';
+                branchHtml += `
+                    <div class="${optClass}" onclick="selectBranch(${index}, ${optIndex})" role="button" tabindex="0">
+                        <span>${option.desc}</span>
+                        <button type="button" onclick="event.stopPropagation(); selectBranch(${index}, ${optIndex})">${isSelected ? '✓ 已选' : '选择'}</button>
                     </div>
                 `;
             });
-            secondJobHtml += `</div>`;
-            branchPointsContainer.innerHTML += secondJobHtml;
-        }
-        
-        // 显示已选择的二转职业
-        if (player.classSecond) {
-            const job = classConfig[player.class].secondJobs[player.classSecond];
-            let jobHtml = `<div class="class-job-box class-job-box-done">`;
-            jobHtml += `<h4>二转职业：${job.name}</h4>`;
-            jobHtml += `<div style="font-size: 0.9rem; color: #475569;">加成：${getJobBonusDescription(job.bonus)}</div>`;
-            jobHtml += `</div>`;
-            branchPointsContainer.innerHTML += jobHtml;
-        }
-        
-        // 显示三转职业信息
-        if (player.tower.currentFloor >= 200000 && player.classSecond && !player.classThird) {
-            const thirdJobs = classConfig[player.class].thirdJobs;
-            let availableThirdJob = null;
-            
-            // 找到对应的三转职业
-            for (const [key, job] of Object.entries(thirdJobs)) {
-                if (job.baseJob === player.classSecond) {
-                    availableThirdJob = job;
-                    break;
-                }
-            }
-            
-            if (availableThirdJob) {
-                let thirdJobHtml = `<div class="class-job-box class-job-box-3">`;
-                thirdJobHtml += `<h4>三转职业晋升（需要通天塔20万层）</h4>`;
-                thirdJobHtml += `<div><strong>${availableThirdJob.name}</strong></div>`;
-                thirdJobHtml += `<div style="font-size: 0.9rem; color: #475569;">加成：${getJobBonusDescription(availableThirdJob.bonus)}</div>`;
-                thirdJobHtml += `<button type="button" class="class-job-btn class-job-btn-3" onclick="selectThirdJob()">晋升为三转</button>`;
-                thirdJobHtml += `</div>`;
-                branchPointsContainer.innerHTML += thirdJobHtml;
-            }
-        }
-        
-        // 显示已选择的三转职业
-        if (player.classThird) {
-            const job = classConfig[player.class].thirdJobs[player.classThird];
-            let jobHtml = `<div class="class-job-box class-job-box-done">`;
-            jobHtml += `<h4>三转职业：${job.name}</h4>`;
-            jobHtml += `<div style="font-size: 0.9rem; color: #475569;">加成：${getJobBonusDescription(job.bonus)}</div>`;
-            jobHtml += `</div>`;
-            branchPointsContainer.innerHTML += jobHtml;
-        }
-        
-        // 显示四转职业信息
-        if (player.tower.currentFloor >= 300000 && player.classThird && !player.classFourth) {
-            const fourthJobs = classConfig[player.class].fourthJobs;
-            let availableFourthJob = null;
-            
-            // 找到对应的四转职业
-            for (const [key, job] of Object.entries(fourthJobs)) {
-                if (job.baseJob === player.classThird) {
-                    availableFourthJob = job;
-                    break;
-                }
-            }
-            
-            if (availableFourthJob) {
-                let fourthJobHtml = `<div class="class-job-box class-job-box-4">`;
-                fourthJobHtml += `<h4>四转职业晋升（需要通天塔30万层）</h4>`;
-                fourthJobHtml += `<div><strong>${availableFourthJob.name}</strong></div>`;
-                fourthJobHtml += `<div style="font-size: 0.9rem; color: #475569;">加成：${getJobBonusDescription(availableFourthJob.bonus)}</div>`;
-                fourthJobHtml += `<button type="button" class="class-job-btn class-job-btn-4" onclick="selectFourthJob()">晋升为四转</button>`;
-                fourthJobHtml += `</div>`;
-                branchPointsContainer.innerHTML += fourthJobHtml;
-            }
-        }
-        
-        // 显示已选择的四转职业
-        if (player.classFourth) {
-            const job = classConfig[player.class].fourthJobs[player.classFourth];
-            let jobHtml = `<div class="class-job-box class-job-box-done">`;
-            jobHtml += `<h4>四转职业：${job.name}</h4>`;
-            jobHtml += `<div style="font-size: 0.9rem; color: #475569;">加成：${getJobBonusDescription(job.bonus)}</div>`;
-            jobHtml += `</div>`;
-            branchPointsContainer.innerHTML += jobHtml;
+            branchHtml += `</div>`;
         }
 
-        // 显示五转职业信息
-        if (player.tower.currentFloor >= 400000 && player.classFourth && !player.classFifth) {
-            const fifthJobs = classConfig[player.class].fifthJobs;
-            let availableFifthJob = null;
-            for (const [key, job] of Object.entries(fifthJobs)) {
-                if (job.baseJob === player.classFourth) {
-                    availableFifthJob = job;
-                    break;
-                }
-            }
-            if (availableFifthJob) {
-                let fifthJobHtml = `<div class="class-job-box class-job-box-5">`;
-                fifthJobHtml += `<h4>五转职业晋升（需要通天塔40万层）</h4>`;
-                fifthJobHtml += `<div><strong>${availableFifthJob.name}</strong></div>`;
-                fifthJobHtml += `<div style="font-size: 0.9rem; color: #475569;">加成：${getJobBonusDescription(availableFifthJob.bonus)}</div>`;
-                fifthJobHtml += `<button type="button" class="class-job-btn class-job-btn-5" onclick="selectFifthJob()">晋升为五转</button>`;
-                fifthJobHtml += `</div>`;
-                branchPointsContainer.innerHTML += fifthJobHtml;
-            }
-        }
+        branchHtml += `</div>`;
+        branchPointsContainer.innerHTML += branchHtml;
 
-        // 显示已选择的五转职业
-        if (player.classFifth) {
-            const job = classConfig[player.class].fifthJobs[player.classFifth];
-            let jobHtml = `<div class="class-job-box class-job-box-done">`;
-            jobHtml += `<h4>五转职业：${job.name}</h4>`;
-            jobHtml += `<div style="font-size: 0.9rem; color: #475569;">加成：${getJobBonusDescription(job.bonus)}</div>`;
-            jobHtml += `</div>`;
-            branchPointsContainer.innerHTML += jobHtml;
-        }
-
-        // 显示六转职业信息
-        if (player.tower.currentFloor >= 500000 && player.classFifth && !player.classSixth) {
-            const sixthJobs = classConfig[player.class].sixthJobs;
-            let availableSixthJob = null;
-            for (const [key, job] of Object.entries(sixthJobs)) {
-                if (job.baseJob === player.classFifth) {
-                    availableSixthJob = job;
-                    break;
-                }
-            }
-            if (availableSixthJob) {
-                let sixthJobHtml = `<div class="class-job-box class-job-box-6">`;
-                sixthJobHtml += `<h4>六转职业晋升（需要通天塔50万层）</h4>`;
-                sixthJobHtml += `<div><strong>${availableSixthJob.name}</strong></div>`;
-                sixthJobHtml += `<div style="font-size: 0.9rem; color: #475569;">加成：${getJobBonusDescription(availableSixthJob.bonus)}</div>`;
-                sixthJobHtml += `<button type="button" class="class-job-btn class-job-btn-6" onclick="selectSixthJob()">晋升为六转</button>`;
-                sixthJobHtml += `</div>`;
-                branchPointsContainer.innerHTML += sixthJobHtml;
-            }
-        }
-
-        // 显示已选择的六转职业
-        if (player.classSixth) {
-            const job = classConfig[player.class].sixthJobs[player.classSixth];
-            let jobHtml = `<div class="class-job-box class-job-box-done">`;
-            jobHtml += `<h4>六转职业：${job.name}</h4>`;
-            jobHtml += `<div style="font-size: 0.9rem; color: #475569;">加成：${getJobBonusDescription(job.bonus)}</div>`;
-            jobHtml += `</div>`;
-            branchPointsContainer.innerHTML += jobHtml;
-        }
-
-        // 显示七转职业信息
-        if (player.tower.currentFloor >= 600000 && player.classSixth && !player.classSeventh) {
-            const seventhJobs = classConfig[player.class].seventhJobs;
-            let availableSeventhJob = null;
-            for (const [key, job] of Object.entries(seventhJobs)) {
-                if (job.baseJob === player.classSixth) {
-                    availableSeventhJob = job;
-                    break;
-                }
-            }
-            if (availableSeventhJob) {
-                let seventhJobHtml = `<div class="class-job-box class-job-box-7">`;
-                seventhJobHtml += `<h4>七转职业晋升（需要通天塔60万层）</h4>`;
-                seventhJobHtml += `<div><strong>${availableSeventhJob.name}</strong></div>`;
-                seventhJobHtml += `<div style="font-size: 0.9rem; color: #475569;">加成：${getJobBonusDescription(availableSeventhJob.bonus)}</div>`;
-                seventhJobHtml += `<button type="button" class="class-job-btn class-job-btn-7" onclick="selectSeventhJob()">晋升为七转</button>`;
-                seventhJobHtml += `</div>`;
-                branchPointsContainer.innerHTML += seventhJobHtml;
-            }
-        }
-
-        // 显示已选择的七转职业
-        if (player.classSeventh) {
-            const job = classConfig[player.class].seventhJobs[player.classSeventh];
-            let jobHtml = `<div class="class-job-box class-job-box-done">`;
-            jobHtml += `<h4>七转职业：${job.name}</h4>`;
-            jobHtml += `<div style="font-size: 0.9rem; color: #475569;">加成：${getJobBonusDescription(job.bonus)}</div>`;
-            jobHtml += `</div>`;
-            branchPointsContainer.innerHTML += jobHtml;
-        }
-    } else {
-        branchesContainer.style.display = 'none';
+        if (!isUnlocked) break;
     }
-    
-    // 更新玩家名字旁的职业显示
+
+    let jobsHtml = '';
+
+    if (player.tower.currentFloor >= 100000 && !player.classSecond) {
+        const entries = Object.entries(classConfig[player.class].secondJobs);
+        let cards = '';
+        entries.forEach(([key, job]) => {
+            cards += `
+                <div class="class-job-card" onclick="selectSecondJob('${key}')" role="button" tabindex="0">
+                    <div class="class-job-card-name ${getClassNameTierClass(2)}">${job.name}</div>
+                    <div class="class-job-card-desc">${getJobBonusDescription(job.bonus)}</div>
+                    <button type="button" class="class-job-btn class-job-btn-2" onclick="event.stopPropagation(); selectSecondJob('${key}')">选择此职业</button>
+                </div>
+            `;
+        });
+        jobsHtml += `<div class="class-job-box class-job-box-2">
+            <div class="class-job-box-head">
+                <h4>二转职业选择</h4>
+                <span class="class-job-tier">通天塔 10万层</span>
+            </div>
+            <div class="class-job-box-body">
+                <div class="class-job-cards">${cards}</div>
+            </div>
+        </div>`;
+    }
+
+    if (player.classSecond) {
+        const job = classConfig[player.class].secondJobs[player.classSecond];
+        jobsHtml += buildDoneJobBox('二转职业', job.name, getJobBonusDescription(job.bonus), 2);
+    }
+
+    if (player.tower.currentFloor >= 200000 && player.classSecond && !player.classThird) {
+        const found = findJobByBase(classConfig[player.class].thirdJobs, player.classSecond);
+        if (found) {
+            jobsHtml += buildPromoteJobBox(
+                'class-job-box-3', '三转职业晋升', '通天塔 20万层',
+                found.job.name, getJobBonusDescription(found.job.bonus),
+                'class-job-btn-3', '晋升为三转', 'selectThirdJob()', 3
+            );
+        }
+    }
+
+    if (player.classThird) {
+        const job = classConfig[player.class].thirdJobs[player.classThird];
+        jobsHtml += buildDoneJobBox('三转职业', job.name, getJobBonusDescription(job.bonus), 3);
+    }
+
+    if (player.tower.currentFloor >= 300000 && player.classThird && !player.classFourth) {
+        const found = findJobByBase(classConfig[player.class].fourthJobs, player.classThird);
+        if (found) {
+            jobsHtml += buildPromoteJobBox(
+                'class-job-box-4', '四转职业晋升', '通天塔 30万层',
+                found.job.name, getJobBonusDescription(found.job.bonus),
+                'class-job-btn-4', '晋升为四转', 'selectFourthJob()', 4
+            );
+        }
+    }
+
+    if (player.classFourth) {
+        const job = classConfig[player.class].fourthJobs[player.classFourth];
+        jobsHtml += buildDoneJobBox('四转职业', job.name, getJobBonusDescription(job.bonus), 4);
+    }
+
+    if (player.tower.currentFloor >= 400000 && player.classFourth && !player.classFifth) {
+        const found = findJobByBase(classConfig[player.class].fifthJobs, player.classFourth);
+        if (found) {
+            jobsHtml += buildPromoteJobBox(
+                'class-job-box-5', '五转职业晋升', '通天塔 40万层',
+                found.job.name, getJobBonusDescription(found.job.bonus),
+                'class-job-btn-5', '晋升为五转', 'selectFifthJob()', 5
+            );
+        }
+    }
+
+    if (player.classFifth) {
+        const job = classConfig[player.class].fifthJobs[player.classFifth];
+        jobsHtml += buildDoneJobBox('五转职业', job.name, getJobBonusDescription(job.bonus), 5);
+    }
+
+    if (player.tower.currentFloor >= 500000 && player.classFifth && !player.classSixth) {
+        const found = findJobByBase(classConfig[player.class].sixthJobs, player.classFifth);
+        if (found) {
+            jobsHtml += buildPromoteJobBox(
+                'class-job-box-6', '六转职业晋升', '通天塔 50万层',
+                found.job.name, getJobBonusDescription(found.job.bonus),
+                'class-job-btn-6', '晋升为六转', 'selectSixthJob()', 6
+            );
+        }
+    }
+
+    if (player.classSixth) {
+        const job = classConfig[player.class].sixthJobs[player.classSixth];
+        jobsHtml += buildDoneJobBox('六转职业', job.name, getJobBonusDescription(job.bonus), 6);
+    }
+
+    if (player.tower.currentFloor >= 600000 && player.classSixth && !player.classSeventh) {
+        const found = findJobByBase(classConfig[player.class].seventhJobs, player.classSixth);
+        if (found) {
+            jobsHtml += buildPromoteJobBox(
+                'class-job-box-7', '七转职业晋升', '通天塔 60万层',
+                found.job.name, getJobBonusDescription(found.job.bonus),
+                'class-job-btn-7', '晋升为七转', 'selectSeventhJob()', 7
+            );
+        }
+    }
+
+    if (player.classSeventh) {
+        const job = classConfig[player.class].seventhJobs[player.classSeventh];
+        jobsHtml += buildDoneJobBox('七转职业', job.name, getJobBonusDescription(job.bonus), 7);
+    }
+
+    if (!jobsHtml) {
+        jobsHtml = '<div class="class-jobs-empty">通天塔达到 10万层后开放二转选择</div>';
+    }
+    jobsContainer.innerHTML = jobsHtml;
+
+    updateClassModalSummary();
+    switchClassBranchTab(window.__classBranchTab || 'all');
     updatePlayerClassNameDisplay();
 }
 // 辅助函数：获取职业加成描述
@@ -2038,6 +2393,8 @@ function selectBranch(branchIndex, optionIndex) {
 // 更新玩家名字旁的职业显示
 function updatePlayerClassNameDisplay() {
     const classNameElement = document.getElementById('playerClassName');
+    if (!classNameElement) return;
+    classNameElement.className = 'player-class-display';
     if (player.class) {
         let displayName = classConfig[player.class].name;
         
@@ -2056,7 +2413,9 @@ function updatePlayerClassNameDisplay() {
             displayName += `·${classConfig[player.class].secondJobs[player.classSecond].name}`;
         }
         
-        classNameElement.textContent = `[${displayName}]`;
+        // 外层保留胶囊底色，内层再套渐变彩字（避免 background 冲突导致空白）
+        const tierClass = getClassNameTierClass(getClassAdvancementTier());
+        classNameElement.innerHTML = `<span class="class-name-text ${tierClass}">[${displayName}]</span>`;
     } else {
         classNameElement.textContent = '';
     }

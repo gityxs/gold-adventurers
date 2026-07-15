@@ -1936,6 +1936,7 @@ function calculateNightClubIncome() {
         if (customersEl && customersEl.style.display === 'block') updateCustomersTab();
     }
 }
+window.calculateNightClubIncome = calculateNightClubIncome;
 
 // 尝试一次顾客光顾：智能顾客（多类型/偏好/预算/心情/回头客/价格敏感/多件购买）
 function tryNightClubCustomerVisit() {

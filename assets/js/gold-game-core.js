@@ -1,4 +1,4 @@
-        const GAME_VERSION = "2.0.35";
+        const GAME_VERSION = "2.0.37";
         const GAME_INVENTORY_MAX = 100;
         var WING_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
         var MOUNT_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
@@ -59,8 +59,16 @@
                 if (arr[i] === id) { arr.splice(i, 1); break; }
             }
         }
+        /** 按全局 key 单例注册 interval，重复调用会先清旧表项，避免 loadGame 叠定时器 */
+        function registerSingletonInterval(storeKey, fn, ms) {
+            if (!storeKey) return registerInterval(fn, ms);
+            if (window[storeKey] != null) unregisterInterval(window[storeKey]);
+            window[storeKey] = registerInterval(fn, ms);
+            return window[storeKey];
+        }
         window.registerInterval = registerInterval;
         window.unregisterInterval = unregisterInterval;
+        window.registerSingletonInterval = registerSingletonInterval;
 
         // 初始化玩家数据
     let player = {
@@ -81,6 +89,9 @@
     xutong: 0,
     shitone: 0,
     weitone: 0,
+    yongtone: 0,
+    wujitone: 0,
+    daotone: 0,
     reincarnationCoin: 0,
     reincarnationCount: 0,
     equipment: [],
@@ -345,6 +356,12 @@ landlord: {
                 fieldTiers: Array(50).fill(0),
                 skyVineLevel: 0,
                 skyVineProgress: 0,
+                geneTrees: {
+                    '彩光': { level: 0, progress: 0 },
+                    '炫彩': { level: 0, progress: 0 },
+                    '琉璃': { level: 0, progress: 0 },
+                    '琥珀': { level: 0, progress: 0 }
+                },
                 bars: { silver: 0, gold: 0, diamond: 0, flow: 0 },
                 seedStorage: {},
                 fruitStorage: [],
@@ -748,227 +765,26 @@ gems: {
   seed_herb5: 0
     },
 timeSecretRealm: {
-    currency: 0, // 秘境币
-    bestFloor: 0, // 最佳层数
-    clearCount: 0, // 总通关次数（显示用）
-    clearCountByDifficulty: { easy: 0, normal: 0, hard: 0, nightmare: 0, hell: 0 }, // 各难度通关次数，用于按描述解锁下一难度
-    unlockedItems: [], // 已解锁商店物品
+    currency: 0,
+    bestFloor: 0,
+    clearCount: 0,
+    totalRuns: 0,
+    clearCountByDifficulty: { easy: 0, normal: 0, hard: 0, nightmare: 0, hell: 0 },
+    difficulty: { current: 'easy', unlocked: ['easy'] },
+    codex: { rooms: {}, relics: {}, elites: 0, gambles: 0 },
+    permanentBonuses: { baseTime: 0, startingBuffs: 0, eternalAttackBonus: 0, eternalHealthBonus: 0 },
     currentRun: {
-        isActive: false, // 是否正在进行冒险
-        currentFloor: 1, // 当前层数
-        timeLeft: 300, // 剩余时间（秒）
-        tempBuffs: [], // 临时强化
-        currentRoom: null, // 当前房间
-        exploredRooms: 0, // 已探索房间数
-        currencyEarned: 0, // 本次冒险获得的秘境币
-        playerHealth: 0, // 玩家生命值（临时）
-        playerAttack: 0, // 玩家攻击力（临时）
-    },
-   difficulty: {
-   levels: {
-        easy: { 
-            name: '简单', 
-            multiplier: 0.8, 
-            rewardMultiplier: 0.7, 
-            description: '适合新手玩家', 
-            unlockCondition: '无',
-            clearFloor: 10  // 通关层数要求
-        },
-        normal: { 
-            name: '普通', 
-            multiplier: 1.0, 
-            rewardMultiplier: 1.0, 
-            description: '标准难度', 
-            unlockCondition: '通关简单难度3次',
-            clearFloor: 15
-        },
-        hard: { 
-            name: '困难', 
-            multiplier: 1.5, 
-            rewardMultiplier: 1.5, 
-            description: '更具挑战性', 
-            unlockCondition: '通关普通难度5次',
-            clearFloor: 20
-        },
-        nightmare: { 
-            name: '噩梦', 
-            multiplier: 2.0, 
-            rewardMultiplier: 2.5, 
-            description: '极限挑战', 
-            unlockCondition: '通关困难难度10次',
-            clearFloor: 25
-        },
-        hell: { 
-            name: '地狱', 
-            multiplier: 3.0, 
-            rewardMultiplier: 4.0, 
-            description: '终极考验', 
-            unlockCondition: '通关噩梦难度20次',
-            clearFloor: 30
-        }
-    },
-    current: 'easy',
-    unlocked: ['easy']
-},
-    roomTypes: {
-        battle: { weight: 40, name: '战斗房间' },
-        event: { weight: 25, name: '事件房间' },
-        treasure: { weight: 20, name: '宝箱房间' },
-        rest: { weight: 10, name: '休息房间' },
-        shop: { weight: 5, name: '商店房间' }
-    },  
-    tempBuffs: {
-              attack: { 
-        name: '攻击强化', 
-        description: '攻击力提升50%，探索时间+30秒', 
-        effect: 'attack', 
-        value: 0.5, 
-        duration: 0,
-        timeBonus: 30  // 新增：增加20秒探索时间
-    },
-    health: { 
-        name: '生命强化', 
-        description: '生命值提升50%，探索时间+60秒', 
-        effect: 'health', 
-        value: 0.5, 
-        duration: 0,
-        timeBonus: 60  // 新增：增加40秒探索时间
-    },
-    critRate: { 
-        name: '暴击强化', 
-        description: '暴击率提升10%，探索时间+90秒', 
-        effect: 'critRate', 
-        value: 0.1, 
-        duration: 0,
-        timeBonus: 90  // 新增：增加60秒探索时间
-    },
-    critDamage: { 
-        name: '爆伤强化', 
-        description: '爆伤提升50%，探索时间+120秒', 
-        effect: 'critDamage', 
-        value: 0.5, 
-        duration: 0,
-        timeBonus: 120  // 新增：增加80秒探索时间
-    },
-    speed: { 
-        name: '速度强化', 
-        description: '探索速度提升，探索时间+150秒', 
-        effect: 'speed', 
-        value: 10, 
-        duration: 0,
-        timeBonus: 150  // 新增：增加100秒探索时间
-    },
-                luck: { name: '幸运强化', description: '获得双倍秘境币', effect: 'luck', value: 1, duration: 0  }
-    },
-    shopItems: {
-        permanentAttack: { 
-            name: '永恒攻击符文', 
-            description: '临时提升现有攻击力50%可以叠加（转生失效）', 
-            cost: 100000, 
-            type: 'permanent',
-            effect: 'attack'
-        },
-        permanentHealth: { 
-            name: '永恒生命符文', 
-            description: '临时提升现有生命值50%可以叠加（转生失效）', 
-            cost: 100000, 
-            type: 'permanent',
-            effect: 'health'
-        },
-        timeExtension: { 
-        name: '时间沙漏', 
-        description: '永久增加探索时间60秒（限购50个）', 
-        cost: 500000, 
-        type: 'permanent',
-        effect: 'time',
-        maxPurchase: 50, // 限购50个
-        purchased: 0, // 已购买数量
-        permanentEffect: true // 永久效果
-    },
-    startingBuff: { 
-        name: '起始祝福', 
-        description: '每次冒险开始时永久获得1个随机增益效果（限购2个）', 
-        cost: 800000, 
-        type: 'permanent',
-        effect: 'startingBuff',
-        maxPurchase: 2, // 限购2个
-        purchased: 0, // 已购买数量
-        permanentEffect: true // 永久效果
-    },
-       trapSkillBook1: {
-    name: '侦查技能书·初级',
-    description: '提升陷阱侦查成功率到60%',
-    cost: 500000,
-    type: 'permanent',
-    effect: 'detection_advanced'
-},
- trapSkillBook2: {
-    name: '侦查技能书·高级',
-    description: '提升陷阱侦查成功率到80%',
-    cost: 800000,
-    type: 'permanent',
-    effect: 'detection_expert'
-},
- trapSkillBook3: {
-    name: '解除技能书·初级',
-    description: '提升陷阱解除成功率到70%',
-    cost: 500000,
-    type: 'permanent',
-    effect: 'disarm_advanced'
-},
- trapSkillBook4: {
-    name: '解除技能书·高级',
-    description: '提升陷阱解除成功率到85%',
-    cost: 800000,
-    type: 'permanent',
-    effect: 'disarm_expert'
-},
- trapSense: {
-    name: '陷阱感知药水',
-    description: '下次冒险陷阱侦查成功率提升30%',
-    cost: 10000,
-    type: 'permanent',
-    effect: 'detection_boost'
-},
-        rareMaterial: { 
-            name: '秘境结晶', 
-            description: '神器碎片1000个', 
-            cost: 100000, 
-            type: 'material',
-            effect: 'material'
-        }
-    },
-traps: {
-    // 陷阱类型配置
-    types: {
-        poison: { weight: 20, name: '毒液陷阱', damageType: 'percentage', damage: 0.15, duration: 3 },
-        spike: { weight: 15, name: '尖刺陷阱', damageType: 'fixed', damage: 1000, duration: 1 },
-        curse: { weight: 10, name: '诅咒陷阱', damageType: 'debuff', effect: 'attack', value: -0.3, duration: 5 },
-        slow: { weight: 12, name: '迟缓陷阱', damageType: 'time', damage: 30, duration: 0 },
-        confusion: { weight: 8, name: '混乱陷阱', damageType: 'random', damage: 0.2, duration: 2 },
-        disarm: { weight: 5, name: '缴械陷阱', damageType: 'debuff', effect: 'critRate', value: -0.5, duration: 4 }
-    },
-    
-    // 陷阱检测技能
-    detectionSkills: {
-        basic: { name: '基础侦查', successRate: 0.3, cost: 5 },
-        advanced: { name: '高级侦查', successRate: 0.6, cost: 15 },
-        expert: { name: '专家侦查', successRate: 0.8, cost: 25 },
-        master: { name: '大师侦查', successRate: 0.95, cost: 40 }
-    },
-    // 陷阱解除技能
-    disarmSkills: {
-        basic: { name: '基础解除', successRate: 0.4, cost: 10 },
-        advanced: { name: '高级解除', successRate: 0.7, cost: 20 },
-        expert: { name: '专家解除', successRate: 0.85, cost: 35 },
-        master: { name: '大师解除', successRate: 1.0, cost: 50 }
-    },
-    // 玩家掌握的陷阱技能
-    playerSkills: {
-        detection: 'basic',
-        disarm: 'basic'
+        isActive: false,
+        currentFloor: 1,
+        timeLeft: 0,
+        tempBuffs: [],
+        relics: [],
+        currentRoom: null,
+        exploredRooms: 0,
+        currencyEarned: 0,
+        playerHealth: 0,
+        playerAttack: 0
     }
-}
 },
   nightClub: {
     level: 1,
@@ -1020,7 +836,10 @@ traps: {
               yuyu5: { level: 0, cost: 1, multiplier: 17714.70 },
               yuyu6: { level: 0, cost: 1, multiplier: 53144.10 },
          yuyu7: { level: 0, cost: 1, multiplier: 159432.30 },
-              yuyu8: { level: 0, cost: 1, multiplier: 478296.50 }   
+              yuyu8: { level: 0, cost: 1, multiplier: 478296.50 },
+              yuyu9: { level: 0, cost: 1, multiplier: 1434890.70 },
+              yuyu10: { level: 0, cost: 1, multiplier: 4304672.10 },
+              yuyu11: { level: 0, cost: 1, multiplier: 12914016.30 }
     },
     dungeonEquipment: [],
      techniques: {}, 
@@ -1093,6 +912,15 @@ traps: {
     "first_yeyu22": false,
     "first_yeyu23": false,
     "first_yeyu24": false,
+    "first_yeyu25": false,
+    "first_yeyu26": false,
+    "first_yeyu27": false,
+    "first_yeyu28": false,
+    "first_yeyu29": false,
+    "first_yeyu30": false,
+    "first_yeyu31": false,
+    "first_yeyu32": false,
+    "first_yeyu33": false,
     "common_chest_100": false,
     "common_chest_10000": false,
     "common_chest_1000000": false,
@@ -1168,6 +996,21 @@ traps: {
     "yeyu8_chest_1000000": false,
     "yeyu8_chest_10000000": false,
     "yeyu8_chest_100000000": false,
+    "yeyu9_chest_100": false,
+    "yeyu9_chest_10000": false,
+    "yeyu9_chest_1000000": false,
+    "yeyu9_chest_10000000": false,
+    "yeyu9_chest_100000000": false,
+    "yeyu10_chest_100": false,
+    "yeyu10_chest_10000": false,
+    "yeyu10_chest_1000000": false,
+    "yeyu10_chest_10000000": false,
+    "yeyu10_chest_100000000": false,
+    "yeyu11_chest_100": false,
+    "yeyu11_chest_10000": false,
+    "yeyu11_chest_1000000": false,
+    "yeyu11_chest_10000000": false,
+    "yeyu11_chest_100000000": false,
     "max_stage_10": false,
     "max_stage_30": false,
     "max_stage_60": false,
@@ -1229,6 +1072,15 @@ traps: {
     "yuyu8_10": false,
     "yuyu8_50": false,
     "yuyu8_100": false,
+    "yuyu9_10": false,
+    "yuyu9_50": false,
+    "yuyu9_100": false,
+    "yuyu10_10": false,
+    "yuyu10_50": false,
+    "yuyu10_100": false,
+    "yuyu11_10": false,
+    "yuyu11_50": false,
+    "yuyu11_100": false,
 
     // 新增魂环成就状态
     "year1_10": false,
@@ -1407,6 +1259,86 @@ traps: {
     "year37_100": false,
     "year37_1000": false,
     "year37_10000": false,
+    "year38_10": false,
+    "year38_100": false,
+    "year38_1000": false,
+    "year38_10000": false,
+    "year39_10": false,
+    "year39_100": false,
+    "year39_1000": false,
+    "year39_10000": false,
+    "year40_10": false,
+    "year40_100": false,
+    "year40_1000": false,
+    "year40_10000": false,
+    "year41_10": false,
+    "year41_100": false,
+    "year41_1000": false,
+    "year41_10000": false,
+    "year42_10": false,
+    "year42_100": false,
+    "year42_1000": false,
+    "year42_10000": false,
+    "year43_10": false,
+    "year43_100": false,
+    "year43_1000": false,
+    "year43_10000": false,
+    "year44_10": false,
+    "year44_100": false,
+    "year44_1000": false,
+    "year44_10000": false,
+    "year45_10": false,
+    "year45_100": false,
+    "year45_1000": false,
+    "year45_10000": false,
+    "year46_10": false,
+    "year46_100": false,
+    "year46_1000": false,
+    "year46_10000": false,
+    "year47_10": false,
+    "year47_100": false,
+    "year47_1000": false,
+    "year47_10000": false,
+    "year48_10": false,
+    "year48_100": false,
+    "year48_1000": false,
+    "year48_10000": false,
+    "year49_10": false,
+    "year49_100": false,
+    "year49_1000": false,
+    "year49_10000": false,
+    "year50_10": false,
+    "year50_100": false,
+    "year50_1000": false,
+    "year50_10000": false,
+    "year51_10": false,
+    "year51_100": false,
+    "year51_1000": false,
+    "year51_10000": false,
+    "year52_10": false,
+    "year52_100": false,
+    "year52_1000": false,
+    "year52_10000": false,
+    "year53_10": false,
+    "year53_100": false,
+    "year53_1000": false,
+    "year53_10000": false,
+    "year54_10": false,
+    "year54_100": false,
+    "year54_1000": false,
+    "year54_10000": false,
+    "year55_10": false,
+    "year55_100": false,
+    "year55_1000": false,
+    "year55_10000": false,
+    "year56_10": false,
+    "year56_100": false,
+    "year56_1000": false,
+    "year56_10000": false,
+    "year57_10": false,
+    "year57_100": false,
+    "year57_1000": false,
+    "year57_10000": false,
     "world_boss_1st": false,
     "world_boss_top5": false,
     "world_boss_top10": false,
@@ -1418,7 +1350,7 @@ traps: {
       },
             actionLogs: [], 
             goldLogs: [],
-            autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], 
+            autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], 
             autoBuySpeedBoost: false,
             onlineBoostEnabled: false,
             autoBuyMaterialChest: false, 
@@ -1443,7 +1375,9 @@ traps: {
                 mingtone: false,
                 xutong: false,
                 shitone: false,
-                weitone: false
+                weitone: false,
+                yongtone: false,
+                wujitone: false
             },
             clickTimestamps: [], 
             chestCounts: { 
@@ -1456,7 +1390,8 @@ traps: {
             reincarnationStats: { 
                 gpsBonus: { level: 0, cost: 1 },
                 equipmentLevelBonus: { level: 0, cost: 1 },
-                clickLimitBonus: { level: 0, cost: 1 }
+                clickLimitBonus: { level: 0, cost: 1 },
+                reincarnationCoinBonus: { level: 0, cost: 1 }
             },
             materialChestCost: 1,
             techniqueChestCost: 1,
@@ -1562,7 +1497,16 @@ traps: {
     "yeyu21": { gpsMultiplier: 5.10, description: "获得时空装备，GPS +510%" },    
     "yeyu22": { gpsMultiplier: 5.20, description: "获得未来装备，GPS +520%" },
     "yeyu23": { gpsMultiplier: 5.30, description: "获得从前装备，GPS +530%" },
-    "yeyu24": { gpsMultiplier: 5.40, description: "获得星澜装备，GPS +540%" },    
+    "yeyu24": { gpsMultiplier: 5.40, description: "获得星澜装备，GPS +540%" },
+    "yeyu25": { gpsMultiplier: 5.50, description: "获得逆旅装备，GPS +550%" },
+    "yeyu26": { gpsMultiplier: 5.60, description: "获得终章装备，GPS +560%" },
+    "yeyu27": { gpsMultiplier: 5.70, description: "获得轮回装备，GPS +570%" },
+    "yeyu28": { gpsMultiplier: 5.80, description: "获得恒宇装备，GPS +580%" },
+    "yeyu29": { gpsMultiplier: 5.90, description: "获得无垠装备，GPS +590%" },
+    "yeyu30": { gpsMultiplier: 6.00, description: "获得寂灭装备，GPS +600%" },
+    "yeyu31": { gpsMultiplier: 6.10, description: "获得大道装备，GPS +610%" },
+    "yeyu32": { gpsMultiplier: 6.20, description: "获得本源装备，GPS +620%" },
+    "yeyu33": { gpsMultiplier: 6.30, description: "获得至高装备，GPS +630%" },
     // 新增成就奖励
     "common_chest_100": { gpsMultiplier: 0.10, description: "购买普通宝箱总数达到100个，GPS +10%" },
     "common_chest_10000": { gpsMultiplier: 0.20, description: "购买普通宝箱总数达到1万个，GPS +20%" },
@@ -1639,6 +1583,21 @@ traps: {
     "yeyu8_chest_1000000": { gpsMultiplier: 3.00, description: "购买太虚宝箱总数达到100万个，GPS +300%" },
     "yeyu8_chest_10000000": { gpsMultiplier: 3.90, description: "购买太虚宝箱总数达到1000万个，GPS +390%" },
     "yeyu8_chest_100000000": { gpsMultiplier: 5.90, description: "购买太虚宝箱总数达到1亿个，GPS +590%" },
+    "yeyu9_chest_100": { gpsMultiplier: 1.60, description: "购买永恒宝箱总数达到100个，GPS +160%" },
+    "yeyu9_chest_10000": { gpsMultiplier: 2.30, description: "购买永恒宝箱总数达到1万个，GPS +230%" },
+    "yeyu9_chest_1000000": { gpsMultiplier: 3.10, description: "购买永恒宝箱总数达到100万个，GPS +310%" },
+    "yeyu9_chest_10000000": { gpsMultiplier: 4.00, description: "购买永恒宝箱总数达到1000万个，GPS +400%" },
+    "yeyu9_chest_100000000": { gpsMultiplier: 6.00, description: "购买永恒宝箱总数达到1亿个，GPS +600%" },
+    "yeyu10_chest_100": { gpsMultiplier: 1.70, description: "购买无极宝箱总数达到100个，GPS +170%" },
+    "yeyu10_chest_10000": { gpsMultiplier: 2.40, description: "购买无极宝箱总数达到1万个，GPS +240%" },
+    "yeyu10_chest_1000000": { gpsMultiplier: 3.20, description: "购买无极宝箱总数达到100万个，GPS +320%" },
+    "yeyu10_chest_10000000": { gpsMultiplier: 4.10, description: "购买无极宝箱总数达到1000万个，GPS +410%" },
+    "yeyu10_chest_100000000": { gpsMultiplier: 6.10, description: "购买无极宝箱总数达到1亿个，GPS +610%" },
+    "yeyu11_chest_100": { gpsMultiplier: 1.80, description: "购买大道宝箱总数达到100个，GPS +180%" },
+    "yeyu11_chest_10000": { gpsMultiplier: 2.50, description: "购买大道宝箱总数达到1万个，GPS +250%" },
+    "yeyu11_chest_1000000": { gpsMultiplier: 3.30, description: "购买大道宝箱总数达到100万个，GPS +330%" },
+    "yeyu11_chest_10000000": { gpsMultiplier: 4.20, description: "购买大道宝箱总数达到1000万个，GPS +420%" },
+    "yeyu11_chest_100000000": { gpsMultiplier: 6.20, description: "购买大道宝箱总数达到1亿个，GPS +620%" },
     "max_stage_10": { gpsMultiplier: 0.20, description: "达到最大关卡10，GPS +20%" },
     "max_stage_30": { gpsMultiplier: 0.50, description: "达到最大关卡30，GPS +50%" },
     "max_stage_60": { gpsMultiplier: 0.80, description: "达到最大关卡60，GPS +80%" },
@@ -1700,6 +1659,15 @@ traps: {
     "yuyu8_10": { gpsMultiplier: 3.10, description: "永劫蚩尤达到10级，GPS +310%" },
     "yuyu8_50": { gpsMultiplier: 6.50, description: "永劫蚩尤达到50级，GPS +650%" },
     "yuyu8_100": { gpsMultiplier: 7.50, description: "永劫蚩尤达到100级，GPS +750%" },
+    "yuyu9_10": { gpsMultiplier: 3.40, description: "天罚刑天达到10级，GPS +340%" },
+    "yuyu9_50": { gpsMultiplier: 7.00, description: "天罚刑天达到50级，GPS +700%" },
+    "yuyu9_100": { gpsMultiplier: 8.00, description: "天罚刑天达到100级，GPS +800%" },
+    "yuyu10_10": { gpsMultiplier: 3.70, description: "浑沌帝江达到10级，GPS +370%" },
+    "yuyu10_50": { gpsMultiplier: 7.50, description: "浑沌帝江达到50级，GPS +750%" },
+    "yuyu10_100": { gpsMultiplier: 8.50, description: "浑沌帝江达到100级，GPS +850%" },
+    "yuyu11_10": { gpsMultiplier: 4.00, description: "无极烛阴达到10级，GPS +400%" },
+    "yuyu11_50": { gpsMultiplier: 8.00, description: "无极烛阴达到50级，GPS +800%" },
+    "yuyu11_100": { gpsMultiplier: 9.00, description: "无极烛阴达到100级，GPS +900%" },
 
     // 新增魂环成就
     "year1_10": { gpsMultiplier: 0.20, description: "一年魂环达到10级，GPS +20%" },
@@ -1878,6 +1846,86 @@ traps: {
     "year37_100": { gpsMultiplier: 4.80, description: "闫闫·黑丝亿年魂环达到100级，GPS +480%" },
     "year37_1000": { gpsMultiplier: 5.20, description: "闫闫·黑丝亿年魂环达到1000级，GPS +520%" },
     "year37_10000": { gpsMultiplier: 7.20, description: "闫闫·黑丝亿年魂环达到10000级，GPS +720%" },
+    "year38_10": { gpsMultiplier: 4.60, description: "霜月·清辉亿年魂环达到10级，GPS +460%" },
+    "year38_100": { gpsMultiplier: 4.90, description: "霜月·清辉亿年魂环达到100级，GPS +490%" },
+    "year38_1000": { gpsMultiplier: 5.30, description: "霜月·清辉亿年魂环达到1000级，GPS +530%" },
+    "year38_10000": { gpsMultiplier: 7.30, description: "霜月·清辉亿年魂环达到10000级，GPS +730%" },
+    "year39_10": { gpsMultiplier: 4.70, description: "紫电·雷鸣亿年魂环达到10级，GPS +470%" },
+    "year39_100": { gpsMultiplier: 5.00, description: "紫电·雷鸣亿年魂环达到100级，GPS +500%" },
+    "year39_1000": { gpsMultiplier: 5.40, description: "紫电·雷鸣亿年魂环达到1000级，GPS +540%" },
+    "year39_10000": { gpsMultiplier: 7.40, description: "紫电·雷鸣亿年魂环达到10000级，GPS +740%" },
+    "year40_10": { gpsMultiplier: 4.80, description: "金乌·耀日亿年魂环达到10级，GPS +480%" },
+    "year40_100": { gpsMultiplier: 5.10, description: "金乌·耀日亿年魂环达到100级，GPS +510%" },
+    "year40_1000": { gpsMultiplier: 5.50, description: "金乌·耀日亿年魂环达到1000级，GPS +550%" },
+    "year40_10000": { gpsMultiplier: 7.50, description: "金乌·耀日亿年魂环达到10000级，GPS +750%" },
+    "year41_10": { gpsMultiplier: 4.90, description: "玉衡·星枢亿年魂环达到10级，GPS +490%" },
+    "year41_100": { gpsMultiplier: 5.20, description: "玉衡·星枢亿年魂环达到100级，GPS +520%" },
+    "year41_1000": { gpsMultiplier: 5.60, description: "玉衡·星枢亿年魂环达到1000级，GPS +560%" },
+    "year41_10000": { gpsMultiplier: 7.60, description: "玉衡·星枢亿年魂环达到10000级，GPS +760%" },
+    "year42_10": { gpsMultiplier: 5.00, description: "青莲·化劫亿年魂环达到10级，GPS +500%" },
+    "year42_100": { gpsMultiplier: 5.30, description: "青莲·化劫亿年魂环达到100级，GPS +530%" },
+    "year42_1000": { gpsMultiplier: 5.70, description: "青莲·化劫亿年魂环达到1000级，GPS +570%" },
+    "year42_10000": { gpsMultiplier: 7.70, description: "青莲·化劫亿年魂环达到10000级，GPS +770%" },
+    "year43_10": { gpsMultiplier: 5.10, description: "朱殷·血魄亿年魂环达到10级，GPS +510%" },
+    "year43_100": { gpsMultiplier: 5.40, description: "朱殷·血魄亿年魂环达到100级，GPS +540%" },
+    "year43_1000": { gpsMultiplier: 5.80, description: "朱殷·血魄亿年魂环达到1000级，GPS +580%" },
+    "year43_10000": { gpsMultiplier: 7.80, description: "朱殷·血魄亿年魂环达到10000级，GPS +780%" },
+    "year44_10": { gpsMultiplier: 5.20, description: "玄龟·镇渊亿年魂环达到10级，GPS +520%" },
+    "year44_100": { gpsMultiplier: 5.50, description: "玄龟·镇渊亿年魂环达到100级，GPS +550%" },
+    "year44_1000": { gpsMultiplier: 5.90, description: "玄龟·镇渊亿年魂环达到1000级，GPS +590%" },
+    "year44_10000": { gpsMultiplier: 7.90, description: "玄龟·镇渊亿年魂环达到10000级，GPS +790%" },
+    "year45_10": { gpsMultiplier: 5.30, description: "白虎·裂空亿年魂环达到10级，GPS +530%" },
+    "year45_100": { gpsMultiplier: 5.60, description: "白虎·裂空亿年魂环达到100级，GPS +560%" },
+    "year45_1000": { gpsMultiplier: 6.00, description: "白虎·裂空亿年魂环达到1000级，GPS +600%" },
+    "year45_10000": { gpsMultiplier: 8.00, description: "白虎·裂空亿年魂环达到10000级，GPS +800%" },
+    "year46_10": { gpsMultiplier: 5.40, description: "青龙·御宇亿年魂环达到10级，GPS +540%" },
+    "year46_100": { gpsMultiplier: 5.70, description: "青龙·御宇亿年魂环达到100级，GPS +570%" },
+    "year46_1000": { gpsMultiplier: 6.10, description: "青龙·御宇亿年魂环达到1000级，GPS +610%" },
+    "year46_10000": { gpsMultiplier: 8.10, description: "青龙·御宇亿年魂环达到10000级，GPS +810%" },
+    "year47_10": { gpsMultiplier: 5.50, description: "朱雀·焚野亿年魂环达到10级，GPS +550%" },
+    "year47_100": { gpsMultiplier: 5.80, description: "朱雀·焚野亿年魂环达到100级，GPS +580%" },
+    "year47_1000": { gpsMultiplier: 6.20, description: "朱雀·焚野亿年魂环达到1000级，GPS +620%" },
+    "year47_10000": { gpsMultiplier: 8.20, description: "朱雀·焚野亿年魂环达到10000级，GPS +820%" },
+    "year48_10": { gpsMultiplier: 5.60, description: "玄武·镇狱亿年魂环达到10级，GPS +560%" },
+    "year48_100": { gpsMultiplier: 5.90, description: "玄武·镇狱亿年魂环达到100级，GPS +590%" },
+    "year48_1000": { gpsMultiplier: 6.30, description: "玄武·镇狱亿年魂环达到1000级，GPS +630%" },
+    "year48_10000": { gpsMultiplier: 8.30, description: "玄武·镇狱亿年魂环达到10000级，GPS +830%" },
+    "year49_10": { gpsMultiplier: 5.70, description: "麒麟·显圣亿年魂环达到10级，GPS +570%" },
+    "year49_100": { gpsMultiplier: 6.00, description: "麒麟·显圣亿年魂环达到100级，GPS +600%" },
+    "year49_1000": { gpsMultiplier: 6.40, description: "麒麟·显圣亿年魂环达到1000级，GPS +640%" },
+    "year49_10000": { gpsMultiplier: 8.40, description: "麒麟·显圣亿年魂环达到10000级，GPS +840%" },
+    "year50_10": { gpsMultiplier: 5.80, description: "凤凰·涅槃亿年魂环达到10级，GPS +580%" },
+    "year50_100": { gpsMultiplier: 6.10, description: "凤凰·涅槃亿年魂环达到100级，GPS +610%" },
+    "year50_1000": { gpsMultiplier: 6.50, description: "凤凰·涅槃亿年魂环达到1000级，GPS +650%" },
+    "year50_10000": { gpsMultiplier: 8.50, description: "凤凰·涅槃亿年魂环达到10000级，GPS +850%" },
+    "year51_10": { gpsMultiplier: 5.90, description: "鲲鹏·扶摇亿年魂环达到10级，GPS +590%" },
+    "year51_100": { gpsMultiplier: 6.20, description: "鲲鹏·扶摇亿年魂环达到100级，GPS +620%" },
+    "year51_1000": { gpsMultiplier: 6.60, description: "鲲鹏·扶摇亿年魂环达到1000级，GPS +660%" },
+    "year51_10000": { gpsMultiplier: 8.60, description: "鲲鹏·扶摇亿年魂环达到10000级，GPS +860%" },
+    "year52_10": { gpsMultiplier: 6.00, description: "应龙·行雨亿年魂环达到10级，GPS +600%" },
+    "year52_100": { gpsMultiplier: 6.30, description: "应龙·行雨亿年魂环达到100级，GPS +630%" },
+    "year52_1000": { gpsMultiplier: 6.70, description: "应龙·行雨亿年魂环达到1000级，GPS +670%" },
+    "year52_10000": { gpsMultiplier: 8.70, description: "应龙·行雨亿年魂环达到10000级，GPS +870%" },
+    "year53_10": { gpsMultiplier: 6.10, description: "白泽·通幽亿年魂环达到10级，GPS +610%" },
+    "year53_100": { gpsMultiplier: 6.40, description: "白泽·通幽亿年魂环达到100级，GPS +640%" },
+    "year53_1000": { gpsMultiplier: 6.80, description: "白泽·通幽亿年魂环达到1000级，GPS +680%" },
+    "year53_10000": { gpsMultiplier: 8.80, description: "白泽·通幽亿年魂环达到10000级，GPS +880%" },
+    "year54_10": { gpsMultiplier: 6.20, description: "重明·照冥亿年魂环达到10级，GPS +620%" },
+    "year54_100": { gpsMultiplier: 6.50, description: "重明·照冥亿年魂环达到100级，GPS +650%" },
+    "year54_1000": { gpsMultiplier: 6.90, description: "重明·照冥亿年魂环达到1000级，GPS +690%" },
+    "year54_10000": { gpsMultiplier: 8.90, description: "重明·照冥亿年魂环达到10000级，GPS +890%" },
+    "year55_10": { gpsMultiplier: 6.30, description: "穷奇·吞恶亿年魂环达到10级，GPS +630%" },
+    "year55_100": { gpsMultiplier: 6.60, description: "穷奇·吞恶亿年魂环达到100级，GPS +660%" },
+    "year55_1000": { gpsMultiplier: 7.00, description: "穷奇·吞恶亿年魂环达到1000级，GPS +700%" },
+    "year55_10000": { gpsMultiplier: 9.00, description: "穷奇·吞恶亿年魂环达到10000级，GPS +900%" },
+    "year56_10": { gpsMultiplier: 6.40, description: "梼杌·破军亿年魂环达到10级，GPS +640%" },
+    "year56_100": { gpsMultiplier: 6.70, description: "梼杌·破军亿年魂环达到100级，GPS +670%" },
+    "year56_1000": { gpsMultiplier: 7.10, description: "梼杌·破军亿年魂环达到1000级，GPS +710%" },
+    "year56_10000": { gpsMultiplier: 9.10, description: "梼杌·破军亿年魂环达到10000级，GPS +910%" },
+    "year57_10": { gpsMultiplier: 6.50, description: "混沌·无名亿年魂环达到10级，GPS +650%" },
+    "year57_100": { gpsMultiplier: 6.80, description: "混沌·无名亿年魂环达到100级，GPS +680%" },
+    "year57_1000": { gpsMultiplier: 7.20, description: "混沌·无名亿年魂环达到1000级，GPS +720%" },
+    "year57_10000": { gpsMultiplier: 9.20, description: "混沌·无名亿年魂环达到10000级，GPS +920%" },
     "world_boss_1st": { gpsMultiplier: 10.0, description: "在世界BOSS中获得第1名，GPS +1000%"  },
     "world_boss_top5": { gpsMultiplier: 5.0, description: "在世界BOSS中获得第2-10名，GPS +500%"  },
     "world_boss_top10": { gpsMultiplier: 3.0, description: "在世界BOSS中获得第11-30名，GPS +300%"  },
@@ -2229,7 +2277,16 @@ const mysteryConfig = [
          yeyu21: { name: '时空', gps: 5e23, click: 5e23, prob: 0.0000001, growthRate: 12.50 },
          yeyu22: { name: '未来', gps: 1e25, click: 1e26, prob: 0.0000001, growthRate: 13.00 },
          yeyu23: { name: '从前', gps: 2e25, click: 2e26, prob: 0.0000001, growthRate: 13.50 },
-         yeyu24: { name: '星澜', gps: 5e25, click: 5e26, prob: 0.0000001, growthRate: 14.00 }
+         yeyu24: { name: '星澜', gps: 5e25, click: 5e26, prob: 0.0000001, growthRate: 14.00 },
+         yeyu25: { name: '逆旅', gps: 1e27, click: 1e28, prob: 0.0000001, growthRate: 14.50 },
+         yeyu26: { name: '终章', gps: 2e27, click: 2e28, prob: 0.0000001, growthRate: 15.00 },
+         yeyu27: { name: '轮回', gps: 5e27, click: 5e28, prob: 0.0000001, growthRate: 15.50 },
+         yeyu28: { name: '恒宇', gps: 1e29, click: 1e30, prob: 0.0000001, growthRate: 16.00 },
+         yeyu29: { name: '无垠', gps: 2e29, click: 2e30, prob: 0.0000001, growthRate: 16.50 },
+         yeyu30: { name: '寂灭', gps: 5e29, click: 5e30, prob: 0.0000001, growthRate: 17.00 },
+         yeyu31: { name: '大道', gps: 1e31, click: 1e32, prob: 0.0000001, growthRate: 17.50 },
+         yeyu32: { name: '本源', gps: 2e31, click: 2e32, prob: 0.0000001, growthRate: 18.00 },
+         yeyu33: { name: '至高', gps: 5e31, click: 5e32, prob: 0.0000001, growthRate: 18.50 }
         };
         // 副本装备配置
         const dungeonEquipmentTypes = {
@@ -2296,7 +2353,27 @@ const mysteryConfig = [
             ultimate47: { name: '神罚·雷霆杖▲▲▲▲▲▲', growthRange: [0.001, 5.60] },
             ultimate48: { name: '魔界·邪战戟▲▲▲▲▲▲▲', growthRange: [0.001, 5.70] },
             ultimate49: { name: '圣光·灭世剑▲▲▲▲▲▲▲▲', growthRange: [0.001, 5.80] },
-            ultimate50: { name: '宇宙·神王剑▲▲▲▲▲▲▲▲▲', growthRange: [0.001, 5.90] }      
+            ultimate50: { name: '宇宙·神王剑▲▲▲▲▲▲▲▲▲', growthRange: [0.001, 5.90] },
+            ultimate51: { name: '归墟·太初刃▽', growthRange: [0.001, 6.00] },
+            ultimate52: { name: '归墟·太初斧▼', growthRange: [0.001, 6.10] },
+            ultimate53: { name: '归墟·太初枪▼▼', growthRange: [0.001, 6.20] },
+            ultimate54: { name: '归墟·太初剑▼▼▼', growthRange: [0.001, 6.30] },
+            ultimate55: { name: '归墟·太初弓▼▼▼▼', growthRange: [0.001, 6.40] },
+            ultimate56: { name: '归墟·太初盾▼▼▼▼▼', growthRange: [0.001, 6.50] },
+            ultimate57: { name: '归墟·太初杖▼▼▼▼▼▼', growthRange: [0.001, 6.60] },
+            ultimate58: { name: '归墟·太初戟▼▼▼▼▼▼▼', growthRange: [0.001, 6.70] },
+            ultimate59: { name: '归墟·永恒刃▼▼▼▼▼▼▼▼', growthRange: [0.001, 6.80] },
+            ultimate60: { name: '归墟·永恒斧▼▼▼▼▼▼▼▼▼', growthRange: [0.001, 6.90] },
+            ultimate61: { name: '本源·至高刃★▽', growthRange: [0.001, 7.00] },
+            ultimate62: { name: '本源·至高斧★▼', growthRange: [0.001, 7.10] },
+            ultimate63: { name: '本源·至高枪★▼▼', growthRange: [0.001, 7.20] },
+            ultimate64: { name: '本源·至高剑★▼▼▼', growthRange: [0.001, 7.30] },
+            ultimate65: { name: '本源·至高弓★▼▼▼▼', growthRange: [0.001, 7.40] },
+            ultimate66: { name: '本源·至高盾★▼▼▼▼▼', growthRange: [0.001, 7.50] },
+            ultimate67: { name: '本源·至高杖★▼▼▼▼▼▼', growthRange: [0.001, 7.60] },
+            ultimate68: { name: '本源·至高戟★▼▼▼▼▼▼▼', growthRange: [0.001, 7.70] },
+            ultimate69: { name: '本源·大道刃★▼▼▼▼▼▼▼▼', growthRange: [0.001, 7.80] },
+            ultimate70: { name: '本源·大道斧★▼▼▼▼▼▼▼▼▼', growthRange: [0.001, 7.90] }
         };
 
         // 宝箱概率配置
@@ -2315,7 +2392,10 @@ const mysteryConfig = [
     12: [ { rarity: 'yeyu12', prob: 0.8 }, { rarity: 'yeyu13', prob: 0.14 }, { rarity: 'yeyu14', prob: 0.05 }, { rarity: 'yeyu15', prob: 0.01 } ],
     13: [ { rarity: 'yeyu15', prob: 0.8 }, { rarity: 'yeyu16', prob: 0.14 }, { rarity: 'yeyu17', prob: 0.05 }, { rarity: 'yeyu18', prob: 0.01 } ],
     14: [ { rarity: 'yeyu18', prob: 0.8 }, { rarity: 'yeyu19', prob: 0.14 }, { rarity: 'yeyu20', prob: 0.05 }, { rarity: 'yeyu21', prob: 0.01 } ],
-    15: [ { rarity: 'yeyu21', prob: 0.8 }, { rarity: 'yeyu22', prob: 0.14 }, { rarity: 'yeyu23', prob: 0.05 }, { rarity: 'yeyu24', prob: 0.01 } ]
+    15: [ { rarity: 'yeyu21', prob: 0.8 }, { rarity: 'yeyu22', prob: 0.14 }, { rarity: 'yeyu23', prob: 0.05 }, { rarity: 'yeyu24', prob: 0.01 } ],
+    16: [ { rarity: 'yeyu24', prob: 0.8 }, { rarity: 'yeyu25', prob: 0.14 }, { rarity: 'yeyu26', prob: 0.05 }, { rarity: 'yeyu27', prob: 0.01 } ],
+    17: [ { rarity: 'yeyu27', prob: 0.8 }, { rarity: 'yeyu28', prob: 0.14 }, { rarity: 'yeyu29', prob: 0.05 }, { rarity: 'yeyu30', prob: 0.01 } ],
+    18: [ { rarity: 'yeyu30', prob: 0.8 }, { rarity: 'yeyu31', prob: 0.14 }, { rarity: 'yeyu32', prob: 0.05 }, { rarity: 'yeyu33', prob: 0.01 } ]
 };
 
         // 宠物配置
@@ -2334,7 +2414,10 @@ const mysteryConfig = [
         yuyu5: { name: '玄渊白犼', currency: 'mingtone', multiplier: 17714.70 },
          yuyu6: { name: '灾祸蜚牛', currency: 'xutong', multiplier: 53144.10 }, 
          yuyu7: { name: '寂灭罗睺', currency: 'shitone', multiplier: 159432.30 }, 
-        yuyu8: { name: '永劫蚩尤', currency: 'weitone', multiplier: 478296.90 } 
+        yuyu8: { name: '永劫蚩尤', currency: 'weitone', multiplier: 478296.90 },
+        yuyu9: { name: '天罚刑天', currency: 'yongtone', multiplier: 1434890.70 },
+        yuyu10: { name: '浑沌帝江', currency: 'wujitone', multiplier: 4304672.10 },
+        yuyu11: { name: '无极烛阴', currency: 'daotone', multiplier: 12914016.30 }
      };
 
         // 魂环配置
@@ -2382,7 +2465,27 @@ const mysteryConfig = [
             year34: { name: '血狱·魔神亿年魂环', baseMult: 2.70, costBase: 1000 },  
             year35: { name: '赤霄·苍穹亿年魂环', baseMult: 2.80, costBase: 1000 },
             year36: { name: '炎凤·涅槃亿年魂环', baseMult: 2.90, costBase: 1000 },
-            year37: { name: '闫闫·黑丝亿年魂环', baseMult: 3.00, costBase: 1000 }
+            year37: { name: '闫闫·黑丝亿年魂环', baseMult: 3.00, costBase: 1000 },
+            year38: { name: '霜月·清辉亿年魂环', baseMult: 3.10, costBase: 1000 },
+            year39: { name: '紫电·雷鸣亿年魂环', baseMult: 3.20, costBase: 1000 },
+            year40: { name: '金乌·耀日亿年魂环', baseMult: 3.30, costBase: 1000 },
+            year41: { name: '玉衡·星枢亿年魂环', baseMult: 3.40, costBase: 1000 },
+            year42: { name: '青莲·化劫亿年魂环', baseMult: 3.50, costBase: 1000 },
+            year43: { name: '朱殷·血魄亿年魂环', baseMult: 3.60, costBase: 1000 },
+            year44: { name: '玄龟·镇渊亿年魂环', baseMult: 3.70, costBase: 1000 },
+            year45: { name: '白虎·裂空亿年魂环', baseMult: 3.80, costBase: 1000 },
+            year46: { name: '青龙·御宇亿年魂环', baseMult: 3.90, costBase: 1000 },
+            year47: { name: '朱雀·焚野亿年魂环', baseMult: 4.00, costBase: 1000 },
+            year48: { name: '玄武·镇狱亿年魂环', baseMult: 4.10, costBase: 1000 },
+            year49: { name: '麒麟·显圣亿年魂环', baseMult: 4.20, costBase: 1000 },
+            year50: { name: '凤凰·涅槃亿年魂环', baseMult: 4.30, costBase: 1000 },
+            year51: { name: '鲲鹏·扶摇亿年魂环', baseMult: 4.40, costBase: 1000 },
+            year52: { name: '应龙·行雨亿年魂环', baseMult: 4.50, costBase: 1000 },
+            year53: { name: '白泽·通幽亿年魂环', baseMult: 4.60, costBase: 1000 },
+            year54: { name: '重明·照冥亿年魂环', baseMult: 4.70, costBase: 1000 },
+            year55: { name: '穷奇·吞恶亿年魂环', baseMult: 4.80, costBase: 1000 },
+            year56: { name: '梼杌·破军亿年魂环', baseMult: 4.90, costBase: 1000 },
+            year57: { name: '混沌·无名亿年魂环', baseMult: 5.00, costBase: 1000 }
         };
            const TECHNIQUE_DISPLAY_ORDER = [
     // 生命类（防御型）
@@ -2483,7 +2586,27 @@ const mysteryConfig = [
     'ultimate47', 
     'ultimate48',   
     'ultimate49', 
-    'ultimate50'
+    'ultimate50',
+    'ultimate51',
+    'ultimate52',
+    'ultimate53',
+    'ultimate54',
+    'ultimate55',
+    'ultimate56',
+    'ultimate57',
+    'ultimate58',
+    'ultimate59',
+    'ultimate60',
+    'ultimate61',
+    'ultimate62',
+    'ultimate63',
+    'ultimate64',
+    'ultimate65',
+    'ultimate66',
+    'ultimate67',
+    'ultimate68',
+    'ultimate69',
+    'ultimate70'
 ];
 
 // 切换自动转生状态
@@ -2663,8 +2786,41 @@ function autoReincarnate() {
             case 'yeyu24':
                 totalReincarnationCoin += eq.level * 10000.0;
                 break;
+            case 'yeyu25':
+                totalReincarnationCoin += eq.level * 11000.0;
+                break;
+            case 'yeyu26':
+                totalReincarnationCoin += eq.level * 12000.0;
+                break;
+            case 'yeyu27':
+                totalReincarnationCoin += eq.level * 13000.0;
+                break;
+            case 'yeyu28':
+                totalReincarnationCoin += eq.level * 14000.0;
+                break;
+            case 'yeyu29':
+                totalReincarnationCoin += eq.level * 15000.0;
+                break;
+            case 'yeyu30':
+                totalReincarnationCoin += eq.level * 16000.0;
+                break;
+            case 'yeyu31':
+                totalReincarnationCoin += eq.level * 17000.0;
+                break;
+            case 'yeyu32':
+                totalReincarnationCoin += eq.level * 18000.0;
+                break;
+            case 'yeyu33':
+                totalReincarnationCoin += eq.level * 19000.0;
+                break;
         }
     });
+
+    // 转生收益：每级转生币总加成 +10%
+    const coinBonusLv = (player.reincarnationStats && player.reincarnationStats.reincarnationCoinBonus)
+        ? (Number(player.reincarnationStats.reincarnationCoinBonus.level) || 0)
+        : 0;
+    totalReincarnationCoin *= (1 + coinBonusLv * 0.1);
 
     // 重置装备等级
     player.equipment.forEach(eq => {
@@ -2688,10 +2844,18 @@ function autoReincarnate() {
     player.mingtone = 0;
     player.xutong = 0;
     player.shitone = 0;
-    player.weitone = 0;   
+    player.weitone = 0;
+    player.yongtone = 0;
+    player.wujitone = 0;
+    player.daotone = 0;   
  // 重置材料宝箱购买成本
             player.materialChestCost = 1;
             player.techniqueChestCost = 1;
+
+            if (typeof resetTsrEternalRuneBonuses === 'function') {
+                resetTsrEternalRuneBonuses();
+            }
+
     // 增加转生币
     player.reincarnationCoin += totalReincarnationCoin;
     player.reincarnationCount++;
@@ -2864,8 +3028,41 @@ function autoReincarnate() {
                      case 'yeyu24':
                         totalReincarnationCoin += eq.level * 10000.0;
                         break;
+                     case 'yeyu25':
+                        totalReincarnationCoin += eq.level * 11000.0;
+                        break;
+                     case 'yeyu26':
+                        totalReincarnationCoin += eq.level * 12000.0;
+                        break;
+                     case 'yeyu27':
+                        totalReincarnationCoin += eq.level * 13000.0;
+                        break;
+                     case 'yeyu28':
+                        totalReincarnationCoin += eq.level * 14000.0;
+                        break;
+                     case 'yeyu29':
+                        totalReincarnationCoin += eq.level * 15000.0;
+                        break;
+                     case 'yeyu30':
+                        totalReincarnationCoin += eq.level * 16000.0;
+                        break;
+                     case 'yeyu31':
+                        totalReincarnationCoin += eq.level * 17000.0;
+                        break;
+                     case 'yeyu32':
+                        totalReincarnationCoin += eq.level * 18000.0;
+                        break;
+                     case 'yeyu33':
+                        totalReincarnationCoin += eq.level * 19000.0;
+                        break;
                 }
             });
+
+            // 转生收益：每级转生币总加成 +10%
+            const coinBonusLv = (player.reincarnationStats && player.reincarnationStats.reincarnationCoinBonus)
+                ? (Number(player.reincarnationStats.reincarnationCoinBonus.level) || 0)
+                : 0;
+            totalReincarnationCoin *= (1 + coinBonusLv * 0.1);
 
             // 重置装备等级
             player.equipment.forEach(eq => {
@@ -2890,10 +3087,17 @@ function autoReincarnate() {
             player.xutong = 0;
             player.shitone = 0;
             player.weitone = 0;
+            player.yongtone = 0;
+            player.wujitone = 0;
+            player.daotone = 0;
 
             // 重置材料宝箱购买成本
             player.materialChestCost = 1;
             player.techniqueChestCost = 1;
+
+            if (typeof resetTsrEternalRuneBonuses === 'function') {
+                resetTsrEternalRuneBonuses();
+            }
 
             // 增加转生币
             player.reincarnationCoin += totalReincarnationCoin;
@@ -3860,21 +4064,33 @@ function setTechniqueMaxCost() {
             updateVipDisplay(); // 立即更新VIP显示
                updateAutoConvertDisplay();
             // 确保自动购买状态被正确加载
-            player.autoBuy = save.autoBuy || [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+            player.autoBuy = save.autoBuy || [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
             player.autoBuyMaterialChest = save.autoBuyMaterialChest || false;
            player.autoBuyTechniqueChest = save.autoBuyTechniqueChest || false;
-            // 强制覆盖宠物的 multiplier，同时保留等级和其他数据
-            Object.keys(player.pets).forEach(petKey => {
-                if (petConfig[petKey]) {
+            // 强制覆盖宠物的 multiplier，同时保留等级和其他数据；补全新宠物/货币/自动购买槽
+            if (!player.pets || typeof player.pets !== 'object') player.pets = {};
+            Object.keys(petConfig).forEach(petKey => {
+                if (!player.pets[petKey]) {
+                    player.pets[petKey] = { level: 0, cost: 1, multiplier: petConfig[petKey].multiplier };
+                } else {
                     player.pets[petKey].multiplier = petConfig[petKey].multiplier;
                 }
+            });
+            ['yongtone', 'wujitone', 'daotone'].forEach((c) => {
+                if (player[c] == null) player[c] = 0;
+            });
+            if (!Array.isArray(player.autoBuy)) player.autoBuy = [];
+            while (player.autoBuy.length < 18) player.autoBuy.push(false);
+            if (!player.chestCounts || typeof player.chestCounts !== 'object') player.chestCounts = {};
+            ['yeyu9', 'yeyu10', 'yeyu11'].forEach((k) => {
+                if (player.chestCounts[k] == null) player.chestCounts[k] = 0;
             });
        
             // 初始化自动购买按钮状态
             player.autoBuy.forEach((enabled, index) => {
                 const btn = document.getElementById(`autoChest${index + 1}`);
                 if (btn) {
-                    btn.textContent = `${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚', '虚空', '时空', '未来'][index]}宝箱自动购买：${enabled ? '开启' : '关闭'}`;
+                    btn.textContent = `${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚', '虚空', '时空', '未来', '永恒', '无极', '大道'][index]}宝箱自动购买：${enabled ? '开启' : '关闭'}`;
                 }
             });
    
@@ -3906,8 +4122,11 @@ if (speedBoostBtn) {
     if (autoReincEl) autoReincEl.textContent = player.autoReincarnation ? '开启' : '关闭';
       
             // 确保日志不超过 20 条
+            if (!Array.isArray(player.actionLogs)) player.actionLogs = [];
+            if (!Array.isArray(player.lotteryResults)) player.lotteryResults = [];
             player.actionLogs = player.actionLogs.slice(0, 20);
-            player.lotteryResults = player.lotteryResults.slice(0, 5);
+            player.lotteryResults = player.lotteryResults.slice(0, 20);
+            if (typeof updateLotteryResultsDisplay === 'function') updateLotteryResultsDisplay();
 
          
           // 分批初始化，避免阻塞主线程
@@ -4111,7 +4330,10 @@ if (speedBoostBtn) {
                 { currency: "mingtone", amount: 1 },
                 { currency: "xutong", amount: 1 },
                 { currency: "shitone", amount: 1 },
-                { currency: "weitone", amount: 1 }                
+                { currency: "weitone", amount: 1 },
+                { currency: "yongtone", amount: 1 },
+                { currency: "wujitone", amount: 1 },
+                { currency: "daotone", amount: 1 }
             ][index];
 
             // 计算最大可购买数量：分钟数 × 每分钟500个
@@ -4125,7 +4347,7 @@ if (speedBoostBtn) {
                 deductCurrencyBatch(costConfig.currency, costConfig.amount, actualBuy);
                 
                 // 更新宝箱计数
-                const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse','yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6', 'yeyu7', 'yeyu8'][index];
+                const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse','yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6', 'yeyu7', 'yeyu8', 'yeyu9', 'yeyu10', 'yeyu11'][index];
                 player.chestCounts[chestType] += actualBuy;
                 
                 // 批量处理装备获取（这里简化处理，实际可根据需要调整概率计算）
@@ -4260,12 +4482,15 @@ function handleVipPowerGain() {
           yuyu5: { level: 0, cost: 1, multiplier: 17714.70 },
           yuyu6: { level: 0, cost: 1, multiplier: 53144.10 },
          yuyu7: { level: 0, cost: 1, multiplier: 159432.30 },
-          yuyu8: { level: 0, cost: 1, multiplier: 478296.90 }
+          yuyu8: { level: 0, cost: 1, multiplier: 478296.90 },
+          yuyu9: { level: 0, cost: 1, multiplier: 1434890.70 },
+          yuyu10: { level: 0, cost: 1, multiplier: 4304672.10 },
+          yuyu11: { level: 0, cost: 1, multiplier: 12914016.30 }
         },
         dungeonEquipment: oldSave.dungeonEquipment || [],
         soulRings: oldSave.soulRings || [],
         achievements: oldSave.achievements || player.achievements,
-        autoBuy: oldSave.autoBuy || [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 新增宝箱自动购买状态
+        autoBuy: oldSave.autoBuy || [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 新增宝箱自动购买状态
         autoBuyMaterialChest: oldSave.autoBuyMaterialChest || false,
         autoBuyTechniqueChest: oldSave.autoBuyTechniqueChest || false,
        autoBuyTechniqueMaxCost: oldSave.autoBuyTechniqueMaxCost ||0.1,
@@ -4288,16 +4513,19 @@ function handleVipPowerGain() {
             mingtone: false,
             xutong: false,
             shitone: false,
-            weitone: false
+            weitone: false,
+            yongtone: false,
+            wujitone: false
         }, (oldSave && oldSave.autoConvertCurrency && typeof oldSave.autoConvertCurrency === 'object') ? oldSave.autoConvertCurrency : {}),
         clickTimestamps: oldSave.clickTimestamps || [],
-        chestCounts: oldSave.chestCounts || { common: 0, advanced: 0, rare: 0, epic: 0, legendary: 0, chaos: 0, apocalypse: 0, yeyu1: 0, yeyu2: 0, yeyu3: 0, yeyu4: 0, yeyu5: 0, yeyu6: 0, yeyu7: 0, yeyu8: 0 }, // 新增宝箱计数
+        chestCounts: oldSave.chestCounts || { common: 0, advanced: 0, rare: 0, epic: 0, legendary: 0, chaos: 0, apocalypse: 0, yeyu1: 0, yeyu2: 0, yeyu3: 0, yeyu4: 0, yeyu5: 0, yeyu6: 0, yeyu7: 0, yeyu8: 0, yeyu9: 0, yeyu10: 0, yeyu11: 0 }, // 新增宝箱计数
         reincarnationCoin: bigSciToStorageValue((oldSave && oldSave.reincarnationCoin != null) ? oldSave.reincarnationCoin : 0),
         reincarnationCount: oldSave.reincarnationCount || 0,
         reincarnationStats: oldSave.reincarnationStats || {
             gpsBonus: { level: 0, cost: 1 },
             equipmentLevelBonus: { level: 0, cost: 1 },
-            clickLimitBonus: { level: 0, cost: 1 }
+            clickLimitBonus: { level: 0, cost: 1 },
+            reincarnationCoinBonus: { level: 0, cost: 1 }
         },
         materialChestCost: oldSave.materialChestCost || 1,
         stockData: oldSave.stockData || {
@@ -4507,7 +4735,10 @@ const farmClickMultiplierssa = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 3
         { from: 'huangtone', to: 'mingtone', rate: 1e15 },
         { from: 'mingtone', to: 'xutong', rate: 1e20 },
         { from: 'xutong', to: 'shitone', rate: 1e20 },
-        { from: 'shitone', to: 'weitone', rate: 1e20 }        
+        { from: 'shitone', to: 'weitone', rate: 1e20 },
+        { from: 'weitone', to: 'yongtone', rate: 1e20 },
+        { from: 'yongtone', to: 'wujitone', rate: 1e20 },
+        { from: 'wujitone', to: 'daotone', rate: 1e20 }
     ];
 
     conversions.forEach(({ from, to, rate }) => {
@@ -4583,7 +4814,10 @@ const farmClickMultiplierssa = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 3
         { currency: "mingtone", amount: 1 }, 
         { currency: "xutong", amount: 1 }, 
         { currency: "shitone", amount: 1 },
-        { currency: "weitone", amount: 1 }       
+        { currency: "weitone", amount: 1 },
+        { currency: "yongtone", amount: 1 },
+        { currency: "wujitone", amount: 1 },
+        { currency: "daotone", amount: 1 }
     ][type - 1];
 
     const canPay = spendCurrency(costConfig.currency, costConfig.amount);
@@ -4593,11 +4827,11 @@ const farmClickMultiplierssa = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 3
         handleEquipment(selectedRarity);
 
         // 更新宝箱购买计数
-        const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6', 'yeyu7', 'yeyu8'][type - 1];
+        const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6', 'yeyu7', 'yeyu8', 'yeyu9', 'yeyu10', 'yeyu11'][type - 1];
         player.chestCounts[chestType]++;
         checkChestAchievements(chestType, player.chestCounts[chestType]);
     } else {
-        logAction(`${costConfig.currency}不足！无法购买${['普通','高级','稀有','史诗','传说','混沌','终焉','星辰','银河','星云','鸿蒙','太虚', '虚空', '时空', '未来'][type-1]}宝箱`, 'error');
+        logAction(`${costConfig.currency}不足！无法购买${['普通','高级','稀有','史诗','传说','混沌','终焉','星辰','银河','星云','鸿蒙','太虚', '虚空', '时空', '未来', '永恒', '无极', '大道'][type-1]}宝箱`, 'error');
     }
     updateDisplay();
 }
@@ -4819,7 +5053,10 @@ function onCollectionAdded(collectionType) {
                 { currency: "mingtone", amount: 1 },
                 { currency: "xutong", amount: 1 },
                 { currency: "shitone", amount: 1 },
-                { currency: "weitone", amount: 1 }              
+                { currency: "weitone", amount: 1 },
+                { currency: "yongtone", amount: 1 },
+                { currency: "wujitone", amount: 1 },
+                { currency: "daotone", amount: 1 }
             ][index];
             
             if (cmpCurrency(costConfig.currency, costConfig.amount) >= 0) {
@@ -4834,7 +5071,7 @@ function onCollectionAdded(collectionType) {
                     
                     // 统计装备升级总级数
                     let totalLevelsUp = 0;
-                    const chestTypeName = ['普通','高级','稀有','史诗','传说','混沌','终焉','星辰','银河','星云','鸿蒙','太虚', '虚空', '时空', '未来'][index];
+                    const chestTypeName = ['普通','高级','稀有','史诗','传说','混沌','终焉','星辰','银河','星云','鸿蒙','太虚', '虚空', '时空', '未来', '永恒', '无极', '大道'][index];
                     
                     // 批量处理装备获取并统计升级计数
                     for (let i = 0; i < actualBuy; i++) {
@@ -4845,7 +5082,7 @@ function onCollectionAdded(collectionType) {
                     }
                     
                     // 更新宝箱计数
-                    const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6', 'yeyu7', 'yeyu8'][index];
+                    const chestType = ['common', 'advanced', 'rare', 'epic', 'legendary', 'chaos', 'apocalypse', 'yeyu1', 'yeyu2', 'yeyu3', 'yeyu4', 'yeyu5', 'yeyu6', 'yeyu7', 'yeyu8', 'yeyu9', 'yeyu10', 'yeyu11'][index];
                     player.chestCounts[chestType] += actualBuy;
                     checkChestAchievements(chestType, player.chestCounts[chestType]);
                     
@@ -4880,8 +5117,8 @@ if (player.autoBuyMaterialChest && cmpCurrency('diamond', player.materialChestCo
     const index = typeIndex - 1; // 将宝箱类型转换为数组索引
     player.autoBuy[index] = !player.autoBuy[index]; // 切换状态
     const btn = document.getElementById(`autoChest${typeIndex}`);
-    btn.textContent = `${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚', '虚空', '时空', '未来'][index]}宝箱自动购买：${player.autoBuy[index] ? '开启' : '关闭'}`;
-    logAction(`${player.autoBuy[index] ? '开启' : '关闭'}自动购买${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚', '虚空', '时空', '未来'][index]}宝箱`, 'info');
+    btn.textContent = `${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚', '虚空', '时空', '未来', '永恒', '无极', '大道'][index]}宝箱自动购买：${player.autoBuy[index] ? '开启' : '关闭'}`;
+    logAction(`${player.autoBuy[index] ? '开启' : '关闭'}自动购买${['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚', '虚空', '时空', '未来', '永恒', '无极', '大道'][index]}宝箱`, 'info');
 }
 
         // 切换自动购买材料宝箱状态
@@ -4928,7 +5165,7 @@ if (player.autoBuyMaterialChest && cmpCurrency('diamond', player.materialChestCo
      // 根据存档同步「在线自动购买」面板内所有宝箱/材料/功法按钮显示，打开面板时调用
      function syncAutoBuyPanelDisplay() {
          if (typeof player === 'undefined' || !player.autoBuy) return;
-         var names = ['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚', '虚空', '时空', '未来'];
+         var names = ['普通', '高级', '稀有', '史诗', '传说', '混沌', '终焉', '星辰', '银河', '星云', '鸿蒙', '太虚', '虚空', '时空', '未来', '永恒', '无极', '大道'];
          player.autoBuy.forEach(function(enabled, index) {
              var btn = document.getElementById('autoChest' + (index + 1));
              if (btn) btn.textContent = names[index] + '宝箱自动购买：' + (enabled ? '开启' : '关闭');
@@ -4943,7 +5180,8 @@ if (player.autoBuyMaterialChest && cmpCurrency('diamond', player.materialChestCo
 function getAllAutoConvertCurrencies() {
     return ['gold', 'diamond', 'titanium', 'starstone', 'cosmicstone',
         'superstone', 'otherworldstone', 'xingjiestone', 'hundunstone',
-        'lingtone', 'huangtone', 'mingtone', 'xutong', 'shitone', 'weitone'];
+        'lingtone', 'huangtone', 'mingtone', 'xutong', 'shitone', 'weitone',
+        'yongtone', 'wujitone'];
 }
 function ensureAutoConvertCurrencyState() {
     if (!player || typeof player !== 'object') return;
@@ -5002,7 +5240,10 @@ function getCurrencyName(currency) {
         mingtone: '冥源石',
         xutong: '虚空石',
         shitone: '时空石',
-        weitone: '未来石'      
+        weitone: '未来石',
+        yongtone: '永恒石',
+        wujitone: '无极石',
+        daotone: '大道石'
     };
     return names[currency] || currency;
 }
@@ -5021,7 +5262,10 @@ function getAutoConvertRatioText(currency) {
         huangtone: { to: 'mingtone', rate: 1e15 },
         mingtone: { to: 'xutong', rate: 1e20 },
         xutong: { to: 'shitone', rate: 1e20 },
-        shitone: { to: 'weitone', rate: 1e20 }
+        shitone: { to: 'weitone', rate: 1e20 },
+        weitone: { to: 'yongtone', rate: 1e20 },
+        yongtone: { to: 'wujitone', rate: 1e20 },
+        wujitone: { to: 'daotone', rate: 1e20 }
     };
     const cfg = conversions[currency];
     if (!cfg) return '';

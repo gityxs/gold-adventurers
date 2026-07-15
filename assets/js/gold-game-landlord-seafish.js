@@ -2259,6 +2259,12 @@
                     fieldTiers: Array(50).fill(0),
                     skyVineLevel: 0,
                     skyVineProgress: 0,
+                    geneTrees: {
+                        '彩光': { level: 0, progress: 0 },
+                        '炫彩': { level: 0, progress: 0 },
+                        '琉璃': { level: 0, progress: 0 },
+                        '琥珀': { level: 0, progress: 0 }
+                    },
                     bars: { silver: 0, gold: 0, diamond: 0, flow: 0 },
                     seedStorage: {},
                     fruitStorage: [],
@@ -2369,6 +2375,7 @@
             ensureLandlordFieldTiers(player.landlord);
             ensureLandlordBars(player.landlord);
             ensureLandlordSkyVine(player.landlord);
+            ensureLandlordGeneTrees(player.landlord);
             ensureLandlordRanch(player.landlord);
             for (let _fi = 0; _fi < player.landlord.unlockedFields; _fi++) {
                 const _pl = player.landlord.fields[_fi];

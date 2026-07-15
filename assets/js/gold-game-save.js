@@ -4,6 +4,7 @@ function handleFileSelect(event) {
     
     if (file.type !== "text/plain" && !file.name.endsWith('.txt')) {
         logAction("请选择.txt格式的存档文件", "error");
+        try { event.target.value = ''; } catch (e) {}
         return;
     }
     
@@ -18,6 +19,7 @@ function handleFileSelect(event) {
         }
     };
     reader.readAsText(file);
+    try { event.target.value = ''; } catch (e) {}
 }
 
 function decryptAndLoadSave(encryptedData) {
@@ -137,6 +139,9 @@ function formatTime(milliseconds) {
                         xutong: 0,
                         shitone: 0,
                         weitone: 0,
+                        yongtone: 0,
+                        wujitone: 0,
+                        daotone: 0,
                         reincarnationCoin: 0,
                         reincarnationCount: 0,
                         equipment: [],
@@ -178,7 +183,10 @@ function formatTime(milliseconds) {
                             yuyu5: { level: 0, cost: 1, multiplier: 17714.70 },
                             yuyu6: { level: 0, cost: 1, multiplier: 53144.10 },
                               yuyu7: { level: 0, cost: 1, multiplier: 159432.30 },
-                            yuyu8: { level: 0, cost: 1, multiplier: 478296.90 }
+                            yuyu8: { level: 0, cost: 1, multiplier: 478296.90 },
+                            yuyu9: { level: 0, cost: 1, multiplier: 1434890.70 },
+                            yuyu10: { level: 0, cost: 1, multiplier: 4304672.10 },
+                            yuyu11: { level: 0, cost: 1, multiplier: 12914016.30 }
                         },
                         dungeonEquipment: [], // 新增副本装备
                         soulRings: [], // 新增魂环系统
@@ -239,6 +247,15 @@ function formatTime(milliseconds) {
         first_yeyu22: false,
         first_yeyu23: false,
         first_yeyu24: false,
+        first_yeyu25: false,
+        first_yeyu26: false,
+        first_yeyu27: false,
+        first_yeyu28: false,
+        first_yeyu29: false,
+        first_yeyu30: false,
+        first_yeyu31: false,
+        first_yeyu32: false,
+        first_yeyu33: false,
         // 宝箱成就
         common_chest_100: false,
         common_chest_10000: false,
@@ -315,6 +332,21 @@ function formatTime(milliseconds) {
         yeyu8_chest_1000000: false,
         yeyu8_chest_10000000: false,
         yeyu8_chest_100000000: false,
+        yeyu9_chest_100: false,
+        yeyu9_chest_10000: false,
+        yeyu9_chest_1000000: false,
+        yeyu9_chest_10000000: false,
+        yeyu9_chest_100000000: false,
+        yeyu10_chest_100: false,
+        yeyu10_chest_10000: false,
+        yeyu10_chest_1000000: false,
+        yeyu10_chest_10000000: false,
+        yeyu10_chest_100000000: false,
+        yeyu11_chest_100: false,
+        yeyu11_chest_10000: false,
+        yeyu11_chest_1000000: false,
+        yeyu11_chest_10000000: false,
+        yeyu11_chest_100000000: false,
         "max_stage_10": false,
     "max_stage_30": false,
     "max_stage_60": false,
@@ -376,6 +408,15 @@ function formatTime(milliseconds) {
     "yuyu8_10": false,
     "yuyu8_50": false,
     "yuyu8_100": false,
+    "yuyu9_10": false,
+    "yuyu9_50": false,
+    "yuyu9_100": false,
+    "yuyu10_10": false,
+    "yuyu10_50": false,
+    "yuyu10_100": false,
+    "yuyu11_10": false,
+    "yuyu11_50": false,
+    "yuyu11_100": false,
     // 新增魂环成就状态
     "year1_10": false,
     "year10_10": false,
@@ -553,6 +594,86 @@ function formatTime(milliseconds) {
     "year37_100": false,
     "year37_1000": false,
     "year37_10000": false,
+    "year38_10": false,
+    "year38_100": false,
+    "year38_1000": false,
+    "year38_10000": false,
+    "year39_10": false,
+    "year39_100": false,
+    "year39_1000": false,
+    "year39_10000": false,
+    "year40_10": false,
+    "year40_100": false,
+    "year40_1000": false,
+    "year40_10000": false,
+    "year41_10": false,
+    "year41_100": false,
+    "year41_1000": false,
+    "year41_10000": false,
+    "year42_10": false,
+    "year42_100": false,
+    "year42_1000": false,
+    "year42_10000": false,
+    "year43_10": false,
+    "year43_100": false,
+    "year43_1000": false,
+    "year43_10000": false,
+    "year44_10": false,
+    "year44_100": false,
+    "year44_1000": false,
+    "year44_10000": false,
+    "year45_10": false,
+    "year45_100": false,
+    "year45_1000": false,
+    "year45_10000": false,
+    "year46_10": false,
+    "year46_100": false,
+    "year46_1000": false,
+    "year46_10000": false,
+    "year47_10": false,
+    "year47_100": false,
+    "year47_1000": false,
+    "year47_10000": false,
+    "year48_10": false,
+    "year48_100": false,
+    "year48_1000": false,
+    "year48_10000": false,
+    "year49_10": false,
+    "year49_100": false,
+    "year49_1000": false,
+    "year49_10000": false,
+    "year50_10": false,
+    "year50_100": false,
+    "year50_1000": false,
+    "year50_10000": false,
+    "year51_10": false,
+    "year51_100": false,
+    "year51_1000": false,
+    "year51_10000": false,
+    "year52_10": false,
+    "year52_100": false,
+    "year52_1000": false,
+    "year52_10000": false,
+    "year53_10": false,
+    "year53_100": false,
+    "year53_1000": false,
+    "year53_10000": false,
+    "year54_10": false,
+    "year54_100": false,
+    "year54_1000": false,
+    "year54_10000": false,
+    "year55_10": false,
+    "year55_100": false,
+    "year55_1000": false,
+    "year55_10000": false,
+    "year56_10": false,
+    "year56_100": false,
+    "year56_1000": false,
+    "year56_10000": false,
+    "year57_10": false,
+    "year57_100": false,
+    "year57_1000": false,
+    "year57_10000": false,
     "world_boss_1st": false,
     "world_boss_top5": false,
     "world_boss_top10": false,
@@ -566,7 +687,7 @@ function formatTime(milliseconds) {
                         },
                         actionLogs: [], // 新增：统一存储所有操作日志
                         goldLogs: [], // 保留原有金币日志（如果仍需单独使用）
-                        autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
+                        autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
                         autoBuyMaterialChest: false, // 新增：自动购买材料宝箱的状态
                       autoBuyTechniqueChest: false,
                      autoBuyTechniqueMaxCost: 0.1,
@@ -589,14 +710,17 @@ function formatTime(milliseconds) {
                             mingtone: false,
                             xutong: false,
                             shitone: false,
-                            weitone: false
+                            weitone: false,
+                            yongtone: false,
+                            wujitone: false
                         }, // 新增：自动兑换货币状态
                         clickTimestamps: [],
                         chestCounts: { common: 0, advanced: 0, rare: 0, epic: 0, legendary: 0 },
                         reincarnationStats: {
                             gpsBonus: { level: 0, cost: 1 },
                             equipmentLevelBonus: { level: 0, cost: 1 },
-                            clickLimitBonus: { level: 0, cost: 1 }
+                            clickLimitBonus: { level: 0, cost: 1 },
+                            reincarnationCoinBonus: { level: 0, cost: 1 }
                         },
                         materialChestCost: 1,
                         stockData: { // 新增股票数据
@@ -685,6 +809,8 @@ function formatTime(milliseconds) {
         let _mainLoopTick = 0;
         registerInterval(() => {
     if (checkVersionBlocked()) return;
+    // save.js 很早注册主循环；asset-boot 显式标 false 时表示后续脚本未就绪
+    if (window.__GOLD_GAME_ASSETS_READY === false) return;
     // 保障：读档若走的是 loadSave() 未走 loadGame()，地主定时器不会启动；主循环里补启，确保不点进疯狂地主也会刷新天气/作物
     if (player.landlord && player.battle && player.battle.maxStage >= 2 && (player.landlord._timerId == null || player.landlord._timerId === undefined) && typeof startLandlordTimers === 'function') {
         startLandlordTimers();
@@ -704,10 +830,14 @@ function formatTime(milliseconds) {
     normalizeMainCurrencies();
     autoConvertCurrency();
     normalizeMainCurrencies();
-    try { gainCultivationExp(); } catch (e) {
+    try {
+        if (typeof gainCultivationExp === 'function') gainCultivationExp();
+    } catch (e) {
         if (typeof console !== 'undefined' && console.error) console.error('gainCultivationExp error', e);
     }
-    try { calculateNightClubIncome(); } catch (e) {
+    try {
+        if (typeof calculateNightClubIncome === 'function') calculateNightClubIncome();
+    } catch (e) {
         if (typeof console !== 'undefined' && console.error) console.error('calculateNightClubIncome error', e);
     }
     if (is2sTick) {
@@ -763,6 +893,9 @@ function formatTime(milliseconds) {
                         xutong: 0,
                         shitone: 0,
                         weitone: 0,
+                        yongtone: 0,
+                        wujitone: 0,
+                        daotone: 0,
                         reincarnationCoin: 0,
                         reincarnationCount: 0,
                         equipment: [],
@@ -803,7 +936,10 @@ function formatTime(milliseconds) {
                             yuyu5: { level: 0, cost: 1, multiplier: 17714.70 },
                             yuyu6: { level: 0, cost: 1, multiplier: 53144.10 },
                               yuyu7: { level: 0, cost: 1, multiplier: 159432.30 },
-                            yuyu8: { level: 0, cost: 1, multiplier: 478296.90 }
+                            yuyu8: { level: 0, cost: 1, multiplier: 478296.90 },
+                            yuyu9: { level: 0, cost: 1, multiplier: 1434890.70 },
+                            yuyu10: { level: 0, cost: 1, multiplier: 4304672.10 },
+                            yuyu11: { level: 0, cost: 1, multiplier: 12914016.30 }
                         },
                         dungeonEquipment: [], // 新增副本装备
                         soulRings: [], // 新增魂环系统
@@ -864,6 +1000,15 @@ function formatTime(milliseconds) {
         first_yeyu22: false,
         first_yeyu23: false,
         first_yeyu24: false,
+        first_yeyu25: false,
+        first_yeyu26: false,
+        first_yeyu27: false,
+        first_yeyu28: false,
+        first_yeyu29: false,
+        first_yeyu30: false,
+        first_yeyu31: false,
+        first_yeyu32: false,
+        first_yeyu33: false,
         // 宝箱成就
         common_chest_100: false,
         common_chest_10000: false,
@@ -940,6 +1085,21 @@ function formatTime(milliseconds) {
         yeyu8_chest_1000000: false,
         yeyu8_chest_10000000: false,
         yeyu8_chest_100000000: false,
+        yeyu9_chest_100: false,
+        yeyu9_chest_10000: false,
+        yeyu9_chest_1000000: false,
+        yeyu9_chest_10000000: false,
+        yeyu9_chest_100000000: false,
+        yeyu10_chest_100: false,
+        yeyu10_chest_10000: false,
+        yeyu10_chest_1000000: false,
+        yeyu10_chest_10000000: false,
+        yeyu10_chest_100000000: false,
+        yeyu11_chest_100: false,
+        yeyu11_chest_10000: false,
+        yeyu11_chest_1000000: false,
+        yeyu11_chest_10000000: false,
+        yeyu11_chest_100000000: false,
         "max_stage_10": false,
     "max_stage_30": false,
     "max_stage_60": false,
@@ -1001,6 +1161,15 @@ function formatTime(milliseconds) {
     "yuyu8_10": false,
     "yuyu8_50": false,
     "yuyu8_100": false,
+    "yuyu9_10": false,
+    "yuyu9_50": false,
+    "yuyu9_100": false,
+    "yuyu10_10": false,
+    "yuyu10_50": false,
+    "yuyu10_100": false,
+    "yuyu11_10": false,
+    "yuyu11_50": false,
+    "yuyu11_100": false,
     // 新增魂环成就状态
     "year1_10": false,
     "year10_10": false,
@@ -1178,6 +1347,86 @@ function formatTime(milliseconds) {
     "year37_100": false,
     "year37_1000": false,
     "year37_10000": false,
+    "year38_10": false,
+    "year38_100": false,
+    "year38_1000": false,
+    "year38_10000": false,
+    "year39_10": false,
+    "year39_100": false,
+    "year39_1000": false,
+    "year39_10000": false,
+    "year40_10": false,
+    "year40_100": false,
+    "year40_1000": false,
+    "year40_10000": false,
+    "year41_10": false,
+    "year41_100": false,
+    "year41_1000": false,
+    "year41_10000": false,
+    "year42_10": false,
+    "year42_100": false,
+    "year42_1000": false,
+    "year42_10000": false,
+    "year43_10": false,
+    "year43_100": false,
+    "year43_1000": false,
+    "year43_10000": false,
+    "year44_10": false,
+    "year44_100": false,
+    "year44_1000": false,
+    "year44_10000": false,
+    "year45_10": false,
+    "year45_100": false,
+    "year45_1000": false,
+    "year45_10000": false,
+    "year46_10": false,
+    "year46_100": false,
+    "year46_1000": false,
+    "year46_10000": false,
+    "year47_10": false,
+    "year47_100": false,
+    "year47_1000": false,
+    "year47_10000": false,
+    "year48_10": false,
+    "year48_100": false,
+    "year48_1000": false,
+    "year48_10000": false,
+    "year49_10": false,
+    "year49_100": false,
+    "year49_1000": false,
+    "year49_10000": false,
+    "year50_10": false,
+    "year50_100": false,
+    "year50_1000": false,
+    "year50_10000": false,
+    "year51_10": false,
+    "year51_100": false,
+    "year51_1000": false,
+    "year51_10000": false,
+    "year52_10": false,
+    "year52_100": false,
+    "year52_1000": false,
+    "year52_10000": false,
+    "year53_10": false,
+    "year53_100": false,
+    "year53_1000": false,
+    "year53_10000": false,
+    "year54_10": false,
+    "year54_100": false,
+    "year54_1000": false,
+    "year54_10000": false,
+    "year55_10": false,
+    "year55_100": false,
+    "year55_1000": false,
+    "year55_10000": false,
+    "year56_10": false,
+    "year56_100": false,
+    "year56_1000": false,
+    "year56_10000": false,
+    "year57_10": false,
+    "year57_100": false,
+    "year57_1000": false,
+    "year57_10000": false,
     "world_boss_1st": false,
     "world_boss_top5": false,
     "world_boss_top10": false,
@@ -1191,7 +1440,7 @@ function formatTime(milliseconds) {
                         },
                         actionLogs: [], // 新增：统一存储所有操作日志
                         goldLogs: [], // 保留原有金币日志（如果仍需单独使用）
-                        autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
+                        autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
                         autoBuyMaterialChest: false, // 新增：自动购买材料宝箱的状态
                       autoBuyTechniqueChest: false,
                       autoBuyTechniqueMaxCost: 0.1,
@@ -1214,14 +1463,17 @@ function formatTime(milliseconds) {
                             mingtone: false,
                             xutong: false,
                             shitone: false,
-                            weitone: false
+                            weitone: false,
+                            yongtone: false,
+                            wujitone: false
                         }, // 新增：自动兑换货币状态
                         clickTimestamps: [],
                         chestCounts: { common: 0, advanced: 0, rare: 0, epic: 0, legendary: 0 },
                         reincarnationStats: {
                             gpsBonus: { level: 0, cost: 1 },
                             equipmentLevelBonus: { level: 0, cost: 1 },
-                            clickLimitBonus: { level: 0, cost: 1 }
+                            clickLimitBonus: { level: 0, cost: 1 },
+                            reincarnationCoinBonus: { level: 0, cost: 1 }
                         },
                         materialChestCost: 1,
                         stockData: { // 新增股票数据
@@ -1277,13 +1529,17 @@ function formatTime(milliseconds) {
 
         // 新增：切换游戏日志分页
         function switchLogTab(page) {
-            document.getElementById('gameLogPage1').classList.remove('active');
-            document.getElementById('gameLogPage2').classList.remove('active');
-            document.getElementById('gameLogPage3').classList.remove('active');
-            document.getElementById('gameLogPage4').classList.remove('active');
-            document.getElementById(`gameLogPage${page}`).classList.add('active');
-            document.querySelectorAll('.log-tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.log-tab[onclick="switchLogTab(${page})"]`).classList.add('active');
+            page = Number(page) || 1;
+            [1, 2, 3, 4].forEach(function(p) {
+                var el = document.getElementById('gameLogPage' + p);
+                if (el) el.classList.toggle('active', p === page);
+            });
+            document.querySelectorAll('.log-tab').forEach(function(t) {
+                t.classList.toggle('active', Number(t.getAttribute('data-log-page')) === page);
+            });
+            if (page === 3 && typeof updateLotteryResultsDisplay === 'function') {
+                updateLotteryResultsDisplay();
+            }
         }
    function toggleAutoConvertUI() {
     const ui = document.getElementById('autoConvertUI');

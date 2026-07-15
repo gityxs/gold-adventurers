@@ -1159,6 +1159,7 @@ function gainCultivationExp() {
         updateCultivationUI();
     }
 }
+window.gainCultivationExp = gainCultivationExp;
 let lastOnlineTime = Date.now();
 function checkOfflineTime() {
     const now = Date.now();
@@ -1387,6 +1388,28 @@ const titleConfig = {
     { name: "混沌魔尊", condition: (p) => p.tower.maxFloor > 650000, bonus: { healthMultiplier: 1.2 } },
     { name: "万法归魔", condition: (p) => p.tower.maxFloor > 700000, bonus: { healthMultiplier: 1.2 } }
 ],
+    // 无限深渊分支（最佳层数）
+    abyssBranch: [
+        { name: "初探深渊", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 30, bonus: { healthMultiplier: 1.1 } },
+        { name: "暗潮试炼", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 50, bonus: { healthMultiplier: 1.1 } },
+        { name: "裂隙行者", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 80, bonus: { healthMultiplier: 1.1 } },
+        { name: "百层渊客", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 100, bonus: { healthMultiplier: 1.1 } },
+        { name: "幽冥猎手", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 130, bonus: { healthMultiplier: 1.2 } },
+        { name: "渊海破军", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 160, bonus: { healthMultiplier: 1.2 } },
+        { name: "深渊统帅", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 200, bonus: { healthMultiplier: 1.2 } },
+        { name: "永夜渊将", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 250, bonus: { healthMultiplier: 1.2 } },
+        { name: "三百魔主", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 300, bonus: { healthMultiplier: 1.3 } },
+        { name: "蚀骨渊尊", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 350, bonus: { healthMultiplier: 1.3 } },
+        { name: "深渊霸主", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 400, bonus: { healthMultiplier: 1.3 } },
+        { name: "万劫渊王", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 450, bonus: { healthMultiplier: 1.3 } },
+        { name: "半千渊帝", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 500, bonus: { healthMultiplier: 1.4 } },
+        { name: "寂灭渊皇", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 550, bonus: { healthMultiplier: 1.4 } },
+        { name: "永劫主宰", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 600, bonus: { healthMultiplier: 1.4 } },
+        { name: "无尽渊神", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 650, bonus: { healthMultiplier: 1.4 } },
+        { name: "七百魔尊", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 700, bonus: { healthMultiplier: 1.5 } },
+        { name: "太虚渊神", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 750, bonus: { healthMultiplier: 1.5 } },
+        { name: "深渊唯一", condition: (p) => (p.abyssTower?.bestFloor || 0) >= 800, bonus: { healthMultiplier: 1.5 } }
+    ],
     // 关卡分支
     stageBranch: [
         { name: "探险者", condition: (p) => p.battle.maxStage > 10, bonus: { attackMultiplier: 1.1 } },
@@ -1449,7 +1472,9 @@ const titleConfig = {
         { name: "魂斗罗", condition: (p) => hasSoulRing(p, "year23"), bonus: { attackMultiplier: 1.4 } },
         { name: "普通封号斗罗", condition: (p) => hasSoulRing(p, "year28"), bonus: { attackMultiplier: 1.5 } },
         { name: "巅峰斗罗", condition: (p) => hasSoulRing(p, "year33"), bonus: { attackMultiplier: 1.5 } },
-        { name: "绝世斗罗", condition: (p) => hasSoulRing(p, "year37"), bonus: { attackMultiplier: 1.5 } }
+        { name: "绝世斗罗", condition: (p) => hasSoulRing(p, "year37"), bonus: { attackMultiplier: 1.5 } },
+        { name: "准神级斗罗", condition: (p) => hasSoulRing(p, "year47"), bonus: { attackMultiplier: 1.6 } },
+        { name: "神级斗罗", condition: (p) => hasSoulRing(p, "year57"), bonus: { attackMultiplier: 1.7 } }
     ],
     // 特殊分支
     specialBranch: [
@@ -1478,6 +1503,49 @@ function hasSoulRing(player, typeName) {
 return player.soulRings.some(ring => ring.type === typeName);
 }
 
+// 按分支内位置 + 加成强度计算称号品阶（0 普通 → 7 神话彩虹）
+function getTitleTierInfo(titleName) {
+    for (const branch of Object.values(titleConfig)) {
+        const idx = branch.findIndex(t => t.name === titleName);
+        if (idx < 0) continue;
+        const title = branch[idx];
+        const progress = branch.length <= 1 ? 1 : idx / (branch.length - 1);
+        let tier = Math.min(6, Math.floor(progress * 7));
+        const bonus = Math.max(
+            Number(title.bonus && title.bonus.attackMultiplier) || 1,
+            Number(title.bonus && title.bonus.healthMultiplier) || 1,
+            Number(title.bonus && title.bonus.critMultiplier) || 1
+        );
+        if (bonus >= 1.4) tier = Math.max(tier, 4);
+        if (bonus >= 1.5) tier = Math.max(tier, 5);
+        if (bonus >= 1.6) tier = Math.max(tier, 6);
+        if (bonus >= 1.7 || progress >= 0.95) tier = Math.max(tier, 7);
+        return { tier: Math.min(7, tier), title };
+    }
+    return { tier: 0, title: null };
+}
+
+function getTitleTierClass(titleName) {
+    return `title-tier-${getTitleTierInfo(titleName).tier}`;
+}
+
+function applyCurrentTitleDisplay(el) {
+    if (!el) return;
+    el.className = el.className
+        .split(/\s+/)
+        .filter(c => c && c !== 'player-title-display' && !/^title-tier-\d$/.test(c))
+        .join(' ');
+    if (!el.classList.contains('player-title-display')) {
+        el.classList.add('player-title-display');
+    }
+    if (player.titles && player.titles.current) {
+        el.textContent = `[${player.titles.current}]`;
+        el.classList.add(getTitleTierClass(player.titles.current));
+    } else {
+        el.textContent = '';
+    }
+}
+
 // 辅助函数：获取指定类型装备的最高等级
 function getEquipLevel(player, equipName) {
 return player.dungeonEquipment
@@ -1492,15 +1560,62 @@ function showTitleDialog() {
         return;
     }
     checkTitleUnlocks(); // 先检查解锁状态
+    if (typeof window.__titleBranchTab !== 'string') window.__titleBranchTab = 'all';
     renderTitleBranches(); // 渲染称号
-    document.getElementById("titleDialog").style.display = "block";
-    document.getElementById("titleOverlay").style.display = "block";
+    const dialog = document.getElementById("titleDialog");
+    const overlay = document.getElementById("titleOverlay");
+    if (dialog) dialog.style.display = "flex";
+    if (overlay) overlay.style.display = "block";
 }
 
 // 关闭称号界面
 function closeTitleDialog() {
-    document.getElementById("titleDialog").style.display = "none";
-    document.getElementById("titleOverlay").style.display = "none";
+    const dialog = document.getElementById("titleDialog");
+    const overlay = document.getElementById("titleOverlay");
+    if (dialog) dialog.style.display = "none";
+    if (overlay) overlay.style.display = "none";
+}
+
+function switchTitleBranchTab(branchKey) {
+    window.__titleBranchTab = branchKey || 'all';
+    document.querySelectorAll('#titleBranchTabs .title-tab').forEach((tab) => {
+        tab.classList.toggle('active', tab.getAttribute('data-branch') === window.__titleBranchTab);
+    });
+    document.querySelectorAll('#titleBranches .titleBranch').forEach((section) => {
+        const key = section.getAttribute('data-branch');
+        const show = window.__titleBranchTab === 'all' || window.__titleBranchTab === key;
+        section.classList.toggle('is-hidden', !show);
+    });
+}
+
+function updateTitleModalSummary() {
+    const worn = document.getElementById('titleWornDisplay');
+    if (worn) {
+        worn.className = 'title-hero-name';
+        if (player.titles && player.titles.current) {
+            worn.textContent = player.titles.current;
+            worn.classList.add(getTitleTierClass(player.titles.current));
+        } else {
+            worn.textContent = '未佩戴称号';
+            worn.classList.add('is-empty');
+        }
+    }
+    let total = 0;
+    Object.values(titleConfig).forEach((branch) => { total += branch.length; });
+    const unlocked = (player.titles && player.titles.unlocked) ? player.titles.unlocked.length : 0;
+    const setText = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+    };
+    setText('titleUnlockedCount', unlocked);
+    setText('titleTotalCount', total);
+    const bonuses = typeof calculateTotalBonuses === 'function'
+        ? calculateTotalBonuses()
+        : { attackMultiplier: 1, healthMultiplier: 1, critMultiplier: 1 };
+    const fmt = (n) => `×${(Number(n) || 1).toFixed(2)}`;
+    setText('titleAtkMul', fmt(bonuses.attackMultiplier));
+    setText('titleHpMul', fmt(bonuses.healthMultiplier));
+    setText('titleCritMul', fmt(bonuses.critMultiplier));
 }
 
 // 检查并解锁称号
@@ -1547,24 +1662,30 @@ function applyTitleBonus(bonus) {
 
 // 渲染称号分支
 function renderTitleBranches() {
-    // 遍历每个分支并渲染
     Object.entries(titleConfig).forEach(([branchKey, titles]) => {
         const container = document.getElementById(`${branchKey}Container`);
         if (!container) return;
-        
-        container.innerHTML = "";
-        titles.forEach(title => {
-            // 只显示已解锁的称号
-            if (player.titles.unlocked.includes(title.name)) {
-                const isSelected = player.titles.current === title.name;
-                const titleEl = document.createElement("div");
-                titleEl.className = `titleItem unlocked ${isSelected ? 'selected' : ''}`;
-                titleEl.textContent = title.name;
-                titleEl.onclick = () => selectTitle(title.name);
-                container.appendChild(titleEl);
-            }
+        container.innerHTML = '';
+        let unlockedInBranch = 0;
+        titles.forEach((title) => {
+            if (!player.titles.unlocked.includes(title.name)) return;
+            unlockedInBranch++;
+            const isSelected = player.titles.current === title.name;
+            const titleEl = document.createElement('div');
+            titleEl.className = `titleItem unlocked ${isSelected ? 'selected' : ''}`;
+            titleEl.title = '点击佩戴该称号';
+            titleEl.onclick = () => selectTitle(title.name);
+            const nameEl = document.createElement('span');
+            nameEl.className = `title-name ${getTitleTierClass(title.name)}`;
+            nameEl.textContent = title.name;
+            titleEl.appendChild(nameEl);
+            container.appendChild(titleEl);
         });
+        const countEl = document.querySelector(`.titleBranch-count[data-count-for="${branchKey}"]`);
+        if (countEl) countEl.textContent = `${unlockedInBranch}/${titles.length}`;
     });
+    updateTitleModalSummary();
+    switchTitleBranchTab(window.__titleBranchTab || 'all');
 }
 
 // 选择称号
@@ -1572,8 +1693,8 @@ function selectTitle(titleName) {
     if (player.titles.unlocked.includes(titleName)) {
         player.titles.current = titleName;
         logAction(`已选择称号：${titleName}`, 'info');
-        renderTitleBranches(); // 更新选中状态
-        updateDisplay(); // 更新玩家名字旁的称号显示
+        renderTitleBranches();
+        updateDisplay();
         saveGame();
     }
 }

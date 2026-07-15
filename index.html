@@ -8,7 +8,7 @@
     <script>
         (function () {
             /** 与 gold-game-core.js 的 GAME_VERSION 对齐；发版时同步修改 */
-            var build = "2.0.35";
+            var build = "2.0.37";
             try {
                 var qs = location.search || "";
                 var m = /[?&]v=([^&]+)/.exec(qs);
@@ -20,16 +20,14 @@
             } catch (eB) {}
             window.__GOLD_GAME_ASSET_BUILD = build;
             window.__goldGameClientBuild = build;
-            document.write(
-                '<script src="assets/js/gold-game-viewport.js?b=' +
-                    encodeURIComponent(build) +
-                    '"><\/script>'
-            );
-            document.write(
-                '<link rel="stylesheet" href="assets/css/gold-game.css?b=' +
-                    encodeURIComponent(build) +
-                    '">'
-            );
+            var css = document.createElement('link');
+            css.rel = 'stylesheet';
+            css.href = 'assets/css/gold-game.css?b=' + encodeURIComponent(build);
+            document.head.appendChild(css);
+            var viewport = document.createElement('script');
+            viewport.src = 'assets/js/gold-game-viewport.js?b=' + encodeURIComponent(build);
+            viewport.async = false;
+            document.head.appendChild(viewport);
         })();
     </script>
     <title>金币冒险者 - 完整版</title>
@@ -48,16 +46,16 @@
             <h4>游戏公告介绍</h4>
             <p>QQ群：902481027    有问题可以进群问（存档异常联系群管理修复）</p>
             <p>1. 转生系统：玩家可以通过转生重置游戏进度，并获得转生币，用于提升转生属性（转生要求必须普通装备10000+转生次数*20）。</p>
-            <p> 转生币等级兑换比例：普通10000=1  稀有5000=1 史诗1000=1 传说300=1 远古200=1 神圣125=1 奥术100=1 天空33=1 地狱20=1 星界12.5=1  原初10=1 超凡3=1 量子2=1 究极1=1  混沌1=3 永恒1=5 虚无1=10 创世1=20 神域1=30 终焉1=40 星辰1=50 起源1=60 时光1=70 造物1=80 银河1=90 天界1=100 星云1=200 星河1=300 纪元1=400 鸿蒙1=500 星穹1=600 亘古1=700 万象1=800 太虚1=900 九垓1=1000  穿梭1=2000  恒古1=3000 虚空1=4000 蔚来1=5000 神罚1=6000  时空1=7000  未来1=8000  从前1=9000   星澜1=10000</p>
-            <p>货币兑换比例：金币10万=1钻石，钻石1亿=1钛晶石，钛晶石1亿=1星耀石，星耀石1亿=1宇宙石，宇宙石10亿=1超能石，超能石1万亿=1异界石，异界石1万亿=1星界石，星界石1万亿=1混沌石，混沌石1000万亿=1灵髓石，灵髓石1000万亿=1幻空石，幻空石1000万亿=1冥源石，冥源石1京=1虚空石，虚空石1京=1时空石，时空石1京=1未来石。</p>
-            <p>2. 宠物系统：玩家可以通过升级宠物来提升装备属性加成。</p>
+            <p> 转生币等级兑换比例：普通10000=1  稀有5000=1 史诗1000=1 传说300=1 远古200=1 神圣125=1 奥术100=1 天空33=1 地狱20=1 星界12.5=1  原初10=1 超凡3=1 量子2=1 究极1=1  混沌1=3 永恒1=5 虚无1=10 创世1=20 神域1=30 终焉1=40 星辰1=50 起源1=60 时光1=70 造物1=80 银河1=90 天界1=100 星云1=200 星河1=300 纪元1=400 鸿蒙1=500 星穹1=600 亘古1=700 万象1=800 太虚1=900 九垓1=1000  穿梭1=2000  恒古1=3000 虚空1=4000 蔚来1=5000 神罚1=6000  时空1=7000  未来1=8000  从前1=9000   星澜1=10000  逆旅1=11000  终章1=12000  轮回1=13000  恒宇1=14000  无垠1=15000  寂灭1=16000  大道1=17000  本源1=18000  至高1=19000</p>
+            <p>货币兑换比例：金币10万=1钻石，钻石1亿=1钛晶石，钛晶石1亿=1星耀石，星耀石1亿=1宇宙石，宇宙石10亿=1超能石，超能石1万亿=1异界石，异界石1万亿=1星界石，星界石1万亿=1混沌石，混沌石1000万亿=1灵髓石，灵髓石1000万亿=1幻空石，幻空石1000万亿=1冥源石，冥源石1京=1虚空石，虚空石1京=1时空石，时空石1京=1未来石，未来石1京=1永恒石，永恒石1京=1无极石，无极石1京=1大道石。</p>
+            <p>2. 宠物系统：玩家可以通过升级宠物来提升装备属性加成。宠物消耗对应货币升级，达到10/50/100级有成就GPS奖励。</p>
             <p>3. 离线系统：现在离线也能奥秘经验和银行和股票，彩票更新，升级装备。</p>
             <p>4. 股票系统，显示实时股价和持有情况，每10分钟股价随机波动±1%~10%，离线时间自动计算股价波动，所有交易使用转生币结算，实时显示价格变化趋势</p>
             <p>5. 彩票系统：30分钟开奖1次。刮刮卡：直接生效，开奖结果看获取！</p>
             <p>6. 银行系统：存钱每6分钟0.02%收益！</p>
-            <p>7. 副本装备系统：副本装备可以提升第一页装备的全属性，使用洗炼石（材料宝箱或者打怪掉）可以重铸副本装备的成长属性或者分解重新获取。成长数值上限：废品0.05%，倚天剑10%，青龙枪15%，白虎斧20%，朱雀弓25%，玄武盾30%，麒麟杖35%，凤凰剑40%，饕餮刀45%，穷奇戟50%，烛龙枪60%，白泽剑70%，混沌斧80%，太初刃90%   后续加深颜色多10%  比如：☆=100%★=110% ○=200% ●=210%  ◇=300%  ◆=310%  □=400%  ■=410%  △=500%  ▲=510%</p>
-            <p>8. 魂环系统：魂环可以永久提升装备属性，通过打怪掉落升级。</p>
-            <p>9. 打怪模式(必须先打)：1转开启，逃跑等于重置关卡消耗最大关卡*10转生币（取消扫荡增加自动扫荡4秒1次！！！）（优先打！第一次打点逃跑！！！）。</p>
+            <p>7. 副本装备系统：副本装备可以提升第一页装备的全属性，使用洗炼石（材料宝箱或者打怪掉）可以重铸副本装备的成长属性或者分解重新获取。成长数值上限：废品0.05%，倚天剑10%，青龙枪15%，白虎斧20%，朱雀弓25%，玄武盾30%，麒麟杖35%，凤凰剑40%，饕餮刀45%，穷奇戟50%，烛龙枪60%，白泽剑70%，混沌斧80%，太初刃90%   后续加深颜色多10%  比如：☆=100%★=110% ○=200% ●=210%  ◇=300%  ◆=310%  □=400%  ■=410%  △=500%  ▲=510%  ▽=600% ▼=610%  ★▽=700% ★▼=710%。</p>
+            <p>8. 魂环系统：魂环可以永久提升装备属性，通过打怪掉落升级。关卡越高可掉越高阶亿年魂环；魂环升到10/100/1000/10000级有成就GPS奖励。</p>
+            <p>9. 打怪模式(必须先打)：1转开启，逃跑等于重置关卡消耗最大关卡*10转生币（取消扫荡增加自动扫荡4秒1次！！！）（优先打！第一次打点逃跑！！！）。每关固定掉落副本装备，并有概率掉落魂环与材料；扫荡/自动扫荡同样结算这些掉落。</p>
             <p>10. 升级属性：第一次加载要转生一次，在点洗点就正常了（总数和实际不一样点一下洗点）。</p>
             <p>11. 功法秘籍：后期比较强，加成属性直接算到玩家属性乘于里面（如果突然没效果了开一个秘法宝箱就好了，正常不会有问题）</p>
             <p>11. 世界BOSS系统：50转开启，才能打比较难，有连击后期简单。</p>
@@ -117,9 +115,11 @@
         <div class="log">
             <h4>2.035更新日志</h4>
             <h4>QQ群：902481027    有问题可以进群问（存档异常联系群管理修复）</h4>
+            <p>2026/07/14:未来石后新增高级货币永恒石/无极石/大道石（1e20兑换），对应永恒/无极/大道宝箱、装备逆旅～至高、宠物天罚刑天/浑沌帝江/无极烛阴及宠物成就。副本装备新增归墟～本源共20件（▽/▼与★▽/★▼档），魂环新增20个亿年魂环（最高混沌·无名），职业界面修改，称号界面修改，主界面12标签字体修改，时光秘境玩法重做，整体玩法更改，疯狂地主增加基因树：提交对应果实增加属性，疯狂地主增加20个新种子，所有高品种子更加容易获得，增加有库存按钮，修复洞天劫摸金模式BUG。</p>
             <p>2026/07/12:洞天劫模式装备增加大量强力新神性词条，
+                    修复洞天劫打副本死亡异常踢出秘境BUG。
                     修改直播人数上限限制。
-                    疯狂地主增加新种子基因合成：基因合成规则
+                    疯狂地主增加新种子基因合成：基因合成规则:
                    • 选择3个种子各消耗1个，按最低价～最高价区间随机产出一种种子
                    • 例：土豆+金桔+牵牛花 → 可出土豆、金桔或牵牛花
                    • 40%几率产出基因变异种子：彩光80%、炫彩14%、琉璃5%、琥珀1%
@@ -415,6 +415,9 @@
       <div class="currency-card"><span class="currency-label">虚空石</span><span class="currency-value" id="xutong">0</span></div>
       <div class="currency-card"><span class="currency-label">时空石</span><span class="currency-value" id="shitone">0</span></div>
       <div class="currency-card"><span class="currency-label">未来石</span><span class="currency-value" id="weitone">0</span></div>
+      <div class="currency-card"><span class="currency-label">永恒石</span><span class="currency-value" id="yongtone">0</span></div>
+      <div class="currency-card"><span class="currency-label">无极石</span><span class="currency-value" id="wujitone">0</span></div>
+      <div class="currency-card"><span class="currency-label">大道石</span><span class="currency-value" id="daotone">0</span></div>
       <div class="currency-card" style="border-color: var(--color-gold);"><span class="currency-label" style="color:var(--color-gold)">转生币</span><span class="currency-value" id="reincarnationCoin" style="color:var(--color-gold)">0</span></div>
     </div>
   </div>
@@ -440,212 +443,317 @@
 
 
   <!-- 标签页 -->
-  <div class="card" style="margin-bottom: var(--space-md); padding: 0; overflow: hidden;">
-    <div class="tabs-new">
-      <div class="tab tab-item-new active" onclick="switchTab('equipment')">装备</div>
-      <div class="tab tab-item-new" onclick="switchTab('items')">道具</div>
-      <div class="tab tab-item-new" onclick="switchTab('collections')">收藏物</div>
-      <div class="tab tab-item-new" onclick="switchTab('reincarnation')">转生属性</div>
-      <div class="tab tab-item-new" onclick="switchTab('pets')">宠物</div>
-      <div class="tab tab-item-new" onclick="switchTab('stocks')">股票</div>
-      <div class="tab tab-item-new" onclick="switchTab('lottery')">彩票</div>
-      <div class="tab tab-item-new" onclick="switchTab('bank')">银行系统</div>
-      <div class="tab tab-item-new" onclick="switchTab('dungeonEquipment')">副本装备</div>
-      <div class="tab tab-item-new" onclick="switchTab('soulRings')">魂环</div>
-      <div class="tab tab-item-new" onclick="switchTab('playerAttributes')">玩家属性</div>
-      <div class="tab tab-item-new" onclick="switchTab('techniques')">功法秘籍</div>
+  <div class="card main-tab-card" style="margin-bottom: var(--space-md); padding: 0; overflow: hidden;">
+    <div class="tabs-new main-tabs" role="tablist">
+      <button type="button" class="tab tab-item-new active" data-tab="equipment" onclick="switchTab('equipment')" title="装备"><span class="main-tab-label">装备</span></button>
+      <button type="button" class="tab tab-item-new" data-tab="items" onclick="switchTab('items')" title="道具"><span class="main-tab-label">道具</span></button>
+      <button type="button" class="tab tab-item-new" data-tab="collections" onclick="switchTab('collections')" title="收藏物"><span class="main-tab-label">收藏物</span></button>
+      <button type="button" class="tab tab-item-new" data-tab="reincarnation" onclick="switchTab('reincarnation')" title="转生属性"><span class="main-tab-label">转生属性</span></button>
+      <button type="button" class="tab tab-item-new" data-tab="pets" onclick="switchTab('pets')" title="宠物"><span class="main-tab-label">宠物</span></button>
+      <button type="button" class="tab tab-item-new" data-tab="stocks" onclick="switchTab('stocks')" title="股票"><span class="main-tab-label">股票</span></button>
+      <button type="button" class="tab tab-item-new" data-tab="lottery" onclick="switchTab('lottery')" title="彩票"><span class="main-tab-label">彩票</span></button>
+      <button type="button" class="tab tab-item-new" data-tab="bank" onclick="switchTab('bank')" title="银行系统"><span class="main-tab-label">银行</span></button>
+      <button type="button" class="tab tab-item-new" data-tab="dungeonEquipment" onclick="switchTab('dungeonEquipment')" title="副本装备"><span class="main-tab-label">副本装备</span></button>
+      <button type="button" class="tab tab-item-new" data-tab="soulRings" onclick="switchTab('soulRings')" title="魂环"><span class="main-tab-label">魂环</span></button>
+      <button type="button" class="tab tab-item-new" data-tab="playerAttributes" onclick="switchTab('playerAttributes')" title="玩家属性"><span class="main-tab-label">玩家属性</span></button>
+      <button type="button" class="tab tab-item-new" data-tab="techniques" onclick="switchTab('techniques')" title="功法秘籍"><span class="main-tab-label">功法秘籍</span></button>
     </div>
-    <div style="padding: var(--space-md);">
+    <div class="main-tab-body">
 
-    <h3></h3>
-    <div id="equipmentList"></div>
-    <h3></h3>
-    <div id="itemList" style="display: none;">
-    <h3></h3>
-    <button onclick="resetItemDisplay()">重置道具页面</button> <!-- 新增按钮 -->
-    
-    <div id="itemContainer"></div> <!-- 用于显示道具信息的容器 -->
-</div>
-    <div id="collectionList" style="display: none;">
-    <button onclick="resetAllCollectionEffects()">重新计算收藏物效果</button>
-    <div id="collectionInfoContainer" style="margin-top: 10px;"></div>
-</div>
-    <h3></h3>
-    <div id="reincarnationList" style="display: none;"></div>
-    <h3></h3>
-    <div id="petList" style="display: none;">
-    <h3></h3>
-    <button onclick="resetPetDisplay()">重置宠物页面</button> <!-- 新增按钮 -->
-    <div id="petContainer"></div> <!-- 用于显示宠物信息的容器 -->
-</div>
-    <div id="stockList" style="display: none;">
-        <h3>股票市场（每10分钟波动一次）</h3>
-        <div id="stocksContainer"></div>
-        <div class="stock-control">
+    <div id="equipmentList" class="main-tab-panel active" role="tabpanel"></div>
+
+    <div id="itemList" class="main-tab-panel" style="display: none;" role="tabpanel">
+      <div class="main-tab-toolbar">
+        <button type="button" class="main-action-btn ghost" onclick="resetItemDisplay()">重置道具页面</button>
+      </div>
+      <div id="itemContainer" class="main-card-grid"></div>
+    </div>
+
+    <div id="collectionList" class="main-tab-panel" style="display: none;" role="tabpanel">
+      <div class="main-tab-toolbar">
+        <button type="button" class="main-action-btn ghost" onclick="resetAllCollectionEffects()">重新计算收藏物效果</button>
+      </div>
+      <div id="collectionInfoContainer" class="main-stack"></div>
+    </div>
+
+    <div id="reincarnationList" class="main-tab-panel" style="display: none;" role="tabpanel"></div>
+
+    <div id="petList" class="main-tab-panel" style="display: none;" role="tabpanel">
+      <div class="main-tab-toolbar">
+        <button type="button" class="main-action-btn ghost" onclick="resetPetDisplay()">重置宠物页面</button>
+      </div>
+      <div id="petContainer" class="main-stack"></div>
+    </div>
+
+    <div id="stockList" class="main-tab-panel" style="display: none;" role="tabpanel">
+        <div class="main-section-head">
+          <h3>股票市场</h3>
+          <span class="main-section-sub">每10分钟波动一次</span>
+        </div>
+        <div id="stocksContainer" class="main-stack"></div>
+        <div class="stock-control main-form-bar">
             <input type="text" id="stockAmount" placeholder="数量(支持1e22)" min="1">
-            <button onclick="buyStock()">买入选中股</button>
-            <button onclick="sellStock()">卖出选中股</button>
-            <button onclick="buyAllStock()">买入选中所有股</button>
-            <button onclick="sellAllStock()">卖出选中所有股</button>
+            <button type="button" class="main-action-btn" onclick="buyStock()">买入选中股</button>
+            <button type="button" class="main-action-btn" onclick="sellStock()">卖出选中股</button>
+            <button type="button" class="main-action-btn secondary" onclick="buyAllStock()">买入选中所有股</button>
+            <button type="button" class="main-action-btn secondary" onclick="sellAllStock()">卖出选中所有股</button>
         </div>
     </div>
-    <h3></h3>
-    <div id="lotteryList" style="display: none;">
-        <h3></h3>
-        <div>
-            <h4>传统数字彩票（购买刮刮卡刷新开奖结果）</h4>
-            <p>每30分钟开奖，1-50数字中6个100万，中5个10万，中4个1万，中3个1000，中2个100，中1个10（中奖奖励星尘发票）。记得来一注！</p>
-            <button onclick="buyTraditionalLottery()">购买传统数字彩票（10转生币）</button>
-            <div id="traditionalLotteryNumbers"></div>
+
+    <div id="lotteryList" class="main-tab-panel" style="display: none;" role="tabpanel">
+        <div class="main-section-head">
+          <h3>彩票大厅</h3>
+          <span class="main-section-sub">转生币购买 · 数字彩 / 刮刮卡</span>
+        </div>
+        <div class="lottery-grid">
+          <div class="lottery-card lottery-card-main">
+            <div class="lottery-card-badge">数字彩</div>
+            <h4 class="lottery-card-title">传统数字彩票</h4>
+            <p class="lottery-card-desc">从 1–50 选号开奖。中 6 个奖 100万星尘发票，中 5/4/3/2/1 递减。每 30 分钟开奖。</p>
+            <div class="lottery-card-meta">
+              <div class="lottery-meta-chip"><span>花费</span><b>10 转生币</b></div>
+              <div class="lottery-meta-chip"><span>周期</span><b>30 分钟</b></div>
+            </div>
+            <button type="button" class="main-action-btn buy-traditional-lottery-btn" onclick="buyTraditionalLottery()">购买数字彩票</button>
+            <div id="traditionalLotteryNumbers" class="lottery-numbers"></div>
             <div id="traditionalLotteryCountdown" class="lottery-countdown">下次开奖: --:--:--</div>
-        </div>
-        <div>
-            <h4>蛇年刮刮卡（购买后刷新开奖结果）</h4>
-            <p>60%谢谢惠顾0转生币，35%鼓励奖获得10-100转生币，三等奖3.9%获得100-500，二等奖1%获得500-2000，一等奖0.1%获得2000-10000。</p>
-            <button onclick="buySnakeScratchCard()">购买蛇年刮刮卡（50转生币）</button>
-        </div>
-        <div>
-            <h4>发财刮刮卡（购买后刷新开奖结果）</h4>
-            <p>60%谢谢惠顾0转生币，35%鼓励奖获得100-1000转生币，三等奖3.9%获得1000-5000，二等奖1%获得5000-20000，一等奖0.1%获得20000-100000。</p>
-            <button onclick="buyFortuneScratchCard()">购买发财刮刮卡（500转生币）</button>
+          </div>
+          <div class="lottery-card">
+            <div class="lottery-card-badge soft">刮刮卡</div>
+            <h4 class="lottery-card-title">蛇年刮刮卡</h4>
+            <p class="lottery-card-desc">60% 谢谢惠顾 · 35% 鼓励奖 10–100 · 三等 3.9% · 二等 1% · 一等 0.1%</p>
+            <div class="lottery-card-meta">
+              <div class="lottery-meta-chip"><span>花费</span><b>50 转生币</b></div>
+              <div class="lottery-meta-chip"><span>即开</span><b>当场开奖</b></div>
+            </div>
+            <button type="button" class="main-action-btn secondary" onclick="buySnakeScratchCard()">购买蛇年刮刮卡</button>
+          </div>
+          <div class="lottery-card">
+            <div class="lottery-card-badge soft">刮刮卡</div>
+            <h4 class="lottery-card-title">发财刮刮卡</h4>
+            <p class="lottery-card-desc">60% 谢谢惠顾 · 35% 鼓励奖 100–1000 · 三等 3.9% · 二等 1% · 一等 0.1%</p>
+            <div class="lottery-card-meta">
+              <div class="lottery-meta-chip"><span>花费</span><b>500 转生币</b></div>
+              <div class="lottery-meta-chip"><span>即开</span><b>当场开奖</b></div>
+            </div>
+            <button type="button" class="main-action-btn secondary" onclick="buyFortuneScratchCard()">购买发财刮刮卡</button>
+          </div>
         </div>
     </div>
 
-    <!-- 新增银行系统 -->
-    <div id="bankList" style="display: none;">
-        <h3>银行系统</h3>
-        <div>
-            <p>当前存款: <span id="bankDeposit">0</span> 转生币</p>
-            <p>利息: <span id="bankInterest">0.2%</span> 每6分钟</p>
-            <p>总金额: <span id="bankTotal">0</span> 转生币</p>
+    <div id="bankList" class="main-tab-panel" style="display: none;" role="tabpanel">
+        <div class="main-section-head">
+          <h3>银行系统</h3>
+          <span class="main-section-sub">利息每6分钟结算</span>
+        </div>
+        <div class="main-stat-grid">
+            <div class="main-stat-chip"><span>当前存款</span><b id="bankDeposit">0</b></div>
+            <div class="main-stat-chip"><span>利息</span><b id="bankInterest">0.2%</b></div>
+            <div class="main-stat-chip"><span>总金额</span><b id="bankTotal">0</b></div>
+        </div>
+        <div class="main-form-bar">
             <input type="number" id="bankAmount" placeholder="金额" min="1">
-            <div style="margin:6px 0;font-size:12px;">
-                <span>存款快捷比例：</span>
-                <button type="button" onclick="setBankAmountPercent('deposit',1)">1%</button>
-                <button type="button" onclick="setBankAmountPercent('deposit',10)">10%</button>
-                <button type="button" onclick="setBankAmountPercent('deposit',25)">25%</button>
-                <button type="button" onclick="setBankAmountPercent('deposit',50)">50%</button>
+            <div class="main-chip-row">
+                <span class="main-muted">存款比例</span>
+                <button type="button" class="main-chip-btn" onclick="setBankAmountPercent('deposit',1)">1%</button>
+                <button type="button" class="main-chip-btn" onclick="setBankAmountPercent('deposit',10)">10%</button>
+                <button type="button" class="main-chip-btn" onclick="setBankAmountPercent('deposit',25)">25%</button>
+                <button type="button" class="main-chip-btn" onclick="setBankAmountPercent('deposit',50)">50%</button>
             </div>
-            <div style="margin:6px 0;font-size:12px;">
-                <span>取款快捷比例：</span>
-                <button type="button" onclick="setBankAmountPercent('withdraw',1)">1%</button>
-                <button type="button" onclick="setBankAmountPercent('withdraw',10)">10%</button>
-                <button type="button" onclick="setBankAmountPercent('withdraw',25)">25%</button>
-                <button type="button" onclick="setBankAmountPercent('withdraw',50)">50%</button>
+            <div class="main-chip-row">
+                <span class="main-muted">取款比例</span>
+                <button type="button" class="main-chip-btn" onclick="setBankAmountPercent('withdraw',1)">1%</button>
+                <button type="button" class="main-chip-btn" onclick="setBankAmountPercent('withdraw',10)">10%</button>
+                <button type="button" class="main-chip-btn" onclick="setBankAmountPercent('withdraw',25)">25%</button>
+                <button type="button" class="main-chip-btn" onclick="setBankAmountPercent('withdraw',50)">50%</button>
             </div>
-            <button onclick="depositToBank()">存款</button>
-            <button onclick="withdrawFromBank()">取款</button>
-            <button onclick="depositAllToBank()">存款所有</button>
-            <button onclick="withdrawAllFromBank()">取款所有</button>
+            <div class="main-btn-row">
+              <button type="button" class="main-action-btn" onclick="depositToBank()">存款</button>
+              <button type="button" class="main-action-btn" onclick="withdrawFromBank()">取款</button>
+              <button type="button" class="main-action-btn secondary" onclick="depositAllToBank()">存款所有</button>
+              <button type="button" class="main-action-btn secondary" onclick="withdrawAllFromBank()">取款所有</button>
+            </div>
         </div>
     </div>
 
-    <!-- 新增副本装备系统 -->
-    <div id="dungeonEquipmentList" style="display: none;">
-        <h3></h3>
-        <div id="dungeonEquipmentContainer"></div>
+    <div id="dungeonEquipmentList" class="main-tab-panel" style="display: none;" role="tabpanel">
+        <div id="dungeonEquipmentContainer" class="main-stack"></div>
     </div>
 
-    <!-- 新增魂环系统 -->
-    <div id="soulRingList" style="display: none;">
-        <h3></h3>
-        <div id="soulRingsContainer"></div>
+    <div id="soulRingList" class="main-tab-panel" style="display: none;" role="tabpanel">
+        <div id="soulRingsContainer" class="main-stack"></div>
     </div>
 
-        <!-- 玩家属性页面 -->
-<div id="playerAttributesList" style="display: none;">
-    <h3>玩家属性</h3>
-    <div>总属性点: <span id="totalAttributePoints">0</span></div>
-    <div>剩余属性点: <span id="remainingAttributePoints">0</span></div>
-    <div>
-        <strong>生命加成</strong>: 每2点属性点增加2%生命 
-        (当前加成: <span id="healthBonus">0%</span>, 已投入: <span id="healthPoints">0</span>)
-        <button onclick="addAttributePoint('health', 1)">+1</button>
-        <button onclick="addAttributePoint('health', 10)">+10</button>
-        <button onclick="addAttributePoint('health', 100)">+100</button>
-        <button onclick="addAttributePoint('health', 1000)">+1000</button>
-        <button onclick="addAttributePoint('health', 10000)">+10000</button>
-        <button onclick="addAttributePoint('health', 100000)">+100000</button>
-        <button onclick="addAttributePoint('health', 'all')">+全部</button>
+<div id="playerAttributesList" class="main-tab-panel" style="display: none;" role="tabpanel">
+    <div class="attr-page">
+      <div class="attr-page-head">
+        <div>
+          <h3 class="attr-page-title">玩家属性</h3>
+          <p class="attr-page-sub">转生与关卡提供属性点</p>
+        </div>
+        <button type="button" class="attr-reset-btn" onclick="resetAttributes()">洗点 · 1转生币</button>
+      </div>
+
+      <div class="attr-summary">
+        <div class="attr-summary-card">
+          <span>总属性点</span>
+          <b id="totalAttributePoints">0</b>
+        </div>
+        <div class="attr-summary-card accent">
+          <span>剩余属性点</span>
+          <b id="remainingAttributePoints">0</b>
+        </div>
+      </div>
+
+      <div class="attr-grid">
+        <div class="attr-card attr-health">
+          <div class="attr-card-head">
+            <strong>生命加成</strong>
+            <span class="attr-rule">每2点 +2% 生命</span>
+          </div>
+          <div class="attr-stats">
+            <div class="attr-stat"><span>当前</span><b id="healthBonus">0%</b></div>
+            <div class="attr-stat"><span>已投入</span><b id="healthPoints">0</b></div>
+          </div>
+          <div class="attr-btn-row">
+            <button type="button" class="attr-btn" onclick="addAttributePoint('health', 1)">+1</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('health', 10)">+10</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('health', 100)">+100</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('health', 1000)">+1k</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('health', 10000)">+1万</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('health', 100000)">+10万</button>
+            <button type="button" class="attr-btn all" onclick="addAttributePoint('health', 'all')">全部</button>
+          </div>
+        </div>
+
+        <div class="attr-card attr-attack">
+          <div class="attr-card-head">
+            <strong>攻击加成</strong>
+            <span class="attr-rule">每2点 +2% 攻击</span>
+          </div>
+          <div class="attr-stats">
+            <div class="attr-stat"><span>当前</span><b id="attackBonus">0%</b></div>
+            <div class="attr-stat"><span>已投入</span><b id="attackPoints">0</b></div>
+          </div>
+          <div class="attr-btn-row">
+            <button type="button" class="attr-btn" onclick="addAttributePoint('attack', 1)">+1</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('attack', 10)">+10</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('attack', 100)">+100</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('attack', 1000)">+1k</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('attack', 10000)">+1万</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('attack', 100000)">+10万</button>
+            <button type="button" class="attr-btn all" onclick="addAttributePoint('attack', 'all')">全部</button>
+          </div>
+        </div>
+
+        <div class="attr-card attr-crit">
+          <div class="attr-card-head">
+            <strong>暴击率加成</strong>
+            <span class="attr-rule">每2点 +0.1% 暴击</span>
+          </div>
+          <div class="attr-stats">
+            <div class="attr-stat"><span>当前</span><b id="critRateBonus">0%</b></div>
+            <div class="attr-stat"><span>已投入</span><b id="critRatePoints">0</b></div>
+          </div>
+          <div class="attr-btn-row">
+            <button type="button" class="attr-btn" onclick="addAttributePoint('critRate', 1)">+1</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('critRate', 10)">+10</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('critRate', 100)">+100</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('critRate', 1000)">+1k</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('critRate', 10000)">+1万</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('critRate', 100000)">+10万</button>
+            <button type="button" class="attr-btn all" onclick="addAttributePoint('critRate', 'all')">全部</button>
+          </div>
+        </div>
+
+        <div class="attr-card attr-critdmg">
+          <div class="attr-card-head">
+            <strong>爆伤加成</strong>
+            <span class="attr-rule">每2点 +1% 爆伤</span>
+          </div>
+          <div class="attr-stats">
+            <div class="attr-stat"><span>当前</span><b id="critDamageBonus">0%</b></div>
+            <div class="attr-stat"><span>已投入</span><b id="critDamagePoints">0</b></div>
+          </div>
+          <div class="attr-btn-row">
+            <button type="button" class="attr-btn" onclick="addAttributePoint('critDamage', 1)">+1</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('critDamage', 10)">+10</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('critDamage', 100)">+100</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('critDamage', 1000)">+1k</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('critDamage', 10000)">+1万</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('critDamage', 100000)">+10万</button>
+            <button type="button" class="attr-btn all" onclick="addAttributePoint('critDamage', 'all')">全部</button>
+          </div>
+        </div>
+
+        <div class="attr-card attr-multi">
+          <div class="attr-card-head">
+            <strong>连击</strong>
+            <span class="attr-rule">每300点 +1 次攻击</span>
+          </div>
+          <div class="attr-stats">
+            <div class="attr-stat"><span>当前</span><b id="multiAttackBonus">0</b></div>
+            <div class="attr-stat"><span>已投入</span><b id="multiAttackPoints">0</b></div>
+          </div>
+          <div class="attr-btn-row">
+            <button type="button" class="attr-btn" onclick="addAttributePoint('multiAttack', 1)">+1</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('multiAttack', 10)">+10</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('multiAttack', 100)">+100</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('multiAttack', 1000)">+1k</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('multiAttack', 10000)">+1万</button>
+            <button type="button" class="attr-btn" onclick="addAttributePoint('multiAttack', 100000)">+10万</button>
+            <button type="button" class="attr-btn all" onclick="addAttributePoint('multiAttack', 'all')">全部</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div>
-        <strong>攻击加成</strong>: 每2点属性点增加2%攻击 
-        (当前加成: <span id="attackBonus">0%</span>, 已投入: <span id="attackPoints">0</span>)
-        <button onclick="addAttributePoint('attack', 1)">+1</button>
-        <button onclick="addAttributePoint('attack', 10)">+10</button>
-        <button onclick="addAttributePoint('attack', 100)">+100</button>
-        <button onclick="addAttributePoint('attack', 1000)">+1000</button>
-        <button onclick="addAttributePoint('attack', 10000)">+10000</button>
-        <button onclick="addAttributePoint('attack', 100000)">+100000</button>
-        <button onclick="addAttributePoint('attack', 'all')">+全部</button>
-    </div>
-    <div>
-        <strong>暴击率加成</strong>: 每2点属性点增加0.1%暴击率 
-        (当前加成: <span id="critRateBonus">0%</span>, 已投入: <span id="critRatePoints">0</span>)
-        <button onclick="addAttributePoint('critRate', 1)">+1</button>
-        <button onclick="addAttributePoint('critRate', 10)">+10</button>
-        <button onclick="addAttributePoint('critRate', 100)">+100</button>
-        <button onclick="addAttributePoint('critRate', 1000)">+1000</button>
-        <button onclick="addAttributePoint('critRate', 10000)">+10000</button>
-        <button onclick="addAttributePoint('critRate', 100000)">+100000</button>
-        <button onclick="addAttributePoint('critRate', 'all')">+全部</button>
-    </div>
-    <div>
-        <strong>爆伤加成</strong>: 每2点属性点增加1%爆伤 
-        (当前加成: <span id="critDamageBonus">0%</span>, 已投入: <span id="critDamagePoints">0</span>)
-        <button onclick="addAttributePoint('critDamage', 1)">+1</button>
-        <button onclick="addAttributePoint('critDamage', 10)">+10</button>
-        <button onclick="addAttributePoint('critDamage', 100)">+100</button>
-        <button onclick="addAttributePoint('critDamage', 1000)">+1000</button>
-        <button onclick="addAttributePoint('critDamage', 10000)">+10000</button>
-        <button onclick="addAttributePoint('critDamage', 100000)">+100000</button>
-        <button onclick="addAttributePoint('critDamage', 'all')">+全部</button>
-    </div>
-    <div>
-        <strong>连击</strong>: 每300点属性点增加1次攻击 
-        (当前加成: <span id="multiAttackBonus">0</span>, 已投入: <span id="multiAttackPoints">0</span>)
-        <button onclick="addAttributePoint('multiAttack', 1)">+1</button>
-        <button onclick="addAttributePoint('multiAttack', 10)">+10</button>
-        <button onclick="addAttributePoint('multiAttack', 100)">+100</button>
-        <button onclick="addAttributePoint('multiAttack', 1000)">+1000</button>
-        <button onclick="addAttributePoint('multiAttack', 10000)">+10000</button>
-        <button onclick="addAttributePoint('multiAttack', 100000)">+100000</button>
-        <button onclick="addAttributePoint('multiAttack', 'all')">+全部</button>
-    </div>
-    <button onclick="resetAttributes()">洗点 (消耗1转生币)</button>
 </div>
 
-      <!-- 功法秘籍页面 -->
-<div id="techniquesList" style="display: none;" >
-    <h3></h3>
-    <button onclick="resetTechniquesData()">重置功法页面</button>
-    <div id="techniquesContainer" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;"></div>
+<div id="techniquesList" class="main-tab-panel" style="display: none;" role="tabpanel">
+    <div class="main-tab-toolbar">
+      <button type="button" class="main-action-btn ghost" onclick="resetTechniquesData()">重置功法页面</button>
+    </div>
+    <div id="techniquesContainer" class="main-stack tech-stack"></div>
  </div>
 
-    </div><!-- 关闭 tab 内容 padding -->
+    </div><!-- 关闭 main-tab-body -->
   </div><!-- 关闭 tabs card -->
 
-  <!-- 游戏日志 (与 1 样式一致) -->
+
+  <!-- 游戏日志：未联网整宽；联网登录后左日志 / 右无限深渊聊天 -->
   <div class="card game-log-section" style="margin-bottom: var(--space-md);">
     <div class="card-header" style="display:flex; align-items:center; gap:var(--space-sm);">
       游戏日志
+      <span id="gameLogChatStatus" class="game-log-chat-status" style="display:none;">联网聊天</span>
       <div style="display:flex; gap:2px; margin-left:auto;">
-        <button class="log-tab active" style="padding:4px 8px;font-size:11px;border:1px solid var(--color-border);border-radius:4px;background:transparent;cursor:pointer;" onclick="switchLogTab(1)">记录</button>
-        <button class="log-tab" style="padding:4px 8px;font-size:11px;border:1px solid var(--color-border);border-radius:4px;background:transparent;cursor:pointer;" onclick="switchLogTab(2)">公告</button>
-        <button class="log-tab" style="padding:4px 8px;font-size:11px;border:1px solid var(--color-border);border-radius:4px;background:transparent;cursor:pointer;" onclick="switchLogTab(3)">开奖</button>
+        <button type="button" class="log-tab active" data-log-page="1" style="padding:4px 8px;font-size:11px;border:1px solid var(--color-border);border-radius:4px;background:transparent;cursor:pointer;" onclick="switchLogTab(1)">记录</button>
+        <button type="button" class="log-tab" data-log-page="3" style="padding:4px 8px;font-size:11px;border:1px solid var(--color-border);border-radius:4px;background:transparent;cursor:pointer;" onclick="switchLogTab(3)">开奖</button>
       </div>
     </div>
-    <div id="gameLogPage1" class="active">
-        <div id="actionLog" class="log log-content"></div>
-    </div>
-    <div id="gameLogPage2">
-        <div class="log log-content"></div>
-    </div>
-    <div id="gameLogPage3">
-        <div id="lotteryResults" class="log log-content"></div>
-    </div>
-    <div id="gameLogPage4">
-        <div id="battleLog" class="log log-content"></div>
+    <div class="game-log-body">
+      <div class="game-log-main">
+        <div id="gameLogPage1" class="active">
+            <div id="actionLog" class="log log-content"></div>
+        </div>
+        <div id="gameLogPage2"></div>
+        <div id="gameLogPage3">
+            <div id="lotteryResults" class="log log-content"></div>
+        </div>
+        <div id="gameLogPage4">
+            <div id="battleLog" class="log log-content"></div>
+        </div>
+      </div>
+      <aside id="gameLogAbyssChatPane" class="game-log-abyss-chat" aria-label="联网聊天" hidden>
+        <div class="game-log-abyss-chat-head">
+          <span class="game-log-abyss-chat-title">联网聊天</span>
+          <span class="game-log-abyss-chat-hint">最近50条</span>
+        </div>
+        <div id="gameLogAbyssChatList" class="game-log-abyss-chat-list"></div>
+        <div class="game-log-abyss-chat-compose">
+          <input id="gameLogAbyssChatInput" type="text" maxlength="120" placeholder="输入聊天内容..." autocomplete="off" />
+          <button type="button" class="game-log-abyss-chat-send" onclick="sendAbyssOnlineChat('gameLogAbyssChatInput')">发送</button>
+        </div>
+      </aside>
     </div>
   </div>
 
@@ -655,7 +763,7 @@
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v2.0.35</div>
+  <div id="footer">版本号: v2.0.37</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -683,35 +791,85 @@
         <button onclick="cancelRename()" style="padding: 10px 24px; font-size: 15px;">取消</button>
     </div>
 </div>
-<div id="classSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
+<div id="classSystemOverlay" class="title-modal-overlay" style="display: none;" onclick="toggleClassSystem()"></div>
+<div id="classSystemUI" class="title-modal class-modal" style="display: none;" role="dialog" aria-labelledby="classModalHeading">
+    <div class="title-modal-header">
+        <div class="title-modal-heading">
+            <h2 id="classModalHeading">职业殿堂</h2>
+            <p class="title-modal-sub">一转后可加点分支，通天塔达标可逐阶转职晋升</p>
+        </div>
+        <button type="button" class="title-modal-close" onclick="toggleClassSystem()" aria-label="关闭">关闭</button>
+    </div>
 
-<div id="classSystemUI" class="class-panel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;">
-    <div class="class-header">
-        <h3>职业系统</h3>
+    <div class="title-modal-hero">
+        <div class="title-hero-label">当前职业</div>
+        <div class="title-hero-name is-empty" id="currentClassName">未选择职业</div>
+        <div class="title-hero-stats" id="classStatsDisplay">
+            <span class="title-stat">转职进度 <em id="classTierStat">0/7</em></span>
+            <span class="title-stat">分支加点 <em id="classBranchStat">0/0</em></span>
+            <span class="title-stat">最高关卡 <em id="classStageStat">0</em></span>
+            <span class="title-stat">通天塔 <em id="classTowerStat">0</em></span>
+            <span class="title-stat">转换书 <em id="classBookStat">0</em></span>
+        </div>
+        <div id="classPathTrack" class="class-path-track" aria-label="转职进度"></div>
     </div>
-    <div class="class-current-wrap">
-        <span class="class-current-label">当前职业：</span><span id="currentClassName">无</span>
+
+    <div class="title-modal-tabs" id="classBranchTabs" role="tablist">
+        <button type="button" class="title-tab active" data-branch="all" onclick="switchClassBranchTab('all')">全部</button>
+        <button type="button" class="title-tab" data-branch="origin" onclick="switchClassBranchTab('origin')">本命</button>
+        <button type="button" class="title-tab" data-branch="branches" onclick="switchClassBranchTab('branches')">分支</button>
+        <button type="button" class="title-tab" data-branch="jobs" onclick="switchClassBranchTab('jobs')">转职</button>
     </div>
-    <div id="classSelection" class="class-selection">
-        <button type="button" class="class-btn class-btn-warrior" onclick="selectClass('warrior')">战士</button>
-        <button type="button" class="class-btn class-btn-mage" onclick="selectClass('mage')">法师</button>
-        <button type="button" class="class-btn class-btn-explorer" onclick="selectClass('explorer')">探险家</button>
-        <button type="button" class="class-btn class-btn-close" onclick="toggleClassSystem()">关闭</button>
-    </div>
-    <div id="classChangeCost">
-        更换职业将消耗1本职业转换书，所有职业加成将重置
-    </div>
-    <div id="classBranches">
-        <h4>职业分支加点</h4>
-        <div id="branchPointsContainer"></div>
+
+    <div class="title-modal-body" id="classBranchesBody">
+        <section class="titleBranch class-section" data-branch="origin">
+            <div class="titleBranch-head">
+                <h3>本命职业</h3>
+                <span class="titleBranch-count" id="classOriginCount">3</span>
+            </div>
+            <div id="classSelection" class="titleRow class-origin-row">
+                <button type="button" class="class-origin-card class-btn-warrior" onclick="selectClass('warrior')">
+                    <span class="class-origin-name">战士</span>
+                    <span class="class-origin-tag">攻防体魄</span>
+                </button>
+                <button type="button" class="class-origin-card class-btn-mage" onclick="selectClass('mage')">
+                    <span class="class-origin-name">法师</span>
+                    <span class="class-origin-tag">奥秘法力</span>
+                </button>
+                <button type="button" class="class-origin-card class-btn-explorer" onclick="selectClass('explorer')">
+                    <span class="class-origin-name">探险家</span>
+                    <span class="class-origin-tag">探索机缘</span>
+                </button>
+            </div>
+            <div id="classChangeCost" class="class-change-hint">
+                更换职业消耗 <strong>1本职业转换书</strong>，所有转职与分支加成将重置
+            </div>
+        </section>
+
+        <section class="titleBranch class-section" data-branch="branches" id="classBranches">
+            <div class="titleBranch-head">
+                <h3>分支加点</h3>
+                <span class="titleBranch-count" id="classBranchCountBadge">0</span>
+            </div>
+            <div id="branchPointsContainer" class="class-branch-list"></div>
+        </section>
+
+        <section class="titleBranch class-section" data-branch="jobs" id="classJobsSection">
+            <div class="titleBranch-head">
+                <h3>转职晋升</h3>
+                <span class="titleBranch-count" id="classJobsCountBadge">0/7</span>
+            </div>
+            <div id="classJobsContainer" class="class-jobs-list"></div>
+        </section>
     </div>
 </div>
-<div id="classChangeConfirmOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); z-index: 1005;"></div>
-<div id="classChangeConfirmDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 22px 26px; border: 1px solid #ccc; border-radius: 10px; z-index: 1006; max-width: 420px; width: 90%; box-sizing: border-box; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.18);">
-    <div id="classChangeConfirmMessage" style="font-size: 15px; line-height: 1.65; margin-bottom: 20px; color: #333;"></div>
-    <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-        <button type="button" id="classChangeConfirmYes" style="padding: 8px 18px;">确认使用</button>
-        <button type="button" id="classChangeConfirmNo" style="padding: 8px 18px;">取消</button>
+<div id="classChangeConfirmOverlay" class="title-modal-overlay class-confirm-overlay" style="display: none;"></div>
+<div id="classChangeConfirmDialog" class="class-confirm-dialog" style="display: none;">
+    <div class="class-confirm-title">更换职业</div>
+    <div id="classChangeConfirmMessage" class="class-confirm-message"></div>
+    <div class="class-confirm-actions">
+        <button type="button" id="classChangeConfirmYes" class="class-confirm-yes">确认使用</button>
+        <button type="button" id="classChangeConfirmNo" class="class-confirm-no">取消</button>
     </div>
 </div>
 <div id="renameOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;"></div>
@@ -794,48 +952,99 @@
     </div>
 
 <!-- 称号系统弹窗 -->
-<div id="titleDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid #333; z-index: 1001; width: 80%; max-width: 800px; max-height: 80vh; overflow-y: auto;">
-    <h3>称号系统</h3>
-    <div id="titleBranches">
-        <!-- 关卡分支 -->
-        <div class="titleBranch">
-            <h4>关卡称号</h4>
-            <div class="titleRow" id="stageBranchContainer"></div>
+<div id="titleOverlay" class="title-modal-overlay" style="display: none;" onclick="closeTitleDialog()"></div>
+<div id="titleDialog" class="title-modal" style="display: none;" role="dialog" aria-labelledby="titleModalHeading">
+    <div class="title-modal-header">
+        <div class="title-modal-heading">
+            <h2 id="titleModalHeading">称号殿堂</h2>
+            <p class="title-modal-sub">已解锁称号永久叠加加成，佩戴仅影响展示名称</p>
         </div>
-        <!-- 转生分支 -->
-        <div class="titleBranch">
-            <h4>转生称号</h4>
-            <div class="titleRow" id="reincarnationBranchContainer"></div>
-        </div>
-        <!-- 驯兽师分支 -->
-        <div class="titleBranch">
-            <h4>驯兽师称号</h4>
-            <div class="titleRow" id="tamerBranchContainer"></div>
-        </div>
-        <!-- 魂环分支 -->
-        <div class="titleBranch">
-            <h4>魂环称号</h4>
-            <div class="titleRow" id="soulRingBranchContainer"></div>
-        </div>
-        <!-- 特殊分支 -->
-        <div class="titleBranch">
-            <h4>特殊称号</h4>
-            <div class="titleRow" id="specialBranchContainer"></div>
-        </div>
-     <!-- 特殊分支 -->
-        <div class="titleBranch">
-            <h4>普通称号</h4>
-            <div class="titleRow" id="towerBranyyContainer"></div>
-        </div>
-    <!-- 特殊分支 -->
-        <div class="titleBranch">
-            <h4>通天塔称号</h4>
-            <div class="titleRow" id="towerBranchContainer"></div>
+        <button type="button" class="title-modal-close" onclick="closeTitleDialog()" aria-label="关闭">关闭</button>
+    </div>
+
+    <div class="title-modal-hero">
+        <div class="title-hero-label">当前佩戴</div>
+        <div class="title-hero-name" id="titleWornDisplay">未佩戴称号</div>
+        <div class="title-hero-stats" id="titleStatsDisplay">
+            <span class="title-stat"><em id="titleUnlockedCount">0</em> 已解锁</span>
+            <span class="title-stat"><em id="titleTotalCount">0</em> 图鉴总数</span>
+            <span class="title-stat">攻击 <em id="titleAtkMul">×1</em></span>
+            <span class="title-stat">生命 <em id="titleHpMul">×1</em></span>
+            <span class="title-stat">暴击 <em id="titleCritMul">×1</em></span>
         </div>
     </div>
-    <button onclick="closeTitleDialog()" style="margin-top: 20px;">关闭</button>
+
+    <div class="title-modal-tabs" id="titleBranchTabs" role="tablist">
+        <button type="button" class="title-tab active" data-branch="all" onclick="switchTitleBranchTab('all')">全部</button>
+        <button type="button" class="title-tab" data-branch="stageBranch" onclick="switchTitleBranchTab('stageBranch')">关卡</button>
+        <button type="button" class="title-tab" data-branch="reincarnationBranch" onclick="switchTitleBranchTab('reincarnationBranch')">转生</button>
+        <button type="button" class="title-tab" data-branch="tamerBranch" onclick="switchTitleBranchTab('tamerBranch')">驯兽</button>
+        <button type="button" class="title-tab" data-branch="soulRingBranch" onclick="switchTitleBranchTab('soulRingBranch')">魂环</button>
+        <button type="button" class="title-tab" data-branch="specialBranch" onclick="switchTitleBranchTab('specialBranch')">特殊</button>
+        <button type="button" class="title-tab" data-branch="towerBranyy" onclick="switchTitleBranchTab('towerBranyy')">生活</button>
+        <button type="button" class="title-tab" data-branch="towerBranch" onclick="switchTitleBranchTab('towerBranch')">通天塔</button>
+        <button type="button" class="title-tab" data-branch="abyssBranch" onclick="switchTitleBranchTab('abyssBranch')">深渊</button>
+    </div>
+
+    <div class="title-modal-body" id="titleBranches">
+        <section class="titleBranch" data-branch="stageBranch">
+            <div class="titleBranch-head">
+                <h3>关卡称号</h3>
+                <span class="titleBranch-count" data-count-for="stageBranch">0</span>
+            </div>
+            <div class="titleRow" id="stageBranchContainer"></div>
+        </section>
+        <section class="titleBranch" data-branch="reincarnationBranch">
+            <div class="titleBranch-head">
+                <h3>转生称号</h3>
+                <span class="titleBranch-count" data-count-for="reincarnationBranch">0</span>
+            </div>
+            <div class="titleRow" id="reincarnationBranchContainer"></div>
+        </section>
+        <section class="titleBranch" data-branch="tamerBranch">
+            <div class="titleBranch-head">
+                <h3>驯兽师称号</h3>
+                <span class="titleBranch-count" data-count-for="tamerBranch">0</span>
+            </div>
+            <div class="titleRow" id="tamerBranchContainer"></div>
+        </section>
+        <section class="titleBranch" data-branch="soulRingBranch">
+            <div class="titleBranch-head">
+                <h3>魂环称号</h3>
+                <span class="titleBranch-count" data-count-for="soulRingBranch">0</span>
+            </div>
+            <div class="titleRow" id="soulRingBranchContainer"></div>
+        </section>
+        <section class="titleBranch" data-branch="specialBranch">
+            <div class="titleBranch-head">
+                <h3>特殊称号</h3>
+                <span class="titleBranch-count" data-count-for="specialBranch">0</span>
+            </div>
+            <div class="titleRow" id="specialBranchContainer"></div>
+        </section>
+        <section class="titleBranch" data-branch="towerBranyy">
+            <div class="titleBranch-head">
+                <h3>生活称号</h3>
+                <span class="titleBranch-count" data-count-for="towerBranyy">0</span>
+            </div>
+            <div class="titleRow" id="towerBranyyContainer"></div>
+        </section>
+        <section class="titleBranch" data-branch="towerBranch">
+            <div class="titleBranch-head">
+                <h3>通天塔称号</h3>
+                <span class="titleBranch-count" data-count-for="towerBranch">0</span>
+            </div>
+            <div class="titleRow" id="towerBranchContainer"></div>
+        </section>
+        <section class="titleBranch" data-branch="abyssBranch">
+            <div class="titleBranch-head">
+                <h3>无限深渊称号</h3>
+                <span class="titleBranch-count" data-count-for="abyssBranch">0</span>
+            </div>
+            <div class="titleRow" id="abyssBranchContainer"></div>
+        </section>
+    </div>
 </div>
-<div id="titleOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;"></div>
 
 
 <!-- 官职系统界面 - 官家气 -->
@@ -1153,6 +1362,9 @@
         <button onclick="buyChest(13)">虚空宝箱（1虚空石）</button>
         <button onclick="buyChest(14)">时空宝箱（1时空石）</button>
         <button onclick="buyChest(15)">未来宝箱（1未来石）</button>
+        <button onclick="buyChest(16)">永恒宝箱（1永恒石）</button>
+        <button onclick="buyChest(17)">无极宝箱（1无极石）</button>
+        <button onclick="buyChest(18)">大道宝箱（1大道石）</button>
      <button onclick="buyMaterialChest()">材料宝箱（<span id="materialChestCost">1</span>钻石）</button>
     <button onclick="buyTechniqueChest()">功法秘籍宝箱（<span id="techniqueChestCost">1</span>转生币）</button>
     </div>
@@ -1952,6 +2164,9 @@
         <button id="autoChest13" class="auto-buy-btn" onclick="toggleAutoBuy(13)">虚空宝箱自动购买：关闭</button>
         <button id="autoChest14" class="auto-buy-btn" onclick="toggleAutoBuy(14)">时空宝箱自动购买：关闭</button>
         <button id="autoChest15" class="auto-buy-btn" onclick="toggleAutoBuy(15)">未来宝箱自动购买：关闭</button>
+        <button id="autoChest16" class="auto-buy-btn" onclick="toggleAutoBuy(16)">永恒宝箱自动购买：关闭</button>
+        <button id="autoChest17" class="auto-buy-btn" onclick="toggleAutoBuy(17)">无极宝箱自动购买：关闭</button>
+        <button id="autoChest18" class="auto-buy-btn" onclick="toggleAutoBuy(18)">大道宝箱自动购买：关闭</button>
         <button id="autoMaterialChest" class="auto-buy-btn" onclick="toggleAutoBuyMaterialChest()">材料宝箱自动购买：关闭</button>
         <button id="autoTechniqueChest" class="auto-buy-btn" onclick="toggleAutoBuyTechniqueChest()">功法秘籍宝箱自动购买：关闭</button>
     </div>
@@ -1976,6 +2191,9 @@
         <button id="autoConvertMingtone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('mingtone')">冥源石自动兑换：关闭</button>
         <button id="autoConvertXutong" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('xutong')">虚空石自动兑换：关闭</button>
         <button id="autoConvertShitone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('shitone')">时空石自动兑换：关闭</button>
+        <button id="autoConvertWeitone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('weitone')">未来石自动兑换：关闭</button>
+        <button id="autoConvertYongtone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('yongtone')">永恒石自动兑换：关闭</button>
+        <button id="autoConvertWujitone" class="auto-buy-btn" onclick="toggleAutoConvertCurrency('wujitone')">无极石自动兑换：关闭</button>
     </div>
     <div style="text-align:center; margin-top:8px;">
         <button id="autoConvertDebugBtn" class="auto-buy-btn" onclick="toggleAutoConvertDebug()" style="display: none; max-width: 320px;">自动兑换调试日志：关闭</button>
@@ -2400,93 +2618,104 @@
     </div>
 </div>
 <!-- 神器锻造系统 -->
-<div id="artifactSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
-<div id="artifactSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #d4af37; border-radius: 10px; z-index: 1001; width: 850px; max-height: 800px; overflow-y: auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #d4af37; padding-bottom: 10px;">
-        <h2 style="color: #d4af37; margin: 0;">神器锻造系统</h2>
-        <button onclick="toggleArtifactSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-size: 14px;">关闭</button>
-    </div>
-    
-
-    <div style="display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap;">
-    <!-- 锻造区域 -->
-    <div style="margin-bottom: 0; background: #333; padding: 15px; border-radius: 8px; flex: 1; min-width: 240px;">
-        <h3 style="color: #d4af37; margin-top: 0;">锻造神器</h3>
-        <p style="font-size: 12px; color: #bbb; margin: 6px 0;">消耗 10 神器碎片 / 次 · 仓库上限 <strong id="artifactInventoryCapHint">100</strong> 件（不含已穿戴）</p>
-        <div style="font-size: 13px; margin-bottom: 8px;">仓库：<span id="artifactInventoryCountDisplay" style="color: #81c784; font-weight: bold;">0/100</span>
-            <span id="artifactInventoryFullHint" style="display:none; color:#ef5350; margin-left:8px;">已满</span>
-        </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-            <button onclick="forgeArtifact(1)" style="background: #d4af37; color: black; border: none; padding: 8px 14px; border-radius: 5px; cursor: pointer; font-weight: bold;">锻造1次</button>
-            <button onclick="forgeArtifact(10)" style="background: #d4af37; color: black; border: none; padding: 8px 14px; border-radius: 5px; cursor: pointer; font-weight: bold;">10次</button>
-            <button onclick="forgeArtifact(20)" style="background: #d4af37; color: black; border: none; padding: 8px 14px; border-radius: 5px; cursor: pointer; font-weight: bold;">20次</button>
-        </div>
-        <p style="font-size: 11px; color: #888; margin: 8px 0 0;">批量锻造会自动按空位截断，避免超出仓库上限导致云存档过大。</p>
-    </div>
-     <div style="background: #444; padding: 15px; border-radius: 8px; flex: 1; min-width: 200px;">
-        <h4 style="color: #d4af37; margin-top: 0;">进阶系统</h4>
-        <p style="font-size: 12px; color: #aaa; margin: 0 0 8px;">在下方仓库选择神器后点「详情」进阶</p>
-        <div id="artifactAdvanceInfo"></div>
-        <button id="advanceArtifactBtn" onclick="advanceArtifact()" style="margin-top: 10px; background: #9C27B0; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 14px;">进阶神器</button>
-    </div>
-     <div style="background: #2a2a2a; padding: 15px; border-radius: 8px; flex: 1.2; min-width: 260px; border: 1px solid #555;">
-        <h4 style="color: #ffcc80; margin-top: 0;">自动分解</h4>
-        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 8px;">
-            <label style="font-size: 12px; color: #ccc;">品阶及以下：</label>
-            <select id="artifactAutoDecomposeQuality" onchange="setArtifactAutoDecomposeQuality()" style="flex:1; min-width: 100px; padding: 5px; background: #1a1a1a; color: #fff; border: 1px solid #666; border-radius: 4px;">
-                <option value="common">普通</option>
-                <option value="uncommon">精良</option>
-                <option value="rare">稀有</option>
-                <option value="epic">史诗</option>
-                <option value="legendary">传说</option>
-                <option value="mythic">神话</option>
-            </select>
-            <button id="toggleArtifactAutoDecompose" onclick="toggleArtifactAutoDecompose()" style="padding: 6px 12px; background: #ff9800; color: #111; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold;">自动分解：关</button>
-        </div>
-        <div style="font-size: 11px; color: #aaa; margin-bottom: 6px;">保留套装（勾选的不参与自动分解）：</div>
-        <div id="artifactKeepSetsBox" style="max-height: 88px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11px;"></div>
-        <button onclick="runArtifactAutoDecompose(false)" style="margin-top: 8px; width: 100%; background: #5d4037; color: #fff; border: none; padding: 6px; border-radius: 5px; cursor: pointer; font-size: 12px;">立即执行一次自动分解</button>
-        <p style="font-size: 10px; color: #777; margin: 6px 0 0;">锁定、已勾选套装、高于阈值的品质不会被自动分解。</p>
-    </div>
-   </div>
-
-    <div id="artifactFilterUIAnchor"></div>
-
-    <!-- 装备部位 -->
-    <div style="margin-bottom: 20px;">
-        <h3 style="color: #d4af37; margin-top: 0;">装备部位</h3>
-        <div id="artifactSlots" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-            <!-- 6个装备部位将动态生成 -->
-        </div>
-    </div>
-    
-    <!-- 神器仓库 -->
-    <div style="margin-bottom: 20px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
-            <h3 style="color: #d4af37; margin: 0;">神器仓库</h3>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <div class="artifact-tab active" onclick="switchArtifactTab('all')">列表</div>
-                <div class="artifact-tab" onclick="switchArtifactTab('sets')">套装</div>
+<div id="artifactSystemOverlay" class="artifact-forge-overlay" style="display: none;"></div>
+<div id="artifactSystemUI" class="artifact-forge-panel" style="display: none;">
+    <header class="artifact-forge-header">
+        <div class="artifact-forge-titleblock">
+            <h2>神器锻造</h2>
+            <div class="artifact-forge-statline">
+                <span>仓库 <strong id="artifactInventoryCountDisplay">0/100</strong></span>
+                <span class="artifact-forge-dot">·</span>
+                <span>上限 <strong id="artifactInventoryCapHint">100</strong></span>
+                <span id="artifactInventoryFullHint" class="artifact-forge-full" style="display:none;">已满</span>
             </div>
         </div>
-        <div id="artifactInventory" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; max-height: 360px; overflow-y: auto; padding: 10px; background: #333; border-radius: 8px;">
+        <button type="button" class="artifact-forge-close" onclick="toggleArtifactSystem()">关闭</button>
+    </header>
+
+    <nav class="artifact-forge-nav" aria-label="神器分区">
+        <button type="button" class="artifact-forge-navbtn active" data-forge-view="equip" onclick="switchArtifactForgeView('equip')">装备</button>
+        <button type="button" class="artifact-forge-navbtn" data-forge-view="bag" onclick="switchArtifactForgeView('bag')">仓库</button>
+        <button type="button" class="artifact-forge-navbtn" data-forge-view="decompose" onclick="switchArtifactForgeView('decompose')">分解</button>
+    </nav>
+
+    <!-- 装备：锻造 + 部位 + 套装效果 -->
+    <div id="artifactForgeViewEquip" class="artifact-forge-view">
+        <div class="artifact-forge-toolbar">
+            <div class="artifact-forge-toolbar-text">
+                <strong>锻造神器</strong>
+                <span>每次消耗 10 神器碎片 · 进阶请在仓库点「详情」</span>
+            </div>
+            <div class="artifact-forge-actions">
+                <button type="button" class="artifact-btn-gold" onclick="forgeArtifact(1)">锻造×1</button>
+                <button type="button" class="artifact-btn-gold" onclick="forgeArtifact(10)">×10</button>
+                <button type="button" class="artifact-btn-gold" onclick="forgeArtifact(20)">×20</button>
+            </div>
         </div>
-        <div id="artifactInventoryPager" style="display: none; justify-content: center; align-items: center; gap: 12px; margin-top: 8px; font-size: 13px;">
-            <button type="button" onclick="changeArtifactInventoryPage(-1)" style="padding: 4px 12px; background: #555; color: #fff; border: none; border-radius: 4px; cursor: pointer;">上一页</button>
-            <span id="artifactInventoryPageInfo" style="color: #aaa;">1/1</span>
-            <button type="button" onclick="changeArtifactInventoryPage(1)" style="padding: 4px 12px; background: #555; color: #fff; border: none; border-radius: 4px; cursor: pointer;">下一页</button>
-        </div>
-        <div id="artifactSetsView" style="display: none; max-height: 360px; overflow-y: auto; padding: 10px; background: #333; border-radius: 8px;">
-            <div id="artifactSetsContainer"></div>
-        </div>
+        <section class="artifact-forge-block">
+            <h3>当前装备</h3>
+            <div id="artifactSlots" class="artifact-slots-grid"></div>
+        </section>
+        <section class="artifact-forge-block">
+            <h3>套装效果</h3>
+            <div id="setBonuses"></div>
+        </section>
     </div>
-   
-    <!-- 套装效果 -->
-    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
-        <h3 style="color: #d4af37; margin-top: 0;">套装效果</h3>
-        <div id="setBonuses">
-            <!-- 套装效果将动态显示 -->
-        </div>
+
+    <!-- 仓库 -->
+    <div id="artifactForgeViewBag" class="artifact-forge-view" style="display:none;">
+        <div id="artifactFilterUIAnchor"></div>
+        <section class="artifact-forge-block artifact-forge-inventory">
+            <div class="artifact-inventory-head">
+                <h3>神器仓库</h3>
+                <div class="artifact-tabs">
+                    <div class="artifact-tab active" onclick="switchArtifactTab('all')">列表</div>
+                    <div class="artifact-tab" onclick="switchArtifactTab('sets')">套装</div>
+                </div>
+            </div>
+            <div id="artifactInventory" class="artifact-inventory-grid"></div>
+            <div id="artifactInventoryPager" class="artifact-inventory-pager" style="display: none;">
+                <button type="button" onclick="changeArtifactInventoryPage(-1)">上一页</button>
+                <span id="artifactInventoryPageInfo">1/1</span>
+                <button type="button" onclick="changeArtifactInventoryPage(1)">下一页</button>
+            </div>
+            <div id="artifactSetsView" class="artifact-sets-view" style="display: none;">
+                <div id="artifactSetsContainer"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 自动分解 -->
+    <div id="artifactForgeViewDecompose" class="artifact-forge-view" style="display:none;">
+        <section class="artifact-forge-block artifact-forge-decompose">
+            <div class="artifact-decompose-head">
+                <h3>自动分解</h3>
+                <button type="button" id="toggleArtifactAutoDecompose" class="artifact-btn-toggle" onclick="toggleArtifactAutoDecompose()">自动分解：关</button>
+            </div>
+            <div class="artifact-decompose-controls">
+                <label class="artifact-decompose-quality">
+                    <span>品阶及以下</span>
+                    <select id="artifactAutoDecomposeQuality" onchange="setArtifactAutoDecomposeQuality()">
+                        <option value="common">普通</option>
+                        <option value="uncommon">精良</option>
+                        <option value="rare">稀有</option>
+                        <option value="epic">史诗</option>
+                        <option value="legendary">传说</option>
+                        <option value="mythic">神话</option>
+                    </select>
+                </label>
+                <button type="button" class="artifact-btn-run" onclick="runArtifactAutoDecompose(false)">立即执行一次</button>
+            </div>
+            <div class="artifact-decompose-sets-bar">
+                <span>限定套装（勾选=只拆这些；全不勾=全部套装）</span>
+                <div class="artifact-decompose-set-ops">
+                    <button type="button" onclick="selectAllArtifactDecomposeSets(true)">全选</button>
+                    <button type="button" onclick="selectAllArtifactDecomposeSets(false)">清空</button>
+                </div>
+            </div>
+            <div id="artifactKeepSetsBox" class="artifact-keep-sets"></div>
+            <p id="artifactAutoDecomposeHint" class="artifact-forge-tip">规则：按品阶分解；锁定不拆。</p>
+        </section>
     </div>
 </div>
 <!-- 杂货铺界面 -->
@@ -4426,8 +4655,8 @@
         </div>
     </div>
     
-    <!-- 水果机转轴 -->
-    <div id="slotReels" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; perspective: 1000px;">
+    <!-- 水果机转轴（中间线为开奖判定行，与「最近结果」一致） -->
+    <div id="slotReels" style="position: relative; display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; perspective: 1000px;">
         <div class="reel-container" style="position: relative; width: 100px; height: 300px; background: #000; border: 3px solid #FFD700; border-radius: 10px; overflow: hidden; transform-style: preserve-3d;">
             <div class="reel" id="reel1" style="position: absolute; width: 100%; transition: top 3s cubic-bezier(0.17, 0.67, 0.83, 0.67);">
                 <!-- 符号将通过JavaScript动态生成 -->
@@ -4443,6 +4672,7 @@
                 <!-- 符号将通过JavaScript动态生成 -->
             </div>
         </div>
+        <div style="pointer-events: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: calc(100% - 8px); max-width: 340px; height: 100px; border-top: 2px solid rgba(255,215,0,0.85); border-bottom: 2px solid rgba(255,215,0,0.85); box-sizing: border-box;"></div>
     </div>
     
     <!-- 控制按钮 -->
@@ -4481,135 +4711,431 @@
 
 
 <!-- 时光秘境主界面 -->
-<div id="timeSecretRealmOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 105, 148, 0.95); z-index: 1050;"></div>
-<div id="timeSecretRealmUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #006994, #004d73); color: #e6f7ff; padding: 25px; border: 3px solid #00bfff; border-radius: 15px; box-shadow: 0 0 30px #00bfff, inset 0 0 20px #006994; z-index: 1051; width: 800px; text-align: center;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #00bfff; padding-bottom: 10px;">
-        <h2 style="color: #e6f7ff; margin: 0; text-shadow: 0 0 10px #00bfff;">时光秘境</h2>
-        <button onclick="toggleTimeSecretRealm()" style="background: #00bfff; color: #004d73; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-weight: bold;">关闭</button>
-    </div>
-      <!-- 在这里添加难度选择区域 -->
-    <div id="tsrDifficultySelection" style="margin-bottom: 20px;">
-        <h3 style="color: #00bfff; border-bottom: 1px solid #00bfff; padding-bottom: 5px; margin-bottom: 10px;">难度选择</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 15px;">
-            <button onclick="selectTsrDifficulty('easy')" id="difficultyEasy" class="difficulty-btn" style="background: linear-gradient(to bottom, #32cd32, #228b22); color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-weight: bold;">简单</button>
-            <button onclick="selectTsrDifficulty('normal')" id="difficultyNormal" class="difficulty-btn" style="background: linear-gradient(to bottom, #1e90ff, #006994); color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-weight: bold;">普通</button>
-            <button onclick="selectTsrDifficulty('hard')" id="difficultyHard" class="difficulty-btn" style="background: linear-gradient(to bottom, #ffa500, #daa520); color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-weight: bold;">困难</button>
-            <button onclick="selectTsrDifficulty('nightmare')" id="difficultyNightmare" class="difficulty-btn" style="background: linear-gradient(to bottom, #ff4500, #cc3700); color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-weight: bold;">噩梦</button>
-            <button onclick="selectTsrDifficulty('hell')" id="difficultyHell" class="difficulty-btn" style="background: linear-gradient(to bottom, #8b0000, #600000); color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-weight: bold;">地狱</button>
+<div id="timeSecretRealmOverlay" class="tsr-overlay"></div>
+<div id="timeSecretRealmUI" class="tsr-shell">
+    <header class="tsr-topbar">
+        <div class="tsr-brand">
+            <div class="tsr-brand-glow"></div>
+            <span class="tsr-brand-icon">⏳</span>
+            <div>
+                <h2 class="tsr-title-gradient">时光秘境</h2>
+                <p class="tsr-brand-sub tsr-sub-rainbow">逆流时空 · 逐层探险 · 命运卡牌 · 虚空共鸣</p>
+            </div>
+            <span id="tsrRunDifficultyBadge" class="tsr-run-badge" style="display:none;"></span>
         </div>
-        <div id="tsrDifficultyInfo" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; border: 1px solid #00bfff; font-size: 14px;">
-            <div id="difficultyDescription">选择难度开始冒险</div>
-            <div id="difficultyUnlockCondition" style="font-size: 12px; color: #d8bfd8; margin-top: 5px;"></div>
+        <button type="button" class="tsr-btn tsr-btn-ghost" onclick="toggleTimeSecretRealm()">关闭</button>
+    </header>
+
+    <!-- 大厅 -->
+    <div id="tsrLobbyPanel" class="tsr-lobby">
+        <div class="tsr-hero-banner tsr-hero-v3">
+            <div class="tsr-hero-left">
+                <div class="tsr-hero-title-row">
+                    <span id="tsrPlayerTitle" class="tsr-player-title">🌱 时光新人</span>
+                    <span id="tsrClaimableCount" class="tsr-claimable-pill">暂无待领</span>
+                </div>
+                <h3>穿越时光裂隙，逐层征服永恒</h3>
+                <div id="tsrNewsTicker" class="tsr-news-ticker tsr-ticker-rainbow">🃏 命运卡牌三选一 · 💠 虚空共鸣爆发 · 🌈 彩光神龛 · ⏰ 末日倒计时 · 🕳️ 虚空/Ω序/奇点新难度</div>
+            </div>
+            <div class="tsr-hero-stats tsr-hero-stats-v3">
+                <div class="tsr-hero-stat"><span id="tsrCurrency">0</span><label>秘境币</label></div>
+                <div class="tsr-hero-stat"><span id="tsrKeyCount">0</span><label>钥匙</label></div>
+                <div class="tsr-hero-stat tsr-hero-stat-streak"><span id="tsrHeroStreak">0</span><label>连击日</label></div>
+                <div class="tsr-hero-stat"><span id="tsrBestFloorHero">0</span><label>最佳层</label></div>
+            </div>
         </div>
-    </div>
-<!-- 开始冒险按钮 -->
-<button onclick="startTimeSecretRealm()" id="startTsrBtn" style="background: linear-gradient(to bottom, #ffd700, #daa520); color: #004d73; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; margin: 10px 0;">开始冒险</button>
-    <!-- 秘境信息显示 -->
-    <div style="margin-bottom: 20px;">
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; border: 1px solid #00bfff;">
-                <div style="color: #00bfff;">秘境币</div>
-                <div id="tsrCurrency" style="font-size: 18px; color: #ffd700;">0</div>
+
+        <nav class="tsr-tab-nav tsr-tab-nav-v3">
+            <button type="button" class="tsr-tab-btn active" data-tsr-tab="adventure" onclick="switchTsrLobbyTab('adventure')">⚔️ 冒险大厅</button>
+            <button type="button" class="tsr-tab-btn" data-tsr-tab="welfare" onclick="switchTsrLobbyTab('welfare')">🎁 福利中心<span id="tsrWelfareBadge" class="tsr-tab-badge"></span></button>
+            <button type="button" class="tsr-tab-btn" data-tsr-tab="shop" onclick="switchTsrLobbyTab('shop')">🏪 永久商店</button>
+            <button type="button" class="tsr-tab-btn" data-tsr-tab="spirit" onclick="switchTsrLobbyTab('spirit')">🧚 精灵养成</button>
+            <button type="button" class="tsr-tab-btn" data-tsr-tab="codex" onclick="switchTsrLobbyTab('codex')">📖 秘境图鉴</button>
+            <button type="button" class="tsr-tab-btn" data-tsr-tab="quests" onclick="switchTsrLobbyTab('quests')">📅 日常周常<span id="tsrQuestBadge" class="tsr-tab-badge"></span></button>
+            <button type="button" class="tsr-tab-btn" data-tsr-tab="achievements" onclick="switchTsrLobbyTab('achievements')">🏆 成就殿堂</button>
+        </nav>
+
+        <div id="tsrTabAdventure" class="tsr-tab-panel active">
+            <div class="tsr-adventure-layout">
+                <div class="tsr-adventure-main">
+                    <div class="tsr-stats-row tsr-stats-row-v3">
+                        <div class="tsr-chip"><span class="tsr-chip-label">最佳层数</span><span id="tsrBestFloor" class="tsr-chip-value">0</span></div>
+                        <div class="tsr-chip"><span class="tsr-chip-label">通关次数</span><span id="tsrClearCount" class="tsr-chip-value">0</span></div>
+                        <div class="tsr-chip"><span class="tsr-chip-label">冒险次数</span><span id="tsrTotalRuns" class="tsr-chip-value">0</span></div>
+                        <div class="tsr-chip"><span class="tsr-chip-label">图鉴进度</span><span id="tsrCodexPct" class="tsr-chip-value">0%</span></div>
+                    </div>
+
+                    <section id="tsrDifficultySelection" class="tsr-diff-section">
+                        <h3 class="tsr-block-title">🎯 选择难度</h3>
+                        <div class="tsr-diff-cards">
+                            <button type="button" onclick="selectTsrDifficulty('easy')" id="difficultyEasy" class="tsr-diff-card tsr-diff-easy" data-difficulty="easy">
+                                <span class="tsr-diff-icon">🌱</span><span class="tsr-diff-name">简单</span><span class="tsr-diff-floor">26层</span>
+                            </button>
+                            <button type="button" onclick="selectTsrDifficulty('normal')" id="difficultyNormal" class="tsr-diff-card tsr-diff-normal" data-difficulty="normal">
+                                <span class="tsr-diff-icon">⚔️</span><span class="tsr-diff-name">普通</span><span class="tsr-diff-floor">40层</span>
+                            </button>
+                            <button type="button" onclick="selectTsrDifficulty('hard')" id="difficultyHard" class="tsr-diff-card tsr-diff-hard" data-difficulty="hard">
+                                <span class="tsr-diff-icon">🔥</span><span class="tsr-diff-name">困难</span><span class="tsr-diff-floor">55层</span>
+                            </button>
+                            <button type="button" onclick="selectTsrDifficulty('nightmare')" id="difficultyNightmare" class="tsr-diff-card tsr-diff-nightmare" data-difficulty="nightmare">
+                                <span class="tsr-diff-icon">💀</span><span class="tsr-diff-name">噩梦</span><span class="tsr-diff-floor">70层</span>
+                            </button>
+                            <button type="button" onclick="selectTsrDifficulty('hell')" id="difficultyHell" class="tsr-diff-card tsr-diff-hell" data-difficulty="hell">
+                                <span class="tsr-diff-icon">☠️</span><span class="tsr-diff-name">地狱</span><span class="tsr-diff-floor">85层</span>
+                            </button>
+                            <button type="button" onclick="selectTsrDifficulty('abyss')" id="difficultyAbyss" class="tsr-diff-card tsr-diff-abyss" data-difficulty="abyss">
+                                <span class="tsr-diff-icon">🕳️</span><span class="tsr-diff-name">深渊</span><span class="tsr-diff-floor">105层</span>
+                            </button>
+                            <button type="button" onclick="selectTsrDifficulty('eternal')" id="difficultyEternal" class="tsr-diff-card tsr-diff-eternal" data-difficulty="eternal">
+                                <span class="tsr-diff-icon">♾️</span><span class="tsr-diff-name">永恒</span><span class="tsr-diff-floor">125层</span>
+                            </button>
+                            <button type="button" onclick="selectTsrDifficulty('transcendent')" id="difficultyTranscendent" class="tsr-diff-card tsr-diff-transcendent" data-difficulty="transcendent">
+                                <span class="tsr-diff-icon">🌟</span><span class="tsr-diff-name">超越</span><span class="tsr-diff-floor">145层</span>
+                            </button>
+                            <button type="button" onclick="selectTsrDifficulty('apocalypse')" id="difficultyApocalypse" class="tsr-diff-card tsr-diff-apocalypse" data-difficulty="apocalypse">
+                                <span class="tsr-diff-icon">💀</span><span class="tsr-diff-name">终焉</span><span class="tsr-diff-floor">170层</span>
+                            </button>
+                            <button type="button" onclick="selectTsrDifficulty('void')" id="difficultyVoid" class="tsr-diff-card tsr-diff-void" data-difficulty="void">
+                                <span class="tsr-diff-icon">🕳️</span><span class="tsr-diff-name">虚空</span><span class="tsr-diff-floor">195层</span>
+                            </button>
+                            <button type="button" onclick="selectTsrDifficulty('omega')" id="difficultyOmega" class="tsr-diff-card tsr-diff-omega" data-difficulty="omega">
+                                <span class="tsr-diff-icon">⚙️</span><span class="tsr-diff-name">Ω序</span><span class="tsr-diff-floor">220层</span>
+                            </button>
+                            <button type="button" onclick="selectTsrDifficulty('singularity')" id="difficultySingularity" class="tsr-diff-card tsr-diff-singularity" data-difficulty="singularity">
+                                <span class="tsr-diff-icon">💠</span><span class="tsr-diff-name">奇点</span><span class="tsr-diff-floor">250层</span>
+                            </button>
+                        </div>
+                        <div id="tsrDifficultyInfo" class="tsr-diff-detail">
+                            <div id="difficultyDescription">选择难度开始冒险</div>
+                            <div id="tsrRewardEstimate" class="tsr-diff-reward-est"></div>
+                            <div id="difficultyUnlockCondition" class="tsr-diff-unlock"></div>
+                        </div>
+                        <div id="tsrDifficultyProgress" class="tsr-diff-progress"></div>
+                    </section>
+
+                    <section class="tsr-contract-section">
+                        <h3 class="tsr-block-title">📜 主契约 <span class="tsr-block-sub">高风险高回报，影响整局节奏</span></h3>
+                        <p id="tsrContractHint" class="tsr-contract-hint">标准冒险，不附加条件</p>
+                        <div class="tsr-contract-cards tsr-contract-cards-v3">
+                            <button type="button" class="tsr-contract-card active" data-role="primary" data-contract="none" onclick="selectTsrContract('none')"><span>📜</span><b>无契约</b><small>稳健入门</small></button>
+                            <button type="button" class="tsr-contract-card" data-role="primary" data-contract="speedrun" onclick="selectTsrContract('speedrun')"><span>⚡</span><b>疾行者</b><small>少时多币</small></button>
+                            <button type="button" class="tsr-contract-card" data-role="primary" data-contract="hoarder" onclick="selectTsrContract('hoarder')"><span>🐹</span><b>囤时者</b><small>层层加时</small></button>
+                            <button type="button" class="tsr-contract-card" data-role="primary" data-contract="gambler" onclick="selectTsrContract('gambler')"><span>🎰</span><b>赌神</b><small>赌局加成</small></button>
+                            <button type="button" class="tsr-contract-card" data-role="primary" data-contract="memeLord" onclick="selectTsrContract('memeLord')"><span>🃏</span><b>梗王</b><small>梗房狂潮</small></button>
+                            <button type="button" class="tsr-contract-card" data-role="primary" data-contract="ironMan" onclick="selectTsrContract('ironMan')"><span>🦾</span><b>铁人</b><small>血厚耗时</small></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="primary" data-contract="spiritGuard" onclick="selectTsrContract('spiritGuard')" title="精灵5级后解锁"><span>🧚</span><b>驭灵者</b><small>精灵充能</small></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="primary" data-contract="spiritSage" onclick="selectTsrContract('spiritSage')" title="精灵10级后解锁"><span>📚</span><b>精灵学者</b><small>精灵房+80%</small></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="primary" data-contract="spiritHunter" onclick="selectTsrContract('spiritHunter')" title="精灵8级后解锁"><span>🏹</span><b>猎灵者</b><small>精英币+18%</small></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="primary" data-contract="starSpirit" onclick="selectTsrContract('starSpirit')" title="终焉星灵后解锁"><span>💫</span><b>星灵</b><small>终焉专属</small></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="primary" data-contract="affixLord" onclick="selectTsrContract('affixLord')" title="击败8只带词条怪后解锁"><span>🏷️</span><b>词条行者</b><small>词条率+35%</small></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="primary" data-contract="fortuneSeeker" onclick="selectTsrContract('fortuneSeeker')" title="彩运轮盘2次或传奇见闻馆1次后解锁"><span>🎨</span><b>彩运</b><small>事件+梗房</small></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="primary" data-contract="chronoHunter" onclick="selectTsrContract('chronoHunter')" title="时光扭曲3次或冒险15次后解锁"><span>🕰️</span><b>时序猎手</b><small>省时多层</small></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="primary" data-contract="codexKeeper" onclick="selectTsrContract('codexKeeper')" title="图鉴过半或传奇见闻馆3次后解锁"><span>📚</span><b>图鉴守护</b><small>特殊房+35%</small></button>
+                        </div>
+                    </section>
+                    <section id="tsrSubContractSection" class="tsr-contract-section tsr-sub-contract" style="display:none;">
+                        <h3 class="tsr-block-title">🔗 副契约 <span class="tsr-block-sub">通关1次后解锁，50%效果，可触发羁绊</span></h3>
+                        <p id="tsrSubContractLock" class="tsr-contract-hint">首次通关后解锁双契约玩法</p>
+                        <div class="tsr-contract-cards tsr-contract-cards-v3">
+                            <button type="button" class="tsr-contract-card active" data-role="sub" data-contract="none" onclick="selectTsrSubContract('none')"><span>➖</span><b>无副约</b></button>
+                            <button type="button" class="tsr-contract-card" data-role="sub" data-contract="speedrun" onclick="selectTsrSubContract('speedrun')"><span>⚡</span><b>疾行</b></button>
+                            <button type="button" class="tsr-contract-card" data-role="sub" data-contract="hoarder" onclick="selectTsrSubContract('hoarder')"><span>🐹</span><b>囤时</b></button>
+                            <button type="button" class="tsr-contract-card" data-role="sub" data-contract="gambler" onclick="selectTsrSubContract('gambler')"><span>🎰</span><b>赌神</b></button>
+                            <button type="button" class="tsr-contract-card" data-role="sub" data-contract="memeLord" onclick="selectTsrSubContract('memeLord')"><span>🃏</span><b>梗王</b></button>
+                            <button type="button" class="tsr-contract-card" data-role="sub" data-contract="ironMan" onclick="selectTsrSubContract('ironMan')"><span>🦾</span><b>铁人</b></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="sub" data-contract="spiritGuard" onclick="selectTsrSubContract('spiritGuard')" title="精灵5级后解锁"><span>🧚</span><b>驭灵</b></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="sub" data-contract="spiritSage" onclick="selectTsrSubContract('spiritSage')" title="精灵10级后解锁"><span>📚</span><b>学者</b></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="sub" data-contract="spiritHunter" onclick="selectTsrSubContract('spiritHunter')" title="精灵8级后解锁"><span>🏹</span><b>猎灵</b></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="sub" data-contract="starSpirit" onclick="selectTsrSubContract('starSpirit')" title="终焉星灵后解锁"><span>💫</span><b>星灵</b></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="sub" data-contract="affixLord" onclick="selectTsrSubContract('affixLord')" title="击败8只带词条怪后解锁"><span>🏷️</span><b>词条</b></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="sub" data-contract="fortuneSeeker" onclick="selectTsrSubContract('fortuneSeeker')" title="彩运轮盘2次或传奇见闻馆1次后解锁"><span>🎨</span><b>彩运</b></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="sub" data-contract="chronoHunter" onclick="selectTsrSubContract('chronoHunter')" title="时光扭曲3次或冒险15次后解锁"><span>🕰️</span><b>时序</b></button>
+                            <button type="button" class="tsr-contract-card tsr-contract-locked" data-role="sub" data-contract="codexKeeper" onclick="selectTsrSubContract('codexKeeper')" title="图鉴过半或传奇见闻馆3次后解锁"><span>📚</span><b>图鉴</b></button>
+                        </div>
+                    </section>
+
+                    <section id="tsrFateCardSection" class="tsr-fate-section">
+                        <h3 class="tsr-block-title tsr-title-rainbow">🃏 命运卡牌 <span class="tsr-block-sub">开局三选一 · 高风险高回报</span></h3>
+                        <div id="tsrFateCardCards" class="tsr-fate-cards"></div>
+                    </section>
+
+                    <div class="tsr-lobby-actions tsr-lobby-actions-v3">
+                        <button type="button" onclick="startTimeSecretRealm()" id="startTsrBtn" class="tsr-btn tsr-btn-gold tsr-btn-lg tsr-btn-pulse">🔑 消耗1钥匙 · 开始冒险</button>
+                        <p class="tsr-start-hint">完成今日挑战与悬赏可获得额外秘境币 · 连续通关日有收益加成</p>
+                    </div>
+                </div>
+                <aside id="tsrDashboardContent" class="tsr-adventure-side tsr-dashboard"></aside>
             </div>
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; border: 1px solid #00bfff;">
-                <div style="color: #00bfff;">最佳层数</div>
-                <div id="tsrBestFloor" style="font-size: 18px; color: #ffd700;">0</div>
+        </div>
+
+        <div id="tsrTabWelfare" class="tsr-tab-panel">
+            <div class="tsr-welfare-grid">
+                <section class="tsr-welfare-card tsr-welfare-sign">
+                    <h3 class="tsr-block-title">📅 七日签到</h3>
+                    <div id="tsrSignInCalendar"></div>
+                </section>
+                <section class="tsr-welfare-card tsr-welfare-wheel">
+                    <h3 class="tsr-block-title">🎡 时光转盘</h3>
+                    <div id="tsrFortuneWheel" class="tsr-fortune-wheel">🎡</div>
+                    <div id="tsrWheelInfo"></div>
+                </section>
+                <section class="tsr-welfare-card tsr-welfare-bounty tsr-welfare-wide">
+                    <h3 class="tsr-block-title">🎯 每日悬赏 <span class="tsr-block-sub">完成即领，次日刷新</span></h3>
+                    <div id="tsrBountyBoard" class="tsr-bounty-board"></div>
+                </section>
             </div>
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; border: 1px solid #00bfff;">
-                <div style="color: #00bfff;">通关次数</div>
-                <div id="tsrClearCount" style="font-size: 18px; color: #ffd700;">0</div>
+        </div>
+
+        <div id="tsrTabShop" class="tsr-tab-panel">
+            <div class="tsr-shop-tab-layout">
+                <section class="tsr-shop-tab-bonuses">
+                    <h3 class="tsr-block-title">✨ 当前永久加成</h3>
+                    <div id="tsrShopBonusesPreview" class="tsr-bonuses-preview"></div>
+                </section>
+                <section class="tsr-shop-tab-featured">
+                    <h3 class="tsr-block-title">🔥 推荐商品</h3>
+                    <div id="tsrShopPreview"></div>
+                    <button type="button" onclick="openTsrShop()" class="tsr-btn tsr-btn-purple tsr-btn-lg">打开完整秘境商店</button>
+                </section>
             </div>
+        </div>
+
+        <div id="tsrTabSpirit" class="tsr-tab-panel">
+            <p class="tsr-tab-hint">培养时光精灵、领悟灵脉技能。Lv35飞升台 · Lv36王座三连战 · 王座3通后极境暴君 · 审判庭/巡礼/裂隙等新特殊房 · 第4形态「终焉星灵」需Lv40与终焉证明。</p>
+            <div id="tsrSpiritContent" class="tsr-spirit-panel"></div>
+        </div>
+
+        <div id="tsrTabCodex" class="tsr-tab-panel">
+            <p class="tsr-tab-hint">分栏浏览房间、遗物、装备、怪物、词条与变异。支持搜索与筛选；点条目看详情，未解锁不剧透。</p>
+            <div id="tsrCodexContent" class="tsr-codex-ui"></div>
+        </div>
+
+        <div id="tsrTabAchievements" class="tsr-tab-panel">
+            <p class="tsr-tab-hint">完成挑战解锁成就。每项成就永久提升秘境内攻击、生命与防御（反击减伤），已解锁立即生效。</p>
+            <div id="tsrAchievementsContent" class="tsr-achieve-list tsr-achieve-grid"></div>
+        </div>
+
+        <div id="tsrTabQuests" class="tsr-tab-panel">
+            <p class="tsr-tab-hint">每日3项日常、每周2项周常，完成可领秘境币与钥匙。</p>
+            <div id="tsrQuestsContent" class="tsr-quest-list"></div>
         </div>
     </div>
 
-    <!-- 秘境控制区域 -->
-    <div style="margin-bottom: 20px;">
-      
-        <button onclick="openTsrShop()" id="openTsrShopBtn" style="background: linear-gradient(to bottom, #ffd700, #daa520); color: #004d73; border: 2px solid #ffd700; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; text-shadow: 0 0 5px #ffd700; box-shadow: 0 0 15px #ffd700; margin-left: 10px;">
-            秘境商店
-        </button>
-    </div>
-    <!-- 秘境状态显示 -->
-    <div id="tsrStatusDisplay" style="display: none; margin-bottom: 20px;">
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; border: 1px solid #00bfff;">
-                <div style="color: #00bfff;">当前层数</div>
-                <div id="tsrCurrentFloor" style="font-size: 16px; color: #ffd700;">1</div>
+    <!-- 冒险中 -->
+    <div id="tsrAdventurePanel" class="tsr-run" style="display:none;">
+        <div class="tsr-run-top">
+            <div class="tsr-run-left">
+                <div id="tsrFloorMap" class="tsr-floor-map"></div>
+                <div id="tsrProgress" class="tsr-progress-wrap"></div>
             </div>
-          <div id="tsrBuffsDisplay" style="display: none; margin-bottom: 20px;">
-    <h3 style="color: #90ee90; border-bottom: 1px solid #90ee90; padding-bottom: 5px; margin-bottom: 10px;">当前增益效果</h3>
-    <div id="tsrCurrentBuffs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; max-height: 150px; overflow-y: auto;"></div>
-</div>
-<div id="tsrHealthBar" style="display: none; margin-bottom: 15px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-        <span style="color: #ff6b6b; font-weight: bold;">生命值:</span>
-        <span id="tsrHealthText" style="color: #ff6b6b; font-weight: bold;">100%</span>
-    </div>
-    <div style="width: 100%; height: 20px; background: rgba(255, 107, 107, 0.2); border-radius: 10px; overflow: hidden;">
-        <div id="tsrHealthBarFill" style="height: 100%; background: linear-gradient(to right, #ff6b6b, #ff0000); border-radius: 10px; transition: width 0.3s ease; width: 100%;"></div>
-    </div>
-    <div style="font-size: 11px; color: #ff6b6b; text-align: center; margin-top: 3px;">
-        <span id="tsrHealthWarning" style="display: none;">⚠️ 生命值低于30%，危险！</span>
-    </div>
-</div>
-<div id="tsrSkillsDisplay" style="display: none; margin-bottom: 20px;">
-    <h3 style="color: #00bfff; border-bottom: 1px solid #00bfff; padding-bottom: 5px; margin-bottom: 10px;">陷阱技能</h3>
-    <div id="tsrCurrentSkills" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;"></div>
-</div>
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; border: 1px solid #00bfff;">
-                <div style="color: #00bfff;">剩余时间</div>
-                <div id="tsrTimeLeft" style="font-size: 16px; color: #ff6b6b;">300秒</div>
+            <div class="tsr-run-center">
+                <div class="tsr-time-ring" id="tsrTimeRingWrap">
+                    <svg viewBox="0 0 100 100" class="tsr-ring-svg">
+                        <circle cx="50" cy="50" r="42" class="tsr-ring-bg"></circle>
+                        <circle cx="50" cy="50" r="42" id="tsrTimeRingFill" class="tsr-ring-fill"></circle>
+                    </svg>
+                    <div class="tsr-ring-text">
+                        <span id="tsrTimeLeft" class="tsr-ring-time">300</span>
+                        <span class="tsr-ring-unit">秒</span>
+                    </div>
+                </div>
             </div>
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; border: 1px solid #00bfff;">
-                <div style="color: #00bfff;">临时强化</div>
-                <div id="tsrTempBuffs" style="font-size: 16px; color: #90ee90;">0个</div>
-            </div>
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; border: 1px solid #00bfff;">
-                <div style="color: #00bfff;">秘境币</div>
-                <div id="tsrCurrentCurrency" style="font-size: 16px; color: #ffd700;">0</div>
+            <div class="tsr-run-right">
+                <div class="tsr-chip"><span class="tsr-chip-label">层数</span><span id="tsrCurrentFloor" class="tsr-chip-value">1</span></div>
+                <div class="tsr-chip"><span class="tsr-chip-label">秘境币</span><span id="tsrCurrentCurrency" class="tsr-chip-value">0</span></div>
+                <div class="tsr-chip tsr-chip-combo"><span class="tsr-chip-label">连击</span><span id="tsrComboDisplay" class="tsr-chip-value">×0</span></div>
+                <div class="tsr-chip tsr-chip-spirit">
+                    <span class="tsr-chip-label">精灵</span>
+                    <span id="tsrSpiritRunSub" class="tsr-chip-spirit-name"></span>
+                    <span id="tsrSpiritCharge" class="tsr-chip-value">0%</span>
+                </div>
+                <div class="tsr-chip tsr-chip-resonance"><span class="tsr-chip-label">虚空共鸣</span><span id="tsrVoidResonance" class="tsr-chip-value tsr-resonance-val">0%</span></div>
+                <div class="tsr-chip"><span class="tsr-chip-label">增益</span><span id="tsrTempBuffs" class="tsr-chip-value">0</span></div>
+                <div id="tsrEncounterChainWrap" class="tsr-chain-wrap" style="display:none;">
+                    <span class="tsr-chain-label">✨ 遭遇链</span>
+                    <div class="tsr-chain-track"><div id="tsrEncounterChainFill" class="tsr-chain-fill"></div></div>
+                    <span id="tsrEncounterChainVal" class="tsr-chain-val">×0</span>
+                </div>
+                <div id="tsrRoomPreview" class="tsr-room-preview" style="display:none;"></div>
+                <div id="tsrFloorAffix" class="tsr-floor-affix" style="display:none;"></div>
             </div>
         </div>
-    </div>
-    
-    <!-- 秘境房间显示 -->
-    <div id="tsrRoomDisplay" style="display: none; margin-bottom: 20px;">
-        <h3 style="color: #00bfff; margin-bottom: 10px;">当前房间</h3>
-        <div id="tsrCurrentRoom" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 2px solid #00bfff; min-height: 100px;"></div>
-    </div>
-    
-    <!-- 秘境行动控制 -->
-    <div id="tsrActionControls" style="display: none; margin-bottom: 20px;">
-        <div style="display: flex; justify-content: center; gap: 10px;">
-            <button onclick="tsrExploreRoom()" id="tsrExploreBtn" style="background: linear-gradient(to bottom, #32cd32, #228b22); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">探索房间</button>
-            <button onclick="tsrRest()" id="tsrRestBtn" style="background: linear-gradient(to bottom, #1e90ff, #006994); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">休息恢复</button>
-            <button onclick="tsrNextFloor()" id="tsrNextFloorBtn" style="background: linear-gradient(to bottom, #ffa500, #daa520); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">前往下一层</button>
-            <button onclick="tsrExitRealm()" id="tsrExitBtn" style="background: linear-gradient(to bottom, #dc143c, #8b0000); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">退出秘境</button>
+
+        <div id="tsrHealthBar" class="tsr-vitals">
+            <div class="tsr-vitals-head">
+                <span>❤️ 生命</span>
+                <span id="tsrHealthText">100%</span>
+            </div>
+            <div class="tsr-vitals-track">
+                <div id="tsrHealthBarFill" class="tsr-vitals-fill"></div>
+            </div>
+            <div id="tsrHealthWarning" class="tsr-vitals-warn" style="display:none;">生命值低于30%，即将失败！</div>
         </div>
-    </div>
-    
-    <!-- 秘境日志 -->
-    <div id="tsrLogContainer" style="height: 200px; overflow-y: auto; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px; margin-top: 10px; border: 1px solid #00bfff;">
-        <div id="tsrBattleLog" style="font-family: monospace; color: #e6f7ff;"></div>
+
+        <div id="tsrCombatBar" class="tsr-combat-bar" style="display:none;">
+            <div class="tsr-combat-stat"><span class="tsr-combat-label">⚔️ 攻击</span><span id="tsrCombatAtk" class="tsr-combat-val">0</span></div>
+            <div class="tsr-combat-stat"><span class="tsr-combat-label">💥 暴击</span><span id="tsrCombatCrit" class="tsr-combat-val">0%</span></div>
+            <div class="tsr-combat-stat"><span class="tsr-combat-label">🔥 暴伤</span><span id="tsrCombatCritDmg" class="tsr-combat-val">0x</span></div>
+            <div class="tsr-combat-stat"><span class="tsr-combat-label">💨 闪避</span><span id="tsrCombatDodge" class="tsr-combat-val">0%</span></div>
+            <div class="tsr-combat-stat"><span class="tsr-combat-label">🩸 吸血</span><span id="tsrCombatLifeSteal" class="tsr-combat-val">0%</span></div>
+            <div class="tsr-combat-stat"><span class="tsr-combat-label">⚡ 穿透</span><span id="tsrCombatPen" class="tsr-combat-val">0%</span></div>
+            <div class="tsr-combat-stat tsr-combat-power"><span class="tsr-combat-label">✨ 战阶</span><span id="tsrCombatPower" class="tsr-combat-val">0</span></div>
+        </div>
+
+        <div id="tsrMonsterBanner" class="tsr-monster-banner" style="display:none;"></div>
+
+        <div class="tsr-run-body">
+            <section class="tsr-scene">
+                <h3 class="tsr-block-title">当前房间</h3>
+                <div id="tsrCurrentRoom" class="tsr-scene-card"></div>
+                <div id="tsrPortalPanel" class="tsr-choice-panel" style="display:none;">
+                    <h4>⛩️ 时光岔路</h4>
+                    <p>选择你的道路，命运将随之改变</p>
+                    <div class="tsr-choice-btns">
+                        <button type="button" class="tsr-btn tsr-btn-safe" onclick="tsrChoosePortal('safe')">安全之路 · +35秒</button>
+                        <button type="button" class="tsr-btn tsr-btn-risk" onclick="tsrChoosePortal('risky')">危险之路 · 战斗+遗物</button>
+                    </div>
+                </div>
+                <div id="tsrRelicPickPanel" class="tsr-choice-panel tsr-relic-pick" style="display:none;">
+                    <h4>🏺 遗物祭坛</h4>
+                    <p>选择一件遗物带走（本局最多<span id="tsrRelicMaxHint">3</span>件）</p>
+                    <div id="tsrRelicPickOptions" class="tsr-relic-options"></div>
+                </div>
+                <div id="tsrMysteryPanel" class="tsr-choice-panel tsr-mystery-panel" style="display:none;">
+                    <h4>🔮 谜题祭坛</h4>
+                    <p>三重考验摆在眼前，你的抉择将影响命运</p>
+                    <div class="tsr-choice-btns">
+                        <button type="button" class="tsr-btn tsr-btn-safe" onclick="tsrChooseMystery('wisdom')">智慧之路 · 增益+20秒</button>
+                        <button type="button" class="tsr-btn tsr-btn-risk" onclick="tsrChooseMystery('courage')">勇气之路 · 精英战斗</button>
+                        <button type="button" class="tsr-btn tsr-btn-gamble" onclick="tsrChooseMystery('greed')">贪婪之路 · +币 -8%血</button>
+                    </div>
+                </div>
+                <div id="tsrVaultPanel" class="tsr-choice-panel tsr-vault-panel" style="display:none;">
+                    <h4>🏦 时之宝库</h4>
+                    <p>时间与财富在此流转，选择你的交易方式</p>
+                    <div class="tsr-choice-btns">
+                        <button type="button" class="tsr-btn tsr-btn-safe" onclick="tsrChooseVault('buyTime')">购入时间 · 80币→50秒</button>
+                        <button type="button" class="tsr-btn tsr-btn-purple" onclick="tsrChooseVault('sellTime')">出售时间 · 40秒→100币</button>
+                        <button type="button" class="tsr-btn tsr-btn-gamble" onclick="tsrChooseVault('gamble')">宝库博弈 · 30秒赌大小</button>
+                    </div>
+                </div>
+                <div id="tsrForgePanel" class="tsr-choice-panel tsr-forge-panel" style="display:none;">
+                    <h4>🔥 时光熔炉</h4>
+                    <p>烈焰升腾，选择你的锻造方式</p>
+                    <div class="tsr-choice-btns">
+                        <button type="button" class="tsr-btn tsr-btn-safe" onclick="tsrChooseForge('temper')">淬火 · 35秒 / 回血+币</button>
+                        <button type="button" class="tsr-btn tsr-btn-purple" onclick="tsrChooseForge('reforge')">重铸 · 50秒 / 随机遗物</button>
+                        <button type="button" class="tsr-btn tsr-btn-gamble" onclick="tsrChooseForge('imbue')">灌注 · 25秒 / 攻击+40%</button>
+                        <button type="button" class="tsr-btn tsr-btn-purple" onclick="tsrChooseForge('arm')">铸装 · 40秒 / 随机装备</button>
+                        <button type="button" class="tsr-btn tsr-btn-gamble" onclick="tsrChooseForge('smelt')">熔炼 · 55秒 / 2件同品质升阶</button>
+                        <button type="button" class="tsr-btn tsr-btn-purple" onclick="tsrChooseForge('wash')">洗炼 · 45秒 / 重铸装备属性</button>
+                    </div>
+                </div>
+                <div id="tsrEquipReforgePanel" class="tsr-choice-panel tsr-equip-reforge-panel" style="display:none;">
+                    <h4>🔄 装备洗炼</h4>
+                    <p>消耗秘境币重铸装备成长属性，保留品质/槽位/前缀/强化等级（单件最多8次）</p>
+                    <div id="tsrEquipReforgeChoices" class="tsr-equip-reforge-list"></div>
+                    <button type="button" class="tsr-btn tsr-btn-ghost" style="margin-top:8px;width:100%;" onclick="hideTsrEquipReforgePanel()">取消</button>
+                </div>
+                <div id="tsrEquipFusionPanel" class="tsr-choice-panel tsr-equip-fusion-panel" style="display:none;">
+                    <h4>🔥 装备熔炼</h4>
+                    <p>消耗背包中2件同品质装备，熔铸为更高品质随机装备</p>
+                    <div id="tsrEquipFusionChoices" class="tsr-equip-fusion-list"></div>
+                    <button type="button" class="tsr-btn tsr-btn-ghost" style="margin-top:8px;width:100%;" onclick="hideTsrEquipFusionPanel()">取消</button>
+                </div>
+                <div id="tsrEquipOverflowPanel" class="tsr-choice-panel tsr-equip-overflow-panel" style="display:none;">
+                    <h4>🎒 背包已满</h4>
+                    <div id="tsrEquipOverflowChoices"></div>
+                </div>
+                <div id="tsrMemePanel" class="tsr-choice-panel tsr-meme-panel" style="display:none;">
+                    <h4 id="tsrMemeTitle">恶趣味房间</h4>
+                    <p id="tsrMemeDesc"></p>
+                    <div id="tsrMemeBtns" class="tsr-choice-btns"></div>
+                </div>
+            </section>
+
+            <aside class="tsr-sidebar">
+                <nav class="tsr-side-tabs">
+                    <button type="button" class="tsr-side-tab" data-side="buffs" onclick="switchTsrSideTab('buffs')">增益</button>
+                    <button type="button" class="tsr-side-tab" data-side="relics" onclick="switchTsrSideTab('relics')">遗物</button>
+                    <button type="button" class="tsr-side-tab active" data-side="equipment" onclick="switchTsrSideTab('equipment')">装备</button>
+                    <button type="button" class="tsr-side-tab" data-side="items" onclick="switchTsrSideTab('items')">道具</button>
+                    <button type="button" class="tsr-side-tab" data-side="skills" onclick="switchTsrSideTab('skills')">技能</button>
+                </nav>
+                <div id="tsrSideBuffs" class="tsr-side-panel">
+                    <div id="tsrCurrentBuffs" class="tsr-buff-list"></div>
+                </div>
+                <div id="tsrSideRelics" class="tsr-side-panel">
+                    <div id="tsrCurrentRelics" class="tsr-relic-list"></div>
+                </div>
+                <div id="tsrSideEquipment" class="tsr-side-panel active">
+                    <div id="tsrCurrentEquipment" class="tsr-equip-list"></div>
+                </div>
+                <div id="tsrSideItems" class="tsr-side-panel">
+                    <div id="tsrCurrentConsumables" class="tsr-consumable-list"></div>
+                </div>
+                <div id="tsrSideSkills" class="tsr-side-panel">
+                    <div id="tsrCurrentSkills" class="tsr-skill-list"></div>
+                </div>
+                <div id="tsrRunShopPanel" class="tsr-run-shop" style="display:none;">
+                    <h4 class="tsr-block-title">局内商店</h4>
+                    <div id="tsrRunShopOffers" class="tsr-shop-offers"></div>
+                </div>
+            </aside>
+        </div>
+
+        <div id="tsrActionControls" class="tsr-actions">
+            <div class="tsr-action-group">
+                <span class="tsr-action-label">陷阱</span>
+                <button type="button" onclick="tsrDetectTrap()" id="tsrDetectBtn" class="tsr-btn tsr-btn-detect" style="display:none;">侦查</button>
+                <button type="button" onclick="tsrDisarmTrap()" id="tsrDisarmBtn" class="tsr-btn tsr-btn-disarm" style="display:none;">解除</button>
+            </div>
+            <div class="tsr-action-group">
+                <span class="tsr-action-label">探索</span>
+                <button type="button" onclick="tsrExploreRoom()" id="tsrExploreBtn" class="tsr-btn tsr-btn-explore">探索</button>
+                <button type="button" onclick="tsrRest()" id="tsrRestBtn" class="tsr-btn tsr-btn-rest">休息</button>
+                <button type="button" onclick="tsrMeditate()" id="tsrMeditateBtn" class="tsr-btn tsr-btn-meditate">冥想</button>
+                <button type="button" onclick="tsrGambleTime()" id="tsrGambleBtn" class="tsr-btn tsr-btn-gamble">时空赌局</button>
+                <button type="button" onclick="tsrInvokeSpirit()" id="tsrInvokeSpiritBtn" class="tsr-btn tsr-btn-purple">呼唤精灵</button>
+            </div>
+            <div class="tsr-action-group">
+                <span class="tsr-action-label">移动</span>
+                <button type="button" onclick="tsrNextFloor()" id="tsrNextFloorBtn" class="tsr-btn tsr-btn-next">下一层</button>
+                <button type="button" onclick="tsrExitRealm()" id="tsrExitBtn" class="tsr-btn tsr-btn-exit">撤离</button>
+            </div>
+        </div>
+
+        <div id="tsrLogContainer" class="tsr-log">
+            <div class="tsr-log-head">冒险日志</div>
+            <div id="tsrBattleLog" class="tsr-log-body"></div>
+        </div>
     </div>
 </div>
 
 <!-- 时光秘境商店 -->
-<div id="tsrShopOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 105, 148, 0.98); z-index: 1060;"></div>
-<div id="tsrShopUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #006994, #004d73); color: #e6f7ff; padding: 30px; border: 3px solid #ffd700; border-radius: 15px; box-shadow: 0 0 40px #ffd700, inset 0 0 20px #006994; z-index: 1061; width: 700px; text-align: center;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="color: #ffd700; margin: 0; text-shadow: 0 0 15px #ffd700;">秘境商店</h2>
-        <button onclick="closeTsrShop()" style="background: #00bfff; color: #004d73; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-weight: bold;">关闭</button>
+<div id="tsrShopOverlay" class="tsr-overlay tsr-shop-overlay"></div>
+<div id="tsrShopUI" class="tsr-shop-shell">
+    <header class="tsr-topbar tsr-shop-top">
+        <div class="tsr-brand"><span class="tsr-brand-icon">🏪</span><h2>秘境商店</h2></div>
+        <button type="button" class="tsr-btn tsr-btn-ghost" onclick="closeTsrShop()">关闭</button>
+    </header>
+    <div class="tsr-shop-balance">
+        <span>秘境币</span>
+        <span id="tsrShopCurrency" class="tsr-shop-balance-val">0</span>
     </div>
-    
-    <div style="margin-bottom: 20px; font-size: 18px;">
-        <span style="color: #00bfff;">秘境币: </span>
-        <span id="tsrShopCurrency" style="color: #ffd700; font-weight: bold;">0</span>
+    <p class="tsr-shop-hint">按标签筛选商品 · 永恒符文永久生效 · 精灵商品可加速养成</p>
+    <nav id="tsrShopTabs" class="tsr-shop-tabs">
+        <button type="button" class="tsr-shop-tab active" data-shop-tab="all" onclick="switchTsrShopTab('all')">📋 全部</button>
+        <button type="button" class="tsr-shop-tab" data-shop-tab="enhance" onclick="switchTsrShopTab('enhance')">✨ 强化</button>
+        <button type="button" class="tsr-shop-tab" data-shop-tab="trap" onclick="switchTsrShopTab('trap')">🪤 陷阱</button>
+        <button type="button" class="tsr-shop-tab" data-shop-tab="supply" onclick="switchTsrShopTab('supply')">🎒 补给</button>
+        <button type="button" class="tsr-shop-tab" data-shop-tab="spirit" onclick="switchTsrShopTab('spirit')">🧚 精灵</button>
+        <button type="button" class="tsr-shop-tab" data-shop-tab="exchange" onclick="switchTsrShopTab('exchange')">💎 兑换</button>
+    </nav>
+    <div id="tsrPermanentBonuses" class="tsr-shop-bonuses">
+        <div class="tsr-empty">暂无永久加成</div>
     </div>
-     <!-- 新增：永久加成显示区域 -->
-    <div id="tsrPermanentBonuses" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px; border: 1px solid #00bfff; margin-bottom: 20px;">
-        <div style="color: #888; text-align: center;">暂无永久加成</div>
-    </div>
-    <div id="tsrShopItems" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-height: 400px; overflow-y: auto;"></div>
+    <div id="tsrShopItems" class="tsr-shop-catalog"></div>
 </div>
   <div id="worldBossUI">
         <button class="boss-close-button" onclick="toggleWorldBossUI()">×</button>
@@ -5602,6 +6128,7 @@
             <button class="landlord-tab" onclick="switchLandlordTab('fields')">田地</button>
             <button class="landlord-tab" onclick="switchLandlordTab('ranch')">🐄 牧场</button>
             <button class="landlord-tab" onclick="switchLandlordTab('skyVine')">通天藤</button>
+            <button class="landlord-tab" onclick="switchLandlordTab('geneTree')">基因树</button>
             <button class="landlord-tab" onclick="switchLandlordTab('storage')">仓库</button>
             <button class="landlord-tab" onclick="switchLandlordTab('stats')">统计</button>
             <button class="landlord-tab" onclick="switchLandlordTab('seaFishing')">🐟 地主海钓</button>
@@ -5611,10 +6138,13 @@
         <div class="landlord-content">
             <!-- 种子商店页面 -->
             <div id="landlordStoreTab" class="landlord-tab-content active">
-                <div class="landlord-refresh-info">
-                    种子商店每10分钟自动刷新一次
-                    <br>
-                    下次刷新: <span id="landlordSeedRefreshTimer">10:00</span>
+                <div class="landlord-store-toolbar">
+                    <div class="landlord-refresh-info">
+                        种子商店每10分钟自动刷新一次
+                        <br>
+                        下次刷新: <span id="landlordSeedRefreshTimer">10:00</span>
+                    </div>
+                    <button type="button" id="landlordSeedStockFilterBtn" class="landlord-stock-filter-btn" onclick="toggleLandlordShopInStockOnly()">只显示有货</button>
                 </div>
                 <div class="landlord-store-grid" id="landlordStoreItems">
                     <!-- 种子将通过JavaScript动态生成 -->
@@ -5623,10 +6153,13 @@
             
             <!-- 道具商店页面 -->
             <div id="landlordItemStoreTab" class="landlord-tab-content">
-                <div class="landlord-refresh-info">
-                    道具商店每10分钟自动刷新一次
-                    <br>
-                    下次刷新: <span id="landlordItemRefreshTimer">10:00</span>
+                <div class="landlord-store-toolbar">
+                    <div class="landlord-refresh-info">
+                        道具商店每10分钟自动刷新一次
+                        <br>
+                        下次刷新: <span id="landlordItemRefreshTimer">10:00</span>
+                    </div>
+                    <button type="button" id="landlordItemStockFilterBtn" class="landlord-stock-filter-btn" onclick="toggleLandlordShopInStockOnly()">只显示有货</button>
                 </div>
                 <div class="landlord-store-grid" id="landlordItemStoreItems">
                     <!-- 道具将通过JavaScript动态生成 -->
@@ -5652,6 +6185,13 @@
             <div id="landlordSkyVineTab" class="landlord-tab-content" style="display:none;">
                 <div id="landlordSkyVineContent" class="landlord-sky-vine-wrap">
                     <!-- 由 renderLandlordSkyVine 填充 -->
+                </div>
+            </div>
+
+            <!-- 基因树 -->
+            <div id="landlordGeneTreeTab" class="landlord-tab-content" style="display:none;">
+                <div id="landlordGeneTreeContent" class="landlord-sky-vine-wrap">
+                    <!-- 由 renderLandlordGeneTree 填充 -->
                 </div>
             </div>
             
@@ -7756,7 +8296,7 @@
 
 <div id="abyssOnlineChatPanel" style="display:none;position:fixed;top:88px;right:12px;z-index:2058;width:320px;max-height:70vh;background:linear-gradient(160deg,rgba(22,12,35,.96),rgba(12,6,20,.96));border:2px solid #7c4dff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.45);overflow:hidden;">
   <div id="abyssOnlineChatDragHandle" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(124,77,255,.18);border-bottom:1px solid rgba(124,77,255,.35);cursor:move;user-select:none;touch-action:none;">
-    <span style="font-size:13px;color:#d1c4e9;font-weight:bold;">无限深渊联网聊天</span>
+    <span style="font-size:13px;color:#d1c4e9;font-weight:bold;">联网聊天</span>
     <span style="display:flex;align-items:center;gap:8px;">
       <span style="font-size:11px;color:#b39ddb;">最近50条</span>
       <button type="button" id="abyssOnlineChatCollapseBtn" onclick="toggleAbyssOnlineChatCollapse()" style="padding:2px 8px;border:1px solid #9575cd;border-radius:6px;background:#4527a0;color:#fff;font-size:11px;cursor:pointer;">折叠</button>
@@ -7766,7 +8306,7 @@
   <div id="abyssOnlineChatList" style="height:300px;overflow-y:auto;padding:8px 10px;font-size:12px;line-height:1.5;color:#e0e0e0;"></div>
   <div style="display:flex;gap:6px;padding:8px;border-top:1px solid rgba(124,77,255,.35);background:rgba(0,0,0,.2);">
     <input id="abyssOnlineChatInput" type="text" maxlength="120" placeholder="输入聊天内容..." style="flex:1;padding:7px 8px;border-radius:8px;border:1px solid #5e35b1;background:#1b1330;color:#fff;outline:none;font-size:16px;" />
-    <button type="button" onclick="sendAbyssOnlineChat();" style="padding:7px 12px;border:none;border-radius:8px;background:#7c4dff;color:#fff;cursor:pointer;font-weight:bold;">发送</button>
+    <button type="button" onclick="sendAbyssOnlineChat('abyssOnlineChatInput');" style="padding:7px 12px;border:none;border-radius:8px;background:#7c4dff;color:#fff;cursor:pointer;font-weight:bold;">发送</button>
   </div>
   </div>
 </div>
@@ -8248,11 +8788,10 @@
 <!-- 脚本由 gold-game-asset-boot.js 按 __GOLD_GAME_ASSET_BUILD 顺序加载，版本随 API 重启 / URL ?v= 更新 -->
     <script>
         (function (b) {
-            document.write(
-                '<script src="assets/js/gold-game-asset-boot.js?b=' +
-                    encodeURIComponent(b || "dev") +
-                    '"><\/script>'
-            );
+            var boot = document.createElement('script');
+            boot.src = 'assets/js/gold-game-asset-boot.js?b=' + encodeURIComponent(b || 'dev');
+            boot.async = false;
+            document.body.appendChild(boot);
         })(window.__GOLD_GAME_ASSET_BUILD);
     </script>
 <!--客服 开始-->
@@ -8271,5 +8810,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>    </div>
+
 </body>
 </html>

@@ -130,7 +130,7 @@ function isZeroLike(value) {
     const x = parseBigSci(value);
     return x.m === 0;
 }
-const MAIN_CURRENCIES = ['gold', 'diamond', 'titanium', 'starstone', 'cosmicstone', 'superstone', 'otherworldstone', 'xingjiestone', 'hundunstone', 'lingtone', 'huangtone', 'mingtone', 'xutong', 'shitone', 'weitone'];
+const MAIN_CURRENCIES = ['gold', 'diamond', 'titanium', 'starstone', 'cosmicstone', 'superstone', 'otherworldstone', 'xingjiestone', 'hundunstone', 'lingtone', 'huangtone', 'mingtone', 'xutong', 'shitone', 'weitone', 'yongtone', 'wujitone', 'daotone'];
 function isMainCurrency(name) {
     return MAIN_CURRENCIES.indexOf(name) !== -1;
 }

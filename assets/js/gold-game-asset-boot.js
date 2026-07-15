@@ -39,7 +39,33 @@
         "assets/js/gold-game-rune-class.js",
         "assets/js/gold-game-dungeon-islands.js",
         "assets/js/gold-game-lunhui-islands.js",
+        "assets/js/gold-game-tsr-equip-ext.js",
         "assets/js/gold-game-time-secret.js",
+        "assets/js/gold-game-tsr-monster-ext.js",
+        "assets/js/gold-game-tsr-monster-play-ext.js",
+        "assets/js/gold-game-tsr-monster-mutation-ext.js",
+        "assets/js/gold-game-tsr-monster-codex-ext.js",
+        "assets/js/gold-game-tsr-content-ext.js",
+        "assets/js/gold-game-tsr-content-ext2.js",
+        "assets/js/gold-game-tsr-content-ext3.js",
+        "assets/js/gold-game-tsr-content-ext4.js",
+        "assets/js/gold-game-tsr-systems-ext.js",
+        "assets/js/gold-game-tsr-content-ext5.js",
+        "assets/js/gold-game-tsr-world-ext.js",
+        "assets/js/gold-game-tsr-endgame-ext.js",
+        "assets/js/gold-game-tsr-legends-ext.js",
+        "assets/js/gold-game-tsr-combat-train-ext.js",
+        "assets/js/gold-game-tsr-unify-ext.js",
+        "assets/js/gold-game-tsr-guide-ext.js",
+        "assets/js/gold-game-tsr-express-ext.js",
+        "assets/js/gold-game-tsr-layout-ext.js",
+        "assets/js/gold-game-tsr-badge-ext.js",
+        "assets/js/gold-game-tsr-feel-ext.js",
+        "assets/js/gold-game-tsr-immersion-ext.js",
+        "assets/js/gold-game-tsr-depth-ext.js",
+        "assets/js/gold-game-tsr-codex-ui-ext.js",
+        "assets/js/gold-game-tsr-balance-ext.js",
+        "assets/js/gold-game-landlord-seeds.js",
         "assets/js/gold-game-landlord-core.js",
         "assets/js/gold-game-dongtian-jie.js",
         "assets/js/gold-game-landlord-farm.js",
@@ -66,7 +92,10 @@
     ];
 
     function loadAt(i) {
-        if (i >= scripts.length) return;
+        if (i >= scripts.length) {
+            window.__GOLD_GAME_ASSETS_READY = true;
+            return;
+        }
         var s = document.createElement("script");
         s.src = assetUrl(scripts[i]);
         s.async = false;
@@ -74,10 +103,14 @@
             loadAt(i + 1);
         };
         s.onerror = function () {
+            if (typeof console !== "undefined" && console.error) {
+                console.error("[gold-game-asset-boot] script load failed:", scripts[i]);
+            }
             loadAt(i + 1);
         };
         document.body.appendChild(s);
     }
 
+    window.__GOLD_GAME_ASSETS_READY = false;
     loadAt(0);
 })();
