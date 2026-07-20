@@ -936,40 +936,65 @@ function formatNumber(num) {
     return formatSci(num);
 }
 const childConfig = {
-    // 怀孕配置
     pregnancy: {
-        duration: 24 * 60 * 60 * 1000, // 怀孕时间：24小时
-        cost: 52013.14, // 怀孕消耗
-        maxChildren: 10 // 最大孩子数量
+        duration: 24 * 60 * 60 * 1000,
+        cost: 52013.14,
+        maxChildren: 10
     },
-    
-    // 孩子成长阶段
     growthStages: [
-        { name: "婴儿", age: 0, duration: 1 * 24 * 60 * 60 * 1000 }, // 婴儿期：1天
-        { name: "幼儿", age: 1, duration: 2 * 24 * 60 * 60 * 1000 }, // 幼儿期：2天
-        { name: "儿童", age: 2, duration: 3 * 24 * 60 * 60 * 1000 }, // 儿童期：3年
-        { name: "少年", age: 3, duration: 7 * 24 * 60 * 60 * 1000 }, // 少年期：7年
-        { name: "青年", age: 4, duration: Infinity } // 青年期：永久
+        { name: "婴儿", age: 0, duration: 1 * 24 * 60 * 60 * 1000 },
+        { name: "幼儿", age: 1, duration: 2 * 24 * 60 * 60 * 1000 },
+        { name: "儿童", age: 2, duration: 3 * 24 * 60 * 60 * 1000 },
+        { name: "少年", age: 3, duration: 7 * 24 * 60 * 60 * 1000 },
+        { name: "青年", age: 4, duration: Infinity }
     ],
-    
-    // 培养类型
-   trainingTypes: [
-        { id: "education", name: "教育", cost: 13145, effect: "intelligence", description: "提高孩子的智力属性" },
-        { id: "sports", name: "体育", cost: 52100, effect: "physique", description: "提高孩子的体质属性" },
-        { id: "arts", name: "艺术", cost: 131400, effect: "charm", description: "提高孩子的魅力属性" },
-        { id: "business", name: "商业", cost: 52100, effect: "business", description: "提高孩子的商业能力" }
+    trainingTypes: [
+        { id: "education", name: "教育", cost: 13145, effect: "intelligence", description: "提高智力属性" },
+        { id: "sports", name: "体育", cost: 52100, effect: "physique", description: "提高体质属性" },
+        { id: "arts", name: "艺术", cost: 131400, effect: "charm", description: "提高魅力属性" },
+        { id: "business", name: "商业", cost: 52100, effect: "business", description: "提高商业能力" }
     ],
-    
-    // 孩子属性加成
     attributeBonuses: {
         intelligence: { gps: 1, description: "每点智力增加100% GPS" },
         physique: { click: 1, description: "每点体质增加100% 点击" },
         charm: { critRate: 1, description: "每点魅力增加100% 生命" },
         business: { gold: 1, description: "每点商业增加100% 攻击" }
+    },
+    // 子孙后代 / 传宗接代 · 祖宗十八代
+    lineage: {
+        maxGeneration: 18,
+        maxPerParent: 3,
+        maxTotalMembers: 180,
+        pregnancyDuration: 24 * 60 * 60 * 1000,
+        pregnancyCost: 88888,
+        rushCost: 188888,
+        marriageCost: 2000000,
+        inheritanceRate: 0.35,
+        generationMult: {
+            1: 1.0, 2: 1.25, 3: 1.55, 4: 1.9, 5: 2.3, 6: 2.8, 7: 3.4, 8: 4.1,
+            9: 5.0, 10: 6.0, 11: 7.2, 12: 8.6, 13: 10.2, 14: 12.0, 15: 14.0, 16: 16.5, 17: 19.5, 18: 23.0
+        },
+        generationNames: {
+            1: "子女", 2: "孙子", 3: "曾孙", 4: "玄孙", 5: "来孙", 6: "晜孙", 7: "仍孙", 8: "云孙",
+            9: "耳孙", 10: "远孙", 11: "弥孙", 12: "胎孙", 13: "灰孙", 14: "衍孙", 15: "昆孙", 16: "裔孙", 17: "末孙", 18: "终世孙"
+        },
+        milestones: [
+            { id: "m1", title: "开枝散叶", need: 3, bonus: 0.05, desc: "家族成员≥3：全加成+5%" },
+            { id: "m2", title: "四世同堂", need: 8, bonus: 0.10, desc: "家族成员≥8：全加成+10%" },
+            { id: "m3", title: "人丁兴旺", need: 15, bonus: 0.15, desc: "家族成员≥15：全加成+15%" },
+            { id: "m4", title: "名门望族", need: 22, bonus: 0.25, desc: "家族成员≥22：全加成+25%" },
+            { id: "m5", title: "五世其昌", need: 35, bonus: 0.35, desc: "家族成员≥35：全加成+35%" },
+            { id: "m6", title: "百世流芳", need: 50, bonus: 0.50, desc: "家族成员≥50：全加成+50%" },
+            { id: "m7", title: "十世其昌", need: 80, bonus: 0.80, desc: "家族成员≥80：全加成+80%" },
+            { id: "m8", title: "十八代传", need: 120, bonus: 1.20, desc: "家族成员≥120：全加成+120%" },
+            { id: "m9", title: "血脉如海", need: 160, bonus: 2.00, desc: "家族成员≥160：全加成+200%" }
+        ]
     }
 };
 
-// 初始化孩子系统数据
+var _childOffspringFilter = 'all';
+var _childActiveTab = 'overview';
+
 function initChildData() {
     if (!player.children) {
         player.children = {
@@ -979,20 +1004,40 @@ function initChildData() {
             children: [],
             totalChildren: 0,
             trainingHistory: [],
+            lineageLevel: 1,
+            lineageExp: 0,
+            claimedMilestones: [],
             childBonuses: {
                 gpsMultiplier: 1.0,
                 clickMultiplier: 1.0,
                 critRateBonus: 1.0,
-                goldMultiplier: 1.0
+                goldMultiplier: 1.0,
+                worldAtkBonus: 0,
+                worldHpBonus: 0,
+                worldCritDmgBonus: 0
             }
         };
+    }
+    if (!Array.isArray(player.children.children)) player.children.children = [];
+    if (!Array.isArray(player.children.claimedMilestones)) player.children.claimedMilestones = [];
+    if (player.children.lineageLevel == null) player.children.lineageLevel = 1;
+    if (player.children.lineageExp == null) player.children.lineageExp = 0;
+    player.children.children.forEach(function(c) {
+        if (c.generation == null) c.generation = 1;
+        if (c.parentId === undefined) c.parentId = null;
+        ensureChildAttributes(c);
+        isFamilyMemberAdult(c); // 同步成长阶段与 isAdult 标记
+    });
+    // 初始化时刷新一次加成，避免读档后世界地图/GPS 仍用旧值
+    if (typeof calculateChildBonuses === 'function') {
+        player.children.childBonuses = calculateChildBonuses();
     }
 }
 
 // 切换孩子系统界面
 function toggleChildSystem() {
     if (!player.marriage || !player.marriage.isMarried) {
-        alert("需要先结婚才能生小孩！");
+        alert("需要先结婚才能开启家族传承！");
         return;
     }
     if (player.marriage.loveLevel < 25) {
@@ -1010,7 +1055,12 @@ function toggleChildSystem() {
         initChildData();
         ui.style.display = 'block';
         overlay.style.display = 'block';
+        if (typeof restoreChildNavCollapse === 'function') restoreChildNavCollapse();
+        switchChildTab(_childActiveTab || 'overview');
         updateChildSystemUI();
+        if (typeof applyChildSubTabForPrimary === 'function') {
+            try { applyChildSubTabForPrimary(_childActiveTab || 'overview'); } catch (eSub) {}
+        }
     }
 }
 
@@ -1019,48 +1069,194 @@ function closeChildSystem() {
     document.getElementById('childSystemOverlay').style.display = 'none';
 }
 
-// 更新孩子系统UI
-function updateChildSystemUI() {
-    updateFamilyStatus();
-    updatePregnancyStatus();
-    updateChildrenList(); // 这个现在包含成长倒计时
-    updateTrainingSection();
-   updateChildWorkSystem(); // 新增：更新工作系统
-    updateChildInteractionSystem(); // 新增：更新互动系统
-    updateChildBonuses();
-    updateConceptionButton();
-    addWorkAndInteractionSections();
-    // 确保成长概览区域存在
-    if (!document.getElementById('growthOverview')) {
-        const familyStatus = document.getElementById('familyStatus');
-        const growthOverview = document.createElement('div');
-        growthOverview.id = 'growthOverview';
-        growthOverview.style.cssText = 'grid-column: 1 / -1; background: #444; padding: 10px; border-radius: 5px; margin-top: 10px;';
-        familyStatus.appendChild(growthOverview);
+function switchChildTab(tab) {
+    _childActiveTab = tab || 'overview';
+    var tabs = document.querySelectorAll('#childSystemUI .c-tab');
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.toggle('active', tabs[i].getAttribute('data-tab') === _childActiveTab);
     }
-    updateGrowthOverview();
+    var map = {
+        overview: 'childSectionOverview',
+        birth: 'childSectionBirth',
+        offspring: 'childSectionOffspring',
+        train: 'childSectionTrain',
+        work: 'childSectionWork',
+        interact: 'childSectionInteract',
+        lineage: 'childSectionLineage',
+        talent: 'childSectionTalent',
+        business: 'childSectionBusiness',
+        ancestral: 'childSectionAncestral',
+        quests: 'childSectionQuests',
+        events: 'childSectionEvents',
+        life: 'childSectionLife',
+        estate: 'childSectionEstate',
+        festival: 'childSectionFestival',
+        feast: 'childSectionFeast',
+        precept: 'childSectionPrecept',
+        trial: 'childSectionTrial',
+        cultivate: 'childSectionCultivate',
+        spiritroot: 'childSectionSpiritroot',
+        dongfu: 'childSectionDongfu',
+        alchemy: 'childSectionAlchemy',
+        artifact: 'childSectionArtifact',
+        tribulation: 'childSectionTribulation',
+        martial: 'childSectionMartial',
+        eighteen: 'childSectionEighteen',
+        glory: 'childSectionGlory',
+        tree: 'childSectionTree',
+        living: 'childSectionLiving',
+        illness: 'childSectionIllness',
+        marital: 'childSectionMarital',
+        realty: 'childSectionRealty',
+        descendants: 'childSectionDescendants',
+        descplus: 'childSectionDescPlus',
+        eightdepth: 'childSectionEighteenDepth',
+        descnova: 'childSectionDescNova',
+        descsaga: 'childSectionDescSaga',
+        descchro: 'childSectionDescChronicle',
+        descflow: 'childSectionDescFlow',
+        descnpc: 'childSectionDescNpc'
+    };
+    Object.keys(map).forEach(function(key) {
+        var el = document.getElementById(map[key]);
+        if (el) el.classList.toggle('active', key === _childActiveTab);
+    });
+    // 自动展开当前页签所在导航分组
+    if (typeof expandChildNavForTab === 'function') expandChildNavForTab(_childActiveTab);
+    // 页内二级标签（由 lineage-ui-perf / lineage-subtabs 提供）
+    if (typeof applyChildSubTabForPrimary === 'function') {
+        try { applyChildSubTabForPrimary(_childActiveTab); } catch (eSub2) {}
+    }
 }
+
+window.toggleChildNavGroup = function (groupId) {
+    var group = document.querySelector('#childSystemUI .c-nav-group[data-nav-group="' + groupId + '"]');
+    if (!group) return;
+    var collapsed = group.classList.toggle('collapsed');
+    var btn = group.querySelector('.c-nav-label');
+    if (btn) btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    try {
+        var st = JSON.parse(localStorage.getItem('childNavCollapse') || '{}');
+        st[groupId] = collapsed;
+        localStorage.setItem('childNavCollapse', JSON.stringify(st));
+    } catch (e) { /* ignore */ }
+};
+
+window.expandChildNavForTab = function (tab) {
+    // 左侧分组默认保持叠起；切页不自动展开，需手动点分组标题
+};
+
+window.restoreChildNavCollapse = function () {
+    var groups = document.querySelectorAll('#childSystemUI .c-nav-group[data-nav-group]');
+    var st = {};
+    try {
+        st = JSON.parse(localStorage.getItem('childNavCollapse') || '{}');
+    } catch (e) { st = {}; }
+    for (var i = 0; i < groups.length; i++) {
+        var group = groups[i];
+        var id = group.getAttribute('data-nav-group');
+        // 默认叠起；仅当本地明确记录为展开(false)时才展开
+        var collapsed = st[id] !== false;
+        group.classList.toggle('collapsed', collapsed);
+        var lab = group.querySelector('.c-nav-label');
+        if (lab) lab.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    }
+};
+
+function setOffspringFilter(filter) {
+    _childOffspringFilter = filter || 'all';
+    var chips = document.querySelectorAll('#childSystemUI .c-chip');
+    for (var i = 0; i < chips.length; i++) {
+        chips[i].classList.toggle('active', chips[i].getAttribute('data-filter') === String(_childOffspringFilter));
+    }
+    var sel = document.getElementById('offspringGenSelect');
+    if (sel) {
+        if (!sel._genFilled) {
+            var maxG = (childConfig.lineage && childConfig.lineage.maxGeneration) || 18;
+            for (var g = 1; g <= maxG; g++) {
+                var opt = document.createElement('option');
+                opt.value = String(g);
+                opt.textContent = '第' + g + '代·' + getGenerationLabel(g);
+                sel.appendChild(opt);
+            }
+            sel._genFilled = true;
+        }
+        sel.value = (_childOffspringFilter === 'all') ? 'all' : String(_childOffspringFilter);
+    }
+    updateChildrenList();
+}
+
+function getDirectChildrenCount() {
+    return (player.children.children || []).filter(function(c) { return (c.generation || 1) === 1; }).length;
+}
+
+function getGenerationMult(gen) {
+    var g = Number(gen) || 1;
+    if (childConfig.lineage.generationMult[g] != null) return childConfig.lineage.generationMult[g];
+    return 1 + (g - 1) * 0.35;
+}
+
+function getGenerationLabel(gen) {
+    return childConfig.lineage.generationNames[gen] || ('第' + gen + '代');
+}
+
+function getChildById(id) {
+    if (!id) return null;
+    return (player.children.children || []).find(function(c) { return c.id === id; }) || null;
+}
+
+function countOffspringOf(parentId) {
+    return (player.children.children || []).filter(function(c) { return c.parentId === parentId; }).length;
+}
+
+function isFamilyMemberAdult(member) {
+    if (!member) return false;
+    if (member.isAdult === true) return true;
+    if (member.growthStage >= childConfig.growthStages.length - 1) {
+        member.isAdult = true;
+        return true;
+    }
+    return false;
+}
+
+function updateChildSystemUI() {
+    if (!document.getElementById('childSystemUI')) return;
+    var tab = _childActiveTab || 'overview';
+    var force = !!window.__lineageForceFullRefresh;
+
+    // 轻量：状态/加成几乎处处需要
+    updateFamilyStatus();
+    updateChildBonuses();
+
+    if (force || tab === 'overview' || tab === 'birth') {
+        updatePregnancyStatus();
+        updateConceptionButton();
+        updateGrowthOverview();
+    }
+    if (force || tab === 'overview' || tab === 'offspring' || tab === 'train') {
+        updateChildrenList();
+        if (force || tab === 'train' || tab === 'overview') updateTrainingSection();
+    }
+    if (force || tab === 'work') updateChildWorkSystem();
+    if (force || tab === 'interact') updateChildInteractionSystem();
+    if (force || tab === 'lineage' || tab === 'overview' || tab === 'tree') {
+        updateLineageOverview();
+        updateLineageActionList();
+        updateLineageMilestones();
+        if (force || tab === 'tree' || tab === 'overview') updateFamilyTreeView();
+        if (typeof enhanceLineageMarriageUI === 'function') enhanceLineageMarriageUI();
+    }
+
+    // 扩展页：只刷当前页签，避免一次重建全部子孙/智邻面板
+    if (typeof refreshActiveChildTabPanels === 'function') {
+        refreshActiveChildTabPanels(tab);
+    } else if (typeof updateLineageExtUI === 'function') {
+        updateLineageExtUI();
+    }
+}
+
 function addWorkAndInteractionSections() {
-    const ui = document.getElementById('childSystemUI');
-    
-    // 检查是否已存在工作和互动区域
-    if (!document.getElementById('childWorkSystem')) {
-        const workSection = document.createElement('div');
-        workSection.id = 'childWorkSystem';
-        workSection.style.cssText = 'margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;';
-        ui.appendChild(workSection);
-    }
-    
-    if (!document.getElementById('childInteractionSystem')) {
-        const interactionSection = document.createElement('div');
-        interactionSection.id = 'childInteractionSystem';
-        interactionSection.style.cssText = 'background: #333; padding: 15px; border-radius: 8px;';
-        ui.appendChild(interactionSection);
-    }
-    
-    // 更新内容
-    updateChildWorkSystem();
-    updateChildInteractionSystem();
+    // 新 UI 已内置打工/互动分区，保留空实现兼容旧调用
 }
 
 function startGrowthCountdownTimer() {
@@ -1068,13 +1264,14 @@ function startGrowthCountdownTimer() {
     var start = function(fn, ms) {
         return reg ? reg('_childGrowthCountdownId', fn, ms) : registerInterval(fn, ms);
     };
-    start(() => {
+    start(function() {
         var ui = document.getElementById('childSystemUI');
         if (ui && ui.style.display === 'block') {
-            updateChildrenList(); // 每分钟更新一次倒计时
+            updateChildrenList();
             updateGrowthOverview();
+            updateLineageActionList();
         }
-    }, 60000); // 每分钟更新一次
+    }, 60000);
 }
 
 
@@ -1137,108 +1334,105 @@ function trainWithStrategy(childIndex) {
 // 更新家庭状态
 function updateFamilyStatus() {
     const container = document.getElementById('familyStatus');
-    const children = player.children.children || [];
+    if (!container) return;
+    const members = player.children.children || [];
     const pregnant = player.children.isPregnant;
-    
-    // 计算可培养的孩子数量
     const now = Date.now();
-    const availableChildren = children.filter(child => {
-        const lastTraining = child.lastTraining || 0;
-        return (now - lastTraining) >= 60 * 60 * 1000;
+    const availableChildren = members.filter(function(child) {
+        return (now - (child.lastTraining || 0)) >= 60 * 60 * 1000;
     }).length;
-    
-    container.innerHTML = `
-        <div>配偶: ${player.marriage.spouseName}</div>
-        <div>孩子数量: ${children.length}/${childConfig.pregnancy.maxChildren}</div>
-        <div>怀孕状态: ${pregnant ? '是' : '否'}</div>
-        <div>可培养: <span style="color: ${availableChildren > 0 ? '#4CAF50' : '#FF6B6B'}">${availableChildren}/${children.length}</span></div>
-        <div>家庭幸福度: ${calculateFamilyHappiness()}%</div>
-    `;
-    
- 
+    const gen1 = members.filter(function(c) { return (c.generation || 1) === 1; }).length;
+    const gen2 = members.filter(function(c) { return c.generation === 2; }).length;
+    const gen3 = members.filter(function(c) { return c.generation === 3; }).length;
+    const gen4plus = members.filter(function(c) { return (c.generation || 1) >= 4; }).length;
+    let maxGen = 0;
+    members.forEach(function(c) { maxGen = Math.max(maxGen, c.generation || 1); });
+    const marriedCount = members.filter(function(c) { return c.isMarried; }).length;
+    const adultCount = members.filter(isFamilyMemberAdult).length;
+    const workingCount = members.filter(function(c) { return isFamilyMemberAdult(c) && c.currentJob; }).length;
+    const pregnantKids = members.filter(function(c) { return c.isPregnant; }).length;
+
+    container.innerHTML =
+        '<div class="c-stat"><span class="lab">配偶</span><span class="val">' + (player.marriage.spouseName || '-') + '</span></div>' +
+        '<div class="c-stat"><span class="lab">直系子女</span><span class="val">' + gen1 + '/' + childConfig.pregnancy.maxChildren + '</span></div>' +
+        '<div class="c-stat"><span class="lab">家族总人数</span><span class="val">' + members.length + '/' + childConfig.lineage.maxTotalMembers + '</span></div>' +
+        '<div class="c-stat"><span class="lab">子/孙/曾/更远</span><span class="val">' + gen1 + '/' + gen2 + '/' + gen3 + '/' + gen4plus + '</span></div>' +
+        '<div class="c-stat"><span class="lab">最远代数</span><span class="val">' + (maxGen ? (getGenerationLabel(maxGen) + ' · 第' + maxGen + '代') : '-') + '</span></div>' +
+        '<div class="c-stat"><span class="lab">成年 / 成婚</span><span class="val">' + adultCount + ' / ' + marriedCount + '</span></div>' +
+        '<div class="c-stat"><span class="lab">打工中</span><span class="val">' + workingCount + '/' + adultCount + '</span></div>' +
+        '<div class="c-stat"><span class="lab">可培养</span><span class="val" style="color:' + (availableChildren > 0 ? '#4CAF50' : '#FF6B6B') + '">' + availableChildren + '/' + members.length + '</span></div>' +
+        '<div class="c-stat"><span class="lab">怀孕中</span><span class="val">' + (pregnant ? '本人' : '否') + (pregnantKids ? ' · 子女' + pregnantKids + '人' : '') + '</span></div>' +
+        '<div class="c-stat"><span class="lab">家庭幸福度</span><span class="val">' + calculateFamilyHappiness() + '%</span></div>' +
+        '<div class="c-stat"><span class="lab">血脉等级</span><span class="val">Lv.' + (player.children.lineageLevel || 1) + '</span></div>' +
+        '<div class="c-stat"><span class="lab">家族声望</span><span class="val">' + (player.children.clanPrestige || 0) + '</span></div>';
+
+    // 总览横幅：十八代进度
+    var titleEl = document.getElementById('childBannerTitle');
+    var descEl = document.getElementById('childBannerDesc');
+    var meterEl = document.getElementById('childGenMeter');
+    if (titleEl) {
+        titleEl.textContent = maxGen
+            ? ('血脉已至 · ' + getGenerationLabel(maxGen) + '（第' + maxGen + '/18 代）')
+            : '血脉未开 · 祖宗十八代';
+    }
+    if (descEl) {
+        descEl.textContent = maxGen >= 18
+            ? '终世孙已立，十八代圆满。继续修缮家业与武道，让地图三维更盛。'
+            : ('可传宗至终世孙共十八代 · 当前人数 ' + members.length + '/' + childConfig.lineage.maxTotalMembers +
+               ' · 世界地图攻/血/爆伤随血脉成长');
+    }
+    if (meterEl) {
+        var cells = '';
+        for (var gi = 1; gi <= 18; gi++) {
+            cells += '<span class="' + (gi <= maxGen ? 'on' : '') + '" title="第' + gi + '代·' + getGenerationLabel(gi) + '"></span>';
+        }
+        meterEl.innerHTML = cells;
+    }
 }
+
 function initChildSystem() {
     initChildData();
     startChildCooldownTimer();
-    
-    startGrowthCountdownTimer(); // 添加成长倒计时计时器
+    startGrowthCountdownTimer();
+    startDescendantPregnancyTimer();
 }
-// 更新怀孕状态
+
 function updatePregnancyStatus() {
     const pregnancySection = document.getElementById('pregnancySection');
     const pregnancyInfo = document.getElementById('pregnancyInfo');
-    
+    if (!pregnancySection || !pregnancyInfo) return;
+
     if (player.children.isPregnant) {
         pregnancySection.style.display = 'block';
-        
         const progress = calculatePregnancyProgress();
         const remainingTime = Math.max(0, childConfig.pregnancy.duration - (Date.now() - player.children.pregnancyStart));
-        const hoursRemaining = Math.ceil(remainingTime / (60 * 60 * 1000));
-        const minutesRemaining = Math.ceil(remainingTime / (60 * 1000));
-        
-        // 检查是否应该分娩
+        const hoursRemaining = Math.floor(remainingTime / (60 * 60 * 1000));
+        const minutesRemaining = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+
         if (progress >= 100) {
-            pregnancyInfo.innerHTML = `
-                <div style="color: #4CAF50; font-weight: bold;">怀孕完成！准备分娩</div>
-                <div style="color: #ccc;">孩子即将出生...</div>
-                <button onclick="giveBirth()" style="margin-top: 10px; background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; width: 100%;">
-                    🎉 立即分娩 🎉
-                </button>
-                <div style="margin-top: 10px; font-size: 12px; color: #888;">
-                    如果分娩没有自动触发，请点击上方按钮
-                </div>
-            `;
-            
-            // 自动触发分娩（延迟1秒确保UI更新）
-            setTimeout(() => {
-                if (player.children.isPregnant) {
-                    console.log('自动触发分娩...');
-                    giveBirth();
-                }
+            pregnancyInfo.innerHTML =
+                '<div style="color:#4CAF50;font-weight:bold;margin-bottom:8px;">怀孕完成！可以分娩了</div>' +
+                '<button class="c-btn c-btn-green" style="width:100%;" onclick="giveBirth()">立即分娩</button>';
+            setTimeout(function() {
+                if (player.children.isPregnant && calculatePregnancyProgress() >= 100) giveBirth();
             }, 1000);
-            
         } else {
-            pregnancyInfo.innerHTML = `
-                <div>怀孕进度: ${progress.toFixed(1)}%</div>
-                <div>剩余时间: ${hoursRemaining} 小时 ${minutesRemaining % 60} 分钟</div>
-                <div>预计出生: ${new Date(player.children.pregnancyStart + childConfig.pregnancy.duration).toLocaleString()}</div>
-                <div style="margin-top: 10px;">
-                    <div style="background: #555; border-radius: 5px; height: 20px; margin: 5px 0; position: relative;">
-                        <div style="background: linear-gradient(90deg, #FF69B4, #FF1493); height: 100%; border-radius: 5px; width: ${progress}%; transition: width 0.3s;"></div>
-                        <div style="position: absolute; top: 0; left: 0; right: 0; text-align: center; color: white; font-size: 12px; line-height: 20px;">
-                            ${progress.toFixed(1)}%
-                        </div>
-                    </div>
-                </div>
-                <button onclick="giveBirthNow()" style="margin-top: 10px; background: #FF9800; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
-                    95.1%以上立即分娩 (消耗 88888 元)
-                </button>
-            `;
+            pregnancyInfo.innerHTML =
+                '<div class="c-stat" style="margin-bottom:8px;"><span class="lab">预计出生</span><span class="val">' +
+                new Date(player.children.pregnancyStart + childConfig.pregnancy.duration).toLocaleString() + '</span></div>' +
+                '<div>剩余约 ' + hoursRemaining + ' 小时 ' + minutesRemaining + ' 分钟</div>' +
+                '<div class="c-progress"><i style="width:' + progress + '%"></i><span>' + progress.toFixed(1) + '%</span></div>' +
+                '<button class="c-btn c-btn-orange" style="width:100%;margin-top:8px;" onclick="giveBirthNow()">95%以上催产（88888 元）</button>';
         }
     } else {
         pregnancySection.style.display = 'none';
     }
 }
 
-
-// 计算怀孕进度
 function calculatePregnancyProgress() {
-    if (!player.children.isPregnant || !player.children.pregnancyStart) {
-        return 0;
-    }
-    
+    if (!player.children.isPregnant || !player.children.pregnancyStart) return 0;
     const elapsed = Date.now() - player.children.pregnancyStart;
-    const progress = Math.min(100, (elapsed / childConfig.pregnancy.duration) * 100);
-    
-    console.log('怀孕进度计算:', {
-        startTime: new Date(player.children.pregnancyStart).toLocaleString(),
-        currentTime: new Date().toLocaleString(),
-        elapsed: Math.round(elapsed / 1000 / 60) + '分钟',
-        totalDuration: Math.round(childConfig.pregnancy.duration / 1000 / 60) + '分钟',
-        progress: progress.toFixed(1) + '%'
-    });
-    
-    return progress;
+    return Math.min(100, (elapsed / childConfig.pregnancy.duration) * 100);
 }
 
 // 怀孕功能
@@ -1253,8 +1447,13 @@ function conceiveChild() {
         return;
     }
     
-    if (player.children.children.length >= childConfig.pregnancy.maxChildren) {
-        logAction(`最多只能有 ${childConfig.pregnancy.maxChildren} 个孩子`, "error");
+    if (getDirectChildrenCount() >= childConfig.pregnancy.maxChildren) {
+        logAction("最多只能有 " + childConfig.pregnancy.maxChildren + " 个直系子女", "error");
+        return;
+    }
+
+    if ((player.children.children || []).length >= childConfig.lineage.maxTotalMembers) {
+        logAction("家族人数已达上限 " + childConfig.lineage.maxTotalMembers, "error");
         return;
     }
     
@@ -1272,30 +1471,29 @@ function conceiveChild() {
     }
     
     if (player.investmentGame.userData.availableFunds < childConfig.pregnancy.cost) {
-        logAction(`资金不足！需要 ${childConfig.pregnancy.cost} 元`, "error");
+        logAction("资金不足！需要 " + childConfig.pregnancy.cost + " 元", "error");
         return;
     }
     
-    // 扣除转生币
     player.investmentGame.userData.availableFunds -= childConfig.pregnancy.cost;
     
-    // 开始怀孕
     player.children.isPregnant = true;
     player.children.pregnancyStart = Date.now();
     player.children.pregnancyProgress = 0;
     player.children.expectedChild = {
         name: childName,
-        gender: childGender
+        gender: childGender,
+        generation: 1,
+        parentId: null
     };
     
     const expectedBirthTime = new Date(Date.now() + childConfig.pregnancy.duration);
-    logAction(`恭喜！您怀孕了！孩子预计在 ${expectedBirthTime.toLocaleString()} 出生`, "success");
+    logAction("恭喜！您怀孕了！孩子预计在 " + expectedBirthTime.toLocaleString() + " 出生", "success");
     
     updateChildSystemUI();
     updateDisplay();
     saveGame();
     
-    // 启动怀孕计时器
     startPregnancyTimer();
 }
 
@@ -1364,9 +1562,13 @@ function giveBirth() {
         }
         
         console.log('创建新孩子...');
+        const expected = player.children.expectedChild;
         const child = createNewChild(
-            player.children.expectedChild.name,
-            player.children.expectedChild.gender
+            expected.name,
+            expected.gender,
+            expected.generation || 1,
+            expected.parentId || null,
+            expected.inheritFrom || null
         );
         
         // 添加到孩子列表
@@ -1437,173 +1639,129 @@ function giveBirthNow() {
 // 更新孩子列表
 function updateChildrenList() {
     const container = document.getElementById('childrenList');
+    if (!container) return;
     const children = player.children.children || [];
-    
-    if (children.length === 0) {
-        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #888; padding: 20px;">还没有孩子</div>';
+    const filter = _childOffspringFilter || 'all';
+    const list = children.filter(function(child) {
+        if (filter === 'all') return true;
+        return String(child.generation || 1) === String(filter);
+    });
+
+    if (list.length === 0) {
+        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#C9A0B8;padding:24px;">暂无成员</div>';
         return;
     }
-    
+
     container.innerHTML = '';
-    
-    children.forEach((child, index) => {
-        // 确保属性正确初始化
-        const safeChild = ensureChildAttributes(child);
-        const currentStage = childConfig.growthStages[safeChild.growthStage];
-        const nextStage = childConfig.growthStages[safeChild.growthStage + 1];
-         const isAdult = safeChild.isAdult || safeChild.growthStage >= childConfig.growthStages.length - 1;
-        
-        // 更新成年状态（确保一致性）
-        if (isAdult && !safeChild.isAdult) {
-            safeChild.isAdult = true;
-        }
-        // 计算成长倒计时
-        const growthInfo = calculateGrowthCountdown(safeChild);
-        
-        const childCard = document.createElement('div');
-        childCard.className = 'child-card';
-        childCard.style.background = '#444';
-        childCard.style.border = '2px solid #FF69B4';
-        childCard.style.borderRadius = '5px';
-        childCard.style.padding = '10px';
-        childCard.style.textAlign = 'center';
-        childCard.style.position = 'relative';
-         const adultBadge = isAdult ? '<div style="position: absolute; top: 5px; right: 5px; background: #4CAF50; color: white; padding: 2px 5px; border-radius: 3px; font-size: 8px;">成年</div>' : '';
-        // 计算培养冷却时间
-        const now = Date.now();
-        const lastTraining = safeChild.lastTraining || 0;
-        const cooldown = 60 * 60 * 1000;
-        const remainingTime = Math.max(0, cooldown - (now - lastTraining));
-        const isOnCooldown = remainingTime > 0;
-        const minutesRemaining = Math.ceil(remainingTime / (60 * 1000));
-        
-        childCard.innerHTML = `
-            <div style="font-weight: bold; color: #FF69B4; font-size: 14px;">${safeChild.name}</div>
-            <div style="font-size: 12px; color: #ccc;">${safeChild.gender === 'boy' ? '👦 男孩' : '👧 女孩'}</div>
-            ${isAdult ? '<div style="font-size: 10px; color: #4CAF50;">✓ 可以工作</div>' : ''}
-            <div style="font-size: 11px; color: #87CEEB;">${currentStage.name}</div>
-            
-            <!-- 成长阶段信息 -->
-            <div style="margin: 5px 0; padding: 3px; background: rgba(0,0,0,0.3); border-radius: 3px;">
-                ${growthInfo.countdownHtml}
-            </div>
-            
-            <!-- 属性显示 -->
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; font-size: 10px; margin: 5px 0;">
-                <div style="color: #32CD32;">智力: ${safeChild.attributes.intelligence}</div>
-                <div style="color: #FFA500;">体质: ${safeChild.attributes.physique}</div>
-                <div style="color: #FF69B4;">魅力: ${safeChild.attributes.charm}</div>
-                <div style="color: #FFD700;">商业: ${safeChild.attributes.business}</div>
-            </div>
-            
-            <!-- 培养冷却状态 -->
-            <div style="font-size: 9px; color: ${isOnCooldown ? '#FF6B6B' : '#4CAF50'}; background: rgba(0,0,0,0.7); padding: 2px 5px; border-radius: 3px; margin-top: 3px;">
-                ${isOnCooldown ? `培养冷却: ${minutesRemaining}分钟` : '可培养'}
-            </div>
-            
-            <!-- 单独培养按钮 -->
-            <div style="margin-top: 5px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px;">
-                <button onclick="trainChild(${index}, 'education')" 
-                        style="background: ${isOnCooldown ? '#888' : '#2196F3'}; color: white; border: none; padding: 2px 4px; border-radius: 2px; cursor: ${isOnCooldown ? 'not-allowed' : 'pointer'}; font-size: 8px;"
-                        ${isOnCooldown ? 'disabled' : ''} title="教育培养">
-                    教育
-                </button>
-                <button onclick="trainChild(${index}, 'sports')" 
-                        style="background: ${isOnCooldown ? '#888' : '#4CAF50'}; color: white; border: none; padding: 2px 4px; border-radius: 2px; cursor: ${isOnCooldown ? 'not-allowed' : 'pointer'}; font-size: 8px;"
-                        ${isOnCooldown ? 'disabled' : ''} title="体育培养">
-                    体育
-                </button>
-                <button onclick="trainChild(${index}, 'arts')" 
-                        style="background: ${isOnCooldown ? '#888' : '#9C27B0'}; color: white; border: none; padding: 2px 4px; border-radius: 2px; cursor: ${isOnCooldown ? 'not-allowed' : 'pointer'}; font-size: 8px;"
-                        ${isOnCooldown ? 'disabled' : ''} title="艺术培养">
-                    艺术
-                </button>
-                <button onclick="trainChild(${index}, 'business')" 
-                        style="background: ${isOnCooldown ? '#888' : '#FF9800'}; color: white; border: none; padding: 2px 4px; border-radius: 2px; cursor: ${isOnCooldown ? 'not-allowed' : 'pointer'}; font-size: 8px;"
-                        ${isOnCooldown ? 'disabled' : ''} title="商业培养">
-                    商业
-                </button>
-            </div>
-              
-            <div style="font-size: 8px; color: #888; margin-top: 2px;">总培养: ${safeChild.totalTraining || 0}次</div>
-        `;
-        
-        container.appendChild(childCard);
+    list.forEach(function(child) {
+        const index = children.findIndex(function(c) { return c.id === child.id; });
+        if (index < 0) return;
+        container.appendChild(buildFamilyMemberCard(child, index, true));
     });
+}
+
+function buildFamilyMemberCard(child, index, showTrain) {
+    const safeChild = ensureChildAttributes(child);
+    const gen = safeChild.generation || 1;
+    const currentStage = childConfig.growthStages[safeChild.growthStage] || childConfig.growthStages[0];
+    const isAdult = isFamilyMemberAdult(safeChild);
+    if (isAdult && !safeChild.isAdult) safeChild.isAdult = true;
+    const growthInfo = calculateGrowthCountdown(safeChild);
+    const now = Date.now();
+    const remainingTime = Math.max(0, 60 * 60 * 1000 - (now - (safeChild.lastTraining || 0)));
+    const isOnCooldown = remainingTime > 0;
+    const minutesRemaining = Math.ceil(remainingTime / (60 * 1000));
+    const parent = getChildById(safeChild.parentId);
+    const parentText = parent ? ('父母：' + parent.name) : (gen === 1 ? '直系' : '');
+
+    const card = document.createElement('div');
+    card.className = 'c-member gen-' + gen;
+    let badges = '<span class="c-badge gen">' + getGenerationLabel(gen) + '</span>';
+    if (safeChild.isMarried) badges = '<span class="c-badge married">已婚</span>';
+    else if (isAdult) badges = '<span class="c-badge adult">成年</span>';
+
+    let trainHtml = '';
+    if (showTrain) {
+        trainHtml =
+            '<div class="c-actions">' +
+            '<button class="c-btn c-btn-sm c-btn-blue" onclick="trainChild(' + index + ',\'education\')" ' + (isOnCooldown ? 'disabled' : '') + '>教育</button>' +
+            '<button class="c-btn c-btn-sm c-btn-green" onclick="trainChild(' + index + ',\'sports\')" ' + (isOnCooldown ? 'disabled' : '') + '>体育</button>' +
+            '<button class="c-btn c-btn-sm c-btn-purple" onclick="trainChild(' + index + ',\'arts\')" ' + (isOnCooldown ? 'disabled' : '') + '>艺术</button>' +
+            '<button class="c-btn c-btn-sm c-btn-orange" onclick="trainChild(' + index + ',\'business\')" ' + (isOnCooldown ? 'disabled' : '') + '>商业</button>' +
+            '</div>';
+    }
+
+    let extraActions = '';
+    if (isAdult && !safeChild.isMarried && gen < childConfig.lineage.maxGeneration) {
+        extraActions += '<button class="c-btn c-btn-sm c-btn-gold" style="width:100%;margin-top:6px;" onclick="arrangeMarriage(' + index + ')">安排成婚</button>';
+    }
+    if (safeChild.isMarried && safeChild.spouse) {
+        extraActions += '<div class="meta" style="margin-top:4px;">配偶：' + safeChild.spouse.name +
+            (safeChild.marriageTier && safeChild.marriageTier !== 'common' ? '（' + safeChild.marriageTier + '）' : '') + '</div>';
+    }
+    var talentLabel = '';
+    if (safeChild.talentId && typeof window.lineageExtConfig !== 'undefined') {
+        var td = window.lineageExtConfig.talents.find(function(t) { return t.id === safeChild.talentId; });
+        if (td) talentLabel = ' · <span style="color:' + td.color + ';">' + td.name + (safeChild.talentAwakened ? '★' : '') + '</span>';
+    }
+
+    card.innerHTML =
+        badges +
+        '<div class="name">' + safeChild.name + '</div>' +
+        '<div class="meta">' + (safeChild.gender === 'boy' ? '男' : '女') + ' · ' + currentStage.name +
+        (isAdult ? ' · 可打工' : '') + (parentText ? ' · ' + parentText : '') + talentLabel + '</div>' +
+        '<div style="margin:6px 0;">' + growthInfo.countdownHtml + '</div>' +
+        '<div class="attrs">' +
+        '<div style="color:#32CD32;">智力 ' + safeChild.attributes.intelligence + '</div>' +
+        '<div style="color:#FFA500;">体质 ' + safeChild.attributes.physique + '</div>' +
+        '<div style="color:#FF69B4;">魅力 ' + safeChild.attributes.charm + '</div>' +
+        '<div style="color:#FFD700;">商业 ' + safeChild.attributes.business + '</div>' +
+        '</div>' +
+        '<div style="font-size:10px;color:' + (isOnCooldown ? '#FF6B6B' : '#4CAF50') + ';">' +
+        (isOnCooldown ? ('培养冷却 ' + minutesRemaining + ' 分钟') : '可培养') +
+        ' · 培养 ' + (safeChild.totalTraining || 0) + ' 次</div>' +
+        trainHtml + extraActions;
+
+    return card;
 }
 
 function calculateGrowthCountdown(child) {
     const currentStage = childConfig.growthStages[child.growthStage];
     const nextStage = childConfig.growthStages[child.growthStage + 1];
-    
-    // 如果是最后阶段
+
     if (!nextStage) {
         return {
-            countdownHtml: `
-                <div style="color: #FFD700; font-size: 9px;">🏆 已达成最高阶段</div>
-                <div style="color: #888; font-size: 8px;">${currentStage.name}</div>
-            `,
+            countdownHtml: '<div style="color:#FFD700;font-size:11px;">已达最高阶段 · ' + currentStage.name + '</div>',
             canGrow: false,
-            timeRemaining: 0
+            timeRemaining: 0,
+            attributesNeeded: 0
         };
     }
-    
-    // 计算当前阶段已过时间
+
     const birthDate = child.birthDate || Date.now();
     const now = Date.now();
-    const timeInCurrentStage = now - birthDate - childConfig.growthStages.slice(0, child.growthStage).reduce((sum, stage) => sum + stage.duration, 0);
+    const timeInCurrentStage = now - birthDate - childConfig.growthStages.slice(0, child.growthStage).reduce(function(sum, stage) { return sum + stage.duration; }, 0);
     const timeRequired = currentStage.duration;
     const timeRemaining = Math.max(0, timeRequired - timeInCurrentStage);
-    
-    // 计算属性需求
-    const totalAttributes = Object.values(child.attributes).reduce((a, b) => a + b, 0);
-    const attributesRequired = (child.growthStage + 1) * 10; // 每阶段需要10点属性
+    const totalAttributes = Object.values(child.attributes).reduce(function(a, b) { return a + b; }, 0);
+    const attributesRequired = (child.growthStage + 1) * 10;
     const attributesNeeded = Math.max(0, attributesRequired - totalAttributes);
-    
-    // 计算成长进度
     const timeProgress = Math.min(100, (timeInCurrentStage / timeRequired) * 100);
     const attributeProgress = Math.min(100, (totalAttributes / attributesRequired) * 100);
     const overallProgress = Math.min(timeProgress, attributeProgress);
-    
-    // 格式化时间
     const hoursRemaining = Math.floor(timeRemaining / (60 * 60 * 1000));
     const minutesRemaining = Math.floor((timeRemaining % (60 * 60 * 1000)) / (60 * 1000));
-    
     const canGrow = timeRemaining <= 0 && attributesNeeded <= 0;
-    
+
     let countdownHtml = '';
-    
     if (canGrow) {
-        countdownHtml = `
-            <div style="color: #4CAF50; font-size: 9px;">✨ 可成长到 ${nextStage.name}</div>
-            <div style="color: #888; font-size: 8px;">点击培养即可升级</div>
-        `;
+        countdownHtml = '<div style="color:#4CAF50;font-size:11px;">可成长至 ' + nextStage.name + '（培养即可升级）</div>';
     } else {
-        // 显示时间倒计时
-        if (timeRemaining > 0) {
-            countdownHtml += `
-                <div style="color: #87CEEB; font-size: 8px;">⏰ ${hoursRemaining}小时${minutesRemaining}分钟</div>
-            `;
-        }
-        
-        // 显示属性需求
-        if (attributesNeeded > 0) {
-            countdownHtml += `
-                <div style="color: #FFA500; font-size: 8px;">📊 还需${attributesNeeded}点属性</div>
-            `;
-        }
-        
-        // 显示进度条
-        countdownHtml += `
-            <div style="margin-top: 3px;">
-                <div style="background: #555; border-radius: 3px; height: 6px; position: relative;">
-                    <div style="background: linear-gradient(90deg, #FF69B4, #FF1493); height: 100%; border-radius: 3px; width: ${overallProgress}%;"></div>
-                </div>
-                <div style="font-size: 7px; color: #ccc;">成长进度: ${overallProgress.toFixed(1)}%</div>
-            </div>
-        `;
+        if (timeRemaining > 0) countdownHtml += '<div style="color:#87CEEB;font-size:10px;">剩余 ' + hoursRemaining + '时' + minutesRemaining + '分</div>';
+        if (attributesNeeded > 0) countdownHtml += '<div style="color:#FFA500;font-size:10px;">还需 ' + attributesNeeded + ' 点属性</div>';
+        countdownHtml += '<div class="c-progress"><i style="width:' + overallProgress + '%"></i><span>' + overallProgress.toFixed(0) + '%</span></div>';
     }
-    
+
     return {
         countdownHtml: countdownHtml,
         canGrow: canGrow,
@@ -1616,72 +1774,43 @@ function calculateGrowthCountdown(child) {
 // 更新培养区域
 function updateTrainingSection() {
     const container = document.getElementById('childTrainingSection');
+    if (!container) return;
     container.innerHTML = '';
-    
-    // 添加冷却时间概览
+
     const children = player.children.children || [];
     const now = Date.now();
-    const availableCount = children.filter(child => {
-        const lastTraining = child.lastTraining || 0;
-        return (now - lastTraining) >= 60 * 60 * 1000;
+    const availableCount = children.filter(function(child) {
+        return (now - (child.lastTraining || 0)) >= 60 * 60 * 1000;
     }).length;
-    
-    const cooldownOverview = document.createElement('div');
-    cooldownOverview.style.cssText = 'grid-column: 1 / -1; background: #555; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px;';
-    cooldownOverview.innerHTML = `
-        <div style="font-size: 12px; color: #ccc;">
-            可培养孩子: <span style="color: ${availableCount > 0 ? '#4CAF50' : '#FF6B6B'}">${availableCount}/${children.length}</span>
-        </div>
-        <div style="font-size: 10px; color: #888;">
-            ${availableCount === 0 ? '所有孩子都在冷却中' : '可点击孩子卡片上的按钮进行单独培养'}
-        </div>
-    `;
-    container.appendChild(cooldownOverview);
-    
-    // 添加批量培养选项
-    const batchTrainingTitle = document.createElement('div');
-    batchTrainingTitle.style.cssText = 'grid-column: 1 / -1; text-align: center; font-weight: bold; color: #FF69B4; margin: 10px 0;';
-    batchTrainingTitle.textContent = '批量培养 (所有可培养的孩子)';
-    container.appendChild(batchTrainingTitle);
-    
-    // 添加培养选项
-    childConfig.trainingTypes.forEach(training => {
-        const trainingCard = document.createElement('div');
-        trainingCard.style.background = '#555';
-        trainingCard.style.padding = '10px';
-        trainingCard.style.borderRadius = '5px';
-        trainingCard.style.textAlign = 'center';
-        
-        trainingCard.innerHTML = `
-            <div style="font-weight: bold; color: ${getTrainingColor(training.id)};">${training.name}</div>
-            <div style="font-size: 12px; color: #ccc; margin: 5px 0;">${training.description}</div>
-            <div style="font-size: 11px; color: #FFD700;">消耗: ${training.cost} 元/孩子</div>
-            <div style="font-size: 10px; color: #87CEEB;">效果: ${getAttributeDisplayName(training.effect)}+1</div>
-            <button onclick="trainAllChildren('${training.id}')" 
-                    style="margin-top: 5px; background: ${availableCount > 0 ? getTrainingColor(training.id) : '#888'}; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: ${availableCount > 0 ? 'pointer' : 'not-allowed'}; width: 100%;"
-                    ${availableCount === 0 ? 'disabled' : ''}>
-                全体${training.name} (${availableCount}个)
-            </button>
-        `;
-        
-        container.appendChild(trainingCard);
-    });
-    
-    // 添加智能培养选项
-    const smartTrainingCard = document.createElement('div');
-    smartTrainingCard.style.cssText = 'grid-column: 1 / -1; background: #555; padding: 10px; border-radius: 5px; text-align: center; margin-top: 10px;';
-    smartTrainingCard.innerHTML = `
-        <div style="font-weight: bold; color: #FF69B4;">智能培养</div>
-        <div style="font-size: 12px; color: #ccc; margin: 5px 0;">根据每个孩子的特点进行最优培养</div>
-        <button onclick="smartTrainAllChildren()" 
-                style="margin-top: 5px; background: ${availableCount > 0 ? '#FF69B4' : '#888'}; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: ${availableCount > 0 ? 'pointer' : 'not-allowed'}; width: 100%;"
-                ${availableCount === 0 ? 'disabled' : ''}>
-            智能培养 (${availableCount}个)
-        </button>
-    `;
-    container.appendChild(smartTrainingCard);
- 
 
+    const overview = document.createElement('div');
+    overview.style.cssText = 'grid-column:1/-1;';
+    overview.innerHTML =
+        '<div class="c-stat" style="text-align:center;">可培养 <span style="color:' + (availableCount > 0 ? '#4CAF50' : '#FF6B6B') + ';font-weight:bold;">' +
+        availableCount + '/' + children.length + '</span> · 含子子孙孙</div>';
+    container.appendChild(overview);
+
+    childConfig.trainingTypes.forEach(function(training) {
+        const card = document.createElement('div');
+        card.className = 'c-train-card';
+        card.innerHTML =
+            '<div style="font-weight:bold;color:' + getTrainingColor(training.id) + ';">' + training.name + '</div>' +
+            '<div class="c-hint">' + training.description + '</div>' +
+            '<div style="font-size:11px;color:#FFD700;margin:6px 0;">' + training.cost + ' 元/人 · ' + getAttributeDisplayName(training.effect) + '+1</div>' +
+            '<button class="c-btn c-btn-pink" style="width:100%;background:' + (availableCount > 0 ? getTrainingColor(training.id) : '#555') + ';" ' +
+            'onclick="trainAllChildren(\'' + training.id + '\')" ' + (availableCount === 0 ? 'disabled' : '') + '>全体' + training.name + '（' + availableCount + '）</button>';
+        container.appendChild(card);
+    });
+
+    const smart = document.createElement('div');
+    smart.className = 'c-train-card';
+    smart.style.gridColumn = '1 / -1';
+    smart.innerHTML =
+        '<div style="font-weight:bold;color:#FF69B4;">智能培养</div>' +
+        '<div class="c-hint">按每位成员最弱属性自动分配培养</div>' +
+        '<button class="c-btn c-btn-pink" style="width:100%;margin-top:8px;" onclick="smartTrainAllChildren()" ' +
+        (availableCount === 0 ? 'disabled' : '') + '>智能培养（' + availableCount + '）</button>';
+    container.appendChild(smart);
 }
 function getCurrentStrategyName() {
     const strategies = {
@@ -1887,9 +2016,11 @@ function trainChild(childIndex, trainingType = null) {
         }
         
         console.log('选择的培养:', training);
+        var costMult = (typeof getLineageTrainCostMult === 'function') ? getLineageTrainCostMult() : 1;
+        var realCost = Math.floor(training.cost * costMult);
         
-        if (player.investmentGame.userData.availableFunds < training.cost) {
-            logAction(`资金不足！需要 ${training.cost} 元`, "error");
+        if (player.investmentGame.userData.availableFunds < realCost) {
+            logAction("资金不足！需要 " + realCost + " 元", "error");
             return;
         }
         
@@ -1898,8 +2029,8 @@ function trainChild(childIndex, trainingType = null) {
         console.log('培养前属性值:', training.effect, '=', oldAttributeValue);
         
         
-        player.investmentGame.userData.availableFunds -= training.cost;
-        console.log('扣除资金:', training.cost, '剩余:', player.investmentGame.userData.availableFunds);
+        player.investmentGame.userData.availableFunds -= realCost;
+        console.log('扣除资金:', realCost, '剩余:', player.investmentGame.userData.availableFunds);
         
         // 确保属性对象存在
         if (!child.attributes) {
@@ -1926,8 +2057,12 @@ function trainChild(childIndex, trainingType = null) {
             child.attributes[actualEffect] = 1; // 初始化属性
         }
         
-        // 增加属性值
-        child.attributes[actualEffect] += 1;
+        // 增加属性值（命格可加成）
+        var gain = 1;
+        if (typeof applyLineageTalentOnTrain === 'function') {
+            gain = applyLineageTalentOnTrain(child, actualEffect, 1);
+        }
+        child.attributes[actualEffect] += gain;
         const newAttributeValue = child.attributes[actualEffect];
         console.log('培养后属性值:', actualEffect, '=', newAttributeValue);
         
@@ -1951,7 +2086,7 @@ function trainChild(childIndex, trainingType = null) {
             player.children.trainingHistory = player.children.trainingHistory.slice(-100);
         }
         
-        logAction(`对 ${child.name} 进行了${training.name}培养，${getAttributeDisplayName(actualEffect)}+1 (${oldAttributeValue} → ${newAttributeValue})`, "success");
+        logAction("对 " + child.name + " 进行了" + training.name + "培养，" + getAttributeDisplayName(actualEffect) + "+" + gain + " (" + oldAttributeValue + " → " + newAttributeValue + ")", "success");
         
         // 检查成长阶段
         checkChildGrowth(childIndex);
@@ -2091,37 +2226,60 @@ function ensureChildAttributes(child) {
     
     return child;
 }
-function createNewChild(name, gender) {
+function createNewChild(name, gender, generation, parentId, inheritFrom) {
+    const gen = generation || 1;
+    const rate = childConfig.lineage.inheritanceRate;
+    let attrs = { intelligence: 1, physique: 1, charm: 1, business: 1 };
+
+    if (inheritFrom && inheritFrom.attributes) {
+        attrs = {
+            intelligence: Math.max(1, Math.floor(1 + (inheritFrom.attributes.intelligence || 1) * rate)),
+            physique: Math.max(1, Math.floor(1 + (inheritFrom.attributes.physique || 1) * rate)),
+            charm: Math.max(1, Math.floor(1 + (inheritFrom.attributes.charm || 1) * rate)),
+            business: Math.max(1, Math.floor(1 + (inheritFrom.attributes.business || 1) * rate))
+        };
+        // 血脉暴击：小概率额外继承
+        if (Math.random() < 0.15) {
+            const keys = Object.keys(attrs);
+            const k = keys[Math.floor(Math.random() * keys.length)];
+            attrs[k] += Math.max(1, Math.floor((inheritFrom.attributes[k] || 1) * 0.1));
+        }
+    }
+
     const child = {
-        id: 'child_' + Date.now(),
+        id: 'child_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
         name: name,
         gender: gender,
         birthDate: Date.now(),
         age: 0,
         growthStage: 0,
-        isAdult: false, // 明确标记为非成年
-        attributes: {
-            intelligence: 1,
-            physique: 1,
-            charm: 1,
-            business: 1
-        },
+        isAdult: false,
+        generation: gen,
+        parentId: parentId || null,
+        attributes: attrs,
         lastTraining: 0,
         totalTraining: 0,
         lastInteraction: 0,
         totalInteractions: 0,
         intimacy: 0,
         currentJob: null,
-        workStartTime: 0
+        workStartTime: 0,
+        isMarried: false,
+        isPregnant: false,
+        pregnancyStart: 0
     };
-    
+
+    addLineageExp(gen === 1 ? 10 : (gen === 2 ? 18 : (gen === 3 ? 28 : 36)));
+    if (typeof assignLineageTalentToNewborn === 'function') {
+        assignLineageTalentToNewborn(child);
+    }
     return ensureChildAttributes(child);
 }
 
 // 检查孩子成长
 function checkChildGrowth(childIndex) {
     const child = player.children.children[childIndex];
-    if (!child || child.isAdult) return;
+    if (!child || isFamilyMemberAdult(child)) return;
     
     const growthInfo = calculateGrowthCountdown(child);
     
@@ -2188,59 +2346,56 @@ function applyGrowthBonus(child, bonus) {
 function updateGrowthOverview() {
     const container = document.getElementById('growthOverview');
     if (!container) return;
-    
+
     const children = player.children.children || [];
     if (children.length === 0) {
-        container.innerHTML = '<div style="text-align: center; color: #888; padding: 10px;">还没有孩子</div>';
+        container.innerHTML = '<div style="text-align:center;color:#C9A0B8;">还没有家族成员</div>';
         return;
     }
-    
-    // 统计成长信息
-    let totalTimeRemaining = 0;
-    let totalAttributesNeeded = 0;
+
     let canGrowCount = 0;
     let growingChildren = 0;
-    
-    children.forEach(child => {
+    let totalTimeRemaining = 0;
+    children.forEach(function(child) {
         const growthInfo = calculateGrowthCountdown(child);
-        if (growthInfo.canGrow) {
-            canGrowCount++;
-        }
-        if (growthInfo.timeRemaining > 0 || growthInfo.attributesNeeded > 0) {
-            growingChildren++;
-        }
+        if (growthInfo.canGrow) canGrowCount++;
+        if (growthInfo.timeRemaining > 0 || growthInfo.attributesNeeded > 0) growingChildren++;
         totalTimeRemaining += growthInfo.timeRemaining;
-        totalAttributesNeeded += growthInfo.attributesNeeded;
     });
-    
-    const avgHoursRemaining = Math.floor(totalTimeRemaining / children.length / (60 * 60 * 1000));
-    const avgMinutesRemaining = Math.floor((totalTimeRemaining / children.length % (60 * 60 * 1000)) / (60 * 1000));
-    
-    container.innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; font-size: 11px;">
-            <div style="color: #4CAF50;">可成长: ${canGrowCount}个</div>
-            <div style="color: #87CEEB;">成长中: ${growingChildren}个</div>
-            <div style="color: #FFA500;">平均时间: ${avgHoursRemaining}h${avgMinutesRemaining}m</div>
-        </div>
-    `;
+    const avgHours = Math.floor(totalTimeRemaining / children.length / (60 * 60 * 1000));
+    const avgMins = Math.floor((totalTimeRemaining / children.length % (60 * 60 * 1000)) / (60 * 1000));
+
+    container.innerHTML =
+        '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:12px;">' +
+        '<div style="color:#4CAF50;">可成长 ' + canGrowCount + '</div>' +
+        '<div style="color:#87CEEB;">成长中 ' + growingChildren + '</div>' +
+        '<div style="color:#FFA500;">平均 ' + avgHours + 'h' + avgMins + 'm</div>' +
+        '</div>';
 }
-// 更新孩子加成
+
 function updateChildBonuses() {
     const container = document.getElementById('childBonuses');
+    const detail = document.getElementById('childBonusesDetail');
     const bonuses = calculateChildBonuses();
-    
-    container.innerHTML = `
-        <div>GPS加成: +${((bonuses.gpsMultiplier - 1) * 100).toFixed(1)}%</div>
-        <div>点击加成: +${((bonuses.clickMultiplier - 1) * 100).toFixed(1)}%</div>
-        <div>生命值: +${(bonuses.critRateBonus * 100).toFixed(2)}%</div>
-        <div>攻击值: +${(bonuses.goldMultiplier * 100).toFixed(2)}%</div>
-        <div style="margin-top: 10px; font-size: 12px; color: #ccc;">
-            加成来自所有孩子的属性总和
-        </div>
-    `;
-    
-    // 更新玩家数据中的加成
+    const milestoneBonus = getClaimedMilestoneBonus();
+    const html =
+        '<div class="c-bonus-grid">' +
+        '<div class="c-bonus-item"><div class="lab">GPS 加成</div><div class="val">+' + ((bonuses.gpsMultiplier - 1) * 100).toFixed(1) + '%</div></div>' +
+        '<div class="c-bonus-item"><div class="lab">点击加成</div><div class="val">+' + ((bonuses.clickMultiplier - 1) * 100).toFixed(1) + '%</div></div>' +
+        '<div class="c-bonus-item"><div class="lab">生命加成</div><div class="val">+' + ((bonuses.critRateBonus - 1) * 100).toFixed(1) + '%</div></div>' +
+        '<div class="c-bonus-item"><div class="lab">攻击加成</div><div class="val">+' + ((bonuses.goldMultiplier - 1) * 100).toFixed(1) + '%</div></div>' +
+        '<div class="c-bonus-item"><div class="lab">世界地图·攻击</div><div class="val">+' + (((bonuses.worldAtkBonus || 0) * 100).toFixed(1)) + '%</div></div>' +
+        '<div class="c-bonus-item"><div class="lab">世界地图·生命</div><div class="val">+' + (((bonuses.worldHpBonus || 0) * 100).toFixed(1)) + '%</div></div>' +
+        '<div class="c-bonus-item"><div class="lab">世界地图·爆伤</div><div class="val">+' + (((bonuses.worldCritDmgBonus || 0) * 100).toFixed(1)) + '%</div></div>' +
+        '</div>' +
+        '<p class="c-hint">含代际倍率、血脉里程碑与武道/战魂等世界地图专属加成（当前里程碑 +' + (milestoneBonus * 100).toFixed(0) + '%）</p>';
+    if (container) container.innerHTML = html;
+    if (detail) detail.innerHTML = html;
     player.children.childBonuses = bonuses;
+    // 同步世界地图攻/血/爆伤，避免只开家族面板才刷新
+    if (typeof updatePlayerBattleStats === 'function') {
+        try { updatePlayerBattleStats(); } catch (e) { /* ignore */ }
+    }
 }
 function triggerChildEvents() {
     if (!player.children || !player.children.children.length) return;
@@ -2334,15 +2489,18 @@ function interactWithChild(childIndex) {
     child.totalInteractions = (child.totalInteractions || 0) + 1;
     child.lastInteraction = now;
     
-    // 小几率获得额外奖励
+    // 小几率获得额外奖励（命格可提高几率）
     let bonusMessage = "";
-    if (Math.random() < 0.1) { // 10%几率获得额外奖励
+    var extraHit = (typeof onLineageInteractHook === 'function')
+        ? onLineageInteractHook(child)
+        : (Math.random() < 0.1);
+    if (extraHit) {
         const bonusAttribute = Object.keys(child.attributes)[Math.floor(Math.random() * Object.keys(child.attributes).length)];
         child.attributes[bonusAttribute] += 1;
-        bonusMessage = `，并且额外增加了${getAttributeDisplayName(bonusAttribute)}`;
+        bonusMessage = "，并且额外增加了" + getAttributeDisplayName(bonusAttribute);
     }
     
-    logAction(`${interaction.message}，${child.name} 的${getAttributeDisplayName(interaction.effect)}+1${bonusMessage}，亲密度+1`, "success");
+    logAction(interaction.message + "，" + child.name + " 的" + getAttributeDisplayName(interaction.effect) + "+1" + bonusMessage + "，亲密度+1", "success");
     
     updateChildSystemUI();
     updateDisplay();
@@ -2385,6 +2543,7 @@ function interactWithAllChildren() {
                 child.intimacy = (child.intimacy || 0) + 1;
                 child.totalInteractions = (child.totalInteractions || 0) + 1;
                 child.lastInteraction = now;
+                if (typeof onLineageInteractHook === 'function') onLineageInteractHook(child);
                 
                 interactedCount++;
                 totalAttributes++;
@@ -2412,147 +2571,82 @@ function getChildAge(child) {
 function updateChildWorkSystem() {
     const container = document.getElementById('childWorkSystem');
     if (!container) return;
-    
+
     const children = player.children.children || [];
-    const adultChildren = children.filter(child => {
-        // 多重条件检测成年状态
-        const isAdultByAge = child.isAdult === true;
-        const isAdultByStage = child.growthStage >= childConfig.growthStages.length - 1;
-        return isAdultByAge || isAdultByStage;
-    });
-    
-    console.log('工作系统检查:', {
-        totalChildren: children.length,
-        adultChildren: adultChildren.length,
-        adultChildrenList: adultChildren.map(c => ({ name: c.name, isAdult: c.isAdult, growthStage: c.growthStage }))
-    });
-    
+    const adultChildren = children.filter(isFamilyMemberAdult);
+
     if (adultChildren.length === 0) {
-        container.innerHTML = `
-            <h3>孩子工作系统</h3>
-            <div style="text-align: center; color: #888; padding: 20px; background: #444; border-radius: 5px;">
-                <div>还没有成年孩子可以工作</div>
-                <div style="font-size: 12px; margin-top: 10px;">
-                    孩子需要成长到青年阶段才能工作
-                </div>
-                <div style="font-size: 11px; color: #FFA500; margin-top: 5px;">
-                    当前成长阶段: ${getGrowthStageInfo(children)}
-                </div>
-        `;
+        container.innerHTML =
+            '<div style="text-align:center;color:#C9A0B8;padding:16px;">还没有成年成员可打工<br><span style="font-size:12px;">需成长至青年阶段 · 当前：' +
+            getGrowthStageInfo(children) + '</span></div>';
         return;
     }
-    
-    container.innerHTML = `
-        <h3>孩子工作系统</h3>
-        <div style="margin-bottom: 10px; font-size: 12px; color: #ccc;">
-            成年孩子可以工作赚取金币 (${adultChildren.length}/${children.length} 个成年)
-        </div>
-        <div id="workChildrenList" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
-            <!-- 工作孩子列表会动态生成 -->
-        </div>
-        <div style="display: flex; gap: 10px;">
-            <button onclick="collectAllChildWorkIncome()" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; flex: 1;">收取所有工作收入</button>
-            <button onclick="autoAssignAllJobs()" style="background: #2196F3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; flex: 1;">自动分配工作</button>
-        </div>
-    `;
-    
+
+    container.innerHTML =
+        '<div class="c-hint" style="margin-top:0;">成年家族成员可打工（' + adultChildren.length + '/' + children.length +
+        '）。时薪随属性与代数提升：子孙代数越高，同属性收入越高。</div>' +
+        '<div id="workChildrenList" class="c-member-grid" style="margin:10px 0;"></div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+        '<button class="c-btn c-btn-green" style="flex:1;" onclick="collectAllChildWorkIncome()">收取全部收入</button>' +
+        '<button class="c-btn c-btn-blue" style="flex:1;" onclick="autoAssignAllJobs()">自动分配工作</button>' +
+        '</div>';
     updateWorkChildrenList();
 }
-// 获取成长阶段信息
-function getGrowthStageInfo(children) {
-    if (children.length === 0) return "没有孩子";
-    
-    const stageCounts = {};
-    children.forEach(child => {
-        const stage = childConfig.growthStages[child.growthStage]?.name || '未知';
-        stageCounts[stage] = (stageCounts[stage] || 0) + 1;
-    });
-    
-    return Object.entries(stageCounts).map(([stage, count]) => `${stage}×${count}`).join(', ');
-}
-// 更新工作孩子列表
+
 function updateWorkChildrenList() {
     const container = document.getElementById('workChildrenList');
     if (!container) return;
-    
     const children = player.children.children || [];
-    const adultChildren = children.filter(child => child.isAdult || child.growthStage >= childConfig.growthStages.length - 1);
-    
+    const adultChildren = children.filter(isFamilyMemberAdult);
     container.innerHTML = '';
-    
-    if (adultChildren.length === 0) {
-        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #888; padding: 20px;">没有成年孩子</div>';
-        return;
-    }
-    
-    adultChildren.forEach((child, index) => {
-        const actualIndex = children.findIndex(c => c.id === child.id);
-        if (actualIndex === -1) return;
-        
-        const workCard = document.createElement('div');
-        workCard.style.background = '#555';
-        workCard.style.padding = '10px';
-        workCard.style.borderRadius = '5px';
-        workCard.style.border = '1px solid #666';
-        workCard.style.position = 'relative';
-        
+
+    adultChildren.forEach(function(child) {
+        const actualIndex = children.findIndex(function(c) { return c.id === child.id; });
+        if (actualIndex < 0) return;
         const workInfo = getChildWorkInfo(child);
         const growthStage = childConfig.growthStages[child.growthStage];
-        
-        // 当前工作指示器
-        const currentJobIndicator = workInfo.currentJob ? `
-            <div style="position: absolute; top: 5px; right: 5px; background: #4CAF50; color: white; padding: 2px 5px; border-radius: 3px; font-size: 8px;">
-                ${workInfo.currentJob}
-            </div>
-        ` : '';
-        
-        workCard.innerHTML = currentJobIndicator + `
-            <div style="font-weight: bold; color: #FF69B4;">${child.name}</div>
-            <div style="font-size: 12px; color: #ccc;">${child.gender === 'boy' ? '👦' : '👧'} ${growthStage?.name || '成年'}</div>
-            
-            <div style="margin: 8px 0;">
-                ${workInfo.currentJob ? `
-                    <div style="font-size: 11px; color: #4CAF50;">职业: ${workInfo.currentJob}</div>
-                    <div style="font-size: 10px; color: #FFD700;">时薪: ${formatNumber(workInfo.hourlyIncome)} 元</div>
-                    <div style="font-size: 10px; color: #87CEEB;">已工作: ${workInfo.hoursWorked.toFixed(1)} 小时</div>
-                    <div style="font-size: 10px; color: #32CD32;">待收: ${formatNumber(workInfo.pendingIncome)} 元</div>
-                ` : `
-                    <div style="font-size: 11px; color: #FF6B6B;">待业中</div>
-                    <div style="font-size: 10px; color: #ccc;">点击开始工作</div>
-                `}
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 10px;">
-                <div style="color: #2196F3;">智力: ${child.attributes.intelligence}</div>
-                <div style="color: #4CAF50;">体质: ${child.attributes.physique}</div>
-                <div style="color: #9C27B0;">魅力: ${child.attributes.charm}</div>
-                <div style="color: #FF9800;">商业: ${child.attributes.business}</div>
-            </div>
-            
-            <div style="margin-top: 8px; display: flex; gap: 3px;">
-                ${!workInfo.currentJob ? `
-                    <button onclick="startChildWork(${actualIndex})" style="background: #4CAF50; color: white; border: none; padding: 3px 6px; border-radius: 3px; cursor: pointer; font-size: 9px; flex: 1;">开始工作</button>
-                ` : `
-                    <button onclick="stopChildWork(${actualIndex})" style="background: #FF9800; color: white; border: none; padding: 3px 6px; border-radius: 3px; cursor: pointer; font-size: 9px; flex: 1;">停止工作</button>
-                    <button onclick="collectChildWorkIncome(${actualIndex})" style="background: #2196F3; color: white; border: none; padding: 3px 6px; border-radius: 3px; cursor: pointer; font-size: 9px; flex: 1;">收取</button>
-                `}
-                <button onclick="showJobSelection(${actualIndex})" style="background: #9C27B0; color: white; border: none; padding: 3px 6px; border-radius: 3px; cursor: pointer; font-size: 9px; flex: 1;">换工作</button>
-            </div>
-        `;
-        
-        container.appendChild(workCard);
+        const card = document.createElement('div');
+        card.className = 'c-member gen-' + (child.generation || 1);
+        card.innerHTML =
+            '<span class="c-badge gen">' + getGenerationLabel(child.generation || 1) + '</span>' +
+            '<div class="name">' + child.name + '</div>' +
+            '<div class="meta">' + (child.gender === 'boy' ? '男' : '女') + ' · ' + (growthStage ? growthStage.name : '成年') + '</div>' +
+            (workInfo.currentJob
+                ? ('<div style="font-size:12px;color:#4CAF50;">职业 ' + workInfo.currentJob + '</div>' +
+                   '<div style="font-size:11px;color:#FFD700;">时薪 ' + formatNumber(workInfo.hourlyIncome) + '</div>' +
+                   '<div style="font-size:11px;color:#87CEEB;">已工作 ' + workInfo.hoursWorked.toFixed(1) + 'h · 待收 ' + formatNumber(workInfo.pendingIncome) + '</div>')
+                : '<div style="font-size:12px;color:#FF6B6B;">待业中</div>') +
+            '<div class="attrs" style="margin-top:6px;">' +
+            '<div style="color:#2196F3;">智 ' + child.attributes.intelligence + '</div>' +
+            '<div style="color:#4CAF50;">体 ' + child.attributes.physique + '</div>' +
+            '<div style="color:#9C27B0;">魅 ' + child.attributes.charm + '</div>' +
+            '<div style="color:#FF9800;">商 ' + child.attributes.business + '</div></div>' +
+            '<div class="c-actions">' +
+            (!workInfo.currentJob
+                ? '<button class="c-btn c-btn-sm c-btn-green" onclick="startChildWork(' + actualIndex + ')">开始</button>'
+                : ('<button class="c-btn c-btn-sm c-btn-orange" onclick="stopChildWork(' + actualIndex + ')">停止</button>' +
+                   '<button class="c-btn c-btn-sm c-btn-blue" onclick="collectChildWorkIncome(' + actualIndex + ')">收取</button>')) +
+            '<button class="c-btn c-btn-sm c-btn-purple" onclick="showJobSelection(' + actualIndex + ')">换工作</button>' +
+            '</div>';
+        container.appendChild(card);
     });
 }
 
 
-function getChildWorkInfo(child) {
-    const now = Date.now();
-    const jobs = {
+function getChildJobDefs() {
+    return {
         "学者": { attribute: "intelligence", baseIncome: 12000 },
         "运动员": { attribute: "physique", baseIncome: 8400 },
-        "艺人": { attribute: "charm", baseIncome: 4600 },
-        "商人": { attribute: "business", baseIncome: 9500 }
+        "艺人": { attribute: "charm", baseIncome: 5600 },
+        "商人": { attribute: "business", baseIncome: 9500 },
+        "家将": { attribute: "physique", baseIncome: 15000 },
+        "族吏": { attribute: "intelligence", baseIncome: 14000 }
     };
+}
+
+function getChildWorkInfo(child) {
+    const now = Date.now();
+    const jobs = getChildJobDefs();
     
     if (!child.currentJob) {
         return { currentJob: null, hourlyIncome: 0, hoursWorked: 0, pendingIncome: 0 };
@@ -2565,7 +2659,8 @@ function getChildWorkInfo(child) {
     
     const workStartTime = child.workStartTime || now;
     const hoursWorked = (now - workStartTime) / (60 * 60 * 1000);
-    const hourlyIncome = job.baseIncome * (child.attributes[job.attribute] || 1);
+    const genMult = getGenerationMult(child.generation || 1);
+    const hourlyIncome = job.baseIncome * (child.attributes[job.attribute] || 1) * genMult;
     const pendingIncome = Math.floor(hoursWorked * hourlyIncome);
     
     return {
@@ -2580,28 +2675,26 @@ function getChildWorkInfo(child) {
 function startChildWork(childIndex) {
     const child = player.children.children[childIndex];
     if (!child) {
-        logAction("无效的孩子索引", "error");
+        logAction("无效的成员索引", "error");
         return;
     }
     
-    // 检查是否成年
-    if (!child.isAdult && child.growthStage < childConfig.growthStages.length - 1) {
+    if (!isFamilyMemberAdult(child)) {
         const currentStage = childConfig.growthStages[child.growthStage]?.name || '未知';
-        logAction(`${child.name} 还是${currentStage}，需要成长到青年阶段才能工作`, "error");
+        logAction(child.name + " 还是" + currentStage + "，需要成长到青年阶段才能工作", "error");
         return;
     }
     
     if (child.currentJob) {
-        logAction(`${child.name} 已经在工作了`, "error");
+        logAction(child.name + " 已经在工作了", "error");
         return;
     }
     
-    // 自动选择最适合的工作
     const bestJob = getBestJobForChild(child);
     child.currentJob = bestJob.name;
     child.workStartTime = Date.now();
     
-    logAction(`${child.name} 开始从事${bestJob.name}工作，时薪 ${formatNumber(bestJob.hourlyIncome)} 元`, "success");
+    logAction(child.name + " 开始从事" + bestJob.name + "工作，时薪 " + formatNumber(bestJob.hourlyIncome) + " 元", "success");
     updateChildSystemUI();
     saveGame();
 }
@@ -2627,15 +2720,17 @@ function collectChildWorkIncome(childIndex) {
 }
 function autoAssignAllJobs() {
     const children = player.children.children || [];
-    const adultChildren = children.filter(child => child.isAdult && !child.currentJob);
+    const adultChildren = children.filter(function(child) {
+        return isFamilyMemberAdult(child) && !child.currentJob;
+    });
     
     if (adultChildren.length === 0) {
-        logAction("没有需要分配工作的孩子", "info");
+        logAction("没有需要分配工作的成员", "info");
         return;
     }
     
     let assignedCount = 0;
-    adultChildren.forEach(child => {
+    adultChildren.forEach(function(child) {
         const bestJob = getBestJobForChild(child);
         child.currentJob = bestJob.name;
         child.workStartTime = Date.now();
@@ -2643,7 +2738,7 @@ function autoAssignAllJobs() {
     });
     
     if (assignedCount > 0) {
-        logAction(`为 ${assignedCount} 个孩子自动分配了工作`, "success");
+        logAction("为 " + assignedCount + " 个成员自动分配了工作", "success");
         updateChildSystemUI();
         saveGame();
     }
@@ -2653,32 +2748,34 @@ function getBestJobForChild(child) {
         { name: "学者", attribute: "intelligence", baseIncome: 12000 },
         { name: "运动员", attribute: "physique", baseIncome: 8400 },
         { name: "艺人", attribute: "charm", baseIncome: 5600 },
-        { name: "商人", attribute: "business", baseIncome: 9500 }
+        { name: "商人", attribute: "business", baseIncome: 9500 },
+        { name: "家将", attribute: "physique", baseIncome: 15000 },
+        { name: "族吏", attribute: "intelligence", baseIncome: 14000 }
     ];
-    
-    // 计算每个工作的时薪
-    const jobOptions = jobs.map(job => {
-        const hourlyIncome = job.baseIncome * (child.attributes[job.attribute] || 1);
-        return { ...job, hourlyIncome: hourlyIncome };
+    const genMult = getGenerationMult(child.generation || 1);
+    const jobOptions = jobs.map(function(job) {
+        const hourlyIncome = job.baseIncome * (child.attributes[job.attribute] || 1) * genMult;
+        return Object.assign({}, job, { hourlyIncome: hourlyIncome });
     });
-    
-    // 选择时薪最高的工作
-    return jobOptions.reduce((best, job) => job.hourlyIncome > best.hourlyIncome ? job : best);
+    return jobOptions.reduce(function(best, job) {
+        return job.hourlyIncome > best.hourlyIncome ? job : best;
+    });
 }
 function showJobSelection(childIndex) {
     const child = player.children.children[childIndex];
-    if (!child || !child.isAdult) {
-        logAction("只有成年孩子才能工作", "error");
+    if (!child || !isFamilyMemberAdult(child)) {
+        logAction("只有成年家族成员才能工作", "error");
         return;
     }
     
+    const genMult = getGenerationMult(child.generation || 1);
     const jobs = [
         { 
             id: "scholar", 
             name: "学者", 
             attribute: "intelligence", 
             baseIncome: 12000, 
-            description: "适合智力高的孩子", 
+            description: "适合智力高的成员", 
             color: "#2196F3",
             icon: "📚"
         },
@@ -2687,7 +2784,7 @@ function showJobSelection(childIndex) {
             name: "运动员", 
             attribute: "physique", 
             baseIncome: 8400, 
-            description: "适合体质高的孩子", 
+            description: "适合体质高的成员", 
             color: "#4CAF50",
             icon: "🏃"
         },
@@ -2696,7 +2793,7 @@ function showJobSelection(childIndex) {
             name: "艺人", 
             attribute: "charm", 
             baseIncome: 5600, 
-            description: "适合魅力高的孩子", 
+            description: "适合魅力高的成员", 
             color: "#9C27B0",
             icon: "🎭"
         },
@@ -2705,15 +2802,33 @@ function showJobSelection(childIndex) {
             name: "商人", 
             attribute: "business", 
             baseIncome: 9500, 
-            description: "适合商业能力高的孩子", 
+            description: "适合商业能力高的成员", 
             color: "#FF9800",
             icon: "💼"
+        },
+        {
+            id: "guard",
+            name: "家将",
+            attribute: "physique",
+            baseIncome: 15000,
+            description: "家族护卫，体质越高收入越高（含代际加成）",
+            color: "#E53935",
+            icon: "⚔"
+        },
+        {
+            id: "clerk",
+            name: "族吏",
+            attribute: "intelligence",
+            baseIncome: 14000,
+            description: "打理族务，智力越高收入越高（含代际加成）",
+            color: "#00897B",
+            icon: "📜"
         }
     ];
     
     // 计算每个工作的时薪
     const jobOptions = jobs.map(job => {
-        const hourlyIncome = job.baseIncome * (child.attributes[job.attribute] || 1);
+        const hourlyIncome = job.baseIncome * (child.attributes[job.attribute] || 1) * genMult;
         const currentAttribute = child.attributes[job.attribute] || 1;
         const suitability = calculateJobSuitability(child, job);
         
@@ -2756,7 +2871,7 @@ function showJobSelection(childIndex) {
         </div>
         
         <div style="margin-bottom: 15px; background: #333; padding: 10px; border-radius: 5px;">
-            <div style="font-size: 12px; color: #ccc;">当前属性:</div>
+            <div style="font-size: 12px; color: #ccc;">当前属性 · ${getGenerationLabel(child.generation || 1)} · 代际收入×${genMult.toFixed(2)}</div>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 5px;">
                 <div style="color: #2196F3;">智力: ${child.attributes.intelligence}</div>
                 <div style="color: #4CAF50;">体质: ${child.attributes.physique}</div>
@@ -2877,17 +2992,25 @@ function calculateJobSuitability(child, job) {
 }
 function selectJob(childIndex, jobId) {
     const child = player.children.children[childIndex];
-    if (!child) return;
+    if (!child || !isFamilyMemberAdult(child)) {
+        logAction("只有成年家族成员才能工作", "error");
+        return;
+    }
     
     const jobs = {
         "scholar": { name: "学者", attribute: "intelligence", baseIncome: 12000 },
         "athlete": { name: "运动员", attribute: "physique", baseIncome: 8400 },
         "artist": { name: "艺人", attribute: "charm", baseIncome: 5600 },
-        "businessman": { name: "商人", attribute: "business", baseIncome: 9500 }
+        "businessman": { name: "商人", attribute: "business", baseIncome: 9500 },
+        "guard": { name: "家将", attribute: "physique", baseIncome: 15000 },
+        "clerk": { name: "族吏", attribute: "intelligence", baseIncome: 14000 }
     };
     
     const selectedJob = jobs[jobId];
-    if (!selectedJob) return;
+    if (!selectedJob) {
+        logAction("无效的职业", "error");
+        return;
+    }
     
     // 先收取当前工作收入（如果有）
     if (child.currentJob) {
@@ -2897,7 +3020,9 @@ function selectJob(childIndex, jobId) {
     child.currentJob = selectedJob.name;
     child.workStartTime = Date.now();
     
-    logAction(`${child.name} 现在从事${selectedJob.name}工作`, "success");
+    const genMult = getGenerationMult(child.generation || 1);
+    const hourly = selectedJob.baseIncome * (child.attributes[selectedJob.attribute] || 1) * genMult;
+    logAction(child.name + " 现在从事" + selectedJob.name + "工作，时薪 " + formatNumber(hourly) + "（含代际×" + genMult.toFixed(2) + "）", "success");
     
     // 关闭对话框
     closeJobSelection();
@@ -2916,73 +3041,45 @@ function closeJobSelection() {
 function updateChildInteractionSystem() {
     const container = document.getElementById('childInteractionSystem');
     if (!container) return;
-    
+
     const children = player.children.children || [];
     if (children.length === 0) {
-        container.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">还没有孩子可以互动</div>';
+        container.innerHTML = '<div style="text-align:center;color:#C9A0B8;padding:16px;">还没有成员可以互动</div>';
         return;
     }
-    
-    container.innerHTML = `
-        <h3>亲子互动</h3>
-        <div style="margin-bottom: 10px; font-size: 12px; color: #ccc;">
-            与孩子互动可以增加亲密度和属性
-        </div>
-        <div id="interactionChildrenList" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
-            <!-- 互动孩子列表会动态生成 -->
-        </div>
-        <button onclick="interactWithAllChildren()" style="background: #FF69B4; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; width: 100%;">与所有孩子互动</button>
-    `;
-    
+
+    container.innerHTML =
+        '<div class="c-hint" style="margin-top:0;">互动增加亲密度与随机属性（5000 元/次，3 小时冷却）</div>' +
+        '<div id="interactionChildrenList" class="c-member-grid" style="margin:10px 0;"></div>' +
+        '<button class="c-btn c-btn-pink" style="width:100%;" onclick="interactWithAllChildren()">与全部可互动成员互动</button>';
     updateInteractionChildrenList();
 }
+
 function updateInteractionChildrenList() {
     const container = document.getElementById('interactionChildrenList');
     if (!container) return;
-    
     const children = player.children.children || [];
-    
     container.innerHTML = '';
-    
-    children.forEach((child, index) => {
-        const interactionCard = document.createElement('div');
-        interactionCard.style.background = '#555';
-        interactionCard.style.padding = '10px';
-        interactionCard.style.borderRadius = '5px';
-        interactionCard.style.border = '1px solid #666';
-        
-        // 计算互动冷却
+
+    children.forEach(function(child, index) {
         const now = Date.now();
-        const lastInteraction = child.lastInteraction || 0;
-        const interactionCooldown = 3 * 60 * 60 * 1000; // 2小时冷却
-        const remainingTime = Math.max(0, interactionCooldown - (now - lastInteraction));
+        const remainingTime = Math.max(0, 3 * 60 * 60 * 1000 - (now - (child.lastInteraction || 0)));
         const canInteract = remainingTime <= 0;
         const hoursRemaining = Math.floor(remainingTime / (60 * 60 * 1000));
         const minutesRemaining = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
-        
-        interactionCard.innerHTML = `
-            <div style="font-weight: bold; color: #FF69B4;">${child.name}</div>
-            <div style="font-size: 12px; color: #ccc;">${child.gender === 'boy' ? '👦' : '👧'} ${getChildAge(child)}岁</div>
-            
-            <div style="margin: 8px 0; font-size: 11px;">
-                <div style="color: ${canInteract ? '#4CAF50' : '#FF6B6B'};">
-                    ${canInteract ? '可互动' : `冷却中: ${hoursRemaining}时${minutesRemaining}分`}
-                </div>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; font-size: 10px;">
-                <div style="color: #32CD32;">亲密度: ${child.intimacy || 0}</div>
-                <div style="color: #FFD700;">互动: ${child.totalInteractions || 0}次</div>
-            </div>
-            
-            <button onclick="interactWithChild(${index})" 
-                    style="margin-top: 8px; background: ${canInteract ? '#FF69B4' : '#888'}; color: white; border: none; padding: 5px; border-radius: 3px; cursor: ${canInteract ? 'pointer' : 'not-allowed'}; font-size: 10px; width: 100%;"
-                    ${canInteract ? '' : 'disabled'}>
-                ${canInteract ? '互动 (消耗 5000 元)' : '冷却中'}
-            </button>
-        `;
-        
-        container.appendChild(interactionCard);
+        const card = document.createElement('div');
+        card.className = 'c-member gen-' + (child.generation || 1);
+        card.innerHTML =
+            '<span class="c-badge gen">' + getGenerationLabel(child.generation || 1) + '</span>' +
+            '<div class="name">' + child.name + '</div>' +
+            '<div class="meta">' + (child.gender === 'boy' ? '男' : '女') + ' · ' + getChildAge(child) + ' 岁</div>' +
+            '<div style="font-size:11px;color:' + (canInteract ? '#4CAF50' : '#FF6B6B') + ';">' +
+            (canInteract ? '可互动' : ('冷却 ' + hoursRemaining + '时' + minutesRemaining + '分')) + '</div>' +
+            '<div class="attrs"><div style="color:#32CD32;">亲密 ' + (child.intimacy || 0) + '</div>' +
+            '<div style="color:#FFD700;">互动 ' + (child.totalInteractions || 0) + '</div></div>' +
+            '<button class="c-btn c-btn-sm c-btn-pink" style="width:100%;margin-top:8px;" onclick="interactWithChild(' + index + ')" ' +
+            (canInteract ? '' : 'disabled') + '>' + (canInteract ? '互动（5000）' : '冷却中') + '</button>';
+        container.appendChild(card);
     });
 }
 
@@ -2990,9 +3087,9 @@ function collectAllChildWorkIncome() {
     const children = player.children.children || [];
     let totalIncome = 0;
     let collectedCount = 0;
-    
-    children.forEach((child, index) => {
-        if (child.isAdult && child.currentJob) {
+
+    children.forEach(function(child) {
+        if (isFamilyMemberAdult(child) && child.currentJob) {
             const workInfo = getChildWorkInfo(child);
             if (workInfo.pendingIncome > 0) {
                 player.investmentGame.userData.availableFunds += workInfo.pendingIncome;
@@ -3002,9 +3099,10 @@ function collectAllChildWorkIncome() {
             }
         }
     });
-    
+
     if (totalIncome > 0) {
-        logAction(`收取了 ${collectedCount} 个孩子的工作收入，总计: ${formatNumber(totalIncome)} 元`, "success");
+        logAction("收取了 " + collectedCount + " 人的工作收入，总计: " + formatNumber(totalIncome) + " 元", "success");
+        if (typeof onLineageCollectHook === 'function') onLineageCollectHook();
         updateDisplay();
         updateChildSystemUI();
         saveGame();
@@ -3013,130 +3111,438 @@ function collectAllChildWorkIncome() {
     }
 }
 
-// 收取孩子工作收入
-function collectChildWorkIncome() {
-    let totalIncome = 0;
-    player.children.children.forEach(child => {
-        if (child.isAdult && child.currentJob) {
-            const workTime = Date.now() - child.workStartTime;
-            const hoursWorked = workTime / (60 * 60 * 1000);
-            const job = getJobByAttribute(child.currentJob);
-            const income = Math.floor(job.income * hoursWorked);
-            
-            if (income > 0) {
-                player.investmentGame.userData.availableFunds += income;
-                totalIncome += income;
-                child.workStartTime = Date.now();
-            }
-        }
-    });
-    
-    if (totalIncome > 0) {
-        logAction(`收取孩子工作收入：${formatNumber(totalIncome)} 元`, "success");
-        updateDisplay();
-        saveGame();
-    }
+function getJobByAttribute(jobName) {
+    const def = getChildJobDefs()[jobName];
+    if (!def) return null;
+    return { attribute: def.attribute, income: def.baseIncome };
 }
 
-function getJobByAttribute(jobName) {
-    const jobs = {
-        "学者": { attribute: "intelligence", income: 12000 },
-        "运动员": { attribute: "physique", income: 8400 },
-        "艺人": { attribute: "charm", income: 5600 },
-        "商人": { attribute: "business", income: 9500 }
-    };
-    return jobs[jobName];
+function getGrowthStageInfo(children) {
+    if (!children || children.length === 0) return "没有成员";
+    const stageCounts = {};
+    children.forEach(function(child) {
+        const stage = (childConfig.growthStages[child.growthStage] && childConfig.growthStages[child.growthStage].name) || '未知';
+        stageCounts[stage] = (stageCounts[stage] || 0) + 1;
+    });
+    return Object.keys(stageCounts).map(function(stage) { return stage + '×' + stageCounts[stage]; }).join(', ');
+}
+
+function stopChildWork(childIndex) {
+    const child = player.children.children[childIndex];
+    if (!child || !child.currentJob) {
+        logAction("该成员没有在工作", "error");
+        return;
+    }
+    const workInfo = getChildWorkInfo(child);
+    if (workInfo.pendingIncome > 0) {
+        player.investmentGame.userData.availableFunds += workInfo.pendingIncome;
+        logAction("停止工作并收取 " + child.name + " 收入 " + formatNumber(workInfo.pendingIncome) + " 元", "success");
+    } else {
+        logAction(child.name + " 已停止工作", "info");
+    }
+    child.currentJob = null;
+    child.workStartTime = 0;
+    updateDisplay();
+    updateChildSystemUI();
+    saveGame();
 }
 
 // 孩子婚姻系统（扩展功能）
 function arrangeMarriage(childIndex) {
     const child = player.children.children[childIndex];
-    if (!child || !child.isAdult) {
-        logAction("只有成年孩子才能结婚", "error");
+    if (!child || !isFamilyMemberAdult(child)) {
+        logAction("只有成年成员才能结婚", "error");
         return;
     }
-    
-    const marriageCost = 2000000; // 200万转生币
+    if (child.isMarried) {
+        logAction(child.name + " 已经成婚", "error");
+        return;
+    }
+    if ((child.generation || 1) >= childConfig.lineage.maxGeneration) {
+        logAction("玄孙/终世孙一代已达上限，无法继续成婚传宗", "error");
+        return;
+    }
+
+    const marriageCost = childConfig.lineage.marriageCost;
     if (player.investmentGame.userData.availableFunds < marriageCost) {
-        logAction(`资金不足！需要 ${marriageCost} 元`, "error");
+        logAction("资金不足！需要 " + marriageCost + " 元", "error");
         return;
     }
-    
-    showCustomConfirm(`确定要为 ${child.name} 安排婚姻吗？消耗 ${marriageCost} 元`, (confirmed) => {
+
+    showCustomConfirm("确定要为 " + child.name + " 安排婚姻吗？消耗 " + marriageCost + " 元\n成婚后可孕育下一代", function(confirmed) {
         if (confirmed) {
             player.investmentGame.userData.availableFunds -= marriageCost;
             child.isMarried = true;
             child.marriageDate = Date.now();
-            
-            // 生成配偶
             const spouseGender = child.gender === 'boy' ? 'girl' : 'boy';
             const spouseNames = {
-                boy: ['小明', '小强', '小刚', '小勇', '小伟'],
-                girl: ['小红', '小芳', '小丽', '小美', '小静']
+                boy: ['子轩', '浩然', '明哲', '俊杰', '天佑', '承安'],
+                girl: ['婉清', '诗涵', '若雪', '雨桐', '雅琴', '慕晴']
             };
             child.spouse = {
                 name: spouseNames[spouseGender][Math.floor(Math.random() * spouseNames[spouseGender].length)],
                 gender: spouseGender
             };
-            
-            logAction(`为 ${child.name} 安排了婚姻，配偶：${child.spouse.name}`, "success");
+            addLineageExp(15);
+            logAction("为 " + child.name + " 安排了婚姻，配偶：" + child.spouse.name + "。可在「传宗」页孕育后代！", "success");
             updateChildSystemUI();
+            updateDisplay();
             saveGame();
         }
     });
 }
-// 计算孩子加成
+
 function calculateChildBonuses() {
     const children = player.children.children || [];
     let totalIntelligence = 0;
     let totalPhysique = 0;
     let totalCharm = 0;
     let totalBusiness = 0;
-    
-    children.forEach(child => {
-        totalIntelligence += child.attributes.intelligence;
-        totalPhysique += child.attributes.physique;
-        totalCharm += child.attributes.charm;
-        totalBusiness += child.attributes.business;
+    var ext = (typeof getLineageExtBonusMult === 'function') ? getLineageExtBonusMult() : { global: 1, gps: 1, click: 1, life: 1, atk: 1, contrib: 1, worldAtk: 0, worldHp: 0, worldCritDmg: 0 };
+    var contrib = ext.contrib || 1;
+
+    children.forEach(function(child) {
+        const mult = getGenerationMult(child.generation || 1) * contrib;
+        totalIntelligence += (child.attributes.intelligence || 0) * mult;
+        totalPhysique += (child.attributes.physique || 0) * mult;
+        totalCharm += (child.attributes.charm || 0) * mult;
+        totalBusiness += (child.attributes.business || 0) * mult;
     });
-    
+
+    const milestone = 1 + getClaimedMilestoneBonus();
+    const lineageLv = 1 + ((player.children.lineageLevel || 1) - 1) * 0.02;
+    var g = (ext.global || 1);
+
+    // 世界地图专属加成：魅力→生命、商业→攻击、体质→爆伤（基础倍率已大幅提升），再叠加武道/战魂/十八代等
+    var worldAtk = (totalBusiness * 0.8) + (ext.worldAtk || 0);
+    var worldHp = (totalCharm * 0.8) + (ext.worldHp || 0);
+    var worldCritDmg = (totalPhysique * 0.5) + (ext.worldCritDmg || 0);
+
     return {
-        gpsMultiplier: 1 + (totalIntelligence * childConfig.attributeBonuses.intelligence.gps),
-        clickMultiplier: 1 + (totalPhysique * childConfig.attributeBonuses.physique.click),
-        critRateBonus: 1 + (totalCharm * childConfig.attributeBonuses.charm.critRate),
-        goldMultiplier: 1 + (totalBusiness * childConfig.attributeBonuses.business.gold)
+        gpsMultiplier: (1 + totalIntelligence * childConfig.attributeBonuses.intelligence.gps) * milestone * lineageLv * g * (ext.gps || 1),
+        clickMultiplier: (1 + totalPhysique * childConfig.attributeBonuses.physique.click) * milestone * lineageLv * g * (ext.click || 1),
+        critRateBonus: (1 + totalCharm * childConfig.attributeBonuses.charm.critRate) * milestone * lineageLv * g * (ext.life || 1),
+        goldMultiplier: (1 + totalBusiness * childConfig.attributeBonuses.business.gold) * milestone * lineageLv * g * (ext.atk || 1),
+        worldAtkBonus: worldAtk,
+        worldHpBonus: worldHp,
+        worldCritDmgBonus: worldCritDmg
     };
 }
 
-// 计算家庭幸福度
 function calculateFamilyHappiness() {
     const children = player.children.children || [];
-    let happiness = 50; // 基础幸福度
-    
-    // 每个孩子+10点
-    happiness += children.length * 10;
-    
-    // 根据孩子属性增加幸福度
-    children.forEach(child => {
-        happiness += (child.attributes.charm * 2);
-        if (child.isAdult) happiness += 20;
+    let happiness = 50;
+    happiness += children.length * 6;
+    children.forEach(function(child) {
+        happiness += (child.attributes.charm || 0) * 1.5;
+        if (isFamilyMemberAdult(child)) happiness += 12;
+        if (child.isMarried) happiness += 8;
+        happiness += (child.generation || 1) * 3;
     });
-    
-    return Math.min(100, happiness);
+    happiness += (player.children.tempHappiness || 0);
+    return Math.min(100, Math.floor(happiness));
 }
 
-// 更新怀孕按钮状态
 function updateConceptionButton() {
     const button = document.getElementById('conceiveBtn');
+    if (!button) return;
     if (player.children.isPregnant) {
         button.disabled = true;
         button.textContent = '已怀孕';
-        button.style.background = '#888';
     } else {
         button.disabled = false;
-        button.textContent = `怀孕 (消耗 ${childConfig.pregnancy.cost} 元)`;
-        button.style.background = '#FF69B4';
+        button.textContent = '怀孕（消耗 ' + childConfig.pregnancy.cost + ' 元）';
     }
+}
+
+/* ========== 子孙后代 / 传宗接代 ========== */
+function getClaimedMilestoneBonus() {
+    const claimed = player.children.claimedMilestones || [];
+    let bonus = 0;
+    childConfig.lineage.milestones.forEach(function(m) {
+        if (claimed.indexOf(m.id) >= 0) bonus += m.bonus;
+    });
+    return bonus;
+}
+
+function addLineageExp(amount) {
+    if (!player.children) return;
+    player.children.lineageExp = (player.children.lineageExp || 0) + (amount || 0);
+    var need = (player.children.lineageLevel || 1) * 40;
+    while (player.children.lineageExp >= need) {
+        player.children.lineageExp -= need;
+        player.children.lineageLevel = (player.children.lineageLevel || 1) + 1;
+        logAction("血脉等级提升至 Lv." + player.children.lineageLevel + "！家族加成略微增强", "success");
+        need = player.children.lineageLevel * 40;
+    }
+    tryClaimLineageMilestones();
+}
+
+function tryClaimLineageMilestones() {
+    const members = (player.children.children || []).length;
+    if (!player.children.claimedMilestones) player.children.claimedMilestones = [];
+    childConfig.lineage.milestones.forEach(function(m) {
+        if (members >= m.need && player.children.claimedMilestones.indexOf(m.id) < 0) {
+            player.children.claimedMilestones.push(m.id);
+            logAction("达成血脉里程碑【" + m.title + "】！" + m.desc, "success");
+        }
+    });
+}
+
+function updateLineageOverview() {
+    const el = document.getElementById('lineageOverview');
+    if (!el) return;
+    const lv = player.children.lineageLevel || 1;
+    const exp = player.children.lineageExp || 0;
+    const need = lv * 40;
+    const pct = Math.min(100, (exp / need) * 100);
+    const members = (player.children.children || []).length;
+    el.innerHTML =
+        '<div class="c-bonus-grid">' +
+        '<div class="c-bonus-item"><div class="lab">血脉等级</div><div class="val">Lv.' + lv + '</div></div>' +
+        '<div class="c-bonus-item"><div class="lab">血脉经验</div><div class="val">' + exp + '/' + need + '</div></div>' +
+        '<div class="c-bonus-item"><div class="lab">家族人数</div><div class="val">' + members + '</div></div>' +
+        '<div class="c-bonus-item"><div class="lab">里程碑加成</div><div class="val">+' + (getClaimedMilestoneBonus() * 100).toFixed(0) + '%</div></div>' +
+        '</div>' +
+        '<div class="c-progress" style="margin-top:10px;"><i style="width:' + pct + '%"></i><span>升级进度 ' + pct.toFixed(0) + '%</span></div>' +
+        '<p class="c-hint">孙子贡献 ×1.25，曾孙 ×1.55；下一代继承父母约 ' + (childConfig.lineage.inheritanceRate * 100) + '% 天赋</p>';
+}
+
+function updateLineageMilestones() {
+    const el = document.getElementById('lineageMilestones');
+    if (!el) return;
+    const members = (player.children.children || []).length;
+    const claimed = player.children.claimedMilestones || [];
+    el.innerHTML = childConfig.lineage.milestones.map(function(m) {
+        const done = claimed.indexOf(m.id) >= 0 || members >= m.need;
+        return '<div class="c-milestone' + (done ? ' done' : '') + '">' +
+            '<div><div class="ms-title">' + m.title + '</div><div class="ms-desc">' + m.desc + '</div></div>' +
+            '<div style="color:' + (done ? '#4CAF50' : '#C9A0B8') + ';font-weight:bold;">' + Math.min(members, m.need) + '/' + m.need + '</div></div>';
+    }).join('');
+}
+
+function updateLineageActionList() {
+    const container = document.getElementById('lineageActionList');
+    if (!container) return;
+    const children = player.children.children || [];
+    const eligible = children.filter(function(c) {
+        return isFamilyMemberAdult(c) && (c.generation || 1) < childConfig.lineage.maxGeneration;
+    });
+
+    if (eligible.length === 0) {
+        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#C9A0B8;padding:20px;">暂无成年子女可传宗<br>先培养子女至青年并安排成婚</div>';
+        return;
+    }
+
+    container.innerHTML = '';
+    eligible.forEach(function(child) {
+        const index = children.findIndex(function(c) { return c.id === child.id; });
+        if (index < 0) return;
+        const offspringCount = countOffspringOf(child.id);
+        const card = document.createElement('div');
+        card.className = 'c-member gen-' + (child.generation || 1);
+
+        let body = '';
+        if (!child.isMarried) {
+            body =
+                '<div class="c-hint">尚未成婚，无法生育下一代</div>' +
+                '<button class="c-btn c-btn-gold" style="width:100%;margin-top:8px;" onclick="arrangeMarriage(' + index + ')">安排成婚（多档可选）</button>';
+        } else if (child.isPregnant) {
+            const progress = calculateDescendantPregnancyProgress(child);
+            const remain = Math.max(0, childConfig.lineage.pregnancyDuration - (Date.now() - (child.pregnancyStart || 0)));
+            const h = Math.floor(remain / 3600000);
+            const m = Math.floor((remain % 3600000) / 60000);
+            body =
+                '<div style="color:#FF69B4;font-size:12px;">孕育中 · 与 ' + (child.spouse && child.spouse.name ? child.spouse.name : '配偶') + '</div>' +
+                '<div class="c-progress"><i style="width:' + progress + '%"></i><span>' + progress.toFixed(1) + '%</span></div>' +
+                '<div class="c-hint">剩余约 ' + h + '时' + m + '分</div>' +
+                (progress >= 100
+                    ? '<button class="c-btn c-btn-green" style="width:100%;" onclick="giveDescendantBirth(' + index + ')">迎接新生儿</button>'
+                    : '<button class="c-btn c-btn-orange" style="width:100%;" onclick="rushDescendantBirth(' + index + ')">催生（' + childConfig.lineage.rushCost + '，需95%）</button>');
+        } else {
+            const canMore = offspringCount < childConfig.lineage.maxPerParent;
+            body =
+                '<div class="meta">配偶 ' + (child.spouse ? child.spouse.name : '-') + ' · 已育 ' + offspringCount + '/' + childConfig.lineage.maxPerParent + '</div>' +
+                (canMore
+                    ? ('<div class="c-form-row" style="margin-top:8px;"><input class="c-input" id="descName_' + index + '" placeholder="后代名字" maxlength="10" style="min-width:0;flex:1;width:100%;"></div>' +
+                       '<div class="c-form-row"><select class="c-input" id="descGender_' + index + '" style="min-width:0;width:100%;"><option value="boy">男孩</option><option value="girl">女孩</option></select></div>' +
+                       '<button class="c-btn c-btn-pink" style="width:100%;" onclick="conceiveDescendant(' + index + ')">孕育下一代（' + childConfig.lineage.pregnancyCost + '）</button>')
+                    : '<div class="c-hint" style="color:#FF6B6B;">该分支已达生育上限</div>');
+        }
+
+        card.innerHTML =
+            '<span class="c-badge gen">' + getGenerationLabel(child.generation || 1) + '</span>' +
+            '<div class="name">' + child.name + '</div>' +
+            '<div class="meta">' + (child.gender === 'boy' ? '男' : '女') + ' · 将诞下第 ' + ((child.generation || 1) + 1) + ' 代</div>' +
+            body;
+        container.appendChild(card);
+    });
+}
+
+function calculateDescendantPregnancyProgress(parent) {
+    if (!parent || !parent.isPregnant || !parent.pregnancyStart) return 0;
+    return Math.min(100, ((Date.now() - parent.pregnancyStart) / childConfig.lineage.pregnancyDuration) * 100);
+}
+
+function conceiveDescendant(parentIndex) {
+    const parent = player.children.children[parentIndex];
+    if (!parent || !parent.isMarried || !isFamilyMemberAdult(parent)) {
+        logAction("只有已婚成年成员才能孕育后代", "error");
+        return;
+    }
+    if (parent.isPregnant) {
+        logAction(parent.name + " 已经在孕育中", "error");
+        return;
+    }
+    if ((parent.generation || 1) >= childConfig.lineage.maxGeneration) {
+        logAction("已达最大代数", "error");
+        return;
+    }
+    if (countOffspringOf(parent.id) >= childConfig.lineage.maxPerParent) {
+        logAction("每位成员最多生育 " + childConfig.lineage.maxPerParent + " 个后代", "error");
+        return;
+    }
+    if ((player.children.children || []).length >= childConfig.lineage.maxTotalMembers) {
+        logAction("家族人数已达上限", "error");
+        return;
+    }
+
+    const nameInput = document.getElementById('descName_' + parentIndex);
+    const genderInput = document.getElementById('descGender_' + parentIndex);
+    const name = nameInput ? nameInput.value.trim() : '';
+    const gender = genderInput ? genderInput.value : 'boy';
+    if (!name) {
+        logAction("请输入后代名字", "error");
+        return;
+    }
+    if (name.length > 10) {
+        logAction("名字不能超过10个字符", "error");
+        return;
+    }
+    if (player.investmentGame.userData.availableFunds < childConfig.lineage.pregnancyCost) {
+        logAction("资金不足！需要 " + childConfig.lineage.pregnancyCost + " 元", "error");
+        return;
+    }
+
+    player.investmentGame.userData.availableFunds -= childConfig.lineage.pregnancyCost;
+    parent.isPregnant = true;
+    parent.pregnancyStart = Date.now();
+    parent.expectedOffspring = { name: name, gender: gender };
+    logAction(parent.name + " 与 " + (parent.spouse ? parent.spouse.name : "配偶") + " 开始孕育下一代：" + name, "success");
+    updateChildSystemUI();
+    updateDisplay();
+    saveGame();
+}
+
+function giveDescendantBirth(parentIndex) {
+    const parent = player.children.children[parentIndex];
+    if (!parent || !parent.isPregnant || !parent.expectedOffspring) {
+        logAction("没有可分娩的孕育状态", "error");
+        return;
+    }
+    const progress = calculateDescendantPregnancyProgress(parent);
+    if (progress < 95) {
+        logAction("孕育进度不足（" + progress.toFixed(1) + "%）", "error");
+        return;
+    }
+
+    const nextGen = (parent.generation || 1) + 1;
+    const baby = createNewChild(
+        parent.expectedOffspring.name,
+        parent.expectedOffspring.gender,
+        nextGen,
+        parent.id,
+        parent
+    );
+    player.children.children.push(baby);
+    player.children.totalChildren = (player.children.totalChildren || 0) + 1;
+    parent.isPregnant = false;
+    parent.pregnancyStart = 0;
+    delete parent.expectedOffspring;
+
+    tryClaimLineageMilestones();
+    logAction("喜得" + getGenerationLabel(nextGen) + "：" + baby.name + "！继承了 " + parent.name + " 的部分天赋", "success");
+    updateChildSystemUI();
+    updateDisplay();
+    saveGame();
+}
+
+function rushDescendantBirth(parentIndex) {
+    const parent = player.children.children[parentIndex];
+    if (!parent || !parent.isPregnant) {
+        logAction("当前没有孕育中的后代", "error");
+        return;
+    }
+    const progress = calculateDescendantPregnancyProgress(parent);
+    if (progress < 95) {
+        logAction("需达到 95% 才能催生（当前 " + progress.toFixed(1) + "%）", "error");
+        return;
+    }
+    if (player.investmentGame.userData.availableFunds < childConfig.lineage.rushCost) {
+        logAction("资金不足！需要 " + childConfig.lineage.rushCost + " 元", "error");
+        return;
+    }
+    showCustomConfirm("确定催生？消耗 " + childConfig.lineage.rushCost + " 元", function(ok) {
+        if (ok) {
+            player.investmentGame.userData.availableFunds -= childConfig.lineage.rushCost;
+            giveDescendantBirth(parentIndex);
+        }
+    });
+}
+
+function updateFamilyTreeView() {
+    const el = document.getElementById('familyTreeView');
+    if (!el) return;
+    const members = player.children.children || [];
+    const spouseName = (player.marriage && player.marriage.spouseName) || '配偶';
+
+    let html = '<div class="c-tree-gen"><div class="c-tree-label">第 0 代 · 本家</div><div class="c-tree-row">' +
+        '<div class="c-tree-node c-tree-root"><div class="tn-name">你</div><div class="tn-sub">与 ' + spouseName + '</div></div></div></div>';
+
+    for (var gen = 1; gen <= childConfig.lineage.maxGeneration; gen++) {
+        var list = members.filter(function(c) { return (c.generation || 1) === gen; });
+        html += '<div class="c-tree-gen"><div class="c-tree-label">第 ' + gen + ' 代 · ' + getGenerationLabel(gen) +
+            '（' + list.length + '）</div><div class="c-tree-row">';
+        if (list.length === 0) {
+            html += '<div class="c-tree-node"><div class="tn-sub">虚位以待</div></div>';
+        } else {
+            list.forEach(function(c) {
+                var parent = getChildById(c.parentId);
+                html += '<div class="c-tree-node"><div class="tn-name">' + c.name + '</div><div class="tn-sub">' +
+                    (c.gender === 'boy' ? '男' : '女') +
+                    (parent ? ' · ' + parent.name + '之子嗣' : '') +
+                    (c.isMarried ? ' · 已婚' : '') +
+                    (isFamilyMemberAdult(c) ? ' · 成年' : '') +
+                    '</div></div>';
+            });
+        }
+        html += '</div></div>';
+    }
+    el.innerHTML = html;
+}
+
+function startDescendantPregnancyTimer() {
+    var reg = typeof registerSingletonInterval === 'function' ? registerSingletonInterval : null;
+    var start = function(fn, ms) {
+        return reg ? reg('_descendantPregnancyId', fn, ms) : registerInterval(fn, ms);
+    };
+    start(function() {
+        if (!player.children || !player.children.children) return;
+        var changed = false;
+        player.children.children.forEach(function(parent, index) {
+            if (parent.isPregnant) {
+                var progress = calculateDescendantPregnancyProgress(parent);
+                if (progress >= 100) {
+                    giveDescendantBirth(index);
+                    changed = true;
+                }
+            }
+        });
+        var ui = document.getElementById('childSystemUI');
+        if (!changed && ui && ui.style.display === 'block' && _childActiveTab === 'lineage') {
+            updateLineageActionList();
+        }
+    }, 30000);
 }
 function showTrainingSelection(childIndex) {
     const child = player.children.children[childIndex];
@@ -3188,31 +3594,25 @@ function addChildSystemToGameLoop() {
     var start = function(fn, ms) {
         return reg ? reg('_childSystemLoopId', fn, ms) : registerInterval(fn, ms);
     };
-    start(() => {
-        if (player.children) {
-            // 检查怀孕状态
-            if (player.children.isPregnant) {
-                const progress = calculatePregnancyProgress();
-                if (progress >= 100) {
-                    giveBirth();
-                }
-            }
-            
-            // 检查孩子成长
-            if (player.children.children) {
-                player.children.children.forEach((child, index) => {
-                    checkChildGrowth(index);
-                });
-            }
-            
-            // 每5分钟更新一次UI
-            if (Math.floor(Date.now() / 1000) % 300 === 0) {
-                updateChildSystemUI();
-            }
-            
-           
+    start(function() {
+        if (!player.children) return;
+        if (player.children.isPregnant) {
+            if (calculatePregnancyProgress() >= 100) giveBirth();
         }
-    }, 60000); // 每分钟检查一次
+        if (player.children.children) {
+            player.children.children.forEach(function(child, index) {
+                checkChildGrowth(index);
+                if (child.isPregnant && calculateDescendantPregnancyProgress(child) >= 100) {
+                    giveDescendantBirth(index);
+                }
+            });
+        }
+        tryClaimLineageMilestones();
+        if (Math.floor(Date.now() / 1000) % 300 === 0) {
+            var ui = document.getElementById('childSystemUI');
+            if (ui && ui.style.display === 'block') updateChildSystemUI();
+        }
+    }, 60000);
 }
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof hasApi === 'function' && hasApi() && typeof goldGameRefreshClientBuild === 'function') {

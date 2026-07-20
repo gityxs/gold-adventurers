@@ -2355,7 +2355,7 @@ function confirmRename() {
         // 装备/成就等重型 UI：仅在数据变化或低频节拍下调用
         function updateHeavyDisplay() {
             // 装备列表：仅当装备数量或等级等变化时重建，避免频繁大量 DOM 操作导致卡顿
-            var equipmentSignature = 'v3|' + player.equipment.length + '-' + player.equipment.reduce(function(s, eq){
+            var equipmentSignature = 'v4|' + player.equipment.length + '-' + player.equipment.reduce(function(s, eq){
                 return s + (eq.level || 0) + String(bigSciToStorageValue(eq.gps)).length
                     + Math.round((eq.gemMultiplier || 0) * 10000)
                     + Math.round((eq.growthRate || 0) * 1000);
@@ -2370,7 +2370,10 @@ function confirmRename() {
                     div.innerHTML = `
                         <div class="equip-card-main">
                           <div class="equip-card-info">
-                            <div class="equip-card-title">${getEquipmentName(eq)}<span class="equip-lv">Lv.${eq.level}</span></div>
+                            <div class="equip-card-title-row">
+                              <span class="equip-card-title">${getEquipmentName(eq)}</span>
+                              <span class="equip-lv">Lv.${eq.level != null ? eq.level : 0}</span>
+                            </div>
                             <div class="equip-card-stats">
                               <span class="equip-stat-pill gps">GPS +${formatSci(eq.gps)}</span>
                               <span class="equip-stat-pill click">点击 +${formatSci(eq.click)}</span>

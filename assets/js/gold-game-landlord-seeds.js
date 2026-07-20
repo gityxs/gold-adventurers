@@ -941,6 +941,16 @@ function getLandlordSeedBaseName(seedKey) {
     return parseLandlordSeedKey(seedKey).baseName;
 }
 
+/** 种子合成链编号（土豆=1，金桔=2…）；变异种子按基础名编号 */
+function getLandlordSeedChainIndex(seedKey) {
+    const base = typeof getLandlordSeedBaseName === 'function' ? getLandlordSeedBaseName(seedKey) : String(seedKey || '');
+    const order = typeof LANDLORD_SKY_VINE_FRUIT_ORDER !== 'undefined'
+        ? LANDLORD_SKY_VINE_FRUIT_ORDER
+        : (typeof seedProperties !== 'undefined' ? Object.keys(seedProperties) : []);
+    const idx = order.indexOf(base);
+    return idx >= 0 ? idx + 1 : 0;
+}
+
 function getLandlordGeneVariantLabelHtml(seedKey) {
     const parsed = parseLandlordSeedKey(seedKey);
     if (!parsed.variant) return parsed.displayName;
@@ -970,9 +980,96 @@ function getLandlordSeedsInPriceRange(minPrice, maxPrice) {
     });
 }
 
+/**
+ * 为一键基因合成找最优材料对：使目标基础种落在价区间内，且候选种尽量少（成功率最高）。
+ * @returns {{ pair: string[], candidateCount: number, chanceText: string, targetBase: string }|null}
+ */
+function findOptimalGeneSynthesisPair(targetSeedKey) {
+    if (!player || !player.landlord || !player.landlord.seedStorage) return null;
+    const targetBase = getLandlordSeedBaseName(targetSeedKey);
+    const targetProps = seedProperties[targetBase];
+    if (!targetProps) return null;
+    const targetPrice = targetProps.price;
+
+    const keys = Object.keys(player.landlord.seedStorage).filter(function (k) {
+        return (player.landlord.seedStorage[k] || 0) > 0 && !!getLandlordSeedProperties(k);
+    });
+    if (keys.length === 0) return null;
+
+    let best = null;
+    for (let i = 0; i < keys.length; i++) {
+        for (let j = i; j < keys.length; j++) {
+            const a = keys[i];
+            const b = keys[j];
+            if (a === b) {
+                if ((player.landlord.seedStorage[a] || 0) < 2) continue;
+            } else {
+                if ((player.landlord.seedStorage[a] || 0) < 1 || (player.landlord.seedStorage[b] || 0) < 1) continue;
+            }
+            const baseA = getLandlordSeedBaseName(a);
+            const baseB = getLandlordSeedBaseName(b);
+            const pa = seedProperties[baseA] ? seedProperties[baseA].price : NaN;
+            const pb = seedProperties[baseB] ? seedProperties[baseB].price : NaN;
+            if (!Number.isFinite(pa) || !Number.isFinite(pb)) continue;
+            const lo = Math.min(pa, pb);
+            const hi = Math.max(pa, pb);
+            if (targetPrice < lo || targetPrice > hi) continue;
+
+            const candidates = getLandlordSeedsInPriceRange(lo, hi);
+            if (!candidates.length || candidates.indexOf(targetBase) < 0) continue;
+
+            const usesTarget = (baseA === targetBase ? 1 : 0) + (baseB === targetBase ? 1 : 0);
+            const span = hi - lo;
+            const score = {
+                pair: [a, b],
+                candidateCount: candidates.length,
+                usesTarget: usesTarget,
+                span: span,
+                targetBase: targetBase
+            };
+            if (!best) {
+                best = score;
+                continue;
+            }
+            if (score.candidateCount < best.candidateCount) {
+                best = score;
+            } else if (score.candidateCount === best.candidateCount) {
+                if (score.usesTarget > best.usesTarget) best = score;
+                else if (score.usesTarget === best.usesTarget && score.span < best.span) best = score;
+            }
+        }
+    }
+    if (!best) return null;
+    best.chanceText = '1/' + best.candidateCount;
+    return best;
+}
+
+/** 当前仓库下，所有可用最优材料对合成到的目标基础种子列表 */
+function listGeneSynthesisAutoTargets() {
+    const order = typeof LANDLORD_SKY_VINE_FRUIT_ORDER !== 'undefined'
+        ? LANDLORD_SKY_VINE_FRUIT_ORDER
+        : Object.keys(seedProperties);
+    const result = [];
+    for (let i = 0; i < order.length; i++) {
+        const base = order[i];
+        if (!seedProperties[base]) continue;
+        const opt = findOptimalGeneSynthesisPair(base);
+        if (!opt) continue;
+        result.push({
+            base: base,
+            chainIndex: i + 1,
+            price: seedProperties[base].price,
+            candidateCount: opt.candidateCount,
+            chanceText: opt.chanceText,
+            pair: opt.pair
+        });
+    }
+    return result;
+}
+
 function performLandlordGeneSynthesis(selectedSeeds) {
-    if (!selectedSeeds || selectedSeeds.length !== 3) {
-        return { ok: false, message: '请选择3个种子！' };
+    if (!selectedSeeds || selectedSeeds.length !== 2) {
+        return { ok: false, message: '请选择2个种子！' };
     }
     for (let i = 0; i < selectedSeeds.length; i++) {
         const s = selectedSeeds[i];

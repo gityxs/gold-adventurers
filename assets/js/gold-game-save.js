@@ -815,6 +815,14 @@ function formatTime(milliseconds) {
     if (player.landlord && player.battle && player.battle.maxStage >= 2 && (player.landlord._timerId == null || player.landlord._timerId === undefined) && typeof startLandlordTimers === 'function') {
         startLandlordTimers();
     }
+    // 保障：农场自动种/收不依赖打开农场 UI；读档后若开关已开则补启后台循环
+    if (player.farm && (player.farm.autoPlant || player.farm.autoHarvest) && !window.farmAutoCheckInterval && typeof ensureFarmAutoLoop === 'function') {
+        ensureFarmAutoLoop();
+    }
+    // 保障：自动钓鱼不依赖打开钓鱼 UI；读档后若开关已开且当前未在钓则续钓
+    if (player.fishing && player.fishing.autoFishingEnabled && !player.fishing.isFishing && typeof ensureAutoFishing === 'function') {
+        ensureAutoFishing();
+    }
 
     _mainLoopTick = (_mainLoopTick + 1) % 600; // 最长到 600 秒后回滚，防止无限增大
     const is2sTick = _mainLoopTick % 2 === 0;   // 每 2 秒
@@ -1519,10 +1527,12 @@ function formatTime(milliseconds) {
                 else if (typeof resumeWorldMapAutoBattleIfNeeded === 'function') resumeWorldMapAutoBattleIfNeeded();
                 if (typeof runTradingOfflineIfNeeded === 'function') runTradingOfflineIfNeeded();
                 updateDisplay();
-                // 自动钓鱼防卡：切回页面后若已挂机超过约25秒仍显示在钓，视为被卡住，强制重置并续钓
-                if (player.fishing && player.fishing.autoFishingEnabled && player.fishing.isFishing && player.fishing.fishingStartTime && (Date.now() - player.fishing.fishingStartTime > 25000)) {
-                    try { resetFishing(); } catch (e) {}
-                    if (player.fishing.autoFishingEnabled) setTimeout(function() { startFishing(); }, 500);
+                // 自动钓鱼：读档后定时器失效；开关已开则续钓（含卡住超过25秒的情况）
+                if (player.fishing && player.fishing.autoFishingEnabled && typeof ensureAutoFishing === 'function') {
+                    if (player.fishing.isFishing && player.fishing.fishingStartTime && (Date.now() - player.fishing.fishingStartTime > 25000)) {
+                        try { resetFishing(); } catch (e) {}
+                    }
+                    ensureAutoFishing();
                 }
             }
         });

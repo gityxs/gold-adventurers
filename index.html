@@ -8,7 +8,7 @@
     <script>
         (function () {
             /** 与 gold-game-core.js 的 GAME_VERSION 对齐；发版时同步修改 */
-            var build = "2.0.37";
+            var build = "2.0.39";
             try {
                 var qs = location.search || "";
                 var m = /[?&]v=([^&]+)/.exec(qs);
@@ -89,7 +89,7 @@
        <p>38. 无尽挖矿：(升级一下稿子等级不然挖不到普通矿)1500转开启，提升大量世界地图经验，和各项属性。</p>
        <p>39. 新版股票:（打怪模式第三层以上开启）（离线后如果打不开点一下疯狂地主再打开）</p>
       <p>40. 房子系统:200转开启，新版股票资金购买，每秒GPS加成 ，收益点击加成（群里兑换码可以领取别墅）</p>
-      <p>41. 结婚系统:(资金总额达到5W开启)，可以生孩子。各种加成</p>
+      <p>41. 结婚系统:(资金总额达到5W开启)，恩爱25级开家族传承：生育培养打工、传宗至十八代；烟火日常/染恙/婚育恩爱（成年成婚且恩爱达标方可孕育）；命格产业宗祠日常轶事科举远征</p>
       <p>42. 赌石系统:(资金总额达到5000开启)：全切/开窗/引线切/擦皮摸底/半明料；本日悬赏、角料快局（每日一次）、风向换季；擦皮可攒「记桩」下刀加成；每刀结算有色·种·件级、料性图鉴、临场结算卡、公盘指数、眼力成长、同行伸价。</p>
       <p>43. 修仙副本:(修仙2级开启)，掉落修仙经验和材料.  新年年兽副本20级开启.试练塔10级开启</p>
       <p>44. 抽象时装:(100转开启)，加少量属性，非常抽象，低概率掉落。</p>
@@ -113,9 +113,11 @@
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>2.035更新日志</h4>
+            <h4>2.039更新日志</h4>
             <h4>QQ群：902481027    有问题可以进群问（存档异常联系群管理修复）</h4>
-            <p>2026/07/14:未来石后新增高级货币永恒石/无极石/大道石（1e20兑换），对应永恒/无极/大道宝箱、装备逆旅～至高、宠物天罚刑天/浑沌帝江/无极烛阴及宠物成就。副本装备新增归墟～本源共20件（▽/▼与★▽/★▼档），魂环新增20个亿年魂环（最高混沌·无名），职业界面修改，称号界面修改，主界面12标签字体修改，时光秘境玩法重做，整体玩法更改，疯狂地主增加基因树：提交对应果实增加属性，疯狂地主增加20个新种子，所有高品种子更加容易获得，增加有库存按钮，修复洞天劫摸金模式BUG。</p>
+            <p>2026/07/20:修复洞天劫摸金模式图鉴显示异常bug，增加丢失按钮。疯狂地主线性合成增加单独一键合成，更新结婚系统的生孩子系统增加子孙后代。时光秘境时间异常bug修复<p>
+            <p>2026/07/17:洞天劫模式副本大厅增加新副本乱星海难度偏高：掉落房主4重铸石 助战2重铸石，装备增加重铸词条数量，重铸后有预览属性选择。疯狂地主增加一键购买有库存商品，合成种子修改成弹窗界面，线型合成一键合成放上面了，基因合成修改3个种子改为2个就可以了（规则不变），可以直接框选择种子，也可以下面最优一键选择，有种子数量可以批量一键合成。修复农场和钓鱼现在不用每次进游戏都要进页面才自动开启，修复疯狂地主不用重启页面才刷新种子商店。<p>
+            <p>2026/07/15:未来石后新增高级货币永恒石/无极石/大道石（1e20兑换），对应永恒/无极/大道宝箱、装备逆旅～至高、宠物天罚刑天/浑沌帝江/无极烛阴及宠物成就。副本装备新增归墟～本源共20件（▽/▼与★▽/★▼档），魂环新增20个亿年魂环（最高混沌·无名），职业界面修改，称号界面修改，神器界面修改清爽，主界面12标签字体修改，某些按键分解加入弹窗确认，时光秘境玩法重做，整体玩法更改，疯狂地主增加基因树：提交对应果实增加属性，疯狂地主增加20个新种子，所有高品种子更加容易获得，增加有库存按钮，修复洞天劫摸金模式BUG。<p>
             <p>2026/07/12:洞天劫模式装备增加大量强力新神性词条，
                     修复洞天劫打副本死亡异常踢出秘境BUG。
                     修改直播人数上限限制。
@@ -365,6 +367,7 @@
       <button class="sidebar-item" onclick="toggleHouseSystem()"><span class="sidebar-icon">&#127968;</span> 房屋 <span class="sidebar-lock">200转</span></button>
       <button class="sidebar-item" onclick="toggleLiveStreamSystem()"><span class="sidebar-icon">&#127909;</span> 直播 <span class="sidebar-lock">500转</span></button>
       <button class="sidebar-item" onclick="toggleMarriageSystem()"><span class="sidebar-icon">&#128141;</span> 结婚<span class="sidebar-lock">5W资产</span></button>      
+      <button class="sidebar-item" onclick="toggleChildSystem()"><span class="sidebar-icon">&#128141;</span> 传宗接代<span class="sidebar-lock">25级恩爱</span></button>      
     </div>
   </div>  
   <div class="sidebar-group collapsed">
@@ -763,7 +766,7 @@
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v2.0.37</div>
+  <div id="footer">版本号: v2.0.39</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -1404,7 +1407,9 @@
         <button onclick="document.getElementById('avatarInput').click()" style="padding: 12px 20px; font-size: 16px;">更改头像</button>
         <button onclick="clearAvatar()" style="padding: 12px 20px; font-size: 16px;">清除头像</button>
         <button onclick="showActivationCodeDialog()" style="padding: 12px 20px; font-size: 16px;">激活码兑换</button>
-        <button onclick="saveGame()" style="padding: 12px 20px; font-size: 16px;">保存游戏</button>
+        <button onclick="saveGame()" style="padding: 12px 20px; font-size: 16px;">保存游戏</button>   
+    <button onclick="downloadSave()" style="padding: 12px 20px; font-size: 16px;">下载TXT存档</button>
+        <button onclick="importEncryptedSave()" style="padding: 12px 20px; font-size: 16px;">导入TXT存档</button>
         <button onclick="resetGame()" style="padding: 12px 20px; font-size: 16px; background-color: #ff4444; color: white; border: none;">重置游戏</button>
     </div>
     <button onclick="toggleSettingsUI()" style="margin-top: 20px; padding: 10px 28px; font-size: 15px;">关闭设置</button>
@@ -6146,6 +6151,14 @@
                     </div>
                     <button type="button" id="landlordSeedStockFilterBtn" class="landlord-stock-filter-btn" onclick="toggleLandlordShopInStockOnly()">只显示有货</button>
                 </div>
+                <div class="landlord-seed-bulk-buy">
+                    <span class="landlord-seed-bulk-buy-label">一键购买有货：</span>
+                    <div class="landlord-seed-bulk-buy-priority" role="group" aria-label="购买优先级">
+                        <button type="button" id="landlordSeedBuyPriorityLow" class="landlord-seed-priority-btn is-active" onclick="setLandlordSeedBuyPriority('low')">优先低价</button>
+                        <button type="button" id="landlordSeedBuyPriorityHigh" class="landlord-seed-priority-btn" onclick="setLandlordSeedBuyPriority('high')">优先高价</button>
+                    </div>
+                    <button type="button" class="landlord-seed-bulk-buy-btn" onclick="buyAllLandlordSeedsInStock()">一键全买</button>
+                </div>
                 <div class="landlord-store-grid" id="landlordStoreItems">
                     <!-- 种子将通过JavaScript动态生成 -->
                 </div>
@@ -6364,6 +6377,66 @@
                             <button type="button" class="sea-fishing-btn small" onclick="seaFishingSubmitBestToDex()">一键点亮/优化图鉴</button>
                         </div>
                         <div id="seaFishingDexList" class="sea-fishing-dex-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 种子合成弹窗（放在地主 UI 内，全屏时也能用） -->
+        <div id="landlordSynthesisModal" class="landlord-synth-modal" style="display:none;" aria-hidden="true">
+            <div class="landlord-synth-modal-backdrop" onclick="closeLandlordSynthesisModal()"></div>
+            <div class="landlord-synth-modal-card" role="dialog" aria-modal="true" aria-labelledby="landlordSynthModalTitle">
+                <header class="landlord-synth-modal-header">
+                    <div>
+                        <div class="landlord-synth-modal-eyebrow">Seed Atelier</div>
+                        <h2 id="landlordSynthModalTitle">种子合成</h2>
+                        <p class="landlord-synth-modal-sub">线性升阶与基因融合分开进行，互不影响</p>
+                    </div>
+                    <button type="button" class="landlord-synth-modal-close" onclick="closeLandlordSynthesisModal()" aria-label="关闭">×</button>
+                </header>
+                <nav class="landlord-synth-tabs" aria-label="合成类型">
+                    <button type="button" class="landlord-synth-tab is-active" data-synth-tab="linear" onclick="setLandlordSynthesisSubMode('linear')">
+                        <span class="landlord-synth-tab-title">线性合成</span>
+                        <span class="landlord-synth-tab-desc">3 合 1 · 固定升阶</span>
+                    </button>
+                    <button type="button" class="landlord-synth-tab" data-synth-tab="gene" onclick="setLandlordSynthesisSubMode('gene')">
+                        <span class="landlord-synth-tab-title">基因合成</span>
+                        <span class="landlord-synth-tab-desc">2 材料 · 区间随机</span>
+                    </button>
+                </nav>
+                <div class="landlord-synth-modal-body">
+                    <div id="landlordSynthLinearPanel" class="landlord-synth-panel is-active" data-synth-panel="linear"></div>
+                    <div id="landlordSynthGenePanel" class="landlord-synth-panel" data-synth-panel="gene" hidden></div>
+                </div>
+
+                <!-- 基因合成：材料框选种子弹层 -->
+                <div id="landlordGeneSeedPicker" class="landlord-gene-seed-picker" aria-hidden="true">
+                    <div class="landlord-gene-seed-picker-backdrop" onclick="closeGeneSynthesisSeedPicker()"></div>
+                    <div class="landlord-gene-seed-picker-card" role="dialog" aria-modal="true">
+                        <header class="landlord-gene-seed-picker-header">
+                            <div>
+                                <div class="landlord-gene-seed-picker-title" id="landlordGeneSeedPickerTitle">选择材料种子</div>
+                                <div class="landlord-gene-seed-picker-sub">点击种子放入对应材料槽</div>
+                            </div>
+                            <button type="button" class="landlord-synth-modal-close" onclick="closeGeneSynthesisSeedPicker()" aria-label="关闭">×</button>
+                        </header>
+                        <div id="landlordGeneSeedPickerList" class="landlord-gene-seed-picker-list"></div>
+                    </div>
+                </div>
+
+                <!-- 基因一键合成：确认 / 结果信息弹层 -->
+                <div id="landlordGeneBatchInfoModal" class="landlord-gene-batch-info" aria-hidden="true">
+                    <div class="landlord-gene-batch-info-backdrop" onclick="closeGeneBatchInfoModal()"></div>
+                    <div class="landlord-gene-batch-info-card" role="dialog" aria-modal="true" aria-labelledby="landlordGeneBatchInfoTitle">
+                        <header class="landlord-gene-batch-info-header">
+                            <div>
+                                <div class="landlord-gene-batch-info-title" id="landlordGeneBatchInfoTitle">一键合成</div>
+                                <div class="landlord-gene-batch-info-sub" id="landlordGeneBatchInfoSub"></div>
+                            </div>
+                            <button type="button" class="landlord-synth-modal-close" onclick="closeGeneBatchInfoModal()" aria-label="关闭">×</button>
+                        </header>
+                        <div id="landlordGeneBatchInfoBody" class="landlord-gene-batch-info-body"></div>
+                        <footer class="landlord-gene-batch-info-footer" id="landlordGeneBatchInfoFooter"></footer>
                     </div>
                 </div>
             </div>
@@ -6796,7 +6869,7 @@
                     <button class="m-btn m-btn-pink" onclick="giveGiftToSpouse()">&#127873; 赠送礼物 (1314元)</button>
                     <button class="m-btn m-btn-pink" onclick="spendTimeWithSpouse()">&#128218; 共度时光 (99999元)</button>
                     <button class="m-btn m-btn-pink" onclick="spendAimeWithSpouse()">&#128747; 全国旅行 (5201314元)</button>
-                    <button class="m-btn m-btn-gold" onclick="toggleChildSystem()">&#128118; 生小孩</button>
+                    <button class="m-btn m-btn-gold" onclick="toggleChildSystem()">&#128118; 家族传承</button>
                     <button class="m-btn m-btn-blue" onclick="renameSpouse()">&#128221; 重命名伴侣</button>
                     <button class="m-btn m-btn-red" onclick="divorce()">&#128683; 离婚</button>
                 </div>
@@ -6889,69 +6962,945 @@
     </div>
 </div>
 </div>
-<!-- 生小孩系统界面 -->
-<div id="childSystemOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
-<div id="childSystemUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #FF69B4; border-radius: 10px; z-index: 1001; width: 900px; max-height: 80vh; overflow-y: auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #FF69B4; padding-bottom: 10px;">
-        <h2 style="color: #FF69B4; margin: 0;">小孩系统</h2>
-        <button onclick="closeChildSystem()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; font-size: 14px;">关闭</button>
-    </div>
-    
-    <!-- 家庭状态 -->
-    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
-        <h3>家庭状态</h3>
-        <div id="familyStatus" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-            <!-- 家庭信息会动态生成 -->
+<!-- 家族传承 · 子孙后代系统 -->
+<style id="childSubtabsInlineCss">
+#childSystemUI .c-subtabs{display:flex!important;flex-wrap:wrap;gap:6px;margin:0 0 12px;padding:8px;background:rgba(0,0,0,.22);border:1px solid rgba(212,168,75,.18);border-radius:10px}
+#childSystemUI .c-subtab{background:rgba(80,40,30,.55);color:rgba(243,230,208,.78);border:1px solid rgba(212,168,75,.22);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:inherit;line-height:1.2}
+#childSystemUI .c-subtab.active{background:linear-gradient(135deg,rgba(196,60,44,.75),rgba(138,42,30,.85));color:#fff;border-color:rgba(212,168,75,.55);font-weight:bold}
+#childSystemUI .c-card.c-sub-hidden{display:none!important}
+</style>
+<div id="childSystemOverlay" class="child-overlay" style="display: none;" onclick="closeChildSystem()"></div>
+<div id="childSystemUI" class="child-panel" style="display: none;">
+    <div class="c-hero">
+        <div class="c-hero-mark" aria-hidden="true"></div>
+        <div class="c-hero-text">
+            <div class="c-brand">祖宗十八代</div>
+            <div class="c-brand-sub">家族传承 · 血脉绵延 · 世界地图三维加持</div>
         </div>
+        <button type="button" class="c-close" onclick="closeChildSystem()">关闭</button>
     </div>
-    
-    <!-- 怀孕状态 -->
-    <div id="pregnancySection" style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px; display: none;">
-        <h3>怀孕状态</h3>
-        <div id="pregnancyInfo"></div>
-    </div>
-    
-    <!-- 生育功能 -->
-    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
-        <h3>生育功能</h3>
-        <div id="conceptionSection">
-            <div style="margin-bottom: 10px;">
-                <label for="childNameInput">孩子名字:</label>
-                <input type="text" id="childNameInput" placeholder="输入孩子名字" style="padding: 5px; width: 200px; margin-left: 10px;">
+    <div class="c-layout">
+        <aside class="c-nav">
+            <div class="c-nav-group collapsed" data-nav-group="jiawu">
+                <button type="button" class="c-nav-label" onclick="toggleChildNavGroup('jiawu')" aria-expanded="false">
+                    <span>家务</span><i class="c-nav-chevron">▾</i>
+                </button>
+                <div class="c-nav-items">
+                    <button type="button" class="c-tab active" data-tab="overview" onclick="switchChildTab('overview')">总览</button>
+                    <button type="button" class="c-tab" data-tab="birth" onclick="switchChildTab('birth')">生育</button>
+                    <button type="button" class="c-tab" data-tab="offspring" onclick="switchChildTab('offspring')">子嗣</button>
+                    <button type="button" class="c-tab" data-tab="descendants" onclick="switchChildTab('descendants')">百态</button>
+                    <button type="button" class="c-tab" data-tab="descplus" onclick="switchChildTab('descplus')">世系</button>
+                    <button type="button" class="c-tab" data-tab="descnova" onclick="switchChildTab('descnova')">万象</button>
+                    <button type="button" class="c-tab" data-tab="descsaga" onclick="switchChildTab('descsaga')">春秋</button>
+                    <button type="button" class="c-tab" data-tab="descchro" onclick="switchChildTab('descchro')">长卷</button>
+                    <button type="button" class="c-tab" data-tab="descflow" onclick="switchChildTab('descflow')">流年</button>
+                    <button type="button" class="c-tab" data-tab="descnpc" onclick="switchChildTab('descnpc')">智邻</button>
+                    <button type="button" class="c-tab" data-tab="train" onclick="switchChildTab('train')">培养</button>
+                    <button type="button" class="c-tab" data-tab="work" onclick="switchChildTab('work')">打工</button>
+                    <button type="button" class="c-tab" data-tab="interact" onclick="switchChildTab('interact')">互动</button>
+                </div>
             </div>
-            <div style="margin-bottom: 10px;">
-                <label for="childGenderSelect">孩子性别:</label>
-                <select id="childGenderSelect" style="padding: 5px; margin-left: 10px;">
-                    <option value="boy">男孩</option>
-                    <option value="girl">女孩</option>
-                </select>
+            <div class="c-nav-group collapsed" data-nav-group="xuema">
+                <button type="button" class="c-nav-label" onclick="toggleChildNavGroup('xuema')" aria-expanded="false">
+                    <span>血脉</span><i class="c-nav-chevron">▾</i>
+                </button>
+                <div class="c-nav-items">
+                    <button type="button" class="c-tab" data-tab="lineage" onclick="switchChildTab('lineage')">传宗</button>
+                    <button type="button" class="c-tab" data-tab="eighteen" onclick="switchChildTab('eighteen')">十八代</button>
+                    <button type="button" class="c-tab" data-tab="eightdepth" onclick="switchChildTab('eightdepth')">玄脉</button>
+                    <button type="button" class="c-tab" data-tab="tree" onclick="switchChildTab('tree')">家谱</button>
+                    <button type="button" class="c-tab" data-tab="talent" onclick="switchChildTab('talent')">命格</button>
+                    <button type="button" class="c-tab" data-tab="precept" onclick="switchChildTab('precept')">家训</button>
+                    <button type="button" class="c-tab" data-tab="trial" onclick="switchChildTab('trial')">试炼</button>
+                </div>
             </div>
-            <button onclick="conceiveChild()" id="conceiveBtn" style="background: #FF69B4; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">怀孕 (消耗 5200 转生币)</button>
+            <div class="c-nav-group collapsed" data-nav-group="jiye">
+                <button type="button" class="c-nav-label" onclick="toggleChildNavGroup('jiye')" aria-expanded="false">
+                    <span>基业</span><i class="c-nav-chevron">▾</i>
+                </button>
+                <div class="c-nav-items">
+                    <button type="button" class="c-tab" data-tab="business" onclick="switchChildTab('business')">产业</button>
+                    <button type="button" class="c-tab" data-tab="estate" onclick="switchChildTab('estate')">宅邸</button>
+                    <button type="button" class="c-tab" data-tab="ancestral" onclick="switchChildTab('ancestral')">宗祠</button>
+                    <button type="button" class="c-tab" data-tab="martial" onclick="switchChildTab('martial')">武道</button>
+                </div>
+            </div>
+            <div class="c-nav-group collapsed" data-nav-group="xiuzhen">
+                <button type="button" class="c-nav-label" onclick="toggleChildNavGroup('xiuzhen')" aria-expanded="false">
+                    <span>修真</span><i class="c-nav-chevron">▾</i>
+                </button>
+                <div class="c-nav-items">
+                    <button type="button" class="c-tab" data-tab="cultivate" onclick="switchChildTab('cultivate')">修炼</button>
+                    <button type="button" class="c-tab" data-tab="spiritroot" onclick="switchChildTab('spiritroot')">灵根</button>
+                    <button type="button" class="c-tab" data-tab="dongfu" onclick="switchChildTab('dongfu')">洞府</button>
+                    <button type="button" class="c-tab" data-tab="alchemy" onclick="switchChildTab('alchemy')">丹房</button>
+                    <button type="button" class="c-tab" data-tab="artifact" onclick="switchChildTab('artifact')">法宝</button>
+                    <button type="button" class="c-tab" data-tab="tribulation" onclick="switchChildTab('tribulation')">渡劫</button>
+                </div>
+            </div>
+            <div class="c-nav-group collapsed" data-nav-group="renjian">
+                <button type="button" class="c-nav-label" onclick="toggleChildNavGroup('renjian')" aria-expanded="false">
+                    <span>人间</span><i class="c-nav-chevron">▾</i>
+                </button>
+                <div class="c-nav-items">
+                    <button type="button" class="c-tab" data-tab="life" onclick="switchChildTab('life')">人生</button>
+                    <button type="button" class="c-tab" data-tab="realty" onclick="switchChildTab('realty')">实录</button>
+                    <button type="button" class="c-tab" data-tab="living" onclick="switchChildTab('living')">烟火</button>
+                    <button type="button" class="c-tab" data-tab="illness" onclick="switchChildTab('illness')">染恙</button>
+                    <button type="button" class="c-tab" data-tab="marital" onclick="switchChildTab('marital')">婚育</button>
+                    <button type="button" class="c-tab" data-tab="festival" onclick="switchChildTab('festival')">年俗</button>
+                    <button type="button" class="c-tab" data-tab="feast" onclick="switchChildTab('feast')">族宴</button>
+                    <button type="button" class="c-tab" data-tab="quests" onclick="switchChildTab('quests')">日常</button>
+                    <button type="button" class="c-tab" data-tab="events" onclick="switchChildTab('events')">轶事</button>
+                    <button type="button" class="c-tab" data-tab="glory" onclick="switchChildTab('glory')">荣耀</button>
+                </div>
+            </div>
+        </aside>
+        <div class="c-body">
+        <div class="c-tabs c-tabs-mobile">
+            <div class="c-tab active" data-tab="overview" onclick="switchChildTab('overview')">总览</div>
+            <div class="c-tab" data-tab="birth" onclick="switchChildTab('birth')">生育</div>
+            <div class="c-tab" data-tab="offspring" onclick="switchChildTab('offspring')">子嗣</div>
+            <div class="c-tab" data-tab="descendants" onclick="switchChildTab('descendants')">百态</div>
+            <div class="c-tab" data-tab="descplus" onclick="switchChildTab('descplus')">世系</div>
+            <div class="c-tab" data-tab="descnova" onclick="switchChildTab('descnova')">万象</div>
+            <div class="c-tab" data-tab="descsaga" onclick="switchChildTab('descsaga')">春秋</div>
+            <div class="c-tab" data-tab="descchro" onclick="switchChildTab('descchro')">长卷</div>
+            <div class="c-tab" data-tab="descflow" onclick="switchChildTab('descflow')">流年</div>
+            <div class="c-tab" data-tab="descnpc" onclick="switchChildTab('descnpc')">智邻</div>
+            <div class="c-tab" data-tab="train" onclick="switchChildTab('train')">培养</div>
+            <div class="c-tab" data-tab="work" onclick="switchChildTab('work')">打工</div>
+            <div class="c-tab" data-tab="interact" onclick="switchChildTab('interact')">互动</div>
+            <div class="c-tab" data-tab="lineage" onclick="switchChildTab('lineage')">传宗</div>
+            <div class="c-tab" data-tab="eighteen" onclick="switchChildTab('eighteen')">十八代</div>
+            <div class="c-tab" data-tab="eightdepth" onclick="switchChildTab('eightdepth')">玄脉</div>
+            <div class="c-tab" data-tab="tree" onclick="switchChildTab('tree')">家谱</div>
+            <div class="c-tab" data-tab="talent" onclick="switchChildTab('talent')">命格</div>
+            <div class="c-tab" data-tab="precept" onclick="switchChildTab('precept')">家训</div>
+            <div class="c-tab" data-tab="trial" onclick="switchChildTab('trial')">试炼</div>
+            <div class="c-tab" data-tab="business" onclick="switchChildTab('business')">产业</div>
+            <div class="c-tab" data-tab="estate" onclick="switchChildTab('estate')">宅邸</div>
+            <div class="c-tab" data-tab="ancestral" onclick="switchChildTab('ancestral')">宗祠</div>
+            <div class="c-tab" data-tab="martial" onclick="switchChildTab('martial')">武道</div>
+            <div class="c-tab" data-tab="cultivate" onclick="switchChildTab('cultivate')">修炼</div>
+            <div class="c-tab" data-tab="spiritroot" onclick="switchChildTab('spiritroot')">灵根</div>
+            <div class="c-tab" data-tab="dongfu" onclick="switchChildTab('dongfu')">洞府</div>
+            <div class="c-tab" data-tab="alchemy" onclick="switchChildTab('alchemy')">丹房</div>
+            <div class="c-tab" data-tab="artifact" onclick="switchChildTab('artifact')">法宝</div>
+            <div class="c-tab" data-tab="tribulation" onclick="switchChildTab('tribulation')">渡劫</div>
+            <div class="c-tab" data-tab="life" onclick="switchChildTab('life')">人生</div>
+            <div class="c-tab" data-tab="realty" onclick="switchChildTab('realty')">实录</div>
+            <div class="c-tab" data-tab="living" onclick="switchChildTab('living')">烟火</div>
+            <div class="c-tab" data-tab="illness" onclick="switchChildTab('illness')">染恙</div>
+            <div class="c-tab" data-tab="marital" onclick="switchChildTab('marital')">婚育</div>
+            <div class="c-tab" data-tab="festival" onclick="switchChildTab('festival')">年俗</div>
+            <div class="c-tab" data-tab="feast" onclick="switchChildTab('feast')">族宴</div>
+            <div class="c-tab" data-tab="quests" onclick="switchChildTab('quests')">日常</div>
+            <div class="c-tab" data-tab="events" onclick="switchChildTab('events')">轶事</div>
+            <div class="c-tab" data-tab="glory" onclick="switchChildTab('glory')">荣耀</div>
+        </div>
+
+        <div id="childSectionOverview" class="c-section active">
+            <div class="c-banner">
+                <div class="c-banner-title" id="childBannerTitle">血脉未开</div>
+                <div class="c-banner-desc" id="childBannerDesc">生育子女、弱冠及笄、订婚成婚、恩爱传宗，直至终世孙，共十八代。</div>
+                <div class="c-banner-meter" id="childGenMeter"></div>
+            </div>
+            <div class="c-card">
+                <h3>家族总览</h3>
+                <div id="familyStatus" class="c-stat-grid"></div>
+                <div id="growthOverview" class="c-growth-box"></div>
+            </div>
+            <div class="c-card">
+                <h3>世界地图加成</h3>
+                <div id="childBonuses"></div>
+            </div>
+            <div class="c-card">
+                <h3>血脉等级</h3>
+                <div id="lineageOverview"></div>
+            </div>
+        </div>
+
+        <div id="childSectionBirth" class="c-section">
+            <div id="pregnancySection" class="c-card" style="display: none;">
+                <h3>怀孕状态</h3>
+                <div id="pregnancyInfo"></div>
+            </div>
+            <div class="c-card">
+                <h3>孕育子嗣</h3>
+                <div id="conceptionSection" class="c-form">
+                    <div class="c-form-row">
+                        <label for="childNameInput">孩子名字</label>
+                        <input type="text" id="childNameInput" class="c-input" placeholder="输入孩子名字" maxlength="10">
+                    </div>
+                    <div class="c-form-row">
+                        <label for="childGenderSelect">孩子性别</label>
+                        <select id="childGenderSelect" class="c-input">
+                            <option value="boy">男孩</option>
+                            <option value="girl">女孩</option>
+                        </select>
+                    </div>
+                    <button onclick="conceiveChild()" id="conceiveBtn" class="c-btn c-btn-pink">怀孕</button>
+                    <p class="c-hint">恩爱 25 级解锁 · 最多 10 名直系子女 · 怀孕时间 1 天</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="childSectionOffspring" class="c-section">
+            <div class="c-card">
+                <div class="c-card-head">
+                    <h3>家族成员</h3>
+                    <div class="c-filter" style="align-items:center;gap:8px;">
+                        <button class="c-chip active" data-filter="all" onclick="setOffspringFilter('all')">全部</button>
+                        <select id="offspringGenSelect" class="c-input" style="min-width:110px;width:auto;padding:4px 8px;" onchange="setOffspringFilter(this.value)">
+                            <option value="all">筛选代数</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="childrenList" class="c-member-grid"></div>
+            </div>
+        </div>
+
+        <div id="childSectionDescendants" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionDescendants">
+                <button type="button" class="c-subtab active" data-sub="overview" role="tab" onclick="switchChildSubTab('childSectionDescendants','overview')">总览立嫡</button>
+                <button type="button" class="c-subtab" data-sub="study" role="tab" onclick="switchChildSubTab('childSectionDescendants','study')">修业志向</button>
+                <button type="button" class="c-subtab" data-sub="social" role="tab" onclick="switchChildSubTab('childSectionDescendants','social')">人情交际</button>
+            </div>
+
+            <div class="c-card" data-sub="overview">
+                <h3>子孙总览</h3>
+                <p class="c-hint">性格、血脉特质、个人声望；可立志修专精、手足师徒、竞赛结友、指定嫡系。不改变婚育门禁。</p>
+                <div id="descOverviewPanel"></div>
+            </div>
+            <div class="c-card" data-sub="study">
+                <h3>雅趣爱好</h3>
+                <p class="c-hint">围棋、书法、垂钓、吹笛、算盘、药圃、比武、夜读——像过日子一样养孩子。</p>
+                <div id="descHobbyPanel"></div>
+            </div>
+            <div class="c-card" data-sub="study">
+                <h3>开蒙学业</h3>
+                <p class="c-hint">未成年专属：经史、算学、礼乐、骑射，可参加小考。</p>
+                <div id="descSchoolPanel"></div>
+            </div>
+            <div class="c-card" data-sub="study">
+                <h3>人生志向</h3>
+                <p class="c-hint">金榜、沙场、富甲、名动、悬壶、护族——立志并深造，永久提升三维。</p>
+                <div id="descAmbitionPanel"></div>
+            </div>
+            <div class="c-card" data-sub="study">
+                <h3>一技专精</h3>
+                <p class="c-hint">成年后可修：剑术、辞章、商道、仪表、医术、兵法。</p>
+                <div id="descSpecialtyPanel"></div>
+            </div>
+            <div class="c-card" data-sub="social">
+                <h3>手足情谊</h3>
+                <div id="descSiblingPanel"></div>
+            </div>
+            <div class="c-card" data-sub="social">
+                <h3>师徒薪火</h3>
+                <div id="descMentorPanel"></div>
+            </div>
+            <div class="c-card" data-sub="social">
+                <h3>同辈竞赛</h3>
+                <div id="descContestPanel"></div>
+            </div>
+            <div class="c-card" data-sub="social">
+                <h3>外界友人</h3>
+                <div id="descPeerPanel"></div>
+            </div>
+            <div class="c-card" data-sub="overview">
+                <h3>立嫡 · 血脉特质</h3>
+                <div id="descHeirPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionDescPlus" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionDescPlus">
+                <button type="button" class="c-subtab active" data-sub="daily" role="tab" onclick="switchChildSubTab('childSectionDescPlus','daily')">心境日课</button>
+                <button type="button" class="c-subtab" data-sub="out" role="tab" onclick="switchChildSubTab('childSectionDescPlus','out')">外出功名</button>
+                <button type="button" class="c-subtab" data-sub="advance" role="tab" onclick="switchChildSubTab('childSectionDescPlus','advance')">切磋进阶</button>
+            </div>
+
+            <div class="c-card" data-sub="daily">
+                <h3>世系总览 · 今日心境</h3>
+                <p class="c-hint">每人每日心境不同；游学/闭关期间无法培养。孝行、功名、分房等永久提升三维。</p>
+                <div id="plusOverviewPanel"></div>
+            </div>
+            <div class="c-card" data-sub="daily">
+                <h3>孝悌日课</h3>
+                <p class="c-hint">晨昏定省、奉茶、反哺、抄孝经、修椅——孝行积攒可升孝名档。</p>
+                <div id="plusFilialPanel"></div>
+            </div>
+            <div class="c-card" data-sub="out">
+                <h3>游学 · 闭关</h3>
+                <p class="c-hint">江南、边关、京城、出海、寻祖；成年可闭关悟道。途中不可培养。</p>
+                <div id="plusTravelPanel"></div>
+            </div>
+            <div class="c-card" data-sub="out">
+                <h3>功名 · 分房</h3>
+                <p class="c-hint">童生→秀才→举人→进士→翰林→国器；声望足够可分房立户。</p>
+                <div id="plusRankPanel"></div>
+            </div>
+            <div class="c-card" data-sub="out">
+                <h3>妆奁聘礼</h3>
+                <p class="c-hint">订婚或成婚后可备奁，提升恩爱/订婚情谊。</p>
+                <div id="plusDowryPanel"></div>
+            </div>
+            <div class="c-card" data-sub="advance">
+                <h3>族中对决</h3>
+                <div id="plusDuelPanel"></div>
+            </div>
+            <div class="c-card" data-sub="daily">
+                <h3>值夜 · 冥想 · 画像</h3>
+                <div id="plusDutyPanel"></div>
+            </div>
+            <div class="c-card" data-sub="advance">
+                <h3>技艺融合</h3>
+                <div id="plusFusionPanel"></div>
+            </div>
+            <div class="c-card" data-sub="advance">
+                <h3>人生节点</h3>
+                <p class="c-hint">初入生计、初为人师、而立自省、为族争光——达成有永久属性与声望。</p>
+                <div id="plusNodesPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionDescNova" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionDescNova">
+                <button type="button" class="c-subtab active" data-sub="virtue" role="tab" onclick="switchChildSubTab('childSectionDescNova','virtue')">德行作息</button>
+                <button type="button" class="c-subtab" data-sub="dream" role="tab" onclick="switchChildSubTab('childSectionDescNova','dream')">梦趣奇遇</button>
+                <button type="button" class="c-subtab" data-sub="misc" role="tab" onclick="switchChildSubTab('childSectionDescNova','misc')">纪念杂务</button>
+            </div>
+
+            <div class="c-card" data-sub="virtue">
+                <h3>五德 · 德堂</h3>
+                <p class="c-hint">仁义礼智信进德；五德堂族级升级。升级类均为 12 小时冷却。不改变婚育门禁。</p>
+                <div id="novaVirtuePanel"></div>
+            </div>
+            <div class="c-card" data-sub="dream">
+                <h3>梦境 · 游艺</h3>
+                <p class="c-hint">夜梦悟道、白日游艺，润养心性与三维。</p>
+                <div id="novaDreamPlayPanel"></div>
+            </div>
+            <div class="c-card" data-sub="virtue">
+                <h3>睡眠 · 夜宵</h3>
+                <p class="c-hint">睡眠不足会影响状态；夜宵与小憩可回气。</p>
+                <div id="novaSleepPanel"></div>
+            </div>
+            <div class="c-card" data-sub="dream">
+                <h3>街头奇遇 · 祝福符</h3>
+                <p class="c-hint">奇遇看代数解锁；请符有短效加成。</p>
+                <div id="novaAdvPanel"></div>
+            </div>
+            <div class="c-card" data-sub="virtue">
+                <h3>亲子夜课</h3>
+                <p class="c-hint">讲故事、陪练字、夜谈志向——拉近亲子。</p>
+                <div id="novaParentPanel"></div>
+            </div>
+            <div class="c-card" data-sub="misc">
+                <h3>纪念册</h3>
+                <p class="c-hint">为子弟收录人生页；总册可升级（12h）。</p>
+                <div id="novaAlbumPanel"></div>
+            </div>
+            <div class="c-card" data-sub="misc">
+                <h3>生辰 · 家书 · 契约 · 营寨 · 排行</h3>
+                <p class="c-hint">生辰礼、未来家书、契约学徒、子弟营寨与排行榜。</p>
+                <div id="novaMiscPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionDescSaga" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionDescSaga">
+                <button type="button" class="c-subtab active" data-sub="build" role="tab" onclick="switchChildSubTab('childSectionDescSaga','build')">族建百艺</button>
+                <button type="button" class="c-subtab" data-sub="social" role="tab" onclick="switchChildSubTab('childSectionDescSaga','social')">社交誓约</button>
+                <button type="button" class="c-subtab" data-sub="life" role="tab" onclick="switchChildSubTab('childSectionDescSaga','life')">心事生计</button>
+            </div>
+
+            <div class="c-card" data-sub="build">
+                <h3>家风碑 · 义仓</h3>
+                <p class="c-hint">族级营建与备荒捐输。升级类 12 小时冷却。不改变婚育门禁。</p>
+                <div id="sagaEthosPanel"></div>
+            </div>
+            <div class="c-card" data-sub="build">
+                <h3>岁时礼 · 工坊百艺</h3>
+                <p class="c-hint">立春至除夕的岁时功课；木作、女红、酿造、陶艺、制墨——百艺升级 12h。</p>
+                <div id="sagaSeasonCraftPanel"></div>
+            </div>
+            <div class="c-card" data-sub="social">
+                <h3>族学 · 文会武集 · 姻亲</h3>
+                <p class="c-hint">成年开讲；诗社棋会武集商叙；成婚后方可走动姻亲。</p>
+                <div id="sagaSocialPanel"></div>
+            </div>
+            <div class="c-card" data-sub="social">
+                <h3>传家宝 · 誓约</h3>
+                <p class="c-hint">成年认主后祭炼；护族/勤学/悌亲/立信四誓加深均为 12h。</p>
+                <div id="sagaTreasurePanel"></div>
+            </div>
+            <div class="c-card" data-sub="life">
+                <h3>围炉 · 心事匣</h3>
+                <p class="c-hint">夜话与心事书写，润养心情与亲近。</p>
+                <div id="sagaHeartPanel"></div>
+            </div>
+            <div class="c-card" data-sub="life">
+                <h3>传艺 · 丰碑 · 双人 · 声望市</h3>
+                <p class="c-hint">长辈传艺、成长立碑、成婚双人日常、声望兑换。</p>
+                <div id="sagaLifePanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionDescChronicle" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionDescChronicle">
+                <button type="button" class="c-subtab active" data-sub="clan" role="tab" onclick="switchChildSubTab('childSectionDescChronicle','clan')">族务编纂</button>
+                <button type="button" class="c-subtab" data-sub="market" role="tab" onclick="switchChildSubTab('childSectionDescChronicle','market')">市井修习</button>
+                <button type="button" class="c-subtab" data-sub="wild" role="tab" onclick="switchChildSubTab('childSectionDescChronicle','wild')">山野日常</button>
+            </div>
+
+            <div class="c-card" data-sub="clan">
+                <h3>族徽 · 藏书楼 · 列传总册</h3>
+                <p class="c-hint">族级营建。升级类 12 小时冷却。不改变婚育门禁。</p>
+                <div id="chroClanPanel"></div>
+            </div>
+            <div class="c-card" data-sub="clan">
+                <h3>列传编纂 · 族中闲职</h3>
+                <p class="c-hint">按人生节点写入长卷；任命守门/司账/管书/厨下/奉祠并升级。</p>
+                <div id="chroBioOfficePanel"></div>
+            </div>
+            <div class="c-card" data-sub="market">
+                <h3>市井 · 善行 · 调解</h3>
+                <p class="c-hint">摊位营生、功德簿、邻里说和——积善有档。</p>
+                <div id="chroMarketPanel"></div>
+            </div>
+            <div class="c-card" data-sub="market">
+                <h3>藏书 · 武馆 · 观星</h3>
+                <p class="c-hint">借还书、日课练武、夜观星象。</p>
+                <div id="chroStudyPanel"></div>
+            </div>
+            <div class="c-card" data-sub="wild">
+                <h3>渔猎 · 寻宝 · 赛季比试</h3>
+                <p class="c-hint">山野营生、故址探查；成年可参赛积分晋档。</p>
+                <div id="chroWildPanel"></div>
+            </div>
+            <div class="c-card" data-sub="wild">
+                <h3>乡音 · 仪容 · 小宠 · 友书 · 厨艺</h3>
+                <p class="c-hint">过日子的细处：歌谣、梳妆、宠物、书信、灶下。</p>
+                <div id="chroLifePanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionDescFlow" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionDescFlow">
+                <button type="button" class="c-subtab active" data-sub="clan" role="tab" onclick="switchChildSubTab('childSectionDescFlow','clan')">台网时序</button>
+                <button type="button" class="c-subtab" data-sub="purse" role="tab" onclick="switchChildSubTab('childSectionDescFlow','purse')">账闻结义</button>
+                <button type="button" class="c-subtab" data-sub="secret" role="tab" onclick="switchChildSubTab('childSectionDescFlow','secret')">秘技传火</button>
+            </div>
+
+            <div class="c-card" data-sub="clan">
+                <h3>流年台 · 消息网</h3>
+                <p class="c-hint">族级营建。升级类 12 小时冷却。不改变婚育门禁。</p>
+                <div id="flowClanPanel"></div>
+            </div>
+            <div class="c-card" data-sub="clan">
+                <h3>节气功课 · 时辰作息</h3>
+                <p class="c-hint">立春到大寒；卯时到亥时——把日子过细。</p>
+                <div id="flowTimePanel"></div>
+            </div>
+            <div class="c-card" data-sub="purse">
+                <h3>私房账本 · 市井传闻</h3>
+                <p class="c-hint">积蓄与花用；打听行情、编传闻册。</p>
+                <div id="flowPursePanel"></div>
+            </div>
+            <div class="c-card" data-sub="purse">
+                <h3>结义 · 驿站 · 夜巡</h3>
+                <p class="c-hint">金兰情谊、远行护商、护宅巡更。</p>
+                <div id="flowSocialPanel"></div>
+            </div>
+            <div class="c-card" data-sub="secret">
+                <h3>秘技 · 残影 · 文社武馆</h3>
+                <p class="c-hint">家传秘技升级 12h；静听先祖残影；文社/武馆段位晋升。</p>
+                <div id="flowSecretPanel"></div>
+            </div>
+            <div class="c-card" data-sub="secret">
+                <h3>重建 · 姻缘线 · 传火</h3>
+                <p class="c-hint">灾后重建；成婚后姻缘线（不影响生育）；长辈向后辈传火。</p>
+                <div id="flowLifePanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionDescNpc" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionDescNpc">
+                <button type="button" class="c-subtab active" data-sub="hall" role="tab" onclick="switchChildSubTab('childSectionDescNpc','hall')">会馆营生</button>
+                <button type="button" class="c-subtab" data-sub="social" role="tab" onclick="switchChildSubTab('childSectionDescNpc','social')">邻里深交</button>
+                <button type="button" class="c-subtab" data-sub="ai" role="tab" onclick="switchChildSubTab('childSectionDescNpc','ai')">智策联动</button>
+            </div>
+
+            <div class="c-card" data-sub="hall">
+                <h3>邻里会馆</h3>
+                <p class="c-hint">现实人间据点。升级 12 小时冷却。不改变婚育门禁。</p>
+                <div id="npcHallPanel"></div>
+            </div>
+            <div class="c-card" data-sub="hall">
+                <h3>现实营生 · 问诊 · 短工 · 租税</h3>
+                <p class="c-hint">看病抓药、码头扛货、代写书信、缴田租屋税——像过日子一样养家。</p>
+                <div id="npcRealPanel"></div>
+            </div>
+            <div class="c-card" data-sub="hall">
+                <h3>人情 · 穿衣 · 陪读 · 下厨 · 债务</h3>
+                <p class="c-hint">红白份子、雨具寒衣、接送陪写、买菜开伙、借还往来。</p>
+                <div id="npcDailyPanel"></div>
+            </div>
+            <div class="c-card" data-sub="social">
+                <h3>智能邻里 NPC</h3>
+                <p class="c-hint">柳郎中、钱掌柜、周塾师、王媒婆、赵二叔、驿丞老吴、阿福，以及铁匠、茶娘、捕快、绣娘、货郎、半仙、更夫、药童、船娘等——会读族况回话，并记交往、积好感。</p>
+                <div id="npcChatPanel"></div>
+            </div>
+            <div class="c-card" data-sub="social">
+                <h3>智邻深玩 · 送礼 · 委托 · 密授 · 誓约</h3>
+                <p class="c-hint">投其所好送礼、请茶设宴、接专属委托；好感达标可听密授（12h）、立知己之约。每日 NPC 心境不同。</p>
+                <div id="npcPlusPanel"></div>
+            </div>
+            <div class="c-card" data-sub="ai">
+                <h3>AI 智策 · 意图对话 · 圆桌 · 传闻 · 剧情</h3>
+                <p class="c-hint">每日简报、意图回话、三人议事、追查传闻、结伴出行、情感剧情、论辩、红线参谋、劝和、托梦问策——均会读取当前族况生成内容。</p>
+                <div id="npcAiPanel"></div>
+            </div>
+            <div class="c-card" data-sub="ai">
+                <h3>十八代联动 · 血脉参谋 · 智邻助碑</h3>
+                <p class="c-hint">读取牌位/祝福/族谱/祭典/玄脉/子孙进度；委托助力立碑进香祀典；十八议题圆桌；与「十八代」「玄脉」「百态」页互通。</p>
+                <div id="npcEighteenLinkPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionTrain" class="c-section">
+            <div class="c-card">
+                <h3>批量培养</h3>
+                <div id="childTrainingSection" class="c-train-grid"></div>
+            </div>
+        </div>
+
+        <div id="childSectionWork" class="c-section">
+            <div class="c-card">
+                <h3>家族打工</h3>
+                <div id="childWorkSystem"></div>
+            </div>
+        </div>
+
+        <div id="childSectionInteract" class="c-section">
+            <div class="c-card">
+                <h3>亲子互动</h3>
+                <div id="childInteractionSystem"></div>
+            </div>
+        </div>
+
+        <div id="childSectionLineage" class="c-section">
+            <div class="c-card">
+                <h3>传宗接代</h3>
+                <p class="c-hint">子嗣须<strong>成年 → 弱冠/及笄 → 订婚 → 成婚 → 恩爱达标</strong>后方可孕育；孕期可调养，分娩后坐月子。子孙继承父母部分天赋；名门联姻可提高继承率。现已开放<strong>祖宗十八代</strong>（子女→…→终世孙，共 18 代，上限 180 人）。</p>
+                <div id="lineageActionList" class="c-member-grid"></div>
+            </div>
+            <div class="c-card">
+                <h3>联姻门第</h3>
+                <div id="lineageMarriageTiersHint"></div>
+            </div>
+            <div class="c-card">
+                <h3>血脉里程碑</h3>
+                <div id="lineageMilestones"></div>
+            </div>
+        </div>
+
+        <div id="childSectionTalent" class="c-section">
+            <div class="c-card">
+                <h3>子孙命格</h3>
+                <p class="c-hint">出生时随机赋予命格。可花费资金觉醒以强化效果；平凡命格觉醒后会蜕变为更高稀有度。</p>
+                <div id="lineageTalentList" class="c-member-grid"></div>
+            </div>
+        </div>
+
+        <div id="childSectionBusiness" class="c-section">
+            <div class="c-card">
+                <h3>家族产业</h3>
+                <div id="lineageBusinessSummary"></div>
+            </div>
+            <div class="c-card">
+                <h3>产业一览</h3>
+                <div id="lineageBusinessList" class="c-train-grid"></div>
+            </div>
+        </div>
+
+        <div id="childSectionAncestral" class="c-section">
+            <div class="c-card">
+                <h3>宗祠祭祖</h3>
+                <div id="lineageAncestralPanel"></div>
+            </div>
+            <div class="c-card">
+                <h3>传家宝</h3>
+                <div id="lineageHeirloomList"></div>
+            </div>
+        </div>
+
+        <div id="childSectionQuests" class="c-section">
+            <div class="c-card">
+                <h3>家族日常</h3>
+                <p class="c-hint">每日刷新。完成可获血脉经验与家族声望（无资金奖励）。</p>
+                <div id="lineageDailyQuestList"></div>
+            </div>
+            <div class="c-card">
+                <h3>科举比试</h3>
+                <div id="lineageExamList" class="c-train-grid"></div>
+            </div>
+        </div>
+
+        <div id="childSectionEvents" class="c-section">
+            <div class="c-card">
+                <h3>家族轶事</h3>
+                <div id="lineageEventPanel"></div>
+            </div>
+            <div class="c-card">
+                <h3>子孙远征</h3>
+                <div id="lineageExpeditionPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionLife" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionLife">
+                <button type="button" class="c-subtab active" data-sub="diary" role="tab" onclick="switchChildSubTab('childSectionLife','diary')">日记起居</button>
+                <button type="button" class="c-subtab" data-sub="career" role="tab" onclick="switchChildSubTab('childSectionLife','career')">志向羁绊</button>
+            </div>
+
+            <div class="c-card" data-sub="diary">
+                <h3>家族日记</h3>
+                <p class="c-hint">起居、羁绊与节庆会留下只言片语。心情影响世界地图攻/血/爆伤。</p>
+                <div id="lifeDiaryPanel"></div>
+            </div>
+            <div class="c-card" data-sub="diary">
+                <h3>起居日常</h3>
+                <p class="c-hint">选一个家人，做一件「像过日子」的事。有冷却、有花费，也有临时地图加成。</p>
+                <div id="lifeActivityPanel"></div>
+            </div>
+            <div class="c-card" data-sub="career">
+                <h3>志向仕途</h3>
+                <p class="c-hint">成年后定志并深造：仕途 / 商道 / 武道 / 医馆 / 百工 / 农桑，永久提升世界地图三维。</p>
+                <div id="lifeCareerPanel" class="c-member-grid"></div>
+            </div>
+            <div class="c-card" data-sub="career">
+                <h3>情感羁绊</h3>
+                <div id="lifeBondPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionEstate" class="c-section">
+            <div class="c-card">
+                <h3>宅邸修缮</h3>
+                <p class="c-hint">正厅、书房、武场、医庐、花园、厢房——每升一级，世界地图攻/血/爆伤永久增加。消耗随等级×10。</p>
+                <div id="lifeEstatePanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionFestival" class="c-section">
+            <div class="c-card">
+                <h3>岁时节令</h3>
+                <p class="c-hint">开春、元宵、中秋、冬至、除夕。办一场热闹，短时大幅提升世界地图三维，并写入家族日记。</p>
+                <div id="lifeFestivalPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionMartial" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionMartial">
+                <button type="button" class="c-subtab active" data-sub="hall" role="tab" onclick="switchChildSubTab('childSectionMartial','hall')">堂席营</button>
+                <button type="button" class="c-subtab" data-sub="drill" role="tab" onclick="switchChildSubTab('childSectionMartial','drill')">演武军功</button>
+            </div>
+
+            <div class="c-card" data-sub="hall">
+                <h3>武道堂 · 世界地图三维</h3>
+                <div id="lineageMartialPanel"></div>
+            </div>
+            <div class="c-card" data-sub="hall">
+                <h3>战魂席</h3>
+                <div id="lineageWarSpiritPanel"></div>
+            </div>
+            <div class="c-card" data-sub="hall">
+                <h3>家将营</h3>
+                <div id="lineageGuardPanel"></div>
+            </div>
+            <div class="c-card" data-sub="drill">
+                <h3>血战演武 · 军功</h3>
+                <div id="lineageDrillPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionEighteen" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionEighteen">
+                <button type="button" class="c-subtab active" data-sub="tablet" role="tab" onclick="switchChildSubTab('childSectionEighteen','tablet')">牌位共鸣</button>
+                <button type="button" class="c-subtab" data-sub="chronicle" role="tab" onclick="switchChildSubTab('childSectionEighteen','chronicle')">谱牒祭典</button>
+                <button type="button" class="c-subtab" data-sub="deep" role="tab" onclick="switchChildSubTab('childSectionEighteen','deep')">深挖遗泽</button>
+            </div>
+
+            <div class="c-card" id="eighteenNpcLinkHintWrap" data-sub="tablet">
+                <h3>智邻 × 十八代</h3>
+                <div id="eighteenNpcLinkHint"></div>
+            </div>
+            <div class="c-card" data-sub="tablet">
+                <h3>祖宗十八代 · 牌位殿</h3>
+                <p class="c-hint">每触及新的一代，可立牌位。牌位提供永久世界地图攻/血/爆伤；下方共鸣区会拆分来源，并展示代际祝福是否已生效。轶事可获「免费立碑」。</p>
+                <div id="eighteenTabletPanel"></div>
+            </div>
+            <div class="c-card" data-sub="tablet">
+                <h3>血脉共鸣 · 代际祝福</h3>
+                <p class="c-hint">合计三维按牌位、代数、祝福、族谱、祭典等分列；触及对应代数后祝福自动点亮。</p>
+                <div id="eighteenResonancePanel"></div>
+            </div>
+            <div class="c-card" data-sub="chronicle">
+                <h3>族谱大典</h3>
+                <div id="eighteenChroniclePanel"></div>
+            </div>
+            <div class="c-card" data-sub="chronicle">
+                <h3>十八代祭典</h3>
+                <div id="eighteenRitualPanel"></div>
+            </div>
+            <div class="c-card" data-sub="deep">
+                <h3>十八代深挖 · 进香 / 祀典 / 托梦 / 传灯</h3>
+                <p class="c-hint">触及代数后可举行代际祀典；日常进香获限时三维；托梦感悟成人；传灯永久提升。</p>
+                <div id="livingEighteenExtraPanel"></div>
+            </div>
+            <div class="c-card" data-sub="deep">
+                <h3>代际遗泽</h3>
+                <p class="c-hint">触及对应代数后可启封遗泽（血书、佩玉、兵符、星图、终世遗诏等），获得永久世界地图三维。</p>
+                <div id="livingLegacyPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionEighteenDepth" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionEighteenDepth">
+                <button type="button" class="c-subtab active" data-sub="altar" role="tab" onclick="switchChildSubTab('childSectionEighteenDepth','altar')">族坛灵觉</button>
+                <button type="button" class="c-subtab" data-sub="personal" role="tab" onclick="switchChildSubTab('childSectionEighteenDepth','personal')">个人修炼</button>
+                <button type="button" class="c-subtab" data-sub="pilgrim" role="tab" onclick="switchChildSubTab('childSectionEighteenDepth','pilgrim')">朝圣小课</button>
+            </div>
+
+            <div class="c-card" data-sub="altar">
+                <h3>玄脉坛 · 族级升级（12小时冷却）</h3>
+                <p class="c-hint">玄脉坛、祖训经卷、族战旌旗、血脉大阵、列传编修、血脉脉冲——升级后进入 12 小时冷却。</p>
+                <div id="depthAltarPanel"></div>
+            </div>
+            <div class="c-card" data-sub="altar">
+                <h3>代际灵觉（每代独立 12h）</h3>
+                <p class="c-hint">1/3/6/9/12/15/18 代灵觉，触及对应代数后可觉醒升级。</p>
+                <div id="depthSpiritPanel"></div>
+            </div>
+            <div class="c-card" data-sub="altar">
+                <h3>十八印 · 启封与祭炼</h3>
+                <p class="c-hint">启封无冷却；祭炼升级有 12 小时冷却。</p>
+                <div id="depthSealPanel"></div>
+            </div>
+            <div class="c-card" data-sub="personal">
+                <h3>子孙破境 · 命星 · 炼体 · 经脉</h3>
+                <p class="c-hint">个人成长线，升级类均为 12 小时冷却。</p>
+                <div id="depthBreakPanel"></div>
+            </div>
+            <div class="c-card" data-sub="personal">
+                <h3>子孙本命器</h3>
+                <p class="c-hint">成年认主后可祭炼（12h 冷却）：文心笔、护族刀、生金算、照心镜、十八玉。</p>
+                <div id="depthArtifactPanel"></div>
+            </div>
+            <div class="c-card" data-sub="pilgrim">
+                <h3>血脉朝圣</h3>
+                <div id="depthPilgrimPanel"></div>
+            </div>
+            <div class="c-card" data-sub="pilgrim">
+                <h3>血脉小课</h3>
+                <p class="c-hint">默诵族名、誊谱、护牌、讲代际故事——短冷却日常。</p>
+                <div id="depthDrillPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionLiving" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionLiving">
+                <button type="button" class="c-subtab active" data-sub="chore" role="tab" onclick="switchChildSubTab('childSectionLiving','chore')">烟火邻里</button>
+                <button type="button" class="c-subtab" data-sub="calamity" role="tab" onclick="switchChildSubTab('childSectionLiving','calamity')">灾害幼年</button>
+            </div>
+
+            <div class="c-card" data-sub="chore">
+                <h3>烟火人间</h3>
+                <p class="c-hint">扫院、采买、邻里、下田、浆洗……按时令过日子。完成可写入日记，并微幅提升世界地图三维。</p>
+                <div id="livingChorePanel"></div>
+            </div>
+            <div class="c-card" data-sub="calamity">
+                <h3>时令灾害</h3>
+                <p class="c-hint">春汛、夏旱、秋风、冬雪乃至时疫暗涌。应对得当可化险为夷，拖延则可能染恙、心情下跌。</p>
+                <div id="livingCalamityPanel"></div>
+            </div>
+            <div class="c-card" data-sub="chore">
+                <h3>邻里人情</h3>
+                <p class="c-hint">借粮、修屋、节礼、劝和——人情积少成多，永久微幅提升世界地图三维。</p>
+                <div id="livingNeighborPanel"></div>
+            </div>
+            <div class="c-card" data-sub="calamity">
+                <h3>幼年光景</h3>
+                <p class="c-hint">未成年子侄专属：玩泥巴、听故事、买糖、描红、试拳。长大后改走烟火与志向。</p>
+                <div id="livingChildhoodPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionIllness" class="c-section">
+            <div class="c-card">
+                <h3>族中染恙</h3>
+                <p class="c-hint">风寒、发热、跌伤、郁结、时疫会真实缠身，且可能传染。病中可能无法打工、培养或孕育；可静养、喝姜汤、请郎中、医庐调养或祠堂祈安。</p>
+                <div id="livingIllnessPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionMarital" class="c-section">
+            <div class="c-card">
+                <h3>订婚相处</h3>
+                <p class="c-hint">须先完成弱冠/及笄（见「实录」），再订婚相处、择日成婚。订婚情谊会转化为成婚后的初始恩爱。</p>
+                <div id="livingBetrothalPanel"></div>
+            </div>
+            <div class="c-card">
+                <h3>婚育恩爱</h3>
+                <p class="c-hint">成婚后继续培养夫妻恩爱，达标才能孕育。</p>
+                <div id="livingMaritalPanel"></div>
+            </div>
+            <div class="c-card">
+                <h3>孕期调养 · 坐月子</h3>
+                <p class="c-hint">孕育中可进补、静养、请稳婆、祠堂祈嗣，提升新生儿出生属性；分娩后坐月子，暂不宜打工。</p>
+                <div id="livingNurturePanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionRealty" class="c-section">
+            <div class="c-subtabs" role="tablist" data-section="childSectionRealty">
+                <button type="button" class="c-subtab active" data-sub="meals" role="tab" onclick="switchChildSubTab('childSectionRealty','meals')">三餐市集</button>
+                <button type="button" class="c-subtab" data-sub="coming" role="tab" onclick="switchChildSubTab('childSectionRealty','coming')">成人礼仪</button>
+                <button type="button" class="c-subtab" data-sub="letter" role="tab" onclick="switchChildSubTab('childSectionRealty','letter')">家书赡养</button>
+            </div>
+
+            <div class="c-card" data-sub="meals">
+                <h3>三餐 · 日用 · 月例</h3>
+                <p class="c-hint">朝食、午膳、晚炊；记油盐账本、发月例钱。天气影响市价与心情。</p>
+                <div id="realMealsPanel"></div>
+            </div>
+            <div class="c-card" data-sub="meals">
+                <h3>市集采买</h3>
+                <p class="c-hint">米面、油盐、布匹、草药、糖、陈酒——每日限购，像过日子一样置办。</p>
+                <div id="realMarketPanel"></div>
+            </div>
+            <div class="c-card" data-sub="coming">
+                <h3>弱冠 · 及笄</h3>
+                <p class="c-hint">成年后行成人礼，赋予字辈，方可订婚传宗。</p>
+                <div id="realComingPanel"></div>
+            </div>
+            <div class="c-card" data-sub="coming">
+                <h3>十八代 · 字辈 / 扫墓 / 口述</h3>
+                <p class="c-hint">齐诵字辈诗、按代扫墓、记录口述史——把十八代活成可触摸的记忆。</p>
+                <div id="realEighteenPanel"></div>
+            </div>
+            <div class="c-card" data-sub="meals">
+                <h3>家传菜谱</h3>
+                <p class="c-hint">祖传饺子、莲藕汤、桂花糖藕、药膳鸡、十八代团圆席——随代数解锁。</p>
+                <div id="realRecipePanel"></div>
+            </div>
+            <div class="c-card" data-sub="letter">
+                <h3>家书往来</h3>
+                <p class="c-hint">问安、叮嘱、和解、嘉许——加深成员羁绊。</p>
+                <div id="realLetterPanel"></div>
+            </div>
+            <div class="c-card" data-sub="letter">
+                <h3>赡养长辈</h3>
+                <p class="c-hint">晚辈侍奉更早世代：梳头、散步、听从前的事、煎药。</p>
+                <div id="realElderPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionGlory" class="c-section">
+            <div class="c-card">
+                <h3>门第与荣耀</h3>
+                <div id="lineageGloryPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionTree" class="c-section">
+            <div class="c-card">
+                <h3>家族家谱</h3>
+                <div id="familyTreeView" class="c-tree"></div>
+            </div>
+            <div class="c-card">
+                <h3>加成明细</h3>
+                <div id="childBonusesDetail"></div>
+            </div>
+        </div>
+
+        <div id="childSectionPrecept" class="c-section">
+            <div class="c-card">
+                <h3>家训堂</h3>
+                <p class="c-hint">立下家训，世代遵循。每条家训永久提升世界地图攻击、生命或爆伤。消耗随条数×10递增。</p>
+                <div id="lifePreceptPanel"></div>
+            </div>
+            <div class="c-card">
+                <h3>子孙列传</h3>
+                <p class="c-hint">为成名子弟立传。列传越多，家族「文脉」越盛，三维常驻提升。</p>
+                <div id="lifeBiographyPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionTrial" class="c-section">
+            <div class="c-card">
+                <h3>血脉试炼</h3>
+                <p class="c-hint">选派成年子弟闯十八关。闯关成功获声望、军功与限时世界地图三维；关卡随代数加深。</p>
+                <div id="lifeTrialPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionFeast" class="c-section">
+            <div class="c-card">
+                <h3>家族大宴</h3>
+                <p class="c-hint">摆席宴请族人与宾客。档次越高，限时三维越强，日记也会记下这场热闹。</p>
+                <div id="lifeFeastPanel"></div>
+            </div>
+        </div>
+
+        <div id="childSectionCultivate" class="c-section">
+            <div class="c-card">
+                <h3>修真境界</h3>
+                <p class="c-hint">子弟入道修炼。境界越高，世界地图攻击/生命/爆伤越高。消耗随境界×10。</p>
+                <div id="xianCultivatePanel"></div>
+            </div>
+        </div>
+        <div id="childSectionSpiritroot" class="c-section">
+            <div class="c-card">
+                <h3>灵根觉醒</h3>
+                <p class="c-hint">金木水火土异灵根。觉醒后永久提升对应世界地图三维，可反复淬炼。</p>
+                <div id="xianSpiritPanel"></div>
+            </div>
+        </div>
+        <div id="childSectionDongfu" class="c-section">
+            <div class="c-card">
+                <h3>家族洞府</h3>
+                <p class="c-hint">开辟洞府聚灵：灵田、炼器阁、护山大阵、观星台……每级永久三维。</p>
+                <div id="xianDongfuPanel"></div>
+            </div>
+        </div>
+        <div id="childSectionAlchemy" class="c-section">
+            <div class="c-card">
+                <h3>丹房炼制</h3>
+                <p class="c-hint">炼制增益丹药，短时大幅提升世界地图三维。有冷却，失败亦有残丹。</p>
+                <div id="xianAlchemyPanel"></div>
+            </div>
+        </div>
+        <div id="childSectionArtifact" class="c-section">
+            <div class="c-card">
+                <h3>本命法宝</h3>
+                <p class="c-hint">为子弟祭炼法宝。装备中的法宝提供常驻世界地图攻/血/爆伤。</p>
+                <div id="xianArtifactPanel"></div>
+            </div>
+        </div>
+        <div id="childSectionTribulation" class="c-section">
+            <div class="c-card">
+                <h3>渡劫飞升</h3>
+                <p class="c-hint">境界足够后可渡劫。成功则境界跃升并永久强化三维；失败有冷却。</p>
+                <div id="xianTribulationPanel"></div>
+            </div>
         </div>
     </div>
-    
-    <!-- 孩子列表 -->
-    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
-        <h3>我的孩子</h3>
-        <div id="childrenList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 300px; overflow-y: auto; padding: 10px;">
-            <!-- 孩子卡片会动态生成 -->
-        </div>
-    </div>
-    
-    <!-- 孩子培养 -->
-    <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
-        <h3>孩子培养</h3>
-        <div id="childTrainingSection" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-            <!-- 培养选项会动态生成 -->
-        </div>
-    </div>
-    
-    <!-- 孩子加成 -->
-    <div style="background: #333; padding: 15px; border-radius: 8px;">
-        <h3>孩子加成</h3>
-        <div id="childBonuses"></div>
-    </div>
-</div>
     </div>
 </div>
 <!-- 轮回装备系统界面 -->
@@ -8789,7 +9738,7 @@
     <script>
         (function (b) {
             var boot = document.createElement('script');
-            boot.src = 'assets/js/gold-game-asset-boot.js?b=' + encodeURIComponent(b || 'dev');
+            boot.src = 'assets/js/gold-game-asset-boot.js?b=' + encodeURIComponent(b || 'dev') + '&_t=' + Date.now();
             boot.async = false;
             document.body.appendChild(boot);
         })(window.__GOLD_GAME_ASSET_BUILD);

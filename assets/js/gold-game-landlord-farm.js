@@ -1,9 +1,9 @@
 // 地主种植
         function initLandlordGame() {
+            // 先离线补算（内含天气、商店与牧场草场合鸣），再按 lastWeatherChange 补在线漏 tick，避免同一时段被算两次
+            checkLandlordOfflineEarnings();
             refreshLandlordStore();
             refreshLandlordItemStore();
-            // 先离线补算（内含天气与牧场草场合鸣），再按 lastWeatherChange 补在线漏 tick，避免同一时段天气被算两次
-            checkLandlordOfflineEarnings();
             updateLandlordWeather();
             renderAllLandlordUI();
             startLandlordTimers();
@@ -95,6 +95,93 @@
             renderLandlordSeedStorage();
             
             showLandlordNotification(`成功购买${seedName}种子！`, "success");
+            saveGame();
+        }
+
+        function getLandlordSeedBuyPriority() {
+            return (player && player.landlord && player.landlord.seedBuyPriority === 'high') ? 'high' : 'low';
+        }
+
+        function syncLandlordSeedBuyPriorityButtons() {
+            var priority = getLandlordSeedBuyPriority();
+            var lowBtn = document.getElementById('landlordSeedBuyPriorityLow');
+            var highBtn = document.getElementById('landlordSeedBuyPriorityHigh');
+            if (lowBtn) {
+                lowBtn.classList.toggle('is-active', priority === 'low');
+                lowBtn.setAttribute('aria-pressed', priority === 'low' ? 'true' : 'false');
+            }
+            if (highBtn) {
+                highBtn.classList.toggle('is-active', priority === 'high');
+                highBtn.setAttribute('aria-pressed', priority === 'high' ? 'true' : 'false');
+            }
+        }
+
+        function setLandlordSeedBuyPriority(priority) {
+            if (!player || !player.landlord) return;
+            player.landlord.seedBuyPriority = priority === 'high' ? 'high' : 'low';
+            syncLandlordSeedBuyPriorityButtons();
+            if (typeof saveGame === 'function') saveGame();
+        }
+
+        // 一键购买当前有库存的种子（按低价/高价优先，买到币不够为止）
+        function buyAllLandlordSeedsInStock() {
+            if (!player || !player.landlord) return;
+
+            var candidates = [];
+            for (var seedName in seedProperties) {
+                if (!Object.prototype.hasOwnProperty.call(seedProperties, seedName)) continue;
+                var stock = Math.floor(Number(player.landlord.storeItems[seedName]) || 0);
+                if (stock <= 0) continue;
+                var seed = (typeof getLandlordSeedProperties === 'function' ? getLandlordSeedProperties(seedName) : null) || seedProperties[seedName];
+                if (!seed || !Number.isFinite(Number(seed.price))) continue;
+                candidates.push({ name: seedName, price: Number(seed.price), stock: stock });
+            }
+
+            if (candidates.length === 0) {
+                showLandlordNotification('当前没有有库存的种子！', 'warning');
+                return;
+            }
+
+            var priority = getLandlordSeedBuyPriority();
+            candidates.sort(function (a, b) {
+                if (a.price !== b.price) {
+                    return priority === 'high' ? (b.price - a.price) : (a.price - b.price);
+                }
+                return String(a.name).localeCompare(String(b.name), 'zh');
+            });
+
+            var boughtCount = 0;
+            var spent = 0;
+            var boughtKinds = 0;
+
+            for (var i = 0; i < candidates.length; i++) {
+                var item = candidates[i];
+                var boughtThis = 0;
+                while (item.stock > 0 && player.landlord.coins >= item.price) {
+                    player.landlord.coins -= item.price;
+                    if (!player.landlord.seedStorage[item.name]) player.landlord.seedStorage[item.name] = 0;
+                    player.landlord.seedStorage[item.name]++;
+                    player.landlord.storeItems[item.name]--;
+                    item.stock--;
+                    boughtThis++;
+                    boughtCount++;
+                    spent += item.price;
+                }
+                if (boughtThis > 0) boughtKinds++;
+            }
+
+            if (boughtCount <= 0) {
+                showLandlordNotification('地主币不足，无法购买任何有货种子！', 'error');
+                return;
+            }
+
+            updateLandlordCoinDisplay();
+            renderLandlordStore();
+            renderLandlordSeedStorage();
+            showLandlordNotification(
+                '一键购买完成：买到 ' + boughtKinds + ' 种共 ' + boughtCount + ' 颗（花费 ' + formatNumber(spent) + ' 地主币）',
+                'success'
+            );
             saveGame();
         }
 

@@ -1385,7 +1385,8 @@ let wingHealthBonus = 0;
         (1 + runeBonuses.health),
         (1 + (player.mining.gems.emerald * 0.05)),
         (1 + player.marriage.marriageBonuses.critRateBonus),
-        (1 + player.children.childBonuses.critRateBonus),
+        (1 + ((player.children.childBonuses && player.children.childBonuses.critRateBonus) || 0)),
+        (1 + ((player.children.childBonuses && player.children.childBonuses.worldHpBonus) || 0)),
         (1 + equipmentStats.health),
         (1 + beastBonus.health),
         (1 + supremeBonus.health),
@@ -1412,7 +1413,8 @@ let wingHealthBonus = 0;
         (1 + mountAttackBonus),
         (1 + runeBonuses.attack),
         (1 + (player.mining.gems.sapphire * 0.05)),
-        (1 + player.children.childBonuses.goldMultiplier),
+        (1 + ((player.children.childBonuses && player.children.childBonuses.goldMultiplier) || 1)),
+        (1 + ((player.children.childBonuses && player.children.childBonuses.worldAtkBonus) || 0)),
         (1 + equipmentStats.attack),
         (1 + beastBonus.attack),
         (1 + supremeBonus.attack),
@@ -1442,7 +1444,7 @@ let wingHealthBonus = 0;
         classBonuses.critMultiplier * titleBonuses.critMultiplier *
         companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100) *  (1 + techBonuses.critDamage* 10)  *  (1 + mountCritDamageBonus) *
         (1 + runeBonuses.critDamage)*         (1 + (player.mining.gems.amethyst*0.05)) * (1+player.marriage.marriageBonuses.critDamageBonus) *
-       (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage) * (1 + supremeBonus.critDamage) * (1 + pixelBonus.critDamage) * (1+player.fiveElements.water.level * 3.00) * (1 + networkPetCritDmgPct) * (1 + (lawBonuses.critDamage || 0)) * worldMapAbyssCombinedMul * geneTreeCritMul; // 应用伴侣爆伤加成 + 无限深渊最佳层数 + 神兽图鉴 + 地主基因树（世界地图）
+       (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage) * (1 + supremeBonus.critDamage) * (1 + pixelBonus.critDamage) * (1+player.fiveElements.water.level * 3.00) * (1 + networkPetCritDmgPct) * (1 + (lawBonuses.critDamage || 0)) * worldMapAbyssCombinedMul * geneTreeCritMul * (1 + ((player.children.childBonuses && player.children.childBonuses.worldCritDmgBonus) || 0)); // 应用伴侣爆伤加成 + 无限深渊最佳层数 + 神兽图鉴 + 地主基因树 + 家族传承爆伤（世界地图）
 
     // 6. 计算连击次数（应用伴侣连击加成）
     player.battle.playerMultiAttack = Math.max(1,
@@ -2036,6 +2038,51 @@ const levelConfig = [
     { level: 15, requiredExp: 50000000, bonus: 1 }
 ];
 
+// 钓鱼系统：读档后恢复自动钓鱼（开关已持久化，但咬钩定时器不会随存档恢复）
+function initFishingData() {
+    if (!player.fishing) {
+        player.fishing = {
+            level: 1,
+            currentExp: 0,
+            fishCage: [],
+            isFishing: false,
+            isBiting: false,
+            biteTimer: null,
+            biteWindowTimer: null,
+            biteTime: 0,
+            bonus: 1,
+            autoFishingEnabled: false,
+            autoDecomposeFishEnabled: false
+        };
+    } else {
+        if (typeof player.fishing.autoFishingEnabled !== 'boolean') player.fishing.autoFishingEnabled = false;
+        if (typeof player.fishing.autoDecomposeFishEnabled !== 'boolean') player.fishing.autoDecomposeFishEnabled = false;
+        if (!Array.isArray(player.fishing.fishCage)) player.fishing.fishCage = [];
+    }
+    // 存档里的 isFishing/定时器在刷新后已失效，必须清掉再按开关续钓
+    player.fishing.isFishing = false;
+    player.fishing.isBiting = false;
+    player.fishing.biteTimer = null;
+    player.fishing.biteWindowTimer = null;
+    player.fishing.biteTime = 0;
+    player.fishing.fishingStartTime = 0;
+    ensureAutoFishing();
+}
+
+function ensureAutoFishing() {
+    if (!player.fishing) return;
+    if (player.reincarnationCount < 20) return;
+    if (!player.fishing.autoFishingEnabled) return;
+    if (player.fishing.isFishing) return;
+    if (window._ensureAutoFishingScheduled) return;
+    window._ensureAutoFishingScheduled = true;
+    setTimeout(function() {
+        window._ensureAutoFishingScheduled = false;
+        if (!player.fishing || !player.fishing.autoFishingEnabled || player.fishing.isFishing) return;
+        startFishing();
+    }, 300);
+}
+
 // 钓鱼系统函数
 function toggleFishingSystem() {
  if (player.reincarnationCount < 20) {
@@ -2052,6 +2099,7 @@ function toggleFishingSystem() {
         ui.style.display = 'block';
         overlay.style.display = 'block';
         updateFishingUI();
+        ensureAutoFishing();
     }
 }
 // 切换自动钓鱼状态
@@ -2077,6 +2125,8 @@ function toggleAutoDecomposeFish() {
     btn.style.background = player.fishing.autoDecomposeFishEnabled ? '#2196F3' : '#f44336';
     
     logAction(`自动分解${player.fishing.autoDecomposeFishEnabled ? '开启' : '关闭'}`, 'info');
+    // 开启自动分解后若鱼笼已满导致自动钓鱼卡住，尝试续钓
+    if (player.fishing.autoDecomposeFishEnabled) ensureAutoFishing();
 }
 
 function updateFishingUI() {
@@ -2124,8 +2174,8 @@ function startFishing() {
         return;
     }
     
-    // 检查鱼笼是否已满
-    if (player.fishing.fishCage.length >= 20) {
+    // 检查鱼笼是否已满（自动分解开启时新渔获不进笼，不阻挡自动钓鱼）
+    if (player.fishing.fishCage.length >= 20 && !player.fishing.autoDecomposeFishEnabled) {
         var st2 = document.getElementById('fishingStatus'); if (st2) st2.textContent = "鱼笼已满，请先分解一些鱼获！";
         return;
     }
@@ -2553,6 +2603,32 @@ const seedConfig = [
     { id: "seed15", name: "金苹果种子", growthTime: 21600, exp: 1200, value: 500, rarity: 0.5 }
 ];
 
+// 农场自动种植/收获后台循环：与 UI 开关解耦，读档后有开关即跑，关面板不停
+function ensureFarmAutoLoop() {
+    if (!player.farm) return;
+    if (player.reincarnationCount < 50) return;
+    if (!player.farm.autoPlant && !player.farm.autoHarvest) {
+        stopFarmAutoLoop();
+        return;
+    }
+    if (window.farmAutoCheckInterval) return;
+    var start = (typeof registerSingletonInterval === 'function')
+        ? function(fn, ms) { return registerSingletonInterval('farmAutoCheckInterval', fn, ms); }
+        : registerInterval;
+    window.farmAutoCheckInterval = start(function() {
+        if (!player.farm) return;
+        if (player.farm.autoHarvest) autoHarvest();
+        if (player.farm.autoPlant) autoPlant();
+    }, 1000);
+}
+
+function stopFarmAutoLoop() {
+    if (!window.farmAutoCheckInterval) return;
+    if (typeof unregisterInterval === 'function') unregisterInterval(window.farmAutoCheckInterval);
+    else clearInterval(window.farmAutoCheckInterval);
+    window.farmAutoCheckInterval = null;
+}
+
 // 切换农场系统界面
 function toggleFarmSystem() {
     if (player.reincarnationCount < 50) {
@@ -2565,36 +2641,17 @@ function toggleFarmSystem() {
     if (ui.style.display === 'block') {
         ui.style.display = 'none';
         overlay.style.display = 'none';
-        
-        // 关闭界面时清除自动化检查
-        if (window.farmAutoCheckInterval) {
-            if (typeof unregisterInterval === 'function') unregisterInterval(window.farmAutoCheckInterval);
-            else clearInterval(window.farmAutoCheckInterval);
-            window.farmAutoCheckInterval = null;
-        }
     } else {
         ui.style.display = 'block';
         overlay.style.display = 'block';
         updateFarmDisplay();
-        
-        // 开启界面时启动自动化检查
-        if (!window.farmAutoCheckInterval) {
-            window.farmAutoCheckInterval = registerInterval(() => {
-                if (player.farm.autoHarvest) autoHarvest();
-                if (player.farm.autoPlant) autoPlant();
-            }, 1000);
-        }
+        ensureFarmAutoLoop();
     }
 }
 
 function closeFarmSystem() {
     document.getElementById('farmSystemUI').style.display = 'none';
     document.getElementById('farmSystemOverlay').style.display = 'none';
-    if (window.farmAutoCheckInterval) {
-        if (typeof unregisterInterval === 'function') unregisterInterval(window.farmAutoCheckInterval);
-        else clearInterval(window.farmAutoCheckInterval);
-        window.farmAutoCheckInterval = null;
-    }
 }
 
 // 更新农场显示
@@ -2925,15 +2982,21 @@ function initFarmData() {
             seeds: {},
             water: 10,
             lastUpdate: Date.now(),
-          autoPlant: false,    // 新增自动种植设置
-            autoHarvest: false 
+            autoPlant: false,
+            autoHarvest: false
         };
+    } else {
+        if (typeof player.farm.autoPlant !== 'boolean') player.farm.autoPlant = false;
+        if (typeof player.farm.autoHarvest !== 'boolean') player.farm.autoHarvest = false;
     }
     
     // 确保农田数组大小正确
     while (player.farm.fields.length < player.farm.maxFields) {
         player.farm.fields.push({ planted: false });
     }
+
+    // 读档后按开关启动后台自动种/收，无需先打开农场界面
+    ensureFarmAutoLoop();
 }
 // 切换自动种植功能
 function toggleAutoPlant() {
@@ -2948,6 +3011,7 @@ function toggleAutoPlant() {
     if (player.farm.autoPlant) {
         autoPlant();
     }
+    ensureFarmAutoLoop();
 }
 
 // 切换自动收获功能
@@ -2963,6 +3027,7 @@ function toggleAutoHarvest() {
     if (player.farm.autoHarvest) {
         autoHarvest();
     }
+    ensureFarmAutoLoop();
 }
 
 // 自动种植逻辑

@@ -1,4 +1,4 @@
-        const GAME_VERSION = "2.0.37";
+        const GAME_VERSION = "2.0.39";
         const GAME_INVENTORY_MAX = 100;
         var WING_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
         var MOUNT_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
@@ -197,11 +197,17 @@ children: {
             children: [],
             totalChildren: 0,
             trainingHistory: [],
+            lineageLevel: 1,
+            lineageExp: 0,
+            claimedMilestones: [],
             childBonuses: {
                 gpsMultiplier: 1.0,
                 clickMultiplier: 1.0,
                 critRateBonus: 0,
-                goldMultiplier: 1.0
+                goldMultiplier: 1.0,
+                worldAtkBonus: 0,
+                worldHpBonus: 0,
+                worldCritDmgBonus: 0
             }
         },
   marriage: {
@@ -3889,6 +3895,16 @@ function setTechniqueMaxCost() {
             } else if (typeof detachWorldMapAutoBattleTimersFromPlayer === 'function') {
                 detachWorldMapAutoBattleTimersFromPlayer(player);
             }
+            // 时光秘境秒表同理：旧 player 被替换后孤儿 interval 会扣到新局上，表现为「刚进就时间耗尽」
+            if (typeof stopTsrTimer === 'function') {
+                try { stopTsrTimer(); } catch (eTsrStop) {}
+            } else if (window._tsrIntervalId != null) {
+                try {
+                    if (typeof unregisterInterval === 'function') unregisterInterval(window._tsrIntervalId);
+                    else clearInterval(window._tsrIntervalId);
+                } catch (eTsrId) {}
+                window._tsrIntervalId = null;
+            }
             player = migrateSaveData(save);
             window._goldGameSaveLoadedOk = true;
             if (currentAccountId && typeof window.writeGoldGameSaveToLocal === 'function') {
@@ -4134,6 +4150,7 @@ if (speedBoostBtn) {
             function() { initSlotMachine(); },
             function() { initMountData(); },
             function() { initFarmData(); },
+            function() { initFishingData(); },
             function() { updateSectNameDisplay(); },
             function() { initExplorationSystem(); },
             function() { initExpeditionData(); },

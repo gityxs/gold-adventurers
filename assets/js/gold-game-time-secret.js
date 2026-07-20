@@ -1385,19 +1385,45 @@ function pruneTimeSecretRealmForSave() {
 /** stringify 后恢复局内计时引用（与 pruneTimeSecretRealmForSave 配对） */
 function restoreTsrTimerAfterSave() {
     const tsr = player?.timeSecretRealm;
-    if (!tsr) {
-        window._tsrTimerSaveStash = null;
-        window._tsrTimerGenStash = null;
-        return;
-    }
-    if (window._tsrTimerSaveStash != null) {
-        tsr.timer = window._tsrTimerSaveStash;
-    }
-    if (window._tsrTimerGenStash != null) {
-        tsr._timerGen = window._tsrTimerGenStash;
-    }
+    const stashedTimer = window._tsrTimerSaveStash;
+    const stashedGen = window._tsrTimerGenStash;
     window._tsrTimerSaveStash = null;
     window._tsrTimerGenStash = null;
+
+    const clearStashed = (id) => {
+        if (id == null) return;
+        if (typeof unregisterInterval === 'function') unregisterInterval(id);
+        else clearInterval(id);
+    };
+
+    if (!tsr) {
+        clearStashed(stashedTimer);
+        if (window._tsrIntervalId != null && window._tsrIntervalId !== stashedTimer) {
+            clearStashed(window._tsrIntervalId);
+        }
+        window._tsrIntervalId = null;
+        return;
+    }
+
+    // 大厅/已结束局：禁止把 interval 写回，否则「通关后秒表还在跑 → 再进局立刻时间耗尽」
+    if (!tsr.currentRun?.isActive) {
+        clearStashed(stashedTimer);
+        if (window._tsrIntervalId != null && window._tsrIntervalId !== stashedTimer) {
+            clearStashed(window._tsrIntervalId);
+        }
+        tsr.timer = null;
+        window._tsrIntervalId = null;
+        tsr._timerGen = (Math.max(Number(stashedGen) || 0, Number(tsr._timerGen) || 0)) + 1;
+        return;
+    }
+
+    if (stashedTimer != null) {
+        tsr.timer = stashedTimer;
+        window._tsrIntervalId = stashedTimer;
+    }
+    if (stashedGen != null) {
+        tsr._timerGen = stashedGen;
+    }
 }
 
 /** 读档后清除误入存档的静态数据（运行时由 ensure 重建） */
@@ -5624,18 +5650,28 @@ function updateTsrSubContractUI() {
 }
 
 function stopTsrTimer() {
-    const tsr = player.timeSecretRealm;
-    if (!tsr) return;
+    const tsr = player?.timeSecretRealm;
     // 世代号作废：即使引用丢失，旧回调也会因 gen 不匹配而不再扣时
-    tsr._timerGen = (tsr._timerGen || 0) + 1;
-    if (tsr.timer != null) {
+    if (tsr) tsr._timerGen = (tsr._timerGen || 0) + 1;
+    const id = (tsr && tsr.timer != null) ? tsr.timer : window._tsrIntervalId;
+    if (id != null) {
         if (typeof unregisterInterval === 'function') {
-            unregisterInterval(tsr.timer);
+            unregisterInterval(id);
         } else {
-            clearInterval(tsr.timer);
+            clearInterval(id);
         }
-        tsr.timer = null;
     }
+    // 双清：避免 tsr.timer 与 window 单例不一致时漏掉一个
+    if (tsr && tsr.timer != null && tsr.timer !== id) {
+        if (typeof unregisterInterval === 'function') unregisterInterval(tsr.timer);
+        else clearInterval(tsr.timer);
+    }
+    if (window._tsrIntervalId != null && window._tsrIntervalId !== id) {
+        if (typeof unregisterInterval === 'function') unregisterInterval(window._tsrIntervalId);
+        else clearInterval(window._tsrIntervalId);
+    }
+    if (tsr) tsr.timer = null;
+    window._tsrIntervalId = null;
 }
 
 function isTsrUiOpen() {
@@ -9846,6 +9882,7 @@ function startTimeSecretRealm() {
     // 初始化当前冒险数据
     tsr.currentRun = {
         isActive: true,
+        runId: `${Date.now().toString(36)}_${Math.floor(Math.random() * 1e9).toString(36)}`,
         currentFloor: 1,
         spaceGambleFloor: 0, // 窗口序号：每 TSR_SPACE_GAMBLE_FLOOR_INTERVAL 层为一窗
         spaceGambleUsedThisFloor: 0,
@@ -17329,8 +17366,27 @@ function tsrExitRealm() {
 
 // 结束时光秘境冒险
 function endTimeSecretRealm(reason) {
-    const tsr = player.timeSecretRealm;
-    const difficulty = tsr.difficulty.levels[tsr.currentRun.difficulty];
+    const tsr = player?.timeSecretRealm;
+    if (!tsr) return;
+    // 先停表：结算耗时长，否则会一边通关一边扣到 0，再重入「时间耗尽」把下一局秒杀
+    stopTsrTimer();
+    if (tsr._endingRun) return;
+    if (!tsr.currentRun?.isActive) return;
+    tsr._endingRun = true;
+
+    try {
+    const difficulty = tsr.difficulty?.levels?.[tsr.currentRun.difficulty];
+    if (!difficulty) {
+        addTsrLog('秘境结算异常：难度数据缺失，已强制回大厅', 'error');
+        disposeTsrRunUiState();
+        resetTsrCurrentRun();
+        showTsrLobbyView();
+        updateTimeSecretRealmUI();
+        return;
+    }
+    // 立刻冻结本局，避免结算过程中其它逻辑再判负/扣时
+    tsr.currentRun.isActive = false;
+
     const clearFloor = tsr.currentRun.clearFloor || difficulty.clearFloor;
     const isTutorial = !!tsr.currentRun.isTutorial;
     
@@ -17509,12 +17565,16 @@ function endTimeSecretRealm(reason) {
     addTsrLog(`总秘境币: ${tsr.currency}`);
     
     // 重置当前冒险，释放局内大对象与闭包引用，避免内存/存档膨胀
-    stopTsrTimer();
     disposeTsrRunUiState();
     resetTsrCurrentRun();
     showTsrLobbyView();
     updateTimeSecretRealmUI();
     saveGame();
+    } finally {
+        tsr._endingRun = false;
+        // 兜底再停一次：扩展包装器若在结算前又开了表
+        stopTsrTimer();
+    }
 }
 function ensureTimeSecretRealmData() {
     if (!player.timeSecretRealm) {
@@ -17678,15 +17738,19 @@ function initTimeSecretRealm() {
 // 开始秘境计时器
 function startTsrTimer() {
     const tsr = player.timeSecretRealm;
-    if (!tsr) return;
+    if (!tsr?.currentRun?.isActive) return;
     stopTsrTimer();
     const gen = tsr._timerGen || 0;
-    tsr.timer = registerInterval(() => {
+    const runToken = tsr.currentRun.runId || (tsr.currentRun.runId = `${Date.now().toString(36)}_${Math.floor(Math.random() * 1e9).toString(36)}`);
+    const id = registerInterval(() => {
+        // 读档会整体替换 player：旧回调绝不能再动新局
+        if (player?.timeSecretRealm !== tsr) return;
         // 被 stop / 新局 start 作废后，孤儿回调直接退出，防止叠加速
-        if (tsr._timerGen !== gen) return;
-        if (!tsr.currentRun?.isActive) return;
+        if (tsr._timerGen !== gen || tsr._endingRun) return;
+        const run = tsr.currentRun;
+        if (!run?.isActive || run.runId !== runToken) return;
         // 战斗 / 抉择中暂停墙钟，避免看动画就把时间耗光
-        if (tsr.currentRun.battleInProgress || tsr.currentRun._resolvingBattle) {
+        if (run.battleInProgress || run._resolvingBattle) {
             tickTsrTimedEffects();
             return;
         }
@@ -17694,21 +17758,34 @@ function startTsrTimer() {
             tickTsrTimedEffects();
             return;
         }
-        tsr.currentRun.timeLeft--;
+        run.timeLeft--;
         tickTsrTimedEffects();
         
         if (isTsrUiOpen()) {
             updateTsrTimeRing();
-            if (tsr.currentRun.luckExpiresAt && Date.now() < tsr.currentRun.luckExpiresAt) {
+            if (run.luckExpiresAt && Date.now() < run.luckExpiresAt) {
                 updateBuffsDisplay();
             }
         }
         
-        if (tsr.currentRun.timeLeft <= 0) {
+        if (run.timeLeft <= 0) {
             endTimeSecretRealm('时间耗尽');
         }
     }, 1000);
+    tsr.timer = id;
+    window._tsrIntervalId = id;
 }
+
+// 扩展脚本会再包装 endTimeSecretRealm；下一帧挂最外层「先停表」，避免包装器前置逻辑期间秒表仍在扣
+setTimeout(function installTsrEndEarlyStopGuard() {
+    if (typeof endTimeSecretRealm !== 'function' || endTimeSecretRealm.__tsrEarlyStopGuard) return;
+    const _origEnd = endTimeSecretRealm;
+    endTimeSecretRealm = function (reason) {
+        if (typeof stopTsrTimer === 'function') stopTsrTimer();
+        return _origEnd.apply(this, arguments);
+    };
+    endTimeSecretRealm.__tsrEarlyStopGuard = true;
+}, 0);
 
 
 // 在玩家属性计算中应用增益效果（秘境独立战斗，不读取主世界 player.battle）

@@ -2201,8 +2201,19 @@
             }
             player.landlord._timerId = registerInterval(() => {
                 checkLandlordPlantGrowth();
-                updateLandlordSeedRefreshTimer();
-                updateLandlordItemRefreshTimer();
+                // 到点真正刷新商店库存；未到点只更新倒计时文案（避免每秒整表重绘）
+                const now = Date.now();
+                const refreshMs = 10 * 60 * 1000;
+                if (now - (player.landlord.lastSeedRefreshTime || 0) >= refreshMs) {
+                    refreshLandlordStore();
+                } else {
+                    updateLandlordSeedRefreshTimer();
+                }
+                if (now - (player.landlord.lastItemRefreshTime || 0) >= refreshMs) {
+                    refreshLandlordItemStore();
+                } else {
+                    updateLandlordItemRefreshTimer();
+                }
                 updateLandlordWeather();
                 if (typeof landlordRanchSimulateToNow === 'function') landlordRanchSimulateToNow();
                 if (typeof updateLandlordRanchPenTimers === 'function') updateLandlordRanchPenTimers();
