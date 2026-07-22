@@ -773,26 +773,31 @@
             '<h4 style="color:#E8C4A8;margin:8px 0;">人情礼金</h4><div class="c-train-grid">' + (N().giftMoney || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doNpcGift(\'' + a.id + '\',+document.getElementById(\'npcDailyMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">天气穿衣</h4><div class="c-train-grid">' + (N().weatherGear || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="doNpcGear(\'' + a.id + '\',+document.getElementById(\'npcDailyMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">陪读接送</h4><div class="c-train-grid">' + (N().schoolRun || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-purple" onclick="doNpcSchoolRun(\'' + a.id + '\',+document.getElementById(\'npcDailyMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">买菜下厨</h4><div class="c-train-grid">' + (N().kitchen || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-green" onclick="doNpcKitchen(\'' + a.id + '\',+document.getElementById(\'npcDailyMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">债务往来</h4><div class="c-train-grid">' + (N().debt || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost, a.earn ? ('约入 ' + fmt(a.earn)) : null) : ((a.cost ? ('耗资 ' + fmt(a.cost)) : '免费') + (a.earn ? (' · 约入 ' + fmt(a.earn)) : ''))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-orange" onclick="doNpcDebt(\'' + a.id + '\',+document.getElementById(\'npcDailyMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>';
     }

@@ -373,13 +373,19 @@
                 if (!(typeof isFamilyMemberAdult === 'function' ? isFamilyMemberAdult(m) : m.isAdult)) return '';
                 return '<option value="' + i + '">' + m.name + '</option>';
             }).join('');
-            sp.innerHTML = '<div class="c-form-row"><label>成员</label><select id="xianRootMember" class="c-input">' + opts + '</select></div>' +
+            var baseRootCost = xcfg().rootAwakenCost || 0;
+            sp.innerHTML = '<div class="c-form-row"><label>成员</label><select id="xianRootMember" class="c-input" onchange="refreshXianRootCosts()">' + opts + '</select></div>' +
+                '<div id="xianRootHint" class="c-hint" style="margin:6px 0;"></div>' +
                 '<div class="c-train-grid">' + (xcfg().roots || []).map(function (root) {
                     return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;border-color:' + root.color + ';">' +
                         '<div class="ms-title" style="color:' + root.color + ';">' + root.name + '</div>' +
                         '<div class="ms-desc">每重 攻+' + (root.atk * 100) + '% 血+' + (root.hp * 100) + '% 爆+' + (root.crit * 100) + '%</div>' +
-                        '<button class="c-btn c-btn-sm c-btn-blue" style="margin-top:6px;" onclick="awakenSpiritRoot(+document.getElementById(\'xianRootMember\').value,\'' + root.id + '\')">觉醒/淬炼</button></div>';
+                        '<div class="ms-desc" id="xianRootCost_' + root.id + '">' +
+                        (typeof lineageMsCost === 'function' ? lineageMsCost(baseRootCost, '觉醒起') : ('耗资 ' + fmt(baseRootCost) + ' · 觉醒起')) +
+                        '</div>' +
+                        '<button class="c-btn c-btn-sm c-btn-blue" style="margin-top:6px;" id="xianRootBtn_' + root.id + '" onclick="awakenSpiritRoot(+document.getElementById(\'xianRootMember\').value,\'' + root.id + '\')">觉醒/淬炼</button></div>';
                 }).join('') + '</div>';
+            if (typeof window.refreshXianRootCosts === 'function') window.refreshXianRootCosts();
         }
 
         var df = el('xianDongfuPanel');
@@ -446,6 +452,42 @@
                 (cd > 0 ? ('冷却 ' + Math.ceil(cd / 60000) + ' 分钟') : '引动天劫') + '</button>';
         }
     }
+
+    window.refreshXianRootCosts = function () {
+        ensureXianData();
+        var sel = el('xianRootMember');
+        var hint = el('xianRootHint');
+        if (!sel) return;
+        var m = (player.children.children || [])[Number(sel.value)];
+        var growth = xcfg().rootRefineGrowth || 10;
+        var base = xcfg().rootAwakenCost || 0;
+        if (hint) {
+            hint.textContent = m
+                ? (m.name + ' 灵根淬炼：费用随重数 ×' + growth + ' 递增')
+                : '请选择成年成员';
+        }
+        (xcfg().roots || []).forEach(function (root) {
+            var node = el('xianRootCost_' + root.id);
+            var btn = el('xianRootBtn_' + root.id);
+            if (!node) return;
+            if (!m) {
+                node.textContent = typeof lineageMsCost === 'function'
+                    ? lineageMsCost(base, '觉醒起')
+                    : ('耗资 ' + fmt(base) + ' · 觉醒起');
+                if (btn) btn.textContent = '觉醒/淬炼';
+                return;
+            }
+            if (!m.spiritRoots) m.spiritRoots = {};
+            var lv = m.spiritRoots[root.id] || 0;
+            var cost = base * Math.pow(growth, lv);
+            var costText = typeof lineageMsCost === 'function' ? lineageMsCost(cost) : ('耗资 ' + fmt(cost));
+            node.textContent = '当前 ' + lv + ' 重 · 下级 ' + costText;
+            if (btn) {
+                btn.textContent = (lv <= 0 ? '觉醒' : '淬炼') +
+                    (typeof lineageCostTag === 'function' ? lineageCostTag(cost) : ('（' + costText + '）'));
+            }
+        });
+    };
 
     window.updateXianPanels = updateXianPanels;
 

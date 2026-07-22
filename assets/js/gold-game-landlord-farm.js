@@ -863,9 +863,9 @@
                 ? LANDLORD_GENE_TREE_ORDER : ['彩光', '炫彩', '琉璃', '琥珀'];
             if (!defs) {
                 defs = {
-                    '彩光': { attackPerLevel: 1, healthPerLevel: 0, critDamagePerLevel: 0, expPerLevel: 0 },
-                    '炫彩': { attackPerLevel: 0, healthPerLevel: 1, critDamagePerLevel: 0, expPerLevel: 0 },
-                    '琉璃': { attackPerLevel: 3, healthPerLevel: 3, critDamagePerLevel: 3, expPerLevel: 0 },
+                    '彩光': { attackPerLevel: 1, healthPerLevel: 0, critDamagePerLevel: 0, expPerLevel: 0.01 },
+                    '炫彩': { attackPerLevel: 0, healthPerLevel: 1, critDamagePerLevel: 0, expPerLevel: 0.02 },
+                    '琉璃': { attackPerLevel: 3, healthPerLevel: 3, critDamagePerLevel: 3, expPerLevel: 0.03 },
                     '琥珀': { attackPerLevel: 0, healthPerLevel: 0, critDamagePerLevel: 0, expPerLevel: 0.1 }
                 };
             }

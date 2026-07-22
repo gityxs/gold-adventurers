@@ -1056,6 +1056,7 @@ function toggleChildSystem() {
         ui.style.display = 'block';
         overlay.style.display = 'block';
         if (typeof restoreChildNavCollapse === 'function') restoreChildNavCollapse();
+        if (typeof restoreChildQuickTabs === 'function') restoreChildQuickTabs();
         switchChildTab(_childActiveTab || 'overview');
         updateChildSystemUI();
         if (typeof applyChildSubTabForPrimary === 'function') {
@@ -1123,6 +1124,7 @@ function switchChildTab(tab) {
     });
     // 自动展开当前页签所在导航分组
     if (typeof expandChildNavForTab === 'function') expandChildNavForTab(_childActiveTab);
+    if (typeof updateChildQuickTabsLabel === 'function') updateChildQuickTabsLabel();
     // 页内二级标签（由 lineage-ui-perf / lineage-subtabs 提供）
     if (typeof applyChildSubTabForPrimary === 'function') {
         try { applyChildSubTabForPrimary(_childActiveTab); } catch (eSub2) {}
@@ -1143,7 +1145,26 @@ window.toggleChildNavGroup = function (groupId) {
 };
 
 window.expandChildNavForTab = function (tab) {
-    // 左侧分组默认保持叠起；切页不自动展开，需手动点分组标题
+    var btn = document.querySelector('#childSystemUI .c-nav .c-tab[data-tab="' + tab + '"]');
+    if (!btn) return;
+    var group = btn.closest ? btn.closest('.c-nav-group') : null;
+    if (!group) {
+        var p = btn.parentElement;
+        while (p && (!p.classList || !p.classList.contains('c-nav-group'))) p = p.parentElement;
+        group = p;
+    }
+    if (!group) return;
+    group.classList.remove('collapsed');
+    var lab = group.querySelector('.c-nav-label');
+    if (lab) lab.setAttribute('aria-expanded', 'true');
+    try {
+        var st = JSON.parse(localStorage.getItem('childNavCollapse') || '{}');
+        var gid = group.getAttribute('data-nav-group');
+        if (gid) {
+            st[gid] = false;
+            localStorage.setItem('childNavCollapse', JSON.stringify(st));
+        }
+    } catch (e) { /* ignore */ }
 };
 
 window.restoreChildNavCollapse = function () {
@@ -1160,6 +1181,46 @@ window.restoreChildNavCollapse = function () {
         group.classList.toggle('collapsed', collapsed);
         var lab = group.querySelector('.c-nav-label');
         if (lab) lab.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    }
+};
+
+window.toggleChildQuickTabs = function () {
+    var box = document.getElementById('childQuickTabs');
+    if (!box) return;
+    var collapsed = box.classList.toggle('collapsed');
+    var btn = document.getElementById('childQuickTabsLabel');
+    if (btn) btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    try {
+        localStorage.setItem('childQuickTabsCollapsed', collapsed ? '1' : '0');
+    } catch (e) { /* ignore */ }
+    if (typeof updateChildQuickTabsLabel === 'function') updateChildQuickTabsLabel();
+};
+
+window.restoreChildQuickTabs = function () {
+    var box = document.getElementById('childQuickTabs');
+    if (!box) return;
+    var collapsed = false;
+    try {
+        collapsed = localStorage.getItem('childQuickTabsCollapsed') === '1';
+    } catch (e) { collapsed = false; }
+    box.classList.toggle('collapsed', collapsed);
+    var btn = document.getElementById('childQuickTabsLabel');
+    if (btn) btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    if (typeof updateChildQuickTabsLabel === 'function') updateChildQuickTabsLabel();
+};
+
+window.updateChildQuickTabsLabel = function () {
+    var cur = document.getElementById('childQuickTabsCurrent');
+    if (!cur) return;
+    var tab = (typeof _childActiveTab !== 'undefined' && _childActiveTab) || 'overview';
+    var active = document.querySelector('#childSystemUI .c-tabs-mobile .c-tab[data-tab="' + tab + '"]')
+        || document.querySelector('#childSystemUI .c-nav .c-tab[data-tab="' + tab + '"]');
+    var name = active ? String(active.textContent || '').trim() : tab;
+    var box = document.getElementById('childQuickTabs');
+    if (box && box.classList.contains('collapsed')) {
+        cur.textContent = name ? ('· 当前「' + name + '」') : '';
+    } else {
+        cur.textContent = name ? ('· ' + name) : '';
     }
 };
 

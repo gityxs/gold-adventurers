@@ -2071,6 +2071,7 @@ function updateTsrMonsterBanner(monster, stats, isBoss, isElite) {
             <div id="tsrCombatCue" class="tsr-combat-cue" style="display:none;"></div>
             <div id="tsrCombatFxLayer" class="tsr-combat-fx-layer" aria-hidden="true"></div>
         </div>`;
+    syncTsrRunArenaMode(true);
 }
 
 function refreshTsrMonsterHpBar(cur, max) {
@@ -2526,6 +2527,16 @@ function hideTsrMonsterBanner(clearContent, opts) {
     banner.style.display = 'none';
     banner.classList.remove('tsr-hit-shake', 'tsr-hit-crit', 'tsr-hit-hurt', 'tsr-hit-skill', 'tsr-victory-flash', 'is-boss', 'is-elite');
     if (clearContent) banner.innerHTML = '';
+    syncTsrRunArenaMode(false);
+}
+
+function syncTsrRunArenaMode(forceCombat) {
+    const panel = document.getElementById('tsrAdventurePanel');
+    const banner = document.getElementById('tsrMonsterBanner');
+    if (!panel) return;
+    const combat = forceCombat === true
+        || (forceCombat !== false && banner && banner.style.display !== 'none' && banner.innerHTML);
+    panel.classList.toggle('tsr-run--combat', !!combat);
 }
 
 function updateTsrCombatBar() {
@@ -6795,6 +6806,10 @@ function salvageTsrEquipFromBag(bagIndex) {
     const value = getTsrEquipSalvageValue(item);
     const gained = addTsrRunCurrency(value, { skipGainScale: true });
     addTsrLog(`分解 ${item.icon} ${item.name}，获得${gained}秘境币`, 'info');
+    if (window._tsrEquipUi?.modal?.type === 'bagItem') {
+        window._tsrEquipUi.modal = { type: 'bag' };
+        window._tsrEquipUi.openBagIdx = null;
+    }
     invalidateTsrUiCache('equipment');
     updateTsrEquipmentDisplay();
     updateTimeSecretRealmUI({ runOnly: true, skipEnsure: true, light: true });
@@ -6967,24 +6982,304 @@ function getTsrBattleEquipDamageMult(opts) {
     return m;
 }
 
-/** 装备侧栏展开态（详情操作），避免每格常驻三按钮把面板拉很长 */
-window._tsrEquipUi = window._tsrEquipUi || { openSlot: null, openBagIdx: null };
+/** 装备坞按钮态 + 弹窗详情（详情不再内联展开，避免撑高侧栏） */
+window._tsrEquipUi = window._tsrEquipUi || { openSlot: null, openBagIdx: null, modal: null };
 
-function toggleTsrEquipSlotDetail(slot) {
-    const ui = window._tsrEquipUi;
-    ui.openSlot = ui.openSlot === slot ? null : slot;
+function closeTsrEquipModal() {
+    const ui = window._tsrEquipUi || (window._tsrEquipUi = {});
+    ui.modal = null;
+    ui.openSlot = null;
     ui.openBagIdx = null;
+    const overlay = document.getElementById('tsrEquipModalOverlay');
+    const modal = document.getElementById('tsrEquipModal');
+    if (overlay) overlay.style.display = 'none';
+    if (modal) modal.style.display = 'none';
+    invalidateTsrUiCache('equipment');
+}
+
+window._tsrInfoModalTab = null;
+
+function closeTsrInfoModal() {
+    window._tsrInfoModalTab = null;
+    const overlay = document.getElementById('tsrInfoModalOverlay');
+    const modal = document.getElementById('tsrInfoModal');
+    if (overlay) overlay.style.display = 'none';
+    if (modal) modal.style.display = 'none';
+    document.querySelectorAll('.tsr-info-panel').forEach(p => { p.style.display = 'none'; });
+    document.querySelectorAll('.tsr-rail-btn[data-info], .tsr-dock-btn[data-info]').forEach(btn => btn.classList.remove('active'));
+}
+
+function openTsrInfoModal(tabId) {
+    if (tabId === 'log') {
+        const logBody = document.getElementById('tsrBattleLog');
+        if (logBody) logBody.scrollTop = logBody.scrollHeight;
+        return;
+    }
+    const map = {
+        buffs: { pane: 'tsrInfoPaneBuffs', title: '✨ 增益效果', refresh: () => { if (typeof updateBuffsDisplay === 'function') updateBuffsDisplay(); } },
+        relics: { pane: 'tsrInfoPaneRelics', title: '🏺 本局遗物', refresh: () => { if (typeof updateTsrRelicsDisplay === 'function') updateTsrRelicsDisplay(); } },
+        items: { pane: 'tsrInfoPaneItems', title: '🧪 局内道具', refresh: () => { if (typeof updateTsrConsumablesDisplay === 'function') updateTsrConsumablesDisplay(); } },
+        skills: { pane: 'tsrInfoPaneSkills', title: '📜 陷阱技能', refresh: () => { if (typeof updateSkillsDisplay === 'function') updateSkillsDisplay(); } }
+    };
+    const conf = map[tabId];
+    if (!conf) return;
+    if (typeof closeTsrEquipModal === 'function') closeTsrEquipModal();
+    window._tsrInfoModalTab = tabId;
+    if (typeof conf.refresh === 'function') conf.refresh();
+    document.querySelectorAll('.tsr-info-panel').forEach(p => {
+        p.style.display = p.id === conf.pane ? 'block' : 'none';
+    });
+    const titleEl = document.getElementById('tsrInfoModalTitle');
+    if (titleEl) titleEl.textContent = conf.title;
+    const overlay = document.getElementById('tsrInfoModalOverlay');
+    const modal = document.getElementById('tsrInfoModal');
+    if (overlay) overlay.style.display = 'block';
+    if (modal) modal.style.display = 'flex';
+    document.querySelectorAll('.tsr-rail-btn[data-info], .tsr-dock-btn[data-info]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.info === tabId);
+    });
+}
+
+function updateTsrInfoRailBadges() {
+    const run = player?.timeSecretRealm?.currentRun;
+    const buffs = run?.tempBuffs || [];
+    const luckActive = run?.luckExpiresAt && Date.now() < run.luckExpiresAt;
+    const buffCount = buffs.length + (luckActive ? 1 : 0);
+    const relicCount = (run?.relics || []).length;
+    const itemCount = (run?.consumables || []).length;
+    const setBadge = (id, n) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = String(n || 0);
+    };
+    setBadge('tsrRailBuffCount', buffCount);
+    setBadge('tsrRailRelicCount', relicCount);
+    setBadge('tsrRailItemCount', itemCount);
+}
+
+function openTsrEquipModal(mode, key) {
+    if (typeof closeTsrInfoModal === 'function') closeTsrInfoModal();
+    const ui = window._tsrEquipUi || (window._tsrEquipUi = {});
+    if (mode === 'slot') {
+        ui.modal = { type: 'slot', slot: key };
+        ui.openSlot = key;
+        ui.openBagIdx = null;
+    } else if (mode === 'bagItem') {
+        ui.modal = { type: 'bagItem', index: Number(key) };
+        ui.openBagIdx = Number(key);
+        ui.openSlot = null;
+    } else if (mode === 'bag') {
+        ui.modal = { type: 'bag' };
+        ui.openSlot = null;
+        ui.openBagIdx = null;
+    } else {
+        ui.modal = { type: 'overview' };
+        ui.openSlot = null;
+        ui.openBagIdx = null;
+    }
     invalidateTsrUiCache('equipment');
     updateTsrEquipmentDisplay();
 }
 
+function buildTsrEquipSetChipsHtml() {
+    const setStatus = getTsrEquipSetStatus();
+    if (!Object.keys(setStatus).length) return '';
+    let html = '<div class="tsr-equip-set-chips tsr-equip-modal-set">';
+    Object.entries(setStatus).forEach(([prefix, count]) => {
+        const set = getTsrEquipSetByPrefix(prefix);
+        if (!set) return;
+        const active = count >= 4 ? '4' : (count >= 2 ? '2' : '');
+        const legendCls = set.exclusive ? ' tsr-equip-set-legend' : '';
+        html += `<span class="tsr-equip-set-chip ${active ? 'active' : ''}${legendCls}" title="${set.name}">
+            ${set.icon}${count}/4${active ? `·${active}` : ''}
+        </span>`;
+    });
+    html += '</div>';
+    return html;
+}
+
+function buildTsrEquipSetBonusHtml() {
+    const setBonus = getTsrEquipSetBonuses();
+    const equipped = player.timeSecretRealm?.currentRun?.equipped || {};
+    if (setBonus.activeLegendarySet4) {
+        return `<div class="tsr-equip-set-bonus tsr-equip-legend-bonus">★ ${setBonus.activeLegendarySet4} 传说四件套已激活</div>`;
+    }
+    if (setBonus.activeSet4) {
+        return `<div class="tsr-equip-set-bonus">${setBonus.activeSet4} 四件套已激活</div>`;
+    }
+    const filled = TSR_EQUIP_SLOTS.filter(s => equipped[s]).length;
+    if (filled >= 4) return '<div class="tsr-equip-set-bonus">四槽齐全：攻血+4%</div>';
+    return '';
+}
+
+function renderTsrEquipModal() {
+    const overlay = document.getElementById('tsrEquipModalOverlay');
+    const modal = document.getElementById('tsrEquipModal');
+    const body = document.getElementById('tsrEquipModalBody');
+    const titleEl = document.getElementById('tsrEquipModalTitle');
+    const ui = window._tsrEquipUi || {};
+    if (!overlay || !modal || !body || !ui.modal) {
+        if (overlay) overlay.style.display = 'none';
+        if (modal) modal.style.display = 'none';
+        return;
+    }
+    const tsr = player.timeSecretRealm;
+    ensureTsrRunEquipment(tsr?.currentRun);
+    const equipped = tsr?.currentRun?.equipped || {};
+    const bag = tsr?.currentRun?.equipmentBag || [];
+    const bagMax = getTsrEquipBagMax();
+    const runCurrency = tsr?.currentRun?.currencyEarned || 0;
+    const m = ui.modal;
+    let title = '装备';
+    let html = '';
+
+    if (m.type === 'overview') {
+        title = '装备总览';
+        html += buildTsrEquipAttrSummaryHtml();
+        html += buildTsrEquipSetChipsHtml();
+        html += buildTsrEquipSetBonusHtml();
+        html += '<div class="tsr-equip-section-label" style="margin-top:10px;">已装备</div>';
+        html += '<div class="tsr-equip-slots-grid">';
+        TSR_EQUIP_SLOTS.forEach(slot => {
+            const meta = TSR_EQUIP_SLOT_META[slot];
+            const item = equipped[slot];
+            if (item) {
+                const color = getTsrEquipTierColor(item.tier);
+                const borderColor = item.exclusive ? '#fbbf24' : color;
+                html += `<button type="button" class="tsr-equip-slot filled${item.exclusive ? ' tsr-equip-exclusive' : ''}" style="border-color:${borderColor};text-align:left;" onclick="openTsrEquipModal('slot','${slot}')">
+                    <div class="tsr-equip-slot-top"><span class="tsr-equip-slot-kind">${meta.icon} ${meta.name}</span>${formatTsrEquipTierBadge(item.tier)}</div>
+                    <div class="tsr-equip-slot-main">
+                        <span class="tsr-equip-slot-ico">${item.icon || meta.icon}</span>
+                        <div class="tsr-equip-slot-brief">
+                            <div class="tsr-equip-name-row">${formatTsrEquipNameHtml(item)}</div>
+                            <div class="tsr-equip-stat-line">${formatTsrEquipStatsCompact(item, true, 3)}</div>
+                        </div>
+                    </div>
+                </button>`;
+            } else {
+                html += `<div class="tsr-equip-slot empty"><span class="tsr-equip-slot-kind">${meta.icon} ${meta.name}</span><span class="tsr-equip-empty-label">空</span></div>`;
+            }
+        });
+        html += '</div>';
+        html += `<div class="tsr-equip-modal-actions">
+            <button type="button" class="tsr-btn tsr-btn-purple" onclick="openTsrEquipModal('bag')">打开背包（${bag.length}/${bagMax}）</button>
+        </div>`;
+    } else if (m.type === 'slot') {
+        const slot = m.slot;
+        const meta = TSR_EQUIP_SLOT_META[slot] || { name: slot, icon: '📦' };
+        const item = equipped[slot];
+        title = `${meta.icon} ${meta.name}`;
+        if (!item) {
+            html = `<div class="tsr-empty">该槽位暂无装备</div>
+                <div class="tsr-equip-modal-actions">
+                    <button type="button" class="tsr-btn tsr-btn-purple" onclick="openTsrEquipModal('bag')">从背包选择</button>
+                </div>`;
+        } else {
+            const color = getTsrEquipTierColor(item.tier);
+            const borderColor = item.exclusive ? '#fbbf24' : color;
+            const lvl = Number(item.enhanceLevel) || 0;
+            const maxLv = getTsrEquipEnhanceMax();
+            const canEnhance = lvl < maxLv;
+            const cost = canEnhance ? getTsrEquipEnhanceCost(item) : 0;
+            const reforgeCost = getTsrEquipReforgeCost(item);
+            const canReforge = Number.isFinite(reforgeCost);
+            html += `<div class="tsr-equip-modal-hero" style="border-color:${borderColor};">
+                <span class="tsr-equip-modal-hero-ico">${item.icon || meta.icon}</span>
+                <div class="tsr-equip-modal-hero-meta">
+                    <div class="tsr-equip-modal-hero-kind">${meta.name} · ${formatTsrEquipTierBadge(item.tier)}</div>
+                    <div class="tsr-equip-name-row">${formatTsrEquipNameHtml(item)}</div>
+                    ${item.affixes?.length ? `<div class="tsr-equip-affix-row">${formatTsrEquipAffixLine(item.affixes, 8)}</div>` : ''}
+                    <div class="tsr-equip-stat-line">${formatTsrEquipStatsCompact(item, true, 10)}</div>
+                </div>
+            </div>`;
+            html += buildTsrEquipSetChipsHtml();
+            html += '<div class="tsr-equip-modal-actions">';
+            if (canEnhance) {
+                html += `<button type="button" class="tsr-equip-enhance" onclick="enhanceTsrEquipped('${slot}')" ${runCurrency < cost ? 'disabled' : ''}>强化 ${cost}币</button>`;
+            } else {
+                html += `<span class="tsr-equip-enhance-max">强化已满 +${lvl}</span>`;
+            }
+            if (canReforge) {
+                html += `<button type="button" class="tsr-equip-reforge" onclick="reforgeTsrEquipped('${slot}')" ${runCurrency < reforgeCost ? 'disabled' : ''}>洗炼 ${reforgeCost}币</button>`;
+            }
+            html += `<button type="button" class="tsr-equip-unequip" onclick="unequipTsrSlot('${slot}');closeTsrEquipModal();">卸下</button>`;
+            html += `<button type="button" class="tsr-btn tsr-btn-ghost" onclick="openTsrEquipModal('bag')">背包</button>`;
+            html += '</div>';
+        }
+    } else if (m.type === 'bagItem') {
+        const idx = Number(m.index);
+        const item = bag[idx];
+        title = '背包装备';
+        if (!item) {
+            html = '<div class="tsr-empty">该装备已不存在</div>';
+            html += `<div class="tsr-equip-modal-actions"><button type="button" class="tsr-btn tsr-btn-ghost" onclick="openTsrEquipModal('bag')">返回背包</button></div>`;
+        } else {
+            const color = getTsrEquipTierColor(item.tier);
+            const borderColor = item.exclusive ? '#fbbf24' : color;
+            const slotLabel = TSR_EQUIP_SLOT_META[item.slot]?.name || '';
+            const salvage = getTsrEquipSalvageValue(item);
+            const reforgeCost = getTsrEquipReforgeCost(item);
+            const canReforge = Number.isFinite(reforgeCost);
+            html += `<div class="tsr-equip-modal-hero" style="border-color:${borderColor};">
+                <span class="tsr-equip-modal-hero-ico">${item.icon || '📦'}</span>
+                <div class="tsr-equip-modal-hero-meta">
+                    <div class="tsr-equip-modal-hero-kind">${slotLabel} · ${formatTsrEquipTierBadge(item.tier)}</div>
+                    <div class="tsr-equip-name-row">${formatTsrEquipNameHtml(item)}</div>
+                    ${item.affixes?.length ? `<div class="tsr-equip-affix-row">${formatTsrEquipAffixLine(item.affixes, 8)}</div>` : ''}
+                    <div class="tsr-equip-stat-line">${formatTsrEquipStatsCompact(item, true, 10)}</div>
+                </div>
+            </div>`;
+            html += '<div class="tsr-equip-modal-actions">';
+            html += `<button type="button" class="tsr-equip-wear" onclick="equipTsrFromBag(${idx});closeTsrEquipModal();">穿戴</button>`;
+            if (canReforge) {
+                html += `<button type="button" class="tsr-equip-reforge" onclick="reforgeTsrFromBag(${idx})" ${runCurrency < reforgeCost ? 'disabled' : ''}>洗炼 ${reforgeCost}币</button>`;
+            }
+            html += `<button type="button" class="tsr-equip-salvage" onclick="salvageTsrEquipFromBag(${idx})">分解 +${salvage}币</button>`;
+            html += `<button type="button" class="tsr-btn tsr-btn-ghost" onclick="openTsrEquipModal('bag')">返回</button>`;
+            html += '</div>';
+        }
+    } else {
+        title = `背包 ${bag.length}/${bagMax}`;
+        html += buildTsrEquipAttrSummaryHtml();
+        html += buildTsrEquipSetChipsHtml();
+        if (!bag.length) {
+            html += '<div class="tsr-empty tsr-equip-bag-empty">背包暂无装备</div>';
+        } else {
+            html += '<div class="tsr-equip-modal-bag-list">';
+            bag.forEach((item, idx) => {
+                const color = getTsrEquipTierColor(item.tier);
+                const borderColor = item.exclusive ? '#fbbf24' : color;
+                const slotLabel = TSR_EQUIP_SLOT_META[item.slot]?.name || '';
+                const salvage = getTsrEquipSalvageValue(item);
+                html += `<div class="tsr-equip-modal-bag-row${item.exclusive ? ' tsr-equip-bag-exclusive' : ''}" style="border-color:${borderColor};">
+                    <button type="button" class="tsr-equip-modal-bag-main" onclick="openTsrEquipModal('bagItem',${idx})">
+                        <span class="tsr-equip-bag-ico">${item.icon || '📦'}</span>
+                        <span class="tsr-equip-bag-meta">
+                            <span class="tsr-equip-bag-name">${formatTsrEquipTierBadge(item.tier)} ${formatTsrEquipNameHtml(item)}</span>
+                            <span class="tsr-equip-stat-line">${slotLabel} · ${formatTsrEquipStatsCompact(item, true, 3)}</span>
+                        </span>
+                    </button>
+                    <div class="tsr-equip-bag-actions">
+                        <button type="button" class="tsr-equip-wear" onclick="equipTsrFromBag(${idx})">穿</button>
+                        <button type="button" class="tsr-equip-salvage" onclick="salvageTsrEquipFromBag(${idx})">${salvage}</button>
+                    </div>
+                </div>`;
+            });
+            html += '</div>';
+        }
+    }
+
+    if (titleEl) titleEl.textContent = title;
+    body.innerHTML = html;
+    overlay.style.display = 'block';
+    modal.style.display = 'flex';
+}
+
+function toggleTsrEquipSlotDetail(slot) {
+    openTsrEquipModal('slot', slot);
+}
+
 function toggleTsrEquipBagDetail(idx) {
-    const ui = window._tsrEquipUi;
-    const n = Number(idx);
-    ui.openBagIdx = ui.openBagIdx === n ? null : n;
-    ui.openSlot = null;
-    invalidateTsrUiCache('equipment');
-    updateTsrEquipmentDisplay();
+    openTsrEquipModal('bagItem', idx);
 }
 
 function buildTsrEquipAttrSummaryHtml() {
@@ -7002,7 +7297,7 @@ function buildTsrEquipAttrSummaryHtml() {
     const chipHtml = chips.map(({ meta, v }) =>
         `<span class="tsr-equip-attr-chip" title="${meta.label}">${meta.icon}${meta.short}+${(v * 100).toFixed(v < 0.01 ? 1 : 0)}%</span>`
     ).join('');
-    return `<details class="tsr-equip-attr-details">
+    return `<details class="tsr-equip-attr-details" open>
         <summary>📊 属性汇总 <span class="tsr-equip-attr-count">${chips.length}</span></summary>
         <div class="tsr-equip-attr-grid">${chipHtml}</div>
     </details>`;
@@ -7021,136 +7316,24 @@ function getTsrEquipSignature() {
     const bag = (run.equipmentBag || []).map(itemSig).join(',');
     const currency = run.currencyEarned || 0;
     const ui = window._tsrEquipUi || {};
-    return `${eq}#${bag}#${currency}#${ui.openSlot || ''}:${ui.openBagIdx ?? ''}`;
+    const modalSig = ui.modal ? `${ui.modal.type}:${ui.modal.slot || ''}:${ui.modal.index ?? ''}` : '';
+    return `${eq}#${bag}#${currency}#${modalSig}`;
 }
 
 function updateTsrEquipmentDisplay() {
     const container = document.getElementById('tsrCurrentEquipment');
-    if (!container) return;
     const sig = getTsrEquipSignature();
     if (_tsrUiCache.equipment === sig) return;
     _tsrUiCache.equipment = sig;
-    const tsr = player.timeSecretRealm;
-    ensureTsrRunEquipment(tsr?.currentRun);
-    const equipped = tsr?.currentRun?.equipped || {};
-    const bag = tsr?.currentRun?.equipmentBag || [];
-    const bagMax = getTsrEquipBagMax();
-    const runCurrency = tsr?.currentRun?.currencyEarned || 0;
-    const setStatus = getTsrEquipSetStatus();
-    const setBonus = getTsrEquipSetBonuses();
-    const openSlot = window._tsrEquipUi?.openSlot || null;
-    const openBagIdx = window._tsrEquipUi?.openBagIdx;
-    let html = buildTsrEquipAttrSummaryHtml();
-    if (Object.keys(setStatus).length) {
-        html += '<div class="tsr-equip-set-chips">';
-        Object.entries(setStatus).forEach(([prefix, count]) => {
-            const set = getTsrEquipSetByPrefix(prefix);
-            if (!set) return;
-            const active = count >= 4 ? '4' : (count >= 2 ? '2' : '');
-            const legendCls = set.exclusive ? ' tsr-equip-set-legend' : '';
-            html += `<span class="tsr-equip-set-chip ${active ? 'active' : ''}${legendCls}" title="${set.name}">
-                ${set.icon}${count}/4${active ? `·${active}` : ''}
-            </span>`;
-        });
-        html += '</div>';
+    // 底栏不再渲染装备图标；仅刷新弹窗内容
+    if (container) container.innerHTML = '';
+    if (window._tsrEquipUi?.modal) renderTsrEquipModal();
+    else {
+        const overlay = document.getElementById('tsrEquipModalOverlay');
+        const modal = document.getElementById('tsrEquipModal');
+        if (overlay) overlay.style.display = 'none';
+        if (modal) modal.style.display = 'none';
     }
-    html += '<div class="tsr-equip-section-label">已装备</div>';
-    html += '<div class="tsr-equip-slots tsr-equip-slots-grid">';
-    TSR_EQUIP_SLOTS.forEach(slot => {
-        const meta = TSR_EQUIP_SLOT_META[slot];
-        const item = equipped[slot];
-        const expanded = openSlot === slot;
-        if (item) {
-            const color = getTsrEquipTierColor(item.tier);
-            const lvl = Number(item.enhanceLevel) || 0;
-            const maxLv = getTsrEquipEnhanceMax();
-            const canEnhance = lvl < maxLv;
-            const cost = canEnhance ? getTsrEquipEnhanceCost(item) : 0;
-            const reforgeCost = getTsrEquipReforgeCost(item);
-            const canReforge = Number.isFinite(reforgeCost);
-            const borderColor = item.exclusive ? '#fbbf24' : color;
-            const enhanceBtn = canEnhance
-                ? `<button type="button" class="tsr-equip-enhance" onclick="event.stopPropagation();enhanceTsrEquipped('${slot}')" ${runCurrency < cost ? 'disabled' : ''}>强化 ${cost}</button>`
-                : `<span class="tsr-equip-enhance-max">+${lvl}满</span>`;
-            const reforgeBtn = canReforge
-                ? `<button type="button" class="tsr-equip-reforge" onclick="event.stopPropagation();reforgeTsrEquipped('${slot}')" ${runCurrency < reforgeCost ? 'disabled' : ''}>洗炼 ${reforgeCost}</button>`
-                : '';
-            html += `<div class="tsr-equip-slot filled${item.exclusive ? ' tsr-equip-exclusive' : ''}${expanded ? ' expanded' : ''}" style="border-color:${borderColor};" onclick="toggleTsrEquipSlotDetail('${slot}')" title="点击展开/收起">
-                <div class="tsr-equip-slot-top">
-                    <span class="tsr-equip-slot-kind">${meta.icon} ${meta.name}</span>
-                    ${formatTsrEquipTierBadge(item.tier)}
-                </div>
-                <div class="tsr-equip-slot-main">
-                    <span class="tsr-equip-slot-ico">${item.icon || meta.icon}</span>
-                    <div class="tsr-equip-slot-brief">
-                        <div class="tsr-equip-name-row">${formatTsrEquipNameHtml(item)}</div>
-                        <div class="tsr-equip-stat-line">${formatTsrEquipStatsCompact(item, true, 3)}</div>
-                    </div>
-                </div>
-                ${expanded ? `<div class="tsr-equip-slot-detail" onclick="event.stopPropagation()">
-                    ${item.affixes?.length ? `<div class="tsr-equip-affix-row">${formatTsrEquipAffixLine(item.affixes, 5)}</div>` : ''}
-                    <div class="tsr-equip-stat-line">${formatTsrEquipStatsCompact(item, true, 8)}</div>
-                    <div class="tsr-equip-slot-actions">
-                        ${enhanceBtn}
-                        ${reforgeBtn}
-                        <button type="button" class="tsr-equip-unequip" onclick="unequipTsrSlot('${slot}')">卸下</button>
-                    </div>
-                </div>` : ''}
-            </div>`;
-        } else {
-            html += `<div class="tsr-equip-slot empty">
-                <span class="tsr-equip-slot-kind">${meta.icon} ${meta.name}</span>
-                <span class="tsr-equip-empty-label">空</span>
-            </div>`;
-        }
-    });
-    html += '</div>';
-    if (setBonus.activeLegendarySet4) {
-        html += `<div class="tsr-equip-set-bonus tsr-equip-legend-bonus">★ ${setBonus.activeLegendarySet4} 传说四件套已激活</div>`;
-    } else if (setBonus.activeSet4) {
-        html += `<div class="tsr-equip-set-bonus">${setBonus.activeSet4} 四件套已激活</div>`;
-    } else {
-        const filled = TSR_EQUIP_SLOTS.filter(s => equipped[s]).length;
-        if (filled >= 4) html += '<div class="tsr-equip-set-bonus">四槽齐全：攻血+4%</div>';
-    }
-    html += `<div class="tsr-equip-bag-head"><span>背包</span><span>${bag.length}/${bagMax}</span></div>`;
-    if (!bag.length) {
-        html += '<div class="tsr-empty tsr-equip-bag-empty">背包暂无装备</div>';
-    } else {
-        html += '<div class="tsr-equip-bag-grid">';
-        bag.forEach((item, idx) => {
-            const color = getTsrEquipTierColor(item.tier);
-            const salvage = getTsrEquipSalvageValue(item);
-            const reforgeCost = getTsrEquipReforgeCost(item);
-            const canReforge = Number.isFinite(reforgeCost);
-            const borderColor = item.exclusive ? '#fbbf24' : color;
-            const slotLabel = TSR_EQUIP_SLOT_META[item.slot]?.name || '';
-            const expanded = openBagIdx === idx;
-            html += `<div class="tsr-equip-bag-card${item.exclusive ? ' tsr-equip-bag-exclusive' : ''}${expanded ? ' expanded' : ''}" style="border-color:${borderColor};">
-                <button type="button" class="tsr-equip-bag-card-main" onclick="toggleTsrEquipBagDetail(${idx})" title="点击查看 · 再点穿戴区可装备">
-                    <span class="tsr-equip-bag-ico">${item.icon || '📦'}</span>
-                    <span class="tsr-equip-bag-meta">
-                        <span class="tsr-equip-bag-name">${formatTsrEquipTierBadge(item.tier)} ${formatTsrEquipNameHtml(item)}</span>
-                        <span class="tsr-equip-stat-line">${slotLabel} · ${formatTsrEquipStatsCompact(item, true, 2)}</span>
-                    </span>
-                </button>
-                ${expanded ? `<div class="tsr-equip-bag-card-detail">
-                    ${item.affixes?.length ? `<div class="tsr-equip-affix-row">${formatTsrEquipAffixLine(item.affixes, 4)}</div>` : ''}
-                    <div class="tsr-equip-stat-line">${formatTsrEquipStatsCompact(item, true, 6)}</div>
-                    <div class="tsr-equip-bag-actions">
-                        <button type="button" class="tsr-equip-wear" onclick="equipTsrFromBag(${idx})">穿戴</button>
-                        ${canReforge ? `<button type="button" class="tsr-equip-reforge-sm" onclick="reforgeTsrFromBag(${idx})" ${runCurrency < reforgeCost ? 'disabled' : ''}>洗${reforgeCost}</button>` : ''}
-                        <button type="button" class="tsr-equip-salvage" onclick="salvageTsrEquipFromBag(${idx})">${salvage}币</button>
-                    </div>
-                </div>` : `<div class="tsr-equip-bag-actions tsr-equip-bag-actions-mini">
-                    <button type="button" class="tsr-equip-wear" onclick="equipTsrFromBag(${idx})" title="穿戴">穿</button>
-                    <button type="button" class="tsr-equip-salvage" onclick="salvageTsrEquipFromBag(${idx})" title="分解">分</button>
-                </div>`}
-            </div>`;
-        });
-        html += '</div>';
-    }
-    container.innerHTML = html;
 }
 
 const TSR_RUN_CONSUMABLES = {
@@ -7330,13 +7513,13 @@ function switchTsrLobbyTab(tabId) {
 }
 
 function switchTsrSideTab(tabId) {
-    document.querySelectorAll('.tsr-side-tab').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.side === tabId);
-    });
-    const map = { buffs: 'tsrSideBuffs', relics: 'tsrSideRelics', equipment: 'tsrSideEquipment', skills: 'tsrSideSkills', items: 'tsrSideItems' };
-    document.querySelectorAll('.tsr-side-panel').forEach(panel => {
-        panel.classList.toggle('active', panel.id === map[tabId]);
-    });
+    if (tabId === 'equipment') {
+        openTsrEquipModal('overview');
+        return;
+    }
+    if (['buffs', 'relics', 'items', 'skills', 'log'].includes(tabId)) {
+        openTsrInfoModal(tabId);
+    }
 }
 
 function recordTsrCodex(roomType) {
@@ -7680,12 +7863,15 @@ function updateTsrFloorMap() {
     if (!container) return;
     const tsr = player.timeSecretRealm;
     if (!tsr.currentRun?.isActive) { container.innerHTML = ''; return; }
-    const clearFloor = tsr.currentRun.clearFloor || 10;
-    const current = tsr.currentRun.currentFloor;
+    const clearFloor = Math.max(1, tsr.currentRun.clearFloor || 26);
+    const current = Math.max(1, Math.min(clearFloor, tsr.currentRun.currentFloor || 1));
     const history = tsr.currentRun.floorHistory || [];
-    const showMax = Math.min(clearFloor, Math.max(current + 2, 10));
+    // 从当前层起向前看约 11 格；接近通关层时截断到 clearFloor（如 20→20-26）
+    const windowSize = 11;
+    const start = current;
+    const end = Math.min(clearFloor, start + windowSize - 1);
     let html = '';
-    for (let f = 1; f <= showMax; f++) {
+    for (let f = start; f <= end; f++) {
         const entry = history.find(h => h.floor === f);
         let cls = 'tsr-floor-node';
         if (f < current) cls += ' cleared';
@@ -7841,9 +8027,16 @@ function showTsrLobbyView() {
     const lobby = document.getElementById('tsrLobbyPanel');
     const adventure = document.getElementById('tsrAdventurePanel');
     const badge = document.getElementById('tsrRunDifficultyBadge');
+    const shell = document.getElementById('timeSecretRealmUI');
     if (lobby) lobby.style.display = 'block';
     if (adventure) adventure.style.display = 'none';
     if (badge) badge.style.display = 'none';
+    if (shell) {
+        shell.classList.remove('tsr-shell--run');
+        if (shell.style.display && shell.style.display !== 'none') shell.style.display = 'block';
+    }
+    if (typeof closeTsrEquipModal === 'function') closeTsrEquipModal();
+    if (typeof closeTsrInfoModal === 'function') closeTsrInfoModal();
     hideTsrChoicePanels(true);
     updateTsrLobbyDashboard();
     updateTsrWelfareDisplay();
@@ -7995,9 +8188,15 @@ function resolveTsrEndClearFlags(reason) {
 function showTsrAdventureView() {
     const lobby = document.getElementById('tsrLobbyPanel');
     const adventure = document.getElementById('tsrAdventurePanel');
+    const shell = document.getElementById('timeSecretRealmUI');
     if (lobby) lobby.style.display = 'none';
-    if (adventure) adventure.style.display = 'block';
-    if (typeof switchTsrSideTab === 'function') switchTsrSideTab('equipment');
+    if (adventure) adventure.style.display = 'flex';
+    if (shell) {
+        shell.classList.add('tsr-shell--run');
+        if (shell.style.display && shell.style.display !== 'none') shell.style.display = 'flex';
+    }
+    if (typeof updateTsrInfoRailBadges === 'function') updateTsrInfoRailBadges();
+    if (typeof syncTsrRunArenaMode === 'function') syncTsrRunArenaMode();
 }
 
 function hasTsrLuckBuff() {
@@ -9703,6 +9902,7 @@ function updateTsrRunPanelUI(options) {
     updateBuffsDisplay();
     updateHealthBar();
     updateTsrCombatBar();
+    if (typeof updateTsrInfoRailBadges === 'function') updateTsrInfoRailBadges();
     // 战斗演出于进行中时绝不能藏横幅，否则会立刻打断自动攻击并卡在「准备开战」
     if (!tsr.currentRun?.battleInProgress) {
         hideTsrMonsterBanner();

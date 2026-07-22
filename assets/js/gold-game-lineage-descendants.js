@@ -18,6 +18,11 @@
     function genLabel(g) {
         return typeof getGenerationLabel === 'function' ? getGenerationLabel(g) : ('第' + g + '代');
     }
+    function attrLabel(attr) {
+        if (typeof getAttributeDisplayName === 'function') return getAttributeDisplayName(attr);
+        var map = { intelligence: '智力', physique: '体质', charm: '魅力', business: '商业' };
+        return map[attr] || attr || '';
+    }
 
     function installDescConfig() {
         if (!window.lineageExtConfig) return;
@@ -886,7 +891,7 @@
             '<div id="descHobbyProgress" class="c-hint" style="margin:6px 0;"></div>' +
             '<div class="c-train-grid">' + (D().hobbies || []).map(function (h) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
-                    '<div class="ms-title">' + h.name + '</div><div class="ms-desc" id="descHobbyHint_' + h.id + '">' + fmt(h.cost) + '</div>' +
+                    '<div class="ms-title">' + h.name + '</div><div class="ms-desc" id="descHobbyHint_' + h.id + '">' + (typeof lineageMsCost === 'function' ? lineageMsCost(h.cost) : ('耗资 ' + fmt(h.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doDescendantHobby(\'' + h.id + '\',+document.getElementById(\'descHobbyMember\').value)">' + h.name + '</button></div>';
             }).join('') + '</div>';
         if (typeof window.refreshDescHobbyProgress === 'function') window.refreshDescHobbyProgress();
@@ -906,7 +911,7 @@
             var cdKey = h.id + ':' + (m.id || sel.value);
             var until = player.children.desc.hobbyCd[cdKey] || 0;
             var left = Math.max(0, until - Date.now());
-            node.textContent = fmt(h.cost) + (left > 0 ? (' · 冷却 ' + Math.ceil(left / 60000) + ' 分') : ' · 可进行');
+            node.textContent = (typeof lineageMsCost === 'function' ? lineageMsCost(h.cost) : ('耗资 ' + fmt(h.cost))) + (left > 0 ? (' · 冷却 ' + Math.ceil(left / 60000) + ' 分') : ' · 可进行');
         });
     };
 
@@ -919,7 +924,7 @@
             '<div id="descSchoolProgress" class="c-hint" style="margin:6px 0;"></div>' +
             '<div class="c-train-grid">' + (D().school.subjects || []).map(function (s) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
-                    '<div class="ms-title">' + s.name + '</div><div class="ms-desc" id="descSchoolHint_' + s.id + '">' + fmt(s.cost) + '</div>' +
+                    '<div class="ms-title">' + s.name + '</div><div class="ms-desc" id="descSchoolHint_' + s.id + '">' + (typeof lineageMsCost === 'function' ? lineageMsCost(s.cost) : ('耗资 ' + fmt(s.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="studyDescendantSubject(\'' + s.id + '\',+document.getElementById(\'descSchoolMember\').value)">上课</button></div>';
             }).join('') + '</div>' +
             '<button class="c-btn c-btn-gold" style="margin-top:8px;width:100%;" onclick="takeDescendantExam(+document.getElementById(\'descSchoolMember\').value)">小考（' + fmt(D().school.examCost) + '）</button>';
@@ -941,7 +946,7 @@
         (D().school.subjects || []).forEach(function (s) {
             var node = el('descSchoolHint_' + s.id);
             if (!node) return;
-            node.textContent = fmt(s.cost) + ' · 当前 ' + (scores[s.id] || 0);
+            node.textContent = (typeof lineageMsCost === 'function' ? lineageMsCost(s.cost) : ('耗资 ' + fmt(s.cost))) + ' · 当前 ' + (scores[s.id] || 0);
         });
     };
 
@@ -950,15 +955,14 @@
         if (!box) return;
         ensureDescData();
         var o = opts(function (m) { return (m.growthStage || 0) >= 2 || isAdult(m); });
-        var ready = !!(player.children.desc && player.children.desc.specialtyReady);
         box.innerHTML = '<div class="c-form-row"><label>成员</label><select id="descAmbMember" class="c-input" onchange="refreshDescAmbitionProgress()">' + o + '</select></div>' +
             '<div id="descAmbProgress" class="c-hint" style="margin:6px 0;"></div>' +
             '<div class="c-train-grid">' + (D().ambitions || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
-                    '<div class="ms-title">' + a.name + '</div><div class="ms-desc">主属性 ' + a.attr + ' · 最高 Lv.' + a.max + '</div>' +
+                    '<div class="ms-title">' + a.name + '</div><div class="ms-desc">主属性 ' + attrLabel(a.attr) + ' · 最高 Lv.' + a.max + ' · 立志免费 · 深造起 ' + fmt(a.cost) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-purple" onclick="setDescendantAmbition(+document.getElementById(\'descAmbMember\').value,\'' + a.id + '\')">立志</button></div>';
             }).join('') + '</div>' +
-            '<button class="c-btn c-btn-orange" style="width:100%;margin-top:8px;" onclick="trainDescendantAmbition(+document.getElementById(\'descAmbMember\').value)">深造志向</button>';
+            '<button class="c-btn c-btn-orange" style="width:100%;margin-top:8px;" id="descAmbTrainBtn" onclick="trainDescendantAmbition(+document.getElementById(\'descAmbMember\').value)">深造志向</button>';
         if (typeof window.refreshDescAmbitionProgress === 'function') window.refreshDescAmbitionProgress();
     }
 
@@ -966,13 +970,25 @@
         ensureDescData();
         var sel = el('descAmbMember');
         var hint = el('descAmbProgress');
+        var btn = el('descAmbTrainBtn');
         if (!sel || !hint) return;
         var m = (player.children.children || [])[Number(sel.value)];
-        if (!m) { hint.textContent = ''; return; }
+        if (!m) { hint.textContent = ''; if (btn) btn.textContent = '深造志向'; return; }
         var amb = (D().ambitions || []).find(function (a) { return a.id === m.descAmbitionId; });
-        hint.textContent = amb
-            ? (m.name + ' 当前志向「' + amb.name + '」Lv.' + (m.descAmbitionLv || 0) + '/' + amb.max)
-            : (m.name + ' 尚未立志');
+        if (!amb) {
+            hint.textContent = m.name + ' 尚未立志';
+            if (btn) btn.textContent = '深造志向';
+            return;
+        }
+        var lv = m.descAmbitionLv || 0;
+        var nextCost = lv >= amb.max ? 0 : amb.cost * Math.pow(1.8, lv);
+        hint.textContent = m.name + ' 当前志向「' + amb.name + '」Lv.' + lv + '/' + amb.max +
+            (lv >= amb.max ? '（已圆满）' : (' · 下级耗资 ' + fmt(nextCost)));
+        if (btn) {
+            btn.textContent = lv >= amb.max
+                ? '志向已圆满'
+                : ('深造志向' + (typeof lineageCostTag === 'function' ? lineageCostTag(nextCost) : ('（耗资 ' + fmt(nextCost) + '）')));
+        }
     };
 
     function updateDescSpecialtyPanel() {
@@ -986,7 +1002,7 @@
             (ready ? '<div class="c-hint" style="color:#81C784;">★ 轶事：专精半价就绪</div>' : '') +
             '<div class="c-train-grid">' + (D().specialties || []).map(function (s) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
-                    '<div class="ms-title">' + s.name + '</div><div class="ms-desc" id="descSpecHint_' + s.id + '">永久三维 · 最高 Lv.' + s.max + '</div>' +
+                    '<div class="ms-title">' + s.name + '</div><div class="ms-desc" id="descSpecHint_' + s.id + '">最高 Lv.' + s.max + ' · 下级起 ' + fmt(s.costBase) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-gold" onclick="upgradeDescendantSpecialty(+document.getElementById(\'descSpecMember\').value,\'' + s.id + '\')">修习</button></div>';
             }).join('') + '</div>';
         if (typeof window.refreshDescSpecialtyProgress === 'function') window.refreshDescSpecialtyProgress();
@@ -1000,12 +1016,20 @@
         var m = (player.children.children || [])[Number(sel.value)];
         if (!m) { hint.textContent = ''; return; }
         var specs = m.descSpecialties || {};
-        hint.textContent = m.name + ' 专精进度';
+        var ready = !!(player.children.desc && player.children.desc.specialtyReady);
+        hint.textContent = m.name + ' 专精进度' + (ready ? ' · 半价就绪' : '');
         (D().specialties || []).forEach(function (s) {
             var node = el('descSpecHint_' + s.id);
             if (!node) return;
             var lv = specs[s.id] || 0;
-            node.textContent = 'Lv.' + lv + '/' + s.max + ' · 永久三维';
+            if (lv >= s.max) {
+                node.textContent = 'Lv.' + lv + '/' + s.max + ' · 已满级';
+                return;
+            }
+            var cost = Math.floor(s.costBase * Math.pow(s.growth || 2, lv));
+            if (ready) cost = Math.floor(cost * 0.5);
+            node.textContent = 'Lv.' + lv + '/' + s.max + ' · ' +
+                (typeof lineageMsCost === 'function' ? lineageMsCost(cost, ready ? '半价' : null) : ('耗资 ' + fmt(cost)));
         });
     };
 
@@ -1018,7 +1042,7 @@
             '<div class="c-form-row"><label>乙</label><select id="descSibB" class="c-input">' + o + '</select></div>' +
             '<div class="c-train-grid">' + (D().siblingActs || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
-                    '<div class="ms-title">' + a.name + '</div><div class="ms-desc">羁绊+' + a.bond + ' · ' + fmt(a.cost) + '</div>' +
+                    '<div class="ms-title">' + a.name + '</div><div class="ms-desc">羁绊+' + a.bond + ' · ' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doSiblingAct(\'' + a.id + '\',+document.getElementById(\'descSibA\').value,+document.getElementById(\'descSibB\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>';
     }
@@ -1040,7 +1064,7 @@
             (player.children.desc.contestReady ? '<div class="c-hint" style="color:#81C784;">竞赛优惠就绪</div>' : '') +
             '<div class="c-train-grid">' + (D().contests || []).map(function (c) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
-                    '<div class="ms-title">' + c.name + '</div><div class="ms-desc">拼 ' + c.attr + ' · ' + fmt(c.cost) + '</div>' +
+                    '<div class="ms-title">' + c.name + '</div><div class="ms-desc">拼 ' + attrLabel(c.attr) + ' · ' + (typeof lineageMsCost === 'function' ? lineageMsCost(c.cost) : ('耗资 ' + fmt(c.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-orange" onclick="enterDescendantContest(\'' + c.id + '\',+document.getElementById(\'descContestMember\').value)">参赛</button></div>';
             }).join('') + '</div>';
     }
@@ -1052,7 +1076,7 @@
         box.innerHTML = '<div class="c-form-row"><label>成员</label><select id="descPeerMember" class="c-input">' + opts() + '</select></div>' +
             '<div class="c-train-grid">' + (D().peerFriends || []).map(function (f) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
-                    '<div class="ms-title">' + f.name + '</div><div class="ms-desc">' + fmt(f.cost) + '</div>' +
+                    '<div class="ms-title">' + f.name + '</div><div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(f.cost) : ('耗资 ' + fmt(f.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-green" onclick="meetPeerFriend(\'' + f.id + '\',+document.getElementById(\'descPeerMember\').value)">往来</button></div>';
             }).join('') + '</div>';
     }

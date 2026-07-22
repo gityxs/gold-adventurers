@@ -1209,6 +1209,10 @@
                 if (!(typeof isFamilyMemberAdult === 'function' ? isFamilyMemberAdult(m) : m.isAdult)) return '';
                 var row = life.careers[m.id];
                 var def = row && ls.careers.find(function (c) { return c.id === row.id; });
+                var nextCost = def ? def.costBase * Math.pow(10, row.lv || 0) : ((ls.careers[0] && ls.careers[0].costBase) || 0);
+                var trainLabel = (!def || (row.lv || 0) >= (def.max || 20))
+                    ? '深造'
+                    : ('深造' + (typeof lineageCostTag === 'function' ? lineageCostTag(nextCost) : ('（耗资 ' + fmt(nextCost) + '）')));
                 return '<div class="c-member"><div class="name">' + m.name + '</div><div class="meta">' +
                     (def ? (def.name + ' Lv.' + (row.lv || 0)) : '尚未定志') + '</div>' +
                     '<select class="c-input" id="careerSel' + i + '" style="margin:6px 0;">' +
@@ -1216,7 +1220,7 @@
                         return '<option value="' + c.id + '"' + (row && row.id === c.id ? ' selected' : '') + '>' + c.name + '</option>';
                     }).join('') + '</select>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="assignLifeCareer(' + i + ', document.getElementById(\'careerSel' + i + '\').value)">定志</button> ' +
-                    '<button class="c-btn c-btn-sm c-btn-gold" onclick="trainLifeCareer(' + i + ')">深造</button></div>';
+                    '<button class="c-btn c-btn-sm c-btn-gold" onclick="trainLifeCareer(' + i + ')">' + trainLabel + '</button></div>';
             }).join('') || '<div class="c-hint">需要成年成员才能定志深造</div>';
         }
 
@@ -1256,12 +1260,14 @@
         }
         var bio = el('lifeBiographyPanel');
         if (bio) {
+            var bioCost = 120000000 * Math.pow(10, (life.biographies || []).length);
+            var bioTag = typeof lineageCostTag === 'function' ? lineageCostTag(bioCost) : ('（耗资 ' + fmt(bioCost) + '）');
             bio.innerHTML = members.map(function (m, i) {
                 if (!(typeof isFamilyMemberAdult === 'function' ? isFamilyMemberAdult(m) : m.isAdult)) return '';
                 var has = (life.biographies || []).indexOf(m.id) >= 0;
                 return '<div class="c-member"><div class="name">' + m.name + '</div><div class="meta">' +
                     getGenerationLabel(m.generation || 1) + (has ? ' · 已有列传' : '') + '</div>' +
-                    (has ? '' : '<button class="c-btn c-btn-sm c-btn-gold" onclick="writeMemberBiography(' + i + ')">立传</button>') +
+                    (has ? '' : '<button class="c-btn c-btn-sm c-btn-gold" onclick="writeMemberBiography(' + i + ')">立传' + bioTag + '</button>') +
                     '</div>';
             }).join('') || '<div class="c-hint">暂无成年成员可立传</div>';
         }

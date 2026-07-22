@@ -8,7 +8,7 @@
     <script>
         (function () {
             /** 与 gold-game-core.js 的 GAME_VERSION 对齐；发版时同步修改 */
-            var build = "2.0.39";
+            var build = "2.0.40";
             try {
                 var qs = location.search || "";
                 var m = /[?&]v=([^&]+)/.exec(qs);
@@ -113,8 +113,9 @@
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>2.039更新日志</h4>
+            <h4>2.040更新日志</h4>
             <h4>QQ群：902481027    有问题可以进群问（存档异常联系群管理修复）</h4>
+            <p>2026/07/22:修复传宗接代有些资金不够异常问题，增加所有资金金额显示。修改时光秘境局内界面UI信息，玩家等级化圣后修改现在轮回数不会降低。洞天劫模式修复某些房间异常问题，增加20个墓200个明器40套装，修复之前古，仙，劫局内获得异常没点亮图鉴BUG。主界面聊天加入锁定按钮，锁定后不自动往下。<p>
             <p>2026/07/20:修复洞天劫摸金模式图鉴显示异常bug，增加丢失按钮。疯狂地主线性合成增加单独一键合成，更新结婚系统的生孩子系统增加子孙后代。时光秘境时间异常bug修复<p>
             <p>2026/07/17:洞天劫模式副本大厅增加新副本乱星海难度偏高：掉落房主4重铸石 助战2重铸石，装备增加重铸词条数量，重铸后有预览属性选择。疯狂地主增加一键购买有库存商品，合成种子修改成弹窗界面，线型合成一键合成放上面了，基因合成修改3个种子改为2个就可以了（规则不变），可以直接框选择种子，也可以下面最优一键选择，有种子数量可以批量一键合成。修复农场和钓鱼现在不用每次进游戏都要进页面才自动开启，修复疯狂地主不用重启页面才刷新种子商店。<p>
             <p>2026/07/15:未来石后新增高级货币永恒石/无极石/大道石（1e20兑换），对应永恒/无极/大道宝箱、装备逆旅～至高、宠物天罚刑天/浑沌帝江/无极烛阴及宠物成就。副本装备新增归墟～本源共20件（▽/▼与★▽/★▼档），魂环新增20个亿年魂环（最高混沌·无名），职业界面修改，称号界面修改，神器界面修改清爽，主界面12标签字体修改，某些按键分解加入弹窗确认，时光秘境玩法重做，整体玩法更改，疯狂地主增加基因树：提交对应果实增加属性，疯狂地主增加20个新种子，所有高品种子更加容易获得，增加有库存按钮，修复洞天劫摸金模式BUG。<p>
@@ -749,7 +750,13 @@
       <aside id="gameLogAbyssChatPane" class="game-log-abyss-chat" aria-label="联网聊天" hidden>
         <div class="game-log-abyss-chat-head">
           <span class="game-log-abyss-chat-title">联网聊天</span>
-          <span class="game-log-abyss-chat-hint">最近50条</span>
+          <span class="game-log-abyss-chat-head-right">
+            <label class="game-log-abyss-chat-lock" title="勾选后刷新时不自动滚到底部，方便翻看上方记录">
+              <input type="checkbox" id="gameLogAbyssChatScrollLock" onchange="setAbyssOnlineChatScrollLock(this.checked)" />
+              锁定记录
+            </label>
+            <span class="game-log-abyss-chat-hint">最近50条</span>
+          </span>
         </div>
         <div id="gameLogAbyssChatList" class="game-log-abyss-chat-list"></div>
         <div class="game-log-abyss-chat-compose">
@@ -766,7 +773,7 @@
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v2.0.39</div>
+  <div id="footer">版本号: v2.0.40</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -1407,8 +1414,8 @@
         <button onclick="document.getElementById('avatarInput').click()" style="padding: 12px 20px; font-size: 16px;">更改头像</button>
         <button onclick="clearAvatar()" style="padding: 12px 20px; font-size: 16px;">清除头像</button>
         <button onclick="showActivationCodeDialog()" style="padding: 12px 20px; font-size: 16px;">激活码兑换</button>
-        <button onclick="saveGame()" style="padding: 12px 20px; font-size: 16px;">保存游戏</button>   
-    <button onclick="downloadSave()" style="padding: 12px 20px; font-size: 16px;">下载TXT存档</button>
+        <button onclick="saveGame()" style="padding: 12px 20px; font-size: 16px;">保存游戏</button>
+       <button onclick="downloadSave()" style="padding: 12px 20px; font-size: 16px;">下载TXT存档</button>
         <button onclick="importEncryptedSave()" style="padding: 12px 20px; font-size: 16px;">导入TXT存档</button>
         <button onclick="resetGame()" style="padding: 12px 20px; font-size: 16px; background-color: #ff4444; color: white; border: none;">重置游戏</button>
     </div>
@@ -4926,15 +4933,11 @@
         </div>
     </div>
 
-    <!-- 冒险中 -->
+    <!-- 冒险中：清爽三层（状态条 / 战场 / 底栏） -->
     <div id="tsrAdventurePanel" class="tsr-run" style="display:none;">
-        <div class="tsr-run-top">
-            <div class="tsr-run-left">
-                <div id="tsrFloorMap" class="tsr-floor-map"></div>
-                <div id="tsrProgress" class="tsr-progress-wrap"></div>
-            </div>
-            <div class="tsr-run-center">
-                <div class="tsr-time-ring" id="tsrTimeRingWrap">
+        <div class="tsr-run-strip">
+            <div class="tsr-run-strip-left">
+                <div class="tsr-time-ring tsr-time-ring-sm" id="tsrTimeRingWrap">
                     <svg viewBox="0 0 100 100" class="tsr-ring-svg">
                         <circle cx="50" cy="50" r="42" class="tsr-ring-bg"></circle>
                         <circle cx="50" cy="50" r="42" id="tsrTimeRingFill" class="tsr-ring-fill"></circle>
@@ -4944,175 +4947,201 @@
                         <span class="tsr-ring-unit">秒</span>
                     </div>
                 </div>
+                <div class="tsr-run-strip-meta">
+                    <div id="tsrFloorMap" class="tsr-floor-map"></div>
+                    <div id="tsrProgress" class="tsr-progress-wrap"></div>
+                </div>
             </div>
-            <div class="tsr-run-right">
-                <div class="tsr-chip"><span class="tsr-chip-label">层数</span><span id="tsrCurrentFloor" class="tsr-chip-value">1</span></div>
-                <div class="tsr-chip"><span class="tsr-chip-label">秘境币</span><span id="tsrCurrentCurrency" class="tsr-chip-value">0</span></div>
-                <div class="tsr-chip tsr-chip-combo"><span class="tsr-chip-label">连击</span><span id="tsrComboDisplay" class="tsr-chip-value">×0</span></div>
-                <div class="tsr-chip tsr-chip-spirit">
+            <div class="tsr-run-strip-stats">
+                <div class="tsr-chip tsr-chip-sm"><span class="tsr-chip-label">层</span><span id="tsrCurrentFloor" class="tsr-chip-value">1</span></div>
+                <div class="tsr-chip tsr-chip-sm"><span class="tsr-chip-label">币</span><span id="tsrCurrentCurrency" class="tsr-chip-value">0</span></div>
+                <div class="tsr-chip tsr-chip-sm tsr-chip-combo"><span class="tsr-chip-label">连击</span><span id="tsrComboDisplay" class="tsr-chip-value">×0</span></div>
+                <div class="tsr-chip tsr-chip-sm tsr-chip-spirit">
                     <span class="tsr-chip-label">精灵</span>
                     <span id="tsrSpiritRunSub" class="tsr-chip-spirit-name"></span>
                     <span id="tsrSpiritCharge" class="tsr-chip-value">0%</span>
                 </div>
-                <div class="tsr-chip tsr-chip-resonance"><span class="tsr-chip-label">虚空共鸣</span><span id="tsrVoidResonance" class="tsr-chip-value tsr-resonance-val">0%</span></div>
-                <div class="tsr-chip"><span class="tsr-chip-label">增益</span><span id="tsrTempBuffs" class="tsr-chip-value">0</span></div>
-                <div id="tsrEncounterChainWrap" class="tsr-chain-wrap" style="display:none;">
-                    <span class="tsr-chain-label">✨ 遭遇链</span>
-                    <div class="tsr-chain-track"><div id="tsrEncounterChainFill" class="tsr-chain-fill"></div></div>
-                    <span id="tsrEncounterChainVal" class="tsr-chain-val">×0</span>
+                <div class="tsr-chip tsr-chip-sm tsr-chip-resonance"><span class="tsr-chip-label">共鸣</span><span id="tsrVoidResonance" class="tsr-chip-value tsr-resonance-val">0%</span></div>
+                <div class="tsr-chip tsr-chip-sm"><span class="tsr-chip-label">增益</span><span id="tsrTempBuffs" class="tsr-chip-value">0</span></div>
+            </div>
+            <div class="tsr-run-strip-vitals">
+                <div id="tsrHealthBar" class="tsr-vitals tsr-vitals-inline">
+                    <div class="tsr-vitals-head">
+                        <span>❤️</span>
+                        <span id="tsrHealthText">100%</span>
+                    </div>
+                    <div class="tsr-vitals-track">
+                        <div id="tsrHealthBarFill" class="tsr-vitals-fill"></div>
+                    </div>
+                    <div id="tsrHealthWarning" class="tsr-vitals-warn" style="display:none;">危急</div>
                 </div>
-                <div id="tsrRoomPreview" class="tsr-room-preview" style="display:none;"></div>
-                <div id="tsrFloorAffix" class="tsr-floor-affix" style="display:none;"></div>
+                <div id="tsrCombatBar" class="tsr-combat-bar tsr-combat-bar-inline" style="display:none;">
+                    <div class="tsr-combat-stat"><span class="tsr-combat-label">攻</span><span id="tsrCombatAtk" class="tsr-combat-val">0</span></div>
+                    <div class="tsr-combat-stat"><span class="tsr-combat-label">暴</span><span id="tsrCombatCrit" class="tsr-combat-val">0%</span></div>
+                    <div class="tsr-combat-stat"><span class="tsr-combat-label">伤</span><span id="tsrCombatCritDmg" class="tsr-combat-val">0x</span></div>
+                    <div class="tsr-combat-stat"><span class="tsr-combat-label">闪</span><span id="tsrCombatDodge" class="tsr-combat-val">0%</span></div>
+                    <div class="tsr-combat-stat"><span class="tsr-combat-label">吸</span><span id="tsrCombatLifeSteal" class="tsr-combat-val">0%</span></div>
+                    <div class="tsr-combat-stat"><span class="tsr-combat-label">穿</span><span id="tsrCombatPen" class="tsr-combat-val">0%</span></div>
+                    <div class="tsr-combat-stat tsr-combat-power"><span class="tsr-combat-label">阶</span><span id="tsrCombatPower" class="tsr-combat-val">0</span></div>
+                </div>
             </div>
         </div>
-
-        <div id="tsrHealthBar" class="tsr-vitals">
-            <div class="tsr-vitals-head">
-                <span>❤️ 生命</span>
-                <span id="tsrHealthText">100%</span>
+        <div class="tsr-run-hud-extra">
+            <div id="tsrEncounterChainWrap" class="tsr-chain-wrap" style="display:none;">
+                <span class="tsr-chain-label">✨ 遭遇链</span>
+                <div class="tsr-chain-track"><div id="tsrEncounterChainFill" class="tsr-chain-fill"></div></div>
+                <span id="tsrEncounterChainVal" class="tsr-chain-val">×0</span>
             </div>
-            <div class="tsr-vitals-track">
-                <div id="tsrHealthBarFill" class="tsr-vitals-fill"></div>
-            </div>
-            <div id="tsrHealthWarning" class="tsr-vitals-warn" style="display:none;">生命值低于30%，即将失败！</div>
+            <div id="tsrRoomPreview" class="tsr-room-preview" style="display:none;"></div>
+            <div id="tsrFloorAffix" class="tsr-floor-affix" style="display:none;"></div>
         </div>
 
-        <div id="tsrCombatBar" class="tsr-combat-bar" style="display:none;">
-            <div class="tsr-combat-stat"><span class="tsr-combat-label">⚔️ 攻击</span><span id="tsrCombatAtk" class="tsr-combat-val">0</span></div>
-            <div class="tsr-combat-stat"><span class="tsr-combat-label">💥 暴击</span><span id="tsrCombatCrit" class="tsr-combat-val">0%</span></div>
-            <div class="tsr-combat-stat"><span class="tsr-combat-label">🔥 暴伤</span><span id="tsrCombatCritDmg" class="tsr-combat-val">0x</span></div>
-            <div class="tsr-combat-stat"><span class="tsr-combat-label">💨 闪避</span><span id="tsrCombatDodge" class="tsr-combat-val">0%</span></div>
-            <div class="tsr-combat-stat"><span class="tsr-combat-label">🩸 吸血</span><span id="tsrCombatLifeSteal" class="tsr-combat-val">0%</span></div>
-            <div class="tsr-combat-stat"><span class="tsr-combat-label">⚡ 穿透</span><span id="tsrCombatPen" class="tsr-combat-val">0%</span></div>
-            <div class="tsr-combat-stat tsr-combat-power"><span class="tsr-combat-label">✨ 战阶</span><span id="tsrCombatPower" class="tsr-combat-val">0</span></div>
-        </div>
-
-        <div id="tsrMonsterBanner" class="tsr-monster-banner" style="display:none;"></div>
-
-        <div class="tsr-run-body">
-            <section class="tsr-scene">
-                <h3 class="tsr-block-title">当前房间</h3>
-                <div id="tsrCurrentRoom" class="tsr-scene-card"></div>
-                <div id="tsrPortalPanel" class="tsr-choice-panel" style="display:none;">
-                    <h4>⛩️ 时光岔路</h4>
-                    <p>选择你的道路，命运将随之改变</p>
-                    <div class="tsr-choice-btns">
-                        <button type="button" class="tsr-btn tsr-btn-safe" onclick="tsrChoosePortal('safe')">安全之路 · +35秒</button>
-                        <button type="button" class="tsr-btn tsr-btn-risk" onclick="tsrChoosePortal('risky')">危险之路 · 战斗+遗物</button>
+        <div class="tsr-run-arena">
+            <div id="tsrMonsterBanner" class="tsr-monster-banner" style="display:none;"></div>
+            <section class="tsr-scene tsr-scene-explore">
+                <div class="tsr-explore-left">
+                    <div id="tsrCurrentRoom" class="tsr-scene-card"></div>
+                </div>
+                <div class="tsr-explore-right">
+                    <div id="tsrPortalPanel" class="tsr-choice-panel" style="display:none;">
+                        <h4>⛩️ 时光岔路</h4>
+                        <p>选择你的道路，命运将随之改变</p>
+                        <div class="tsr-choice-btns">
+                            <button type="button" class="tsr-btn tsr-btn-safe" onclick="tsrChoosePortal('safe')">安全之路 · +35秒</button>
+                            <button type="button" class="tsr-btn tsr-btn-risk" onclick="tsrChoosePortal('risky')">危险之路 · 战斗+遗物</button>
+                        </div>
                     </div>
-                </div>
-                <div id="tsrRelicPickPanel" class="tsr-choice-panel tsr-relic-pick" style="display:none;">
-                    <h4>🏺 遗物祭坛</h4>
-                    <p>选择一件遗物带走（本局最多<span id="tsrRelicMaxHint">3</span>件）</p>
-                    <div id="tsrRelicPickOptions" class="tsr-relic-options"></div>
-                </div>
-                <div id="tsrMysteryPanel" class="tsr-choice-panel tsr-mystery-panel" style="display:none;">
-                    <h4>🔮 谜题祭坛</h4>
-                    <p>三重考验摆在眼前，你的抉择将影响命运</p>
-                    <div class="tsr-choice-btns">
-                        <button type="button" class="tsr-btn tsr-btn-safe" onclick="tsrChooseMystery('wisdom')">智慧之路 · 增益+20秒</button>
-                        <button type="button" class="tsr-btn tsr-btn-risk" onclick="tsrChooseMystery('courage')">勇气之路 · 精英战斗</button>
-                        <button type="button" class="tsr-btn tsr-btn-gamble" onclick="tsrChooseMystery('greed')">贪婪之路 · +币 -8%血</button>
+                    <div id="tsrRelicPickPanel" class="tsr-choice-panel tsr-relic-pick" style="display:none;">
+                        <h4>🏺 遗物祭坛</h4>
+                        <p>选择一件遗物带走（本局最多<span id="tsrRelicMaxHint">3</span>件）</p>
+                        <div id="tsrRelicPickOptions" class="tsr-relic-options"></div>
                     </div>
-                </div>
-                <div id="tsrVaultPanel" class="tsr-choice-panel tsr-vault-panel" style="display:none;">
-                    <h4>🏦 时之宝库</h4>
-                    <p>时间与财富在此流转，选择你的交易方式</p>
-                    <div class="tsr-choice-btns">
-                        <button type="button" class="tsr-btn tsr-btn-safe" onclick="tsrChooseVault('buyTime')">购入时间 · 80币→50秒</button>
-                        <button type="button" class="tsr-btn tsr-btn-purple" onclick="tsrChooseVault('sellTime')">出售时间 · 40秒→100币</button>
-                        <button type="button" class="tsr-btn tsr-btn-gamble" onclick="tsrChooseVault('gamble')">宝库博弈 · 30秒赌大小</button>
+                    <div id="tsrMysteryPanel" class="tsr-choice-panel tsr-mystery-panel" style="display:none;">
+                        <h4>🔮 谜题祭坛</h4>
+                        <p>三重考验摆在眼前，你的抉择将影响命运</p>
+                        <div class="tsr-choice-btns">
+                            <button type="button" class="tsr-btn tsr-btn-safe" onclick="tsrChooseMystery('wisdom')">智慧之路 · 额外+20秒</button>
+                            <button type="button" class="tsr-btn tsr-btn-risk" onclick="tsrChooseMystery('courage')">勇气之路 · 精英战斗</button>
+                            <button type="button" class="tsr-btn tsr-btn-gamble" onclick="tsrChooseMystery('greed')">贪婪之路 · +币 -8%血</button>
+                        </div>
                     </div>
-                </div>
-                <div id="tsrForgePanel" class="tsr-choice-panel tsr-forge-panel" style="display:none;">
-                    <h4>🔥 时光熔炉</h4>
-                    <p>烈焰升腾，选择你的锻造方式</p>
-                    <div class="tsr-choice-btns">
-                        <button type="button" class="tsr-btn tsr-btn-safe" onclick="tsrChooseForge('temper')">淬火 · 35秒 / 回血+币</button>
-                        <button type="button" class="tsr-btn tsr-btn-purple" onclick="tsrChooseForge('reforge')">重铸 · 50秒 / 随机遗物</button>
-                        <button type="button" class="tsr-btn tsr-btn-gamble" onclick="tsrChooseForge('imbue')">灌注 · 25秒 / 攻击+40%</button>
-                        <button type="button" class="tsr-btn tsr-btn-purple" onclick="tsrChooseForge('arm')">铸装 · 40秒 / 随机装备</button>
-                        <button type="button" class="tsr-btn tsr-btn-gamble" onclick="tsrChooseForge('smelt')">熔炼 · 55秒 / 2件同品质升阶</button>
-                        <button type="button" class="tsr-btn tsr-btn-purple" onclick="tsrChooseForge('wash')">洗炼 · 45秒 / 重铸装备属性</button>
+                    <div id="tsrVaultPanel" class="tsr-choice-panel tsr-vault-panel" style="display:none;">
+                        <h4>🏦 时之宝库</h4>
+                        <p>时间与财富在此流转，选择你的交易方式</p>
+                        <div class="tsr-choice-btns">
+                            <button type="button" class="tsr-btn tsr-btn-safe" onclick="tsrChooseVault('buyTime')">购入时间 · 80币→50秒</button>
+                            <button type="button" class="tsr-btn tsr-btn-purple" onclick="tsrChooseVault('sellTime')">出售时间 · 40秒→100币</button>
+                            <button type="button" class="tsr-btn tsr-btn-gamble" onclick="tsrChooseVault('gamble')">宝库博弈 · 30秒赌大小</button>
+                        </div>
                     </div>
-                </div>
-                <div id="tsrEquipReforgePanel" class="tsr-choice-panel tsr-equip-reforge-panel" style="display:none;">
-                    <h4>🔄 装备洗炼</h4>
-                    <p>消耗秘境币重铸装备成长属性，保留品质/槽位/前缀/强化等级（单件最多8次）</p>
-                    <div id="tsrEquipReforgeChoices" class="tsr-equip-reforge-list"></div>
-                    <button type="button" class="tsr-btn tsr-btn-ghost" style="margin-top:8px;width:100%;" onclick="hideTsrEquipReforgePanel()">取消</button>
-                </div>
-                <div id="tsrEquipFusionPanel" class="tsr-choice-panel tsr-equip-fusion-panel" style="display:none;">
-                    <h4>🔥 装备熔炼</h4>
-                    <p>消耗背包中2件同品质装备，熔铸为更高品质随机装备</p>
-                    <div id="tsrEquipFusionChoices" class="tsr-equip-fusion-list"></div>
-                    <button type="button" class="tsr-btn tsr-btn-ghost" style="margin-top:8px;width:100%;" onclick="hideTsrEquipFusionPanel()">取消</button>
-                </div>
-                <div id="tsrEquipOverflowPanel" class="tsr-choice-panel tsr-equip-overflow-panel" style="display:none;">
-                    <h4>🎒 背包已满</h4>
-                    <div id="tsrEquipOverflowChoices"></div>
-                </div>
-                <div id="tsrMemePanel" class="tsr-choice-panel tsr-meme-panel" style="display:none;">
-                    <h4 id="tsrMemeTitle">恶趣味房间</h4>
-                    <p id="tsrMemeDesc"></p>
-                    <div id="tsrMemeBtns" class="tsr-choice-btns"></div>
+                    <div id="tsrForgePanel" class="tsr-choice-panel tsr-forge-panel" style="display:none;">
+                        <h4>🔥 时光熔炉</h4>
+                        <p>烈焰升腾，选择你的锻造方式</p>
+                        <div class="tsr-choice-btns">
+                            <button type="button" class="tsr-btn tsr-btn-safe" onclick="tsrChooseForge('temper')">淬火 · 35秒 / 回血+币</button>
+                            <button type="button" class="tsr-btn tsr-btn-purple" onclick="tsrChooseForge('reforge')">重铸 · 50秒 / 随机遗物</button>
+                            <button type="button" class="tsr-btn tsr-btn-gamble" onclick="tsrChooseForge('imbue')">灌注 · 25秒 / 攻击+40%</button>
+                            <button type="button" class="tsr-btn tsr-btn-purple" onclick="tsrChooseForge('arm')">铸装 · 40秒 / 随机装备</button>
+                            <button type="button" class="tsr-btn tsr-btn-gamble" onclick="tsrChooseForge('smelt')">熔炼 · 55秒 / 2件同品质升阶</button>
+                            <button type="button" class="tsr-btn tsr-btn-purple" onclick="tsrChooseForge('wash')">洗炼 · 45秒 / 重铸装备属性</button>
+                        </div>
+                    </div>
+                    <div id="tsrEquipReforgePanel" class="tsr-choice-panel tsr-equip-reforge-panel" style="display:none;">
+                        <h4>🔄 装备洗炼</h4>
+                        <p>消耗秘境币重铸装备成长属性，保留品质/槽位/前缀/强化等级（单件最多8次）</p>
+                        <div id="tsrEquipReforgeChoices" class="tsr-equip-reforge-list"></div>
+                        <button type="button" class="tsr-btn tsr-btn-ghost" style="margin-top:8px;width:100%;" onclick="hideTsrEquipReforgePanel()">取消</button>
+                    </div>
+                    <div id="tsrEquipFusionPanel" class="tsr-choice-panel tsr-equip-fusion-panel" style="display:none;">
+                        <h4>🔥 装备熔炼</h4>
+                        <p>消耗背包中2件同品质装备，熔铸为更高品质随机装备</p>
+                        <div id="tsrEquipFusionChoices" class="tsr-equip-fusion-list"></div>
+                        <button type="button" class="tsr-btn tsr-btn-ghost" style="margin-top:8px;width:100%;" onclick="hideTsrEquipFusionPanel()">取消</button>
+                    </div>
+                    <div id="tsrEquipOverflowPanel" class="tsr-choice-panel tsr-equip-overflow-panel" style="display:none;">
+                        <h4>🎒 背包已满</h4>
+                        <div id="tsrEquipOverflowChoices"></div>
+                    </div>
+                    <div id="tsrMemePanel" class="tsr-choice-panel tsr-meme-panel" style="display:none;">
+                        <h4 id="tsrMemeTitle">恶趣味房间</h4>
+                        <p id="tsrMemeDesc"></p>
+                        <div id="tsrMemeBtns" class="tsr-choice-btns"></div>
+                    </div>
+                    <div id="tsrRunShopPanel" class="tsr-run-shop" style="display:none;">
+                        <h4 class="tsr-block-title">局内商店</h4>
+                        <div id="tsrRunShopOffers" class="tsr-shop-offers"></div>
+                    </div>
                 </div>
             </section>
+        </div>
 
-            <aside class="tsr-sidebar">
-                <nav class="tsr-side-tabs">
-                    <button type="button" class="tsr-side-tab" data-side="buffs" onclick="switchTsrSideTab('buffs')">增益</button>
-                    <button type="button" class="tsr-side-tab" data-side="relics" onclick="switchTsrSideTab('relics')">遗物</button>
-                    <button type="button" class="tsr-side-tab active" data-side="equipment" onclick="switchTsrSideTab('equipment')">装备</button>
-                    <button type="button" class="tsr-side-tab" data-side="items" onclick="switchTsrSideTab('items')">道具</button>
-                    <button type="button" class="tsr-side-tab" data-side="skills" onclick="switchTsrSideTab('skills')">技能</button>
-                </nav>
-                <div id="tsrSideBuffs" class="tsr-side-panel">
+        <div class="tsr-run-dock">
+            <div class="tsr-dock-info">
+                <button type="button" class="tsr-dock-btn tsr-dock-btn-attr" onclick="openTsrEquipModal('overview')" title="属性总览 / 装备">📊</button>
+                <button type="button" class="tsr-dock-btn" data-info="buffs" onclick="openTsrInfoModal('buffs')" title="增益">
+                    ✨<span class="tsr-dock-badge" id="tsrRailBuffCount">0</span>
+                </button>
+                <button type="button" class="tsr-dock-btn" data-info="relics" onclick="openTsrInfoModal('relics')" title="遗物">
+                    🏺<span class="tsr-dock-badge" id="tsrRailRelicCount">0</span>
+                </button>
+                <button type="button" class="tsr-dock-btn" data-info="items" onclick="openTsrInfoModal('items')" title="道具">
+                    🧪<span class="tsr-dock-badge" id="tsrRailItemCount">0</span>
+                </button>
+                <button type="button" class="tsr-dock-btn" data-info="skills" onclick="openTsrInfoModal('skills')" title="技能">📜</button>
+            </div>
+            <div id="tsrActionControls" class="tsr-actions tsr-run-actions">
+                <div class="tsr-action-group">
+                    <button type="button" onclick="tsrDetectTrap()" id="tsrDetectBtn" class="tsr-btn tsr-btn-detect" style="display:none;">侦查</button>
+                    <button type="button" onclick="tsrDisarmTrap()" id="tsrDisarmBtn" class="tsr-btn tsr-btn-disarm" style="display:none;">解除</button>
+                </div>
+                <div class="tsr-action-group">
+                    <button type="button" onclick="tsrExploreRoom()" id="tsrExploreBtn" class="tsr-btn tsr-btn-explore">探索</button>
+                    <button type="button" onclick="tsrRest()" id="tsrRestBtn" class="tsr-btn tsr-btn-rest">休息</button>
+                    <button type="button" onclick="tsrMeditate()" id="tsrMeditateBtn" class="tsr-btn tsr-btn-meditate">冥想</button>
+                    <button type="button" onclick="tsrGambleTime()" id="tsrGambleBtn" class="tsr-btn tsr-btn-gamble">赌局</button>
+                    <button type="button" onclick="tsrInvokeSpirit()" id="tsrInvokeSpiritBtn" class="tsr-btn tsr-btn-purple">精灵</button>
+                </div>
+                <div class="tsr-action-group">
+                    <button type="button" onclick="tsrNextFloor()" id="tsrNextFloorBtn" class="tsr-btn tsr-btn-next">下一层</button>
+                    <button type="button" onclick="tsrExitRealm()" id="tsrExitBtn" class="tsr-btn tsr-btn-exit">撤离</button>
+                </div>
+            </div>
+            <div id="tsrLogContainer" class="tsr-dock-log">
+                <div class="tsr-dock-log-head">冒险日志</div>
+                <div id="tsrBattleLog" class="tsr-log-body tsr-dock-log-body"></div>
+            </div>
+            <div id="tsrCurrentEquipment" class="tsr-equip-list" style="display:none;" aria-hidden="true"></div>
+        </div>
+
+        <div id="tsrInfoModalOverlay" class="tsr-equip-modal-overlay" style="display:none;" onclick="closeTsrInfoModal()"></div>
+        <div id="tsrInfoModal" class="tsr-equip-modal tsr-info-modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="tsrInfoModalTitle">
+            <header class="tsr-equip-modal-head">
+                <h3 id="tsrInfoModalTitle">信息</h3>
+                <button type="button" class="tsr-btn tsr-btn-ghost tsr-equip-modal-close" onclick="closeTsrInfoModal()">关闭</button>
+            </header>
+            <div class="tsr-equip-modal-body tsr-info-modal-body">
+                <div id="tsrInfoPaneBuffs" class="tsr-info-panel" style="display:none;">
                     <div id="tsrCurrentBuffs" class="tsr-buff-list"></div>
                 </div>
-                <div id="tsrSideRelics" class="tsr-side-panel">
+                <div id="tsrInfoPaneRelics" class="tsr-info-panel" style="display:none;">
                     <div id="tsrCurrentRelics" class="tsr-relic-list"></div>
                 </div>
-                <div id="tsrSideEquipment" class="tsr-side-panel active">
-                    <div id="tsrCurrentEquipment" class="tsr-equip-list"></div>
-                </div>
-                <div id="tsrSideItems" class="tsr-side-panel">
+                <div id="tsrInfoPaneItems" class="tsr-info-panel" style="display:none;">
                     <div id="tsrCurrentConsumables" class="tsr-consumable-list"></div>
                 </div>
-                <div id="tsrSideSkills" class="tsr-side-panel">
+                <div id="tsrInfoPaneSkills" class="tsr-info-panel" style="display:none;">
                     <div id="tsrCurrentSkills" class="tsr-skill-list"></div>
                 </div>
-                <div id="tsrRunShopPanel" class="tsr-run-shop" style="display:none;">
-                    <h4 class="tsr-block-title">局内商店</h4>
-                    <div id="tsrRunShopOffers" class="tsr-shop-offers"></div>
-                </div>
-            </aside>
-        </div>
-
-        <div id="tsrActionControls" class="tsr-actions">
-            <div class="tsr-action-group">
-                <span class="tsr-action-label">陷阱</span>
-                <button type="button" onclick="tsrDetectTrap()" id="tsrDetectBtn" class="tsr-btn tsr-btn-detect" style="display:none;">侦查</button>
-                <button type="button" onclick="tsrDisarmTrap()" id="tsrDisarmBtn" class="tsr-btn tsr-btn-disarm" style="display:none;">解除</button>
-            </div>
-            <div class="tsr-action-group">
-                <span class="tsr-action-label">探索</span>
-                <button type="button" onclick="tsrExploreRoom()" id="tsrExploreBtn" class="tsr-btn tsr-btn-explore">探索</button>
-                <button type="button" onclick="tsrRest()" id="tsrRestBtn" class="tsr-btn tsr-btn-rest">休息</button>
-                <button type="button" onclick="tsrMeditate()" id="tsrMeditateBtn" class="tsr-btn tsr-btn-meditate">冥想</button>
-                <button type="button" onclick="tsrGambleTime()" id="tsrGambleBtn" class="tsr-btn tsr-btn-gamble">时空赌局</button>
-                <button type="button" onclick="tsrInvokeSpirit()" id="tsrInvokeSpiritBtn" class="tsr-btn tsr-btn-purple">呼唤精灵</button>
-            </div>
-            <div class="tsr-action-group">
-                <span class="tsr-action-label">移动</span>
-                <button type="button" onclick="tsrNextFloor()" id="tsrNextFloorBtn" class="tsr-btn tsr-btn-next">下一层</button>
-                <button type="button" onclick="tsrExitRealm()" id="tsrExitBtn" class="tsr-btn tsr-btn-exit">撤离</button>
             </div>
         </div>
 
-        <div id="tsrLogContainer" class="tsr-log">
-            <div class="tsr-log-head">冒险日志</div>
-            <div id="tsrBattleLog" class="tsr-log-body"></div>
+        <div id="tsrEquipModalOverlay" class="tsr-equip-modal-overlay" style="display:none;" onclick="closeTsrEquipModal()"></div>
+        <div id="tsrEquipModal" class="tsr-equip-modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="tsrEquipModalTitle">
+            <header class="tsr-equip-modal-head">
+                <h3 id="tsrEquipModalTitle">装备</h3>
+                <button type="button" class="tsr-btn tsr-btn-ghost tsr-equip-modal-close" onclick="closeTsrEquipModal()">关闭</button>
+            </header>
+            <div id="tsrEquipModalBody" class="tsr-equip-modal-body"></div>
         </div>
     </div>
 </div>
@@ -6968,6 +6997,11 @@
 #childSystemUI .c-subtab{background:rgba(80,40,30,.55);color:rgba(243,230,208,.78);border:1px solid rgba(212,168,75,.22);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:inherit;line-height:1.2}
 #childSystemUI .c-subtab.active{background:linear-gradient(135deg,rgba(196,60,44,.75),rgba(138,42,30,.85));color:#fff;border-color:rgba(212,168,75,.55);font-weight:bold}
 #childSystemUI .c-card.c-sub-hidden{display:none!important}
+/* 顶部快捷标签可折叠；窄屏隐藏侧栏 */
+#childSystemUI .c-quick-tabs-items.c-tabs{display:flex!important}
+#childSystemUI .c-quick-tabs.collapsed .c-quick-tabs-items{display:none!important}
+@media (max-width:820px){#childSystemUI .c-nav{display:none!important}}
+#childSystemOverlay.child-overlay{top:0;right:0;bottom:0;left:0}
 </style>
 <div id="childSystemOverlay" class="child-overlay" style="display: none;" onclick="closeChildSystem()"></div>
 <div id="childSystemUI" class="child-panel" style="display: none;">
@@ -7058,7 +7092,13 @@
             </div>
         </aside>
         <div class="c-body">
-        <div class="c-tabs c-tabs-mobile">
+        <div class="c-quick-tabs" id="childQuickTabs">
+            <button type="button" class="c-quick-tabs-label" id="childQuickTabsLabel" onclick="toggleChildQuickTabs()" aria-expanded="true">
+                <span class="c-quick-tabs-title">快捷标签</span>
+                <span class="c-quick-tabs-current" id="childQuickTabsCurrent"></span>
+                <i class="c-nav-chevron">▾</i>
+            </button>
+            <div class="c-tabs c-tabs-mobile c-quick-tabs-items">
             <div class="c-tab active" data-tab="overview" onclick="switchChildTab('overview')">总览</div>
             <div class="c-tab" data-tab="birth" onclick="switchChildTab('birth')">生育</div>
             <div class="c-tab" data-tab="offspring" onclick="switchChildTab('offspring')">子嗣</div>
@@ -7099,6 +7139,7 @@
             <div class="c-tab" data-tab="quests" onclick="switchChildTab('quests')">日常</div>
             <div class="c-tab" data-tab="events" onclick="switchChildTab('events')">轶事</div>
             <div class="c-tab" data-tab="glory" onclick="switchChildTab('glory')">荣耀</div>
+            </div>
         </div>
 
         <div id="childSectionOverview" class="c-section active">

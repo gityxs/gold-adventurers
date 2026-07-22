@@ -368,11 +368,14 @@
     }
 
     function pay(cost) {
-        if ((funds().funds || 0) < cost) {
+        var ud = funds();
+        var bal = ud.availableFunds != null ? ud.availableFunds : (ud.funds || 0);
+        if ((bal || 0) < cost) {
             logAction('资金不足（需 ' + fmt(cost) + '）', 'error');
             return false;
         }
-        funds().funds -= cost;
+        if (ud.availableFunds != null) ud.availableFunds -= cost;
+        else ud.funds -= cost;
         return true;
     }
 
@@ -871,12 +874,13 @@
             '<h4 style="color:#E8C4A8;margin:8px 0;">岁时礼</h4><div class="c-train-grid">' + (S().seasons || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doSagaSeason(\'' + a.id + '\',+document.getElementById(\'sagaScMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">工坊百艺（升级 12h）</h4><div class="c-train-grid">' + (S().crafts || []).map(function (c) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + c.name + '</div>' +
-                    '<div class="ms-desc">下级约 ' + fmt(c.costBase) + ' 起 · 随等级递增</div>' +
+                    '<div class="ms-desc">下级起 ' + (typeof lineageMsCost === 'function' ? lineageMsCost(c.costBase) : ('耗资 ' + fmt(c.costBase))) + ' · 随等级递增</div>' +
                     '<button class="c-btn c-btn-sm c-btn-gold" onclick="upgradeSagaCraft(+document.getElementById(\'sagaScMember\').value,\'' + c.id + '\')">进「' + c.name + '」</button></div>';
             }).join('') + '</div>';
     }
@@ -889,16 +893,19 @@
             '<h4 style="color:#E8C4A8;margin:8px 0;">族学讲席</h4><div class="c-train-grid">' + (S().lecture || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="doSagaLecture(\'' + a.id + '\',+document.getElementById(\'sagaSocialMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">文会 · 武集</h4><div class="c-train-grid">' + (S().gather || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-orange" onclick="doSagaGather(\'' + a.id + '\',+document.getElementById(\'sagaSocialMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">姻亲走动（成婚）</h4><div class="c-train-grid">' + (S().inlaw || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doSagaInlaw(\'' + a.id + '\',+document.getElementById(\'sagaSocialMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>';
     }
@@ -907,16 +914,20 @@
         var box = el('sagaTreasurePanel');
         if (!box) return;
         ensureSagaData();
+        var claimCost = S().claimHeirloom.cost;
         box.innerHTML = '<div class="c-form-row"><label>成员</label><select id="sagaTreasureMember" class="c-input">' + opts(isAdult) + '</select></div>' +
             '<h4 style="color:#E8C4A8;margin:8px 0;">传家宝</h4><div class="c-train-grid">' + (S().heirlooms || []).map(function (h) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + h.name + '</div>' +
+                    '<div class="ms-desc">认主 ' + (typeof lineageMsCost === 'function' ? lineageMsCost(claimCost) : ('耗资 ' + fmt(claimCost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-purple" onclick="claimSagaHeirloom(+document.getElementById(\'sagaTreasureMember\').value,\'' + h.id + '\')">认主</button>' +
+                    '<div class="ms-desc">祭炼 下级起 ' + (typeof lineageMsCost === 'function' ? lineageMsCost(h.costBase, '12h') : ('耗资 ' + fmt(h.costBase) + ' · 12h')) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-gold" style="margin-top:4px;" onclick="upgradeSagaHeirloom(+document.getElementById(\'sagaTreasureMember\').value,\'' + h.id + '\')">祭炼（12h）</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">子弟誓约（12h）</h4><div class="c-train-grid">' + (S().oath.types || []).map(function (o) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + o.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(o.costBase, '12h') : ('耗资 ' + fmt(o.costBase) + ' · 12h')) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-orange" onclick="upgradeSagaOath(+document.getElementById(\'sagaTreasureMember\').value,\'' + o.id + '\')">加深誓约</button></div>';
             }).join('') + '</div>';
     }
@@ -929,11 +940,13 @@
             '<h4 style="color:#E8C4A8;margin:8px 0;">围炉夜话</h4><div class="c-train-grid">' + (S().circle || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doSagaCircle(\'' + a.id + '\',+document.getElementById(\'sagaHeartMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">心事匣</h4><div class="c-train-grid">' + (S().heartBox || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="doSagaHeart(\'' + a.id + '\',+document.getElementById(\'sagaHeartMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>';
     }
@@ -947,6 +960,7 @@
             '<div class="c-train-grid">' + (S().elderTeach || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-gold" onclick="doSagaElderTeach(\'' + a.id + '\',+document.getElementById(\'sagaPupil\').value,+document.getElementById(\'sagaMentor\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">成长丰碑</h4>' +
@@ -954,6 +968,7 @@
             '<div class="c-train-grid">' + (S().monuments || []).map(function (mon) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + mon.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(mon.cost) : ('耗资 ' + fmt(mon.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-purple" onclick="claimSagaMonument(+document.getElementById(\'sagaMonMember\').value,\'' + mon.id + '\')">立碑</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">双人日常（成婚）</h4>' +
@@ -961,6 +976,7 @@
             '<div class="c-train-grid">' + (S().couple || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doSagaCouple(\'' + a.id + '\',+document.getElementById(\'sagaCoupleMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">声望市</h4>' +

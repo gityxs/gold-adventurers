@@ -907,11 +907,13 @@
             '<h4 style="color:#E8C4A8;margin:8px 0;">梦境</h4><div class="c-train-grid">' + (N().dreams || []).map(function (d) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + d.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(d.cost) : ('耗资 ' + fmt(d.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="recordNovaDream(\'' + d.id + '\',+document.getElementById(\'novaDreamMember\').value)">' + d.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">游艺</h4><div class="c-train-grid">' + (N().plays || []).map(function (p) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + p.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(p.cost) : ('耗资 ' + fmt(p.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="doNovaPlay(\'' + p.id + '\',+document.getElementById(\'novaDreamMember\').value)">' + p.name + '</button></div>';
             }).join('') + '</div>';
     }
@@ -920,13 +922,16 @@
         var box = el('novaSleepPanel');
         if (!box) return;
         ensureNovaData();
+        var restCost = (N().sleep && N().sleep.restCost) || 1500000;
         box.innerHTML = '<div class="c-form-row"><label>成员</label><select id="novaSleepMember" class="c-input">' + opts() + '</select></div>' +
             '<div class="c-train-grid">' + (N().supper || []).map(function (s) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
-                    '<div class="ms-title">' + s.name + '</div><div class="ms-desc">睡眠+' + s.sleep + '</div>' +
+                    '<div class="ms-title">' + s.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(s.cost, '睡眠+' + s.sleep) : ('耗资 ' + fmt(s.cost) + ' · 睡眠+' + s.sleep)) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-green" onclick="doNovaSupper(\'' + s.id + '\',+document.getElementById(\'novaSleepMember\').value)">' + s.name + '</button></div>';
             }).join('') + '</div>' +
-            '<button class="c-btn c-btn-gold" style="width:100%;margin-top:8px;" onclick="restNovaSleep(+document.getElementById(\'novaSleepMember\').value)">小憩回气</button>';
+            '<button class="c-btn c-btn-gold" style="width:100%;margin-top:8px;" onclick="restNovaSleep(+document.getElementById(\'novaSleepMember\').value)">小憩回气' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(restCost) : ('（耗资 ' + fmt(restCost) + '）')) + '</button>';
     }
 
     function updateNovaAdvPanel() {
@@ -939,6 +944,7 @@
                 var lock = a.needGen && g < a.needGen;
                 return '<div class="c-milestone' + (lock ? '' : ' done') + '" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-orange" ' + (lock ? 'disabled' : '') +
                     ' onclick="doNovaAdventure(\'' + a.id + '\',+document.getElementById(\'novaAdvMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
@@ -947,6 +953,7 @@
                 var on = Date.now() < (player.children.descNova.charmUntil[c.id] || 0);
                 return '<div class="c-milestone' + (on ? ' done' : '') + '" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + c.name + (on ? ' · 生效中' : '') + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(c.cost) : ('耗资 ' + fmt(c.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-purple" onclick="castNovaCharm(\'' + c.id + '\')">请符</button></div>';
             }).join('') + '</div>';
     }
@@ -959,6 +966,7 @@
             '<div class="c-train-grid">' + (N().parentNight || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doNovaParentNight(\'' + a.id + '\',+document.getElementById(\'novaParentMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>';
     }
@@ -996,9 +1004,14 @@
                 return '<li>' + (m ? m.name : id) + (idx === 0 ? ' ★' : '') + '</li>';
             }).join('') + '</ol>';
         }
+        var birthCost = (N().birthday && N().birthday.cost) || 20000000;
+        var letterCost = (N().futureLetter && N().futureLetter.cost) || 10000000;
+        var rankCost = (N().ranking && N().ranking.refreshCost) || 5000000;
         box.innerHTML = '<div class="c-form-row"><label>成员</label><select id="novaMiscMember" class="c-input">' + opts() + '</select></div>' +
-            '<button class="c-btn c-btn-gold" style="width:100%;margin-top:4px;" onclick="celebrateNovaBirthday(+document.getElementById(\'novaMiscMember\').value)">办生辰礼（每人12h）</button>' +
-            '<button class="c-btn c-btn-pink" style="width:100%;margin-top:6px;" onclick="writeNovaFutureLetter(+document.getElementById(\'novaMiscMember\').value)">写/拆未来家书</button>' +
+            '<button class="c-btn c-btn-gold" style="width:100%;margin-top:4px;" onclick="celebrateNovaBirthday(+document.getElementById(\'novaMiscMember\').value)">办生辰礼' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(birthCost, '每人12h') : ('（耗资 ' + fmt(birthCost) + ' · 每人12h）')) + '</button>' +
+            '<button class="c-btn c-btn-pink" style="width:100%;margin-top:6px;" onclick="writeNovaFutureLetter(+document.getElementById(\'novaMiscMember\').value)">写/拆未来家书' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(letterCost) : ('（耗资 ' + fmt(letterCost) + '）')) + '</button>' +
             '<div class="c-form-row" style="margin-top:10px;"><label>契约徒弟</label><select id="novaContractPupil" class="c-input">' + opts(function (m) { return !isAdult(m); }) + '</select></div>' +
             '<div class="c-form-row"><label>契约师父</label><select id="novaContractMentor" class="c-input">' + opts(isAdult) + '</select></div>' +
             '<button class="c-btn c-btn-blue" style="width:100%;" onclick="upgradeNovaContract(+document.getElementById(\'novaContractPupil\').value,+document.getElementById(\'novaContractMentor\').value)">契约学徒升级（约 ' + fmt((N().contract && N().contract.costBase) || 45000000) + ' 起 · 12h）</button>' +
@@ -1006,7 +1019,8 @@
             (typeof lineageCostTag === 'function'
                 ? lineageCostTag(Math.floor(N().camp.costBase * Math.pow(N().camp.growth, d.campLv || 0)), '12h')
                 : ('（' + fmt(Math.floor(N().camp.costBase * Math.pow(N().camp.growth, d.campLv || 0))) + '）')) + '</button>' +
-            '<button class="c-btn c-btn-purple" style="width:100%;margin-top:6px;" onclick="refreshNovaRanking()">刷新子弟排行</button>' + rankHtml;
+            '<button class="c-btn c-btn-purple" style="width:100%;margin-top:6px;" onclick="refreshNovaRanking()">刷新子弟排行' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(rankCost) : ('（耗资 ' + fmt(rankCost) + '）')) + '</button>' + rankHtml;
     }
 
     window.updateDescNovaPanels = function () {

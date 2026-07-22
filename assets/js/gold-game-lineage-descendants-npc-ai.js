@@ -642,7 +642,8 @@
         (N().council || []).forEach(function (t) {
             var cd = C.cdHint(d.councilCd[t.id]);
             html += '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
-                '<div class="ms-title">' + t.name + '</div><div class="ms-desc">' + C.fmt(t.cost) + (cd ? ' · ' + cd : '') + '</div>' +
+                '<div class="ms-title">' + t.name + '</div>' +
+                '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(t.cost, cd || null) : (('耗资 ' + C.fmt(t.cost)) + (cd ? ' · ' + cd : ''))) + '</div>' +
                 '<button class="c-btn c-btn-sm c-btn-gold" onclick="startNpcCouncil(\'' + t.id +
                 '\',document.getElementById(\'npcAiA\').value,document.getElementById(\'npcAiB\').value,document.getElementById(\'npcAiC\').value,+document.getElementById(\'npcAiMember\').value)">开会</button></div>';
         });
@@ -654,7 +655,8 @@
             html += '<div class="c-hint">' + rum.title + '：' + rum.text +
                 (d.activeRumor.investigated ? '（已查）' : '') + '</div>';
             if (!d.activeRumor.investigated) {
-                html += '<button class="c-btn c-btn-orange" style="width:100%;margin-top:4px;" onclick="investigateNpcRumor(+document.getElementById(\'npcAiMember\').value)">出资调查（' + C.fmt(rum.investigateCost) + '）</button>';
+                html += '<button class="c-btn c-btn-orange" style="width:100%;margin-top:4px;" onclick="investigateNpcRumor(+document.getElementById(\'npcAiMember\').value)">出资调查' +
+                    (typeof lineageCostTag === 'function' ? lineageCostTag(rum.investigateCost) : ('（耗资 ' + C.fmt(rum.investigateCost) + '）')) + '</button>';
             }
         } else html += '<div class="c-hint">暂无传闻</div>';
 
@@ -662,6 +664,7 @@
         (N().outings || []).forEach(function (o) {
             html += '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                 '<div class="ms-title">' + o.name + '</div>' +
+                '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(o.cost) : ('耗资 ' + C.fmt(o.cost))) + '</div>' +
                 '<button class="c-btn c-btn-sm c-btn-pink" onclick="doNpcOuting(\'' + o.id +
                 '\',document.getElementById(\'npcAiA\').value,+document.getElementById(\'npcAiMember\').value)">' + o.name + '</button></div>';
         });
@@ -673,19 +676,28 @@
             var done = step >= arc.steps.length;
             var st = arc.steps[Math.min(step, arc.steps.length - 1)];
             var npc = npcById(arc.npc);
+            var arcDesc = (npc ? npc.name : '') + ' · ' + (done ? '已完结' : ('下一步：' + st.name + '（' + (step + 1) + '/' + arc.steps.length + '）'));
             html += '<div class="c-milestone' + (done ? ' done' : '') + '" style="flex-direction:column;align-items:stretch;">' +
                 '<div class="ms-title">' + arc.name + '</div>' +
-                '<div class="ms-desc">' + (npc ? npc.name : '') + ' · ' + (done ? '已完结' : ('下一步：' + st.name + '（' + (step + 1) + '/' + arc.steps.length + '）')) + '</div>' +
+                '<div class="ms-desc">' + (done ? arcDesc : (typeof lineageMsCost === 'function' ? lineageMsCost(st.cost, arcDesc) : (('耗资 ' + C.fmt(st.cost)) + ' · ' + arcDesc))) + '</div>' +
                 '<button class="c-btn c-btn-sm c-btn-blue" ' + (done ? 'disabled' : '') +
                 ' onclick="advanceNpcArc(\'' + arc.id + '\',+document.getElementById(\'npcAiMember\').value)">' + (done ? '完结' : '推进') + '</button></div>';
         });
         html += '</div>';
 
+        var debateCost = (N().debate && N().debate.cost) || 15000000;
+        var matchCost = (N().matchAdvice && N().matchAdvice.cost) || 18000000;
+        var mediateCost = (N().mediateNpc && N().mediateNpc.cost) || 20000000;
+        var dreamCost = (N().dreamCouncil && N().dreamCouncil.cost) || 35000000;
         html += '<h4 style="color:#E8C4A8;margin:12px 0 6px;">论辩 · 红线 · 劝和 · 托梦</h4>';
-        html += '<button class="c-btn c-btn-orange" style="width:100%;margin-top:4px;" onclick="debateNpc(document.getElementById(\'npcAiA\').value,+document.getElementById(\'npcAiMember\').value)">与A论辩（塾师/捕快/半仙/掌柜）</button>';
-        html += '<button class="c-btn c-btn-pink" style="width:100%;margin-top:6px;" onclick="askMatchAdvice(+document.getElementById(\'npcAiMember\').value)">请王媒婆做红线参谋</button>';
-        html += '<button class="c-btn c-btn-blue" style="width:100%;margin-top:6px;" onclick="mediateTwoNpcs(document.getElementById(\'npcAiA\').value,document.getElementById(\'npcAiB\').value,+document.getElementById(\'npcAiMember\').value)">劝和 A 与 B</button>';
-        html += '<button class="c-btn c-btn-purple" style="width:100%;margin-top:6px;" onclick="dreamNpcCouncil(+document.getElementById(\'npcAiMember\').value)">袁半仙·托梦问策</button>';
+        html += '<button class="c-btn c-btn-orange" style="width:100%;margin-top:4px;" onclick="debateNpc(document.getElementById(\'npcAiA\').value,+document.getElementById(\'npcAiMember\').value)">与A论辩（塾师/捕快/半仙/掌柜）' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(debateCost) : ('（耗资 ' + C.fmt(debateCost) + '）')) + '</button>';
+        html += '<button class="c-btn c-btn-pink" style="width:100%;margin-top:6px;" onclick="askMatchAdvice(+document.getElementById(\'npcAiMember\').value)">请王媒婆做红线参谋' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(matchCost) : ('（耗资 ' + C.fmt(matchCost) + '）')) + '</button>';
+        html += '<button class="c-btn c-btn-blue" style="width:100%;margin-top:6px;" onclick="mediateTwoNpcs(document.getElementById(\'npcAiA\').value,document.getElementById(\'npcAiB\').value,+document.getElementById(\'npcAiMember\').value)">劝和 A 与 B' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(mediateCost) : ('（耗资 ' + C.fmt(mediateCost) + '）')) + '</button>';
+        html += '<button class="c-btn c-btn-purple" style="width:100%;margin-top:6px;" onclick="dreamNpcCouncil(+document.getElementById(\'npcAiMember\').value)">袁半仙·托梦问策' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(dreamCost) : ('（耗资 ' + C.fmt(dreamCost) + '）')) + '</button>';
 
         if (d.lastAiLog && d.lastAiLog.length) {
             html += '<div class="c-hint" style="margin-top:12px;">AI 互动日志</div><ul style="font-size:12px;padding-left:18px;">';

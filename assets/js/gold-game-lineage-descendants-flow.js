@@ -383,11 +383,8 @@
     }
 
     function pay(cost) {
-        if ((funds().funds != null ? funds().funds : funds().availableFunds) < cost) {
-            // prefer availableFunds used elsewhere
-        }
         var ud = funds();
-        var bal = ud.availableFunds != null ? ud.availableFunds : ud.funds;
+        var bal = ud.availableFunds != null ? ud.availableFunds : (ud.funds || 0);
         if ((bal || 0) < cost) {
             logAction('资金不足（需 ' + fmt(cost) + '）', 'error');
             return false;
@@ -731,11 +728,13 @@
             '<h4 style="color:#E8C4A8;margin:8px 0;">节气功课</h4><div class="c-train-grid">' + (F().jieqi || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doFlowJieqi(\'' + a.id + '\',+document.getElementById(\'flowTimeMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">时辰作息</h4><div class="c-train-grid">' + (F().shichen || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="doFlowShichen(\'' + a.id + '\',+document.getElementById(\'flowTimeMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>';
     }
@@ -744,21 +743,28 @@
         var box = el('flowPursePanel');
         if (!box) return;
         ensureFlowData();
+        var purseUp = F().purse.upgrade.costBase;
+        var purseTag = typeof lineageCostTag === 'function'
+            ? lineageCostTag(purseUp, '下级起 · 12h')
+            : ('（下级起 耗资 ' + fmt(purseUp) + ' · 12h）');
         box.innerHTML = '<div class="c-form-row"><label>成员</label><select id="flowPurseMember" class="c-input">' + opts() + '</select></div>' +
-            '<button class="c-btn c-btn-gold" style="width:100%;margin:6px 0;" onclick="upgradeFlowPurse(+document.getElementById(\'flowPurseMember\').value)">升级私房账本（12h）</button>' +
+            '<button class="c-btn c-btn-gold" style="width:100%;margin:6px 0;" onclick="upgradeFlowPurse(+document.getElementById(\'flowPurseMember\').value)">升级私房账本' + purseTag + '</button>' +
             '<h4 style="color:#E8C4A8;margin:8px 0;">积蓄</h4><div class="c-train-grid">' + (F().purse.saveActs || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-green" onclick="doFlowPurseSave(\'' + a.id + '\',+document.getElementById(\'flowPurseMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">花用</h4><div class="c-train-grid">' + (F().purse.spendActs || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
-                    '<div class="ms-title">' + a.name + '</div><div class="ms-desc">需私房 ' + a.purseNeed + '</div>' +
+                    '<div class="ms-title">' + a.name + '</div><div class="ms-desc">需私房 ' + a.purseNeed +
+                    (a.cost ? (' · ' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost)))) : '') + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-orange" onclick="doFlowPurseSpend(\'' + a.id + '\',+document.getElementById(\'flowPurseMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">市井传闻</h4><div class="c-train-grid">' + (F().rumors || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-purple" onclick="doFlowRumor(\'' + a.id + '\',+document.getElementById(\'flowPurseMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>';
     }
@@ -771,16 +777,19 @@
             '<h4 style="color:#E8C4A8;margin:8px 0;">结义金兰</h4><div class="c-train-grid">' + (F().sworn || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doFlowSworn(\'' + a.id + '\',+document.getElementById(\'flowSocialMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">远行驿站</h4><div class="c-train-grid">' + (F().post || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-orange" onclick="doFlowPost(\'' + a.id + '\',+document.getElementById(\'flowSocialMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">夜巡</h4><div class="c-train-grid">' + (F().patrol || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="doFlowPatrol(\'' + a.id + '\',+document.getElementById(\'flowSocialMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>';
     }
@@ -789,41 +798,51 @@
         var box = el('flowSecretPanel');
         if (!box) return;
         ensureFlowData();
+        var wenCost = (F().ranks.wen[0] || {}).cost;
+        var wuCost = (F().ranks.wu[0] || {}).cost;
+        var wenTag = typeof lineageCostTag === 'function' ? lineageCostTag(wenCost, '按当前段位') : ('（耗资 ' + fmt(wenCost) + ' · 按段位）');
+        var wuTag = typeof lineageCostTag === 'function' ? lineageCostTag(wuCost, '按当前段位') : ('（耗资 ' + fmt(wuCost) + ' · 按段位）');
         box.innerHTML = '<div class="c-form-row"><label>成员</label><select id="flowSecretMember" class="c-input">' + opts() + '</select></div>' +
             '<h4 style="color:#E8C4A8;margin:8px 0;">家传秘技（12h）</h4><div class="c-train-grid">' + (F().secrets || []).map(function (s) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + s.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(s.costBase, '12h') : ('耗资 ' + fmt(s.costBase) + ' · 12h')) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-gold" onclick="upgradeFlowSecret(+document.getElementById(\'flowSecretMember\').value,\'' + s.id + '\')">修习</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">先祖残影</h4><div class="c-train-grid">' + (F().echo || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-purple" onclick="doFlowEcho(\'' + a.id + '\',+document.getElementById(\'flowSecretMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">文社 · 武馆</h4>' +
-            '<button class="c-btn c-btn-blue" style="width:48%;" onclick="promoteFlowRank(+document.getElementById(\'flowSecretMember\').value,\'wen\')">文社晋升</button> ' +
-            '<button class="c-btn c-btn-orange" style="width:48%;" onclick="promoteFlowRank(+document.getElementById(\'flowSecretMember\').value,\'wu\')">武馆晋升</button>';
+            '<button class="c-btn c-btn-blue" style="width:48%;" onclick="promoteFlowRank(+document.getElementById(\'flowSecretMember\').value,\'wen\')">文社晋升' + wenTag + '</button> ' +
+            '<button class="c-btn c-btn-orange" style="width:48%;" onclick="promoteFlowRank(+document.getElementById(\'flowSecretMember\').value,\'wu\')">武馆晋升' + wuTag + '</button>';
     }
 
     function updateFlowLifePanel() {
         var box = el('flowLifePanel');
         if (!box) return;
         ensureFlowData();
+        var torchCost = F().torch.passCost;
+        var torchTag = typeof lineageCostTag === 'function' ? lineageCostTag(torchCost) : ('（耗资 ' + fmt(torchCost) + '）');
         box.innerHTML = '<div class="c-form-row"><label>成员</label><select id="flowLifeMember" class="c-input">' + opts() + '</select></div>' +
             '<h4 style="color:#E8C4A8;margin:8px 0;">灾后重建</h4><div class="c-train-grid">' + (F().rebuild || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-green" onclick="doFlowRebuild(\'' + a.id + '\',+document.getElementById(\'flowLifeMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">姻缘线（成婚·非生育）</h4><div class="c-train-grid">' + (F().redline || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doFlowRedline(\'' + a.id + '\',+document.getElementById(\'flowLifeMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">传火接力</h4>' +
             '<div class="c-form-row"><label>传火者</label><select id="flowTorchMentor" class="c-input">' + opts(isAdult) + '</select></div>' +
             '<div class="c-form-row"><label>接火者</label><select id="flowTorchPupil" class="c-input">' + opts() + '</select></div>' +
-            '<button class="c-btn c-btn-gold" style="width:100%;" onclick="doFlowTorch(+document.getElementById(\'flowTorchMentor\').value,+document.getElementById(\'flowTorchPupil\').value)">传火</button>';
+            '<button class="c-btn c-btn-gold" style="width:100%;" onclick="doFlowTorch(+document.getElementById(\'flowTorchMentor\').value,+document.getElementById(\'flowTorchPupil\').value)">传火' + torchTag + '</button>';
     }
 
     window.updateDescFlowPanels = function () {

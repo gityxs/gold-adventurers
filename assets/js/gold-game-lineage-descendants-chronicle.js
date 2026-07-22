@@ -413,11 +413,14 @@
     }
 
     function pay(cost) {
-        if ((funds().funds || 0) < cost) {
+        var ud = funds();
+        var bal = ud.availableFunds != null ? ud.availableFunds : (ud.funds || 0);
+        if ((bal || 0) < cost) {
             logAction('资金不足（需 ' + fmt(cost) + '）', 'error');
             return false;
         }
-        funds().funds -= cost;
+        if (ud.availableFunds != null) ud.availableFunds -= cost;
+        else ud.funds -= cost;
         return true;
     }
 
@@ -765,19 +768,25 @@
         var box = el('chroBioOfficePanel');
         if (!box) return;
         ensureChronicleData();
+        var officeBase = (C().offices[0] || {}).costBase;
+        var officeTag = typeof lineageCostTag === 'function'
+            ? lineageCostTag(officeBase, '按当前闲职下级计 · 12h')
+            : ('（下级起 ' + fmt(officeBase) + ' · 12h · 按等级）');
         box.innerHTML = '<div class="c-form-row"><label>子弟</label><select id="chroBioMember" class="c-input">' + opts() + '</select></div>' +
             '<h4 style="color:#E8C4A8;margin:8px 0;">列传编纂</h4><div class="c-train-grid">' + (C().bio || []).map(function (p) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + p.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(p.cost) : ('耗资 ' + fmt(p.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-gold" onclick="writeChronicleBio(+document.getElementById(\'chroBioMember\').value,\'' + p.id + '\')">写入</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">族中闲职</h4>' +
             '<div class="c-train-grid">' + (C().offices || []).map(function (o) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + o.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(8000000) : ('耗资 ' + fmt(8000000))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="assignChronicleOffice(+document.getElementById(\'chroBioMember\').value,\'' + o.id + '\')">任命</button></div>';
             }).join('') + '</div>' +
-            '<button class="c-btn c-btn-orange" style="width:100%;margin-top:8px;" onclick="upgradeChronicleOffice(+document.getElementById(\'chroBioMember\').value)">升级当前闲职（12h）</button>';
+            '<button class="c-btn c-btn-orange" style="width:100%;margin-top:8px;" onclick="upgradeChronicleOffice(+document.getElementById(\'chroBioMember\').value)">升级当前闲职' + officeTag + '</button>';
     }
 
     function updateChroMarketPanel() {
@@ -788,16 +797,19 @@
             '<h4 style="color:#E8C4A8;margin:8px 0;">市井摊位</h4><div class="c-train-grid">' + (C().stalls || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-green" onclick="doChronicleStall(\'' + a.id + '\',+document.getElementById(\'chroMarketMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">善行功德</h4><div class="c-train-grid">' + (C().deeds || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doChronicleDeed(\'' + a.id + '\',+document.getElementById(\'chroMarketMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">邻里调解</h4><div class="c-train-grid">' + (C().mediate || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="doChronicleMediate(\'' + a.id + '\',+document.getElementById(\'chroMarketMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>';
     }
@@ -810,16 +822,19 @@
             '<h4 style="color:#E8C4A8;margin:8px 0;">藏书借阅</h4><div class="c-train-grid">' + (C().books || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="doChronicleBook(\'' + a.id + '\',+document.getElementById(\'chroStudyMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">武馆日课</h4><div class="c-train-grid">' + (C().dojo || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-orange" onclick="doChronicleDojo(\'' + a.id + '\',+document.getElementById(\'chroStudyMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">观星</h4><div class="c-train-grid">' + (C().stars || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-purple" onclick="doChronicleStar(\'' + a.id + '\',+document.getElementById(\'chroStudyMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>';
     }
@@ -828,19 +843,23 @@
         var box = el('chroWildPanel');
         if (!box) return;
         ensureChronicleData();
+        var cupCost = C().seasonCup.entryCost;
+        var cupTag = typeof lineageCostTag === 'function' ? lineageCostTag(cupCost) : ('（耗资 ' + fmt(cupCost) + '）');
         box.innerHTML = '<div class="c-form-row"><label>成员</label><select id="chroWildMember" class="c-input">' + opts() + '</select></div>' +
             '<h4 style="color:#E8C4A8;margin:8px 0;">渔猎采药</h4><div class="c-train-grid">' + (C().forage || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-green" onclick="doChronicleForage(\'' + a.id + '\',+document.getElementById(\'chroWildMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">寻宝考古</h4><div class="c-train-grid">' + (C().dig || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-gold" onclick="doChronicleDig(\'' + a.id + '\',+document.getElementById(\'chroWildMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">赛季比试</h4>' +
-            '<button class="c-btn c-btn-orange" style="width:100%;" onclick="enterChronicleCup(+document.getElementById(\'chroWildMember\').value)">报名参赛（成年）</button>';
+            '<button class="c-btn c-btn-orange" style="width:100%;" onclick="enterChronicleCup(+document.getElementById(\'chroWildMember\').value)">报名参赛（成年）' + cupTag + '</button>';
     }
 
     function updateChroLifePanel() {
@@ -851,26 +870,31 @@
             '<h4 style="color:#E8C4A8;margin:8px 0;">乡音歌谣</h4><div class="c-train-grid">' + (C().songs || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-pink" onclick="doChronicleSong(\'' + a.id + '\',+document.getElementById(\'chroLifeMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">仪容服饰</h4><div class="c-train-grid">' + (C().attire || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-purple" onclick="doChronicleAttire(\'' + a.id + '\',+document.getElementById(\'chroLifeMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">小宠</h4><div class="c-train-grid">' + (C().pets || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-green" onclick="doChroniclePet(\'' + a.id + '\',+document.getElementById(\'chroLifeMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">友书往来</h4><div class="c-train-grid">' + (C().letters || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="doChronicleLetter(\'' + a.id + '\',+document.getElementById(\'chroLifeMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>' +
             '<h4 style="color:#E8C4A8;margin:12px 0 8px;">厨艺</h4><div class="c-train-grid">' + (C().cook || []).map(function (a) {
                 return '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                     '<div class="ms-title">' + a.name + '</div>' +
+                    '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + fmt(a.cost))) + '</div>' +
                     '<button class="c-btn c-btn-sm c-btn-orange" onclick="doChronicleCook(\'' + a.id + '\',+document.getElementById(\'chroLifeMember\').value)">' + a.name + '</button></div>';
             }).join('') + '</div>';
     }

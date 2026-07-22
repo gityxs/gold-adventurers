@@ -88,7 +88,7 @@ function getNextHuaShengRequirement() {
     return 30 + count * 5;
 }
 
-// 化圣：属性 ×100，轮回次数回到 30
+// 化圣：属性 ×100，保留当前轮回数
 function huaShengPlayer() {
     // 化圣计数 +1
     player.level.huaShengCount = Math.floor(Number(player.level.huaShengCount) || 0) + 1;
@@ -96,11 +96,7 @@ function huaShengPlayer() {
     // 每次化圣属性提升 100 倍（乘法叠加）
     player.level.huaShengMultiplier = (Number(player.level.huaShengMultiplier) || 1) * 100;
 
-    // 轮回次数回到 30 次
-    player.level.ascentionCounta = 30;
-    player.level.ascentionMultipliera = player.level.ascentionCounta * 2;
-
-    // 化圣后沿用玩家等级重置逻辑（保持为 1 级）
+    // 化圣后沿用玩家等级重置逻辑（保持为 1 级），轮回数与轮回加成保留不变
     player.level.current = 1;
     player.level.ascentionCount = 0;
     player.level.ascentionMultiplier = 1;
@@ -111,7 +107,7 @@ function huaShengPlayer() {
     player.level.clickBonus = player.level.current * 1 * player.level.ascentionMultiplier * player.level.ascentionMultipliera * huaShengMul;
     player.level.gpsBonus = player.level.current * 1 * player.level.ascentionMultiplier * player.level.ascentionMultipliera * huaShengMul;
 
-    logAction(`化圣成功！化圣次数：${player.level.huaShengCount}，化圣倍率：${formatSci(player.level.huaShengMultiplier)}x（轮回回到30）`, 'success');
+    logAction(`化圣成功！化圣次数：${player.level.huaShengCount}，化圣倍率：${formatSci(player.level.huaShengMultiplier)}x（轮回保留${player.level.ascentionCounta}转）`, 'success');
     player.level.reincarnationEligibleHintForAca = null;
     updateLevelUI();
     updateDisplay();

@@ -4,8 +4,8 @@
  * 局终复盘 / 怪物·变异图鉴 UI / 新手引导 / 构筑与房间补强
  */
 const TSR_SEASON_LEN_DAYS = 28;
-/** 赛季经验获取总倍率（下降为五分之一） */
-const TSR_SEASON_XP_GAIN_SCALE = 0.2;
+/** 赛季经验获取总倍率（下降为百分之一） */
+const TSR_SEASON_XP_GAIN_SCALE = 0.01;
 /** 赛季纪元：自该日起为 S1（原按 2026-01-01 会落到 S7） */
 const TSR_SEASON_EPOCH_UTC = Date.UTC(2026, 5, 18);
 const TSR_SEASON_MAX_LEVEL = 50;
@@ -94,7 +94,7 @@ const TSR_ENVIRONMENTS = {
 };
 
 const TSR_WORLD_RELICS = {
-    seasonBadge: { name: '赛季徽章', icon: '🏅', desc: '赛季经验+20%，秘境币+6%', effect: 'currency', value: 0.06 },
+    seasonBadge: { name: '赛季徽章', icon: '🏅', desc: '赛季经验+10%，秘境币+6%', effect: 'currency', value: 0.06 },
     factionSigil: { name: '派系符印', icon: '🛡️', desc: '声望获取+25%，特殊房+4%', effect: 'specialRoom', value: 0.04 },
     envWard: { name: '气候护符', icon: '🌈', desc: '环境负面减半，反击-4%', effect: 'counterReduce', value: 0.04 },
     rushCrown: { name: '冲刺冠', icon: '👑', desc: '首领冲刺奖励+20%，攻击+8%', effect: 'attack', value: 0.08 },
@@ -174,7 +174,7 @@ function getTsrSeasonTier() {
 function addTsrSeasonXP(amount, reason) {
     if (typeof isTsrTutorialRun === 'function' && isTsrTutorialRun()) return 0;
     const s = ensureTsrSeason();
-    const bonus = (player.timeSecretRealm?.currentRun?.relics || []).includes('seasonBadge') ? 1.2 : 1;
+    const bonus = (player.timeSecretRealm?.currentRun?.relics || []).includes('seasonBadge') ? 1.1 : 1;
     const gain = Math.max(0, Math.floor(amount * bonus * TSR_SEASON_XP_GAIN_SCALE));
     if (!gain) return 0;
     const before = getTsrSeasonTier();
@@ -440,9 +440,8 @@ function continueTsrBossRush() {
         run.bossRushCleared = true;
         if (!tsr.lifetimeStats) tsr.lifetimeStats = {};
         tsr.lifetimeStats.bossRushClears = (tsr.lifetimeStats.bossRushClears || 0) + 1;
-        addTsrSeasonXP(180, '首领冲刺通关');
-        addTsrPermanentCurrency?.(1000);
-        addTsrLog('👹 首领冲刺全通！+1000秘境币', 'success');
+        addTsrPermanentCurrency?.(100);
+        addTsrLog('👹 首领冲刺全通！+100秘境币', 'success');
         checkTsrWorldAchievements();
         endTimeSecretRealm('bossRushClear');
         return;
@@ -1063,8 +1062,9 @@ function initTsrWorldExtensions() {
         onTsrMonsterBattleVictory = function (monster) {
             if (typeof _prev === 'function') _prev(monster);
             recordTsrMonsterCodex(monster);
-            addTsrSeasonXP(8 + (monster?.tier === 'mythic' ? 20 : monster?.tier === 'legendary' ? 12 : 0), null);
-            if (player.timeSecretRealm?.currentRun?.isBossRush) addTsrSeasonXP(25, '冲刺击破');
+            if (!player.timeSecretRealm?.currentRun?.isBossRush) {
+                addTsrSeasonXP(8 + (monster?.tier === 'mythic' ? 20 : monster?.tier === 'legendary' ? 12 : 0), null);
+            }
         };
         onTsrMonsterBattleVictory.__tsrWorldPatched = true;
     } else if (typeof onTsrMonsterBattleVictory !== 'function') {
@@ -1083,12 +1083,15 @@ function initTsrWorldExtensions() {
                 ? resolveTsrEndClearFlags(reason)
                 : { seasonFullXp: false, debriefAsCleared: false, factionRep: false };
             const debrief = buildTsrDebrief(reason, !!flags.debriefAsCleared);
-            if (flags.seasonFullXp) {
-                addTsrSeasonXP(80 + (run?.currentFloor || 0) * 2, flags.isChallenge ? '挑战结算' : '通关结算');
-                const pledged = ensureTsrFactions().pledged;
-                if (flags.factionRep && pledged) addTsrFactionRep(pledged, 6, flags.isChallenge ? '挑战' : '通关');
-            } else {
-                addTsrSeasonXP(15 + Math.floor((run?.currentFloor || 1) * 1.5), '撤离结算');
+            const isBossRushEnd = !!(run?.isBossRush || reason === 'bossRushClear');
+            if (!isBossRushEnd) {
+                if (flags.seasonFullXp) {
+                    addTsrSeasonXP(80 + (run?.currentFloor || 0) * 2, flags.isChallenge ? '挑战结算' : '通关结算');
+                    const pledged = ensureTsrFactions().pledged;
+                    if (flags.factionRep && pledged) addTsrFactionRep(pledged, 6, flags.isChallenge ? '挑战' : '通关');
+                } else {
+                    addTsrSeasonXP(15 + Math.floor((run?.currentFloor || 1) * 1.5), '撤离结算');
+                }
             }
             _orig(reason);
             setTimeout(() => showTsrDebrief(debrief), 200);

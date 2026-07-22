@@ -147,6 +147,26 @@ window.formatAbyssOnlineChatTime = function(ts) {
     return y + '-' + mm + '-' + dd + ' ' + hh + ':' + mi + ':' + ss;
 };
 window._abyssOnlineChatListIds = ['abyssOnlineChatList', 'gameLogAbyssChatList'];
+window._abyssOnlineChatScrollLocked = false;
+window.setAbyssOnlineChatScrollLock = function(locked) {
+    window._abyssOnlineChatScrollLocked = !!locked;
+    var cb = document.getElementById('gameLogAbyssChatScrollLock');
+    if (cb && cb.checked !== window._abyssOnlineChatScrollLocked) cb.checked = window._abyssOnlineChatScrollLocked;
+    var floatCb = document.getElementById('abyssOnlineChatScrollLock');
+    if (floatCb && floatCb.checked !== window._abyssOnlineChatScrollLocked) floatCb.checked = window._abyssOnlineChatScrollLocked;
+};
+window.isAbyssOnlineChatScrollLocked = function() {
+    var cb = document.getElementById('gameLogAbyssChatScrollLock');
+    if (cb) window._abyssOnlineChatScrollLocked = !!cb.checked;
+    return !!window._abyssOnlineChatScrollLocked;
+};
+window._applyAbyssOnlineChatListHtml = function(box, html, locked) {
+    if (!box) return;
+    var prevTop = box.scrollTop;
+    box.innerHTML = html;
+    if (locked) box.scrollTop = prevTop;
+    else box.scrollTop = box.scrollHeight;
+};
 window._buildAbyssOnlineChatHtml = function(list, theme) {
     var arr = Array.isArray(list) ? list : [];
     var maxId = window._abyssOnlineChatLastRenderedId || 0;
@@ -186,17 +206,14 @@ window.renderAbyssOnlineChat = function(list) {
     var floatBox = document.getElementById('abyssOnlineChatList');
     var logBox = document.getElementById('gameLogAbyssChatList');
     if (!floatBox && !logBox) return;
+    var locked = typeof window.isAbyssOnlineChatScrollLocked === 'function'
+        ? window.isAbyssOnlineChatScrollLocked()
+        : !!window._abyssOnlineChatScrollLocked;
     var dark = window._buildAbyssOnlineChatHtml(list, 'dark');
     var light = window._buildAbyssOnlineChatHtml(list, 'light');
     window._abyssOnlineChatLastRenderedId = Math.max(dark.maxId, light.maxId);
-    if (floatBox) {
-        floatBox.innerHTML = dark.html;
-        floatBox.scrollTop = floatBox.scrollHeight;
-    }
-    if (logBox) {
-        logBox.innerHTML = light.html;
-        logBox.scrollTop = logBox.scrollHeight;
-    }
+    if (floatBox) window._applyAbyssOnlineChatListHtml(floatBox, dark.html, locked);
+    if (logBox) window._applyAbyssOnlineChatListHtml(logBox, light.html, locked);
 };
 window.pollAbyssOnlineChat = function() {
     if (typeof goldGameGetAbyssChat !== 'function') return;

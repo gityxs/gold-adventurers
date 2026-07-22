@@ -363,9 +363,9 @@
         const LANDLORD_GENE_TREE_FRUIT_PER_LEVEL = 500;
         const LANDLORD_GENE_TREE_ORDER = ['彩光', '炫彩', '琉璃', '琥珀'];
         const LANDLORD_GENE_TREE_DEFS = {
-            '彩光': { icon: '🌈', attackPerLevel: 1, healthPerLevel: 0, critDamagePerLevel: 0, expPerLevel: 0, sub: '每级世界地图总攻击 +100%' },
-            '炫彩': { icon: '✨', attackPerLevel: 0, healthPerLevel: 1, critDamagePerLevel: 0, expPerLevel: 0, sub: '每级世界地图总生命 +100%' },
-            '琉璃': { icon: '💎', attackPerLevel: 3, healthPerLevel: 3, critDamagePerLevel: 3, expPerLevel: 0, sub: '每级世界地图攻击/生命/爆伤各 +300%' },
+            '彩光': { icon: '🌈', attackPerLevel: 1, healthPerLevel: 0, critDamagePerLevel: 0, expPerLevel: 0.01, sub: '每级世界地图总攻击 +100%，经验 +1%' },
+            '炫彩': { icon: '✨', attackPerLevel: 0, healthPerLevel: 1, critDamagePerLevel: 0, expPerLevel: 0.02, sub: '每级世界地图总生命 +100%，经验 +2%' },
+            '琉璃': { icon: '💎', attackPerLevel: 3, healthPerLevel: 3, critDamagePerLevel: 3, expPerLevel: 0.03, sub: '每级世界地图攻击/生命/爆伤各 +300%，经验 +3%' },
             '琥珀': { icon: '🔶', attackPerLevel: 0, healthPerLevel: 0, critDamagePerLevel: 0, expPerLevel: 0.1, sub: '每级世界地图总经验 +10%' }
         };
         window.__landlordGeneTreeConstantsReady = true;

@@ -827,9 +827,12 @@
         var box = el('plusRankPanel');
         if (!box) return;
         ensurePlusData();
+        var ranks = P().ranks || [];
+        var startCost = ranks[0] ? ranks[0].cost : 0;
         box.innerHTML = '<div class="c-form-row"><label>成年</label><select id="plusRankMember" class="c-input">' + opts(isAdult) + '</select></div>' +
             '<p class="c-hint">功名：童生→秀才→举人→进士→翰林→国器（需声望）</p>' +
-            '<button class="c-btn c-btn-gold" style="width:100%;" onclick="promoteOfficialRank(+document.getElementById(\'plusRankMember\').value)">考取/晋升功名</button>' +
+            '<button class="c-btn c-btn-gold" style="width:100%;" onclick="promoteOfficialRank(+document.getElementById(\'plusRankMember\').value)">考取/晋升功名' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(startCost, '起') : ('（耗资 ' + fmt(startCost) + ' 起）')) + '</button>' +
             '<h4 style="margin:12px 0 8px;color:#E8C4A8;">分房立户</h4>' +
             '<button class="c-btn c-btn-orange" style="width:100%;" onclick="foundFamilyBranch(+document.getElementById(\'plusRankMember\').value)">分房立户（' +
             fmt(player.children.descPlus.branchReady ? 0 : P().branch.cost) + '）</button>' +

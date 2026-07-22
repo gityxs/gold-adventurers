@@ -361,4 +361,59 @@
         document.addEventListener('DOMContentLoaded', bootSubTabs);
         if (document.readyState !== 'loading') bootSubTabs();
     }
+
+    // —— 刷新后保留下拉选中人物（避免点一次升级又要重选）——
+    function snapshotChildSelects() {
+        var ui = document.getElementById('childSystemUI');
+        if (!ui || !ui.querySelectorAll) return null;
+        var map = {};
+        var list = ui.querySelectorAll('select');
+        for (var i = 0; i < list.length; i++) {
+            var s = list[i];
+            if (!s.id) continue;
+            map[s.id] = s.value;
+        }
+        return map;
+    }
+
+    function restoreChildSelects(map) {
+        if (!map) return;
+        Object.keys(map).forEach(function (id) {
+            var s = document.getElementById(id);
+            if (!s || !s.options || !s.options.length) return;
+            var v = String(map[id]);
+            var found = false;
+            for (var i = 0; i < s.options.length; i++) {
+                if (String(s.options[i].value) === v) { found = true; break; }
+            }
+            if (!found) return;
+            if (String(s.value) === v) return;
+            s.value = v;
+            try {
+                if (typeof s.onchange === 'function') s.onchange();
+                else if (s.dispatchEvent) s.dispatchEvent(new Event('change', { bubbles: true }));
+            } catch (e) { /* ignore */ }
+        });
+    }
+
+    var _preserveDepth = 0;
+    function withPreservedChildSelects(fn) {
+        if (typeof fn !== 'function') return fn;
+        return function () {
+            var snap = null;
+            if (_preserveDepth === 0) snap = snapshotChildSelects();
+            _preserveDepth++;
+            try {
+                return fn.apply(this, arguments);
+            } finally {
+                _preserveDepth--;
+                if (_preserveDepth === 0) restoreChildSelects(snap);
+            }
+        };
+    }
+
+    window.refreshActiveChildTabPanels = withPreservedChildSelects(window.refreshActiveChildTabPanels);
+    if (typeof window.updateChildSystemUI === 'function') {
+        window.updateChildSystemUI = withPreservedChildSelects(window.updateChildSystemUI);
+    }
 })();

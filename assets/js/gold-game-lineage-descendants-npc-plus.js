@@ -559,7 +559,8 @@
         html += '<h4 style="color:#E8C4A8;margin:10px 0 6px;">送礼</h4><div class="c-train-grid">';
         (N().gifts || []).forEach(function (g) {
             html += '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
-                '<div class="ms-title">' + g.name + '</div><div class="ms-desc">' + C.fmt(g.cost) + '</div>' +
+                '<div class="ms-title">' + g.name + '</div>' +
+                '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(g.cost) : ('耗资 ' + C.fmt(g.cost))) + '</div>' +
                 '<button class="c-btn c-btn-sm c-btn-pink" onclick="giftToNpc(\'' + g.id + '\',document.getElementById(\'npcPlusTarget\').value,+document.getElementById(\'npcPlusMember\').value)">赠送</button></div>';
         });
         html += '</div>';
@@ -568,6 +569,7 @@
         (N().invite || []).forEach(function (a) {
             html += '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                 '<div class="ms-title">' + a.name + '</div>' +
+                '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost) : ('耗资 ' + C.fmt(a.cost))) + '</div>' +
                 '<button class="c-btn c-btn-sm c-btn-gold" onclick="inviteNpc(\'' + a.id + '\',document.getElementById(\'npcPlusTarget\').value,+document.getElementById(\'npcPlusMember\').value)">' + a.name + '</button></div>';
         });
         html += '</div>';
@@ -576,10 +578,12 @@
         (N().commissions || []).forEach(function (a) {
             var npc = npcById(a.npc);
             var cd = C.cdHint(d.commCd[a.id]);
+            var extras = [(npc ? npc.name : ''), '好感≥' + a.needFavor];
+            if (cd) extras.push(cd);
+            if (a.earn) extras.push('入' + C.fmt(a.earn));
             html += '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                 '<div class="ms-title">' + a.name + '</div>' +
-                '<div class="ms-desc">' + (npc ? npc.name : '') + ' · 好感≥' + a.needFavor + (cd ? ' · ' + cd : '') +
-                (a.earn ? ' · 入' + C.fmt(a.earn) : '') + '</div>' +
+                '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost, extras) : (('耗资 ' + C.fmt(a.cost)) + ' · ' + extras.join(' · '))) + '</div>' +
                 '<button class="c-btn c-btn-sm c-btn-orange" onclick="doNpcCommission(\'' + a.id + '\',+document.getElementById(\'npcPlusMember\').value)">接委托</button></div>';
         });
         html += '</div>';
@@ -588,16 +592,20 @@
         (N().secrets || []).forEach(function (s) {
             var learned = !!d.secretsLearned[s.id];
             var npc = npcById(s.npc);
+            var secExtras = [(npc ? npc.name : ''), '好感≥' + s.needFavor];
+            if (learned) secExtras.push('已学');
             html += '<div class="c-milestone' + (learned ? ' done' : '') + '" style="flex-direction:column;align-items:stretch;">' +
                 '<div class="ms-title">' + s.name + '</div>' +
-                '<div class="ms-desc">' + (npc ? npc.name : '') + ' · 好感≥' + s.needFavor + (learned ? ' · 已学' : '') + '</div>' +
+                '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(s.cost, secExtras) : (('耗资 ' + C.fmt(s.cost)) + ' · ' + secExtras.join(' · '))) + '</div>' +
                 '<button class="c-btn c-btn-sm c-btn-purple" ' + (learned ? 'disabled' : '') +
                 ' onclick="learnNpcSecret(\'' + s.id + '\',+document.getElementById(\'npcPlusMember\').value)">' + (learned ? '已习得' : '请授') + '</button></div>';
         });
         html += '</div>';
 
         html += '<h4 style="color:#E8C4A8;margin:12px 0 6px;">知己誓约（好感≥90，12h）</h4>';
-        html += '<button class="c-btn c-btn-gold" style="width:100%;" onclick="swearNpcOath(document.getElementById(\'npcPlusTarget\').value,+document.getElementById(\'npcPlusMember\').value)">与当前智邻立约</button>';
+        var oathCost = (N().bondOath && N().bondOath.cost) || 80000000;
+        html += '<button class="c-btn c-btn-gold" style="width:100%;" onclick="swearNpcOath(document.getElementById(\'npcPlusTarget\').value,+document.getElementById(\'npcPlusMember\').value)">与当前智邻立约' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(oathCost) : ('（耗资 ' + C.fmt(oathCost) + '）')) + '</button>';
         var oathNames = Object.keys(d.oaths || {}).filter(function (id) { return d.oaths[id]; }).map(function (id) {
             var n = npcById(id);
             return n ? n.name : id;

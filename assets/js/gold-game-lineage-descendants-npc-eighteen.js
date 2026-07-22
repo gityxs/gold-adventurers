@@ -585,9 +585,12 @@
         html += '<div class="c-form-row"><label>智邻C</label><select id="npcLinkNpcC" class="c-input">' + npcOpts() + '</select></div>';
 
         html += '<h4 style="color:#E8C4A8;margin:10px 0 6px;">血脉参谋 · 快捷助力</h4>';
-        html += '<button class="c-btn c-btn-purple" style="width:100%;margin-top:4px;" onclick="askBloodlineCounsel(document.getElementById(\'npcLinkNpc\').value,+document.getElementById(\'npcLinkMember\').value)">请当前智邻作血脉参谋</button>';
-        html += '<button class="c-btn c-btn-gold" style="width:100%;margin-top:6px;" onclick="npcAssistIncense(document.getElementById(\'npcLinkNpc\').value)">智邻陪先进香</button>';
-        html += '<button class="c-btn c-btn-blue" style="width:100%;margin-top:6px;" onclick="npcBoostChronicle(document.getElementById(\'npcLinkNpc\').value)">智邻指点修撰族谱(+1级)</button>';
+        html += '<button class="c-btn c-btn-purple" style="width:100%;margin-top:4px;" onclick="askBloodlineCounsel(document.getElementById(\'npcLinkNpc\').value,+document.getElementById(\'npcLinkMember\').value)">请当前智邻作血脉参谋' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(12000000) : ('（耗资 ' + C.fmt(12000000) + '）')) + '</button>';
+        html += '<button class="c-btn c-btn-gold" style="width:100%;margin-top:6px;" onclick="npcAssistIncense(document.getElementById(\'npcLinkNpc\').value)">智邻陪先进香' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(10000000) : ('（耗资 ' + C.fmt(10000000) + '）')) + '</button>';
+        html += '<button class="c-btn c-btn-blue" style="width:100%;margin-top:6px;" onclick="npcBoostChronicle(document.getElementById(\'npcLinkNpc\').value)">智邻指点修撰族谱(+1级)' +
+            (typeof lineageCostTag === 'function' ? lineageCostTag(30000000) : ('（耗资 ' + C.fmt(30000000) + '）')) + '</button>';
 
         html += '<h4 style="color:#E8C4A8;margin:12px 0 6px;">陪同立碑（选代数）</h4><div class="c-train-grid">';
         for (var g = 1; g <= 18; g++) {
@@ -595,6 +598,7 @@
             var locked = s.maxG < g;
             html += '<div class="c-milestone' + (done ? ' done' : '') + '" style="flex-direction:column;align-items:stretch;">' +
                 '<div class="ms-title">' + genLabel(g) + '</div>' +
+                '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(15000000) : ('耗资 ' + C.fmt(15000000))) + '</div>' +
                 '<button class="c-btn c-btn-sm c-btn-orange" ' + (done || locked ? 'disabled' : '') +
                 ' onclick="npcAssistErectTablet(' + g + ',document.getElementById(\'npcLinkNpc\').value,+document.getElementById(\'npcLinkMember\').value)">' +
                 (done ? '已立' : (locked ? '未及' : '陪同勘定')) + '</button></div>';
@@ -605,9 +609,11 @@
         (N().eighteenCommissions || []).forEach(function (a) {
             var npc = (N().npcs || []).find(function (x) { return x.id === a.npc; });
             var cd = C.cdHint(d.eighteenCommCd[a.id]);
+            var extras = [(npc ? npc.name : ''), '好感≥' + a.needFavor];
+            if (cd) extras.push(cd);
             html += '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
                 '<div class="ms-title">' + a.name + '</div>' +
-                '<div class="ms-desc">' + (npc ? npc.name : '') + ' · 好感≥' + a.needFavor + (cd ? ' · ' + cd : '') + '</div>' +
+                '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(a.cost, extras) : (('耗资 ' + C.fmt(a.cost)) + ' · ' + extras.join(' · '))) + '</div>' +
                 '<button class="c-btn c-btn-sm c-btn-pink" onclick="doNpcEighteenCommission(\'' + a.id + '\',+document.getElementById(\'npcLinkMember\').value)">接委托</button></div>';
         });
         html += '</div>';
@@ -616,7 +622,8 @@
         (N().eighteenCouncil || []).forEach(function (t) {
             var cd = C.cdHint(d.eighteenCouncilCd[t.id]);
             html += '<div class="c-milestone done" style="flex-direction:column;align-items:stretch;">' +
-                '<div class="ms-title">' + t.name + '</div><div class="ms-desc">' + C.fmt(t.cost) + (cd ? ' · ' + cd : '') + '</div>' +
+                '<div class="ms-title">' + t.name + '</div>' +
+                '<div class="ms-desc">' + (typeof lineageMsCost === 'function' ? lineageMsCost(t.cost, cd || null) : (('耗资 ' + C.fmt(t.cost)) + (cd ? ' · ' + cd : ''))) + '</div>' +
                 '<button class="c-btn c-btn-sm c-btn-gold" onclick="startEighteenNpcCouncil(\'' + t.id +
                 '\',document.getElementById(\'npcLinkNpc\').value,document.getElementById(\'npcLinkNpcB\').value,document.getElementById(\'npcLinkNpcC\').value,+document.getElementById(\'npcLinkMember\').value)">开会</button></div>';
         });
