@@ -373,7 +373,8 @@
         if (all || t === 'events') updateClanEventPanel();
         if (all || t === 'life' || t === 'ancestral') updateHeirloomPanel();
         if (all || t === 'quests' || t === 'events') updateExamPanel();
-        if (all || t === 'quests' || t === 'glory') updateExpeditionPanel();
+        // 远征面板在「轶事」页（events），切页/领取后必须刷新，否则会残留「远征归来」按钮
+        if (all || t === 'quests' || t === 'events' || t === 'glory') updateExpeditionPanel();
         if (all || t === 'glory') updateGloryPanel();
     };
 
@@ -929,21 +930,39 @@
         saveGame();
     };
 
+    function getExpeditionEndTime(exp) {
+        if (!exp) return 0;
+        var t = Number(exp.endTime);
+        return isFinite(t) ? t : 0;
+    }
+
+    function isClanExpeditionReady(exp) {
+        return !!(exp && getExpeditionEndTime(exp) <= Date.now());
+    }
+
     function updateExpeditionPanel() {
         var el = document.getElementById('lineageExpeditionPanel');
         if (!el) return;
         ensureLineageExtData();
         var exp = player.children.expedition;
         if (exp) {
-            var left = Math.max(0, exp.endTime - Date.now());
+            var endAt = getExpeditionEndTime(exp);
+            // 存档异常（无 endTime）时允许领取，避免卡死
+            if (!endAt) {
+                exp.endTime = Date.now();
+                endAt = exp.endTime;
+            }
+            var left = Math.max(0, endAt - Date.now());
             var conf = cfg().expeditions.find(function (x) { return x.id === exp.id; });
             if (left <= 0) {
                 el.innerHTML = '<div style="color:#4CAF50;font-weight:bold;">远征归来！</div>' +
                     '<button class="c-btn c-btn-green" style="width:100%;margin-top:8px;" onclick="claimClanExpedition()">领取远征收获</button>';
                 return;
             }
-            el.innerHTML = '<div class="c-hint">【' + (conf ? conf.name : '') + '】进行中</div>' +
-                '<div class="c-progress"><i style="width:' + (100 - left / (conf.duration) * 100) + '%"></i><span>剩余 ' +
+            var dur = (conf && conf.duration) ? conf.duration : Math.max(left, 1);
+            var pct = Math.max(0, Math.min(100, 100 - left / dur * 100));
+            el.innerHTML = '<div class="c-hint">【' + (conf ? conf.name : (exp.id || '远征')) + '】进行中</div>' +
+                '<div class="c-progress"><i style="width:' + pct + '%"></i><span>剩余 ' +
                 Math.ceil(left / 60000) + ' 分</span></div>' +
                 '<div class="meta">出征：' + (exp.memberNames || []).join('、') + '</div>';
             return;
@@ -988,6 +1007,7 @@
             memberNames: team.map(function (t) { return t.name; })
         };
         logAction(team.map(function (t) { return t.name; }).join('、') + ' 出征【' + ex.name + '】', 'success');
+        updateExpeditionPanel();
         updateDisplay();
         updateChildSystemUI();
         saveGame();
@@ -996,13 +1016,21 @@
     window.claimClanExpedition = function () {
         ensureLineageExtData();
         var exp = player.children.expedition;
-        if (!exp || exp.endTime > Date.now()) {
+        if (!exp) {
+            logAction('当前没有远征可领取', 'error');
+            updateExpeditionPanel();
+            return;
+        }
+        if (!isClanExpeditionReady(exp)) {
             logAction('远征尚未归来', 'error');
+            updateExpeditionPanel();
             return;
         }
         var ex = cfg().expeditions.find(function (x) { return x.id === exp.id; });
         if (!ex) {
             player.children.expedition = null;
+            logAction('远征数据异常，已清除', 'error');
+            updateExpeditionPanel();
             return;
         }
         var reward = Math.floor(ex.rewardMin + Math.random() * (ex.rewardMax - ex.rewardMin));
@@ -1018,11 +1046,18 @@
             m.glory = (m.glory || 0) + 8;
         });
         addClanPrestige(ex.prestige);
-        player.children.extStats.expeditions++;
+        if (!player.children.extStats) {
+            player.children.extStats = { trains: 0, collects: 0, interacts: 0, offers: 0, exams: 0, expeditions: 0 };
+        }
+        player.children.extStats.expeditions = (player.children.extStats.expeditions || 0) + 1;
+        if (ex.military) {
+            player.children.militaryMerit = (player.children.militaryMerit || 0) + ex.military;
+        }
         if (typeof addLineageExp === 'function') addLineageExp(15);
         if (ex.heirloomChance && Math.random() < ex.heirloomChance) grantRandomHeirloom();
         player.children.expedition = null;
         logAction('远征归来！获得 ' + formatSci(reward) + ' 资金，队员属性提升', 'success');
+        updateExpeditionPanel();
         updateDisplay();
         updateChildSystemUI();
         saveGame();
@@ -1203,8 +1238,8 @@
                     triggerClanEvent(false);
                 }
             }
-            // 远征完成提示
-            if (player.children.expedition && player.children.expedition.endTime <= Date.now()) {
+            // 远征进行中/完成都刷新（轶事页停留时也要更新剩余时间与领取按钮）
+            if (player.children.expedition) {
                 var ui = document.getElementById('childSystemUI');
                 if (ui && ui.style.display === 'block') updateExpeditionPanel();
             }

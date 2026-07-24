@@ -8,7 +8,7 @@
     <script>
         (function () {
             /** 与 gold-game-core.js 的 GAME_VERSION 对齐；发版时同步修改 */
-            var build = "2.0.40";
+            var build = "2.0.41";
             try {
                 var qs = location.search || "";
                 var m = /[?&]v=([^&]+)/.exec(qs);
@@ -113,9 +113,10 @@
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>2.040更新日志</h4>
+            <h4>2.041更新日志</h4>
             <h4>QQ群：902481027    有问题可以进群问（存档异常联系群管理修复）</h4>
-            <p>2026/07/22:修复传宗接代有些资金不够异常问题，增加所有资金金额显示。修改时光秘境局内界面UI信息，玩家等级化圣后修改现在轮回数不会降低。洞天劫模式修复某些房间异常问题，增加20个墓200个明器40套装，修复之前古，仙，劫局内获得异常没点亮图鉴BUG。主界面聊天加入锁定按钮，锁定后不自动往下。<p>
+            <p>2026/07/24: 修复一些异常显示BUG<p>
+            <p>2026/07/22:修复传宗接代有些资金不够异常问题，升级后子女选择异常弹跳问题，增加折叠方便页面，增加所有资金金额显示。修改时光秘境局内界面UI信息，玩家等级化圣后修改现在轮回数不会降低。洞天劫模式修复某些房间异常问题，增加20个墓200个明器40套装，修复之前古，仙，劫局内获得异常没点亮图鉴BUG。主界面聊天加入锁定按钮，锁定后不自动往下。疯狂地主的基因树：增加世界经验：彩光1%炫彩2%琉璃3%，夜店的销售商品初级品数量9999调整99999，高级品999调整9999.<p>
             <p>2026/07/20:修复洞天劫摸金模式图鉴显示异常bug，增加丢失按钮。疯狂地主线性合成增加单独一键合成，更新结婚系统的生孩子系统增加子孙后代。时光秘境时间异常bug修复<p>
             <p>2026/07/17:洞天劫模式副本大厅增加新副本乱星海难度偏高：掉落房主4重铸石 助战2重铸石，装备增加重铸词条数量，重铸后有预览属性选择。疯狂地主增加一键购买有库存商品，合成种子修改成弹窗界面，线型合成一键合成放上面了，基因合成修改3个种子改为2个就可以了（规则不变），可以直接框选择种子，也可以下面最优一键选择，有种子数量可以批量一键合成。修复农场和钓鱼现在不用每次进游戏都要进页面才自动开启，修复疯狂地主不用重启页面才刷新种子商店。<p>
             <p>2026/07/15:未来石后新增高级货币永恒石/无极石/大道石（1e20兑换），对应永恒/无极/大道宝箱、装备逆旅～至高、宠物天罚刑天/浑沌帝江/无极烛阴及宠物成就。副本装备新增归墟～本源共20件（▽/▼与★▽/★▼档），魂环新增20个亿年魂环（最高混沌·无名），职业界面修改，称号界面修改，神器界面修改清爽，主界面12标签字体修改，某些按键分解加入弹窗确认，时光秘境玩法重做，整体玩法更改，疯狂地主增加基因树：提交对应果实增加属性，疯狂地主增加20个新种子，所有高品种子更加容易获得，增加有库存按钮，修复洞天劫摸金模式BUG。<p>
@@ -773,7 +774,7 @@
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v2.0.40</div>
+  <div id="footer">版本号: v2.0.41</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -1415,7 +1416,7 @@
         <button onclick="clearAvatar()" style="padding: 12px 20px; font-size: 16px;">清除头像</button>
         <button onclick="showActivationCodeDialog()" style="padding: 12px 20px; font-size: 16px;">激活码兑换</button>
         <button onclick="saveGame()" style="padding: 12px 20px; font-size: 16px;">保存游戏</button>
-       <button onclick="downloadSave()" style="padding: 12px 20px; font-size: 16px;">下载TXT存档</button>
+        <button onclick="downloadSave()" style="padding: 12px 20px; font-size: 16px;">下载TXT存档</button>
         <button onclick="importEncryptedSave()" style="padding: 12px 20px; font-size: 16px;">导入TXT存档</button>
         <button onclick="resetGame()" style="padding: 12px 20px; font-size: 16px; background-color: #ff4444; color: white; border: none;">重置游戏</button>
     </div>
@@ -9529,12 +9530,36 @@
     <div id="abyssEquipActionDetail" style="margin-bottom:15px;font-size:14px;"></div>
     <div id="abyssEquipRuneGemBlock" style="margin-bottom:12px;font-size:12px;border:1px solid #6a0dad;padding:8px;border-radius:6px;background:rgba(0,0,0,0.3);"></div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;">
-        <button id="abyssEquipUpgradeBtn" onclick="abyssEquipUpgrade()" style="background:#00bcd4;color:#000;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;">升级(1个升级石)</button>
-        <button id="abyssEquipEnhanceBtn" onclick="abyssEquipEnhance()" style="background:#ff9800;color:#000;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;">强化</button>
+        <button id="abyssEquipUpgradeBtn" onclick="abyssShowEquipUpgradeChoice()" style="background:#00bcd4;color:#000;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;">升级</button>
+        <button id="abyssEquipEnhanceBtn" onclick="abyssShowEquipEnhanceChoice()" style="background:#ff9800;color:#000;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;">强化</button>
         <button onclick="abyssEquipEnchant()" style="background:#9c27b0;color:#fff;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;">附魔</button>
         <button id="abyssEquipUnequipBtn" onclick="abyssEquipUnequip()" style="background:#2196f3;color:#fff;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;">卸下</button>
         <button id="abyssEquipDismantleBtn" onclick="abyssEquipDismantle()" style="background:#f44336;color:#fff;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;">分解</button>
         <button onclick="closeAbyssEquipAction()" style="background:#555;color:#fff;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;">取消</button>
+    </div>
+</div>
+
+<!-- 无限深渊-装备升级选择（升级 / 一键升级） -->
+<div id="abyssEquipUpgradeChoiceOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:2074;" onclick="closeAbyssEquipUpgradeChoice()"></div>
+<div id="abyssEquipUpgradeChoiceUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(145deg,#0d2a2e,#06181a);color:#fff;padding:20px;border:2px solid #00bcd4;border-radius:12px;z-index:2075;width:360px;max-width:92vw;" onclick="event.stopPropagation();">
+    <h3 style="color:#00bcd4;margin:0 0 10px 0;font-size:16px;">装备升级</h3>
+    <div id="abyssEquipUpgradeChoiceInfo" style="font-size:13px;color:#bbb;margin-bottom:14px;line-height:1.55;"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
+        <button id="abyssEquipUpgradeOnceBtn" onclick="abyssEquipUpgrade()" style="background:#00bcd4;color:#000;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;font-weight:bold;">升级</button>
+        <button id="abyssEquipUpgradeMaxBtn" onclick="abyssEquipUpgradeMax()" style="background:linear-gradient(145deg,#26c6da,#00838f);color:#fff;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;font-weight:bold;">一键升级</button>
+        <button onclick="closeAbyssEquipUpgradeChoice()" style="background:#555;color:#fff;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;">取消</button>
+    </div>
+</div>
+
+<!-- 无限深渊-装备强化选择（强化 / 一键强化） -->
+<div id="abyssEquipEnhanceChoiceOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:2074;" onclick="closeAbyssEquipEnhanceChoice()"></div>
+<div id="abyssEquipEnhanceChoiceUI" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(145deg,#2e1a0d,#1a0e06);color:#fff;padding:20px;border:2px solid #ff9800;border-radius:12px;z-index:2075;width:360px;max-width:92vw;" onclick="event.stopPropagation();">
+    <h3 style="color:#ff9800;margin:0 0 10px 0;font-size:16px;">装备强化</h3>
+    <div id="abyssEquipEnhanceChoiceInfo" style="font-size:13px;color:#bbb;margin-bottom:14px;line-height:1.55;"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
+        <button id="abyssEquipEnhanceOnceBtn" onclick="abyssEquipEnhance()" style="background:#ff9800;color:#000;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;font-weight:bold;">强化</button>
+        <button id="abyssEquipEnhanceMaxBtn" onclick="abyssEquipEnhanceMax()" style="background:linear-gradient(145deg,#ffb74d,#e65100);color:#fff;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;font-weight:bold;">一键强化</button>
+        <button onclick="closeAbyssEquipEnhanceChoice()" style="background:#555;color:#fff;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;">取消</button>
     </div>
 </div>
 

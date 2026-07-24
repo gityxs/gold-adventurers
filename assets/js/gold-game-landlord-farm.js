@@ -399,8 +399,8 @@
                     plant.plantedAt = Math.min(plant.plantedAt, acceleratedTime1);
                     effectMessage = "生长加速10分钟！";
                     
-                    // 如果没有特殊突变或者基础突变，2%几率特殊突变和基础突变
-                    if (plant.mutations.length === 0 && !plant.specialMutation) {
+                    // 无元素基础突变时才判定（升级田的银土/金土等不算元素基础突变）
+                    if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation) {
                         if (Math.random() * 100 < 2) {
                             const hadSpecial = !!plant.specialMutation;
                             applyLandlordBasicMutation(plant, { guaranteeBasic: true });
@@ -416,8 +416,8 @@
                     plant.plantedAt = Math.min(plant.plantedAt, acceleratedTime2);
                     effectMessage = "生长加速20分钟！";
                     
-                    // 如果没有特殊突变或者基础突变，5%几率特殊突变和基础突变
-                    if (plant.mutations.length === 0 && !plant.specialMutation) {
+                    // 无元素基础突变时才判定（升级田的银土/金土等不算元素基础突变）
+                    if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation) {
                         if (Math.random() * 100 < 5) {
                             const hadSpecial = !!plant.specialMutation;
                             applyLandlordBasicMutation(plant, { guaranteeBasic: true });
@@ -433,8 +433,8 @@
                     plant.plantedAt = Math.min(plant.plantedAt, acceleratedTime3);
                     effectMessage = "生长加速60分钟！";
                     
-                    // 如果没有特殊突变或者基础突变，10%几率特殊突变和基础突变
-                    if (plant.mutations.length === 0 && !plant.specialMutation) {
+                    // 无元素基础突变时才判定（升级田的银土/金土等不算元素基础突变）
+                    if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation) {
                         if (Math.random() * 100 < 10) {
                             const hadSpecial = !!plant.specialMutation;
                             applyLandlordBasicMutation(plant, { guaranteeBasic: true });
@@ -590,8 +590,8 @@
             const sandAccel = Date.now() - sandMinutes * 60 * 1000;
             plant.plantedAt = Math.min(plant.plantedAt, sandAccel);
             effectMessage = `随机加速了${sandMinutes}分钟！`;
-            if (plant.mutations.length === 0 && !plant.specialMutation && Math.random() * 100 < 8) {
-                applyLandlordBasicMutation(plant);
+            if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation && Math.random() * 100 < 8) {
+                applyLandlordBasicMutation(plant, { rollElement: true });
                 effectMessage += " 触发了基础突变！";
             }
             break;
@@ -613,8 +613,8 @@
             break;
             
         case "大地祝福":
-            if (plant.mutations.length === 0 && !plant.specialMutation) {
-                applyLandlordBasicMutation(plant);
+            if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation) {
+                applyLandlordBasicMutation(plant, { guaranteeBasic: true });
                 effectMessage = "大地祝福！必出基础突变！";
             } else {
                 const earthAccel = Date.now() - 25 * 60 * 1000;
@@ -657,9 +657,10 @@
             const lightningAccel = Date.now() - 20 * 60 * 1000;
             plant.plantedAt = Math.min(plant.plantedAt, lightningAccel);
             effectMessage = "闪电催化！加速20分钟！";
-            if (plant.mutations.length === 0 && !plant.specialMutation) {
-                applyLandlordBasicMutation(plant);
-                effectMessage += " 触发了基础突变！";
+            if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation) {
+                applyLandlordBasicMutation(plant, { rollElement: true });
+                if (landlordHasElementBasicMutation(plant)) effectMessage += " 触发了基础突变！";
+                else effectMessage += " 基础突变判定未中。";
             }
             break;
         case "晨曦露珠":
@@ -690,7 +691,10 @@
             const springAccel = Date.now() - 12 * 60 * 1000;
             plant.plantedAt = Math.min(plant.plantedAt, springAccel);
             effectMessage = "春风扇！加速12分钟！";
-            if (plant.mutations.length === 0 && !plant.specialMutation && Math.random() * 100 < 3) { applyLandlordBasicMutation(plant); effectMessage += " 触发了基础突变！"; }
+            if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation && Math.random() * 100 < 3) {
+                applyLandlordBasicMutation(plant, { rollElement: true });
+                effectMessage += " 触发了基础突变！";
+            }
             break;
         case "雷云发生器":
             if (plant.weatherMutations.length > 0) {
@@ -2879,38 +2883,66 @@
             return Math.max(minWeight, Math.min(maxWeight, maxWeight * weightPercentage));
         }
 
-        // 应用基础突变；专属田地 fieldTier 1~4 必出 银土/金土/钻石土/流光土；opts.guaranteeBasic 为 true 时必出一条元素词条 银/金/水晶/流光（权重 2:1:1:1）
-        function applyLandlordBasicMutation(plant, opts) {
-            opts = opts || {};
-            const fieldTier = opts.fieldTier != null ? opts.fieldTier : (Number(plant.fieldTier) || 0);
-            if (fieldTier >= 1 && fieldTier <= 4) {
-                const affix = LANDLORD_TIER_LAND_AFFIX[fieldTier];
-                plant.mutations = [affix];
-                player.landlord.stats.basicMutations++;
-            } else if (opts.guaranteeBasic) {
+        // 是否已有元素基础突变（银/金/水晶/流光）；升级田专属词条银土/金土等不算
+        function landlordHasElementBasicMutation(plant) {
+            if (!plant || !Array.isArray(plant.mutations)) return false;
+            return plant.mutations.some(function (m) {
+                return LANDLORD_ELEMENT_BASIC_MUTATIONS.indexOf(m) >= 0;
+            });
+        }
+
+        // 追加一条元素基础突变；guaranteed 时权重 2:1:1:1，否则按种植时 5% 概率判定
+        function landlordPushElementBasicMutation(plant, guaranteed) {
+            if (!plant) return false;
+            if (!Array.isArray(plant.mutations)) plant.mutations = [];
+            if (landlordHasElementBasicMutation(plant)) return false;
+            if (guaranteed) {
                 const r = Math.random() * 5;
                 if (r < 2) plant.mutations.push("银");
                 else if (r < 3) plant.mutations.push("金");
                 else if (r < 4) plant.mutations.push("水晶");
                 else plant.mutations.push("流光");
                 player.landlord.stats.basicMutations++;
-            } else {
-                const random = Math.random() * 100;
-                if (random < 95) {
-                    // 无突变
-                } else if (random < 97) {
-                    plant.mutations.push("银");
-                    player.landlord.stats.basicMutations++;
-                } else if (random < 98) {
-                    plant.mutations.push("金");
-                    player.landlord.stats.basicMutations++;
-                } else if (random < 99) {
-                    plant.mutations.push("水晶");
-                    player.landlord.stats.basicMutations++;
-                } else {
-                    plant.mutations.push("流光");
-                    player.landlord.stats.basicMutations++;
+                return true;
+            }
+            const random = Math.random() * 100;
+            if (random < 95) return false;
+            if (random < 97) plant.mutations.push("银");
+            else if (random < 98) plant.mutations.push("金");
+            else if (random < 99) plant.mutations.push("水晶");
+            else plant.mutations.push("流光");
+            player.landlord.stats.basicMutations++;
+            return true;
+        }
+
+        // 应用基础突变；专属田地 fieldTier 1~4 必出 银土/金土/钻石土/流光土（与元素词条可共存）；
+        // opts.guaranteeBasic 必出元素词条；opts.rollElement 按普通概率判定元素词条（用于道具）
+        function applyLandlordBasicMutation(plant, opts) {
+            opts = opts || {};
+            const fieldTier = opts.fieldTier != null ? opts.fieldTier : (Number(plant.fieldTier) || 0);
+            if (!Array.isArray(plant.mutations)) plant.mutations = [];
+
+            if (fieldTier >= 1 && fieldTier <= 4) {
+                const affix = LANDLORD_TIER_LAND_AFFIX[fieldTier];
+                const hadLand = plant.mutations.some(function (m) {
+                    return LANDLORD_ALL_LAND_AFFIXES.indexOf(m) >= 0;
+                });
+                // 只校正土地专属词条，保留银/金/水晶/流光等元素基础突变
+                plant.mutations = plant.mutations.filter(function (m) {
+                    return LANDLORD_ALL_LAND_AFFIXES.indexOf(m) < 0;
+                });
+                if (affix) plant.mutations.push(affix);
+                if (!hadLand) player.landlord.stats.basicMutations++;
+
+                if (opts.guaranteeBasic) {
+                    landlordPushElementBasicMutation(plant, true);
+                } else if (opts.rollElement) {
+                    landlordPushElementBasicMutation(plant, false);
                 }
+            } else if (opts.guaranteeBasic) {
+                landlordPushElementBasicMutation(plant, true);
+            } else {
+                landlordPushElementBasicMutation(plant, false);
             }
             // 检查特殊突变 (5%几率)
             if (Math.random() * 100 < 5) {

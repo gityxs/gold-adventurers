@@ -811,18 +811,18 @@ const nightClubConfig = {
         }
     ],
     levelExpRequirements: [200, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000, 50000000, 100000000],
-    // 售卖商品：maxStockTotal 为库存上限（普通9999 / 贵重999）；单次补货量 = restockCap + 1；补货需达到 restockUnlockLevel
+    // 售卖商品：maxStockTotal 为库存上限（啤酒~VIP套餐99999 / 鱼子酱~钻石香槟塔9999）；单次补货量 = restockCap + 1；补货需达到 restockUnlockLevel
     shopGoods: [
-        { id: 'beer', name: '啤酒', category: 'drink', cost: 8, basePrice: 24, appeal: 0.7, restockCap: 50, maxStockTotal: 9999, restockUnlockLevel: 3 },
-        { id: 'snack', name: '小吃拼盘', category: 'snack', cost: 20, basePrice: 48, appeal: 0.65, restockCap: 45, maxStockTotal: 9999, restockUnlockLevel: 4 },
-        { id: 'fruitplate', name: '果盘', category: 'snack', cost: 24, basePrice: 56, appeal: 0.6, restockCap: 40, maxStockTotal: 9999, restockUnlockLevel: 5 },
-        { id: 'cocktail', name: '鸡尾酒', category: 'drink', cost: 36, basePrice: 84, appeal: 0.5, restockCap: 30, maxStockTotal: 9999, restockUnlockLevel: 6 },
-        { id: 'champagne', name: '香槟', category: 'drink', cost: 110, basePrice: 260, appeal: 0.35, restockCap: 15, maxStockTotal: 9999, restockUnlockLevel: 7 },
-        { id: 'vipset', name: 'VIP套餐', category: 'vip', cost: 240, basePrice: 560, appeal: 0.25, restockCap: 10, maxStockTotal: 999, restockUnlockLevel: 8 },
-        { id: 'caviar', name: '鱼子酱', category: 'vip', cost: 500, basePrice: 1200, appeal: 0.28, restockCap: 8, maxStockTotal: 999, restockUnlockLevel: 9 },
-        { id: 'truffle', name: '松露拼盘', category: 'vip', cost: 600, basePrice: 1500, appeal: 0.22, restockCap: 6, maxStockTotal: 999, restockUnlockLevel: 10 },
-        { id: 'ace', name: '黑桃A香槟', category: 'vip', cost: 800, basePrice: 2000, appeal: 0.2, restockCap: 5, maxStockTotal: 999, restockUnlockLevel: 11 },
-        { id: 'diamond', name: '钻石香槟塔', category: 'vip', cost: 2000, basePrice: 5000, appeal: 0.15, restockCap: 3, maxStockTotal: 999, restockUnlockLevel: 12 }
+        { id: 'beer', name: '啤酒', category: 'drink', cost: 8, basePrice: 24, appeal: 0.7, restockCap: 50, maxStockTotal: 99999, restockUnlockLevel: 3 },
+        { id: 'snack', name: '小吃拼盘', category: 'snack', cost: 20, basePrice: 48, appeal: 0.65, restockCap: 45, maxStockTotal: 99999, restockUnlockLevel: 4 },
+        { id: 'fruitplate', name: '果盘', category: 'snack', cost: 24, basePrice: 56, appeal: 0.6, restockCap: 40, maxStockTotal: 99999, restockUnlockLevel: 5 },
+        { id: 'cocktail', name: '鸡尾酒', category: 'drink', cost: 36, basePrice: 84, appeal: 0.5, restockCap: 30, maxStockTotal: 99999, restockUnlockLevel: 6 },
+        { id: 'champagne', name: '香槟', category: 'drink', cost: 110, basePrice: 260, appeal: 0.35, restockCap: 15, maxStockTotal: 99999, restockUnlockLevel: 7 },
+        { id: 'vipset', name: 'VIP套餐', category: 'vip', cost: 240, basePrice: 560, appeal: 0.25, restockCap: 10, maxStockTotal: 99999, restockUnlockLevel: 8 },
+        { id: 'caviar', name: '鱼子酱', category: 'vip', cost: 500, basePrice: 1200, appeal: 0.28, restockCap: 8, maxStockTotal: 9999, restockUnlockLevel: 9 },
+        { id: 'truffle', name: '松露拼盘', category: 'vip', cost: 600, basePrice: 1500, appeal: 0.22, restockCap: 6, maxStockTotal: 9999, restockUnlockLevel: 10 },
+        { id: 'ace', name: '黑桃A香槟', category: 'vip', cost: 800, basePrice: 2000, appeal: 0.2, restockCap: 5, maxStockTotal: 9999, restockUnlockLevel: 11 },
+        { id: 'diamond', name: '钻石香槟塔', category: 'vip', cost: 2000, basePrice: 5000, appeal: 0.15, restockCap: 3, maxStockTotal: 9999, restockUnlockLevel: 12 }
     ],
     // AI顾客：preferCategory(drink/snack/vip/any), budgetRatio, priceSensitive(0-1越高越嫌贵), maxQtyPerItem(单商品最多买几件), minLevel(夜店等级达到才出现)
     customerTypes: [

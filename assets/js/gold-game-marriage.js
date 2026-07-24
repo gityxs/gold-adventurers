@@ -1400,7 +1400,9 @@ function updateFamilyStatus() {
     const pregnant = player.children.isPregnant;
     const now = Date.now();
     const availableChildren = members.filter(function(child) {
-        return (now - (child.lastTraining || 0)) >= 60 * 60 * 1000;
+        return typeof canFamilyMemberTrain === 'function'
+            ? canFamilyMemberTrain(child).ok
+            : (now - (child.lastTraining || 0)) >= 60 * 60 * 1000;
     }).length;
     const gen1 = members.filter(function(c) { return (c.generation || 1) === 1; }).length;
     const gen2 = members.filter(function(c) { return c.generation === 2; }).length;
@@ -1768,7 +1770,8 @@ function buildFamilyMemberCard(child, index, showTrain) {
 
     card.innerHTML =
         badges +
-        '<div class="name">' + safeChild.name + '</div>' +
+        '<div class="name">' + safeChild.name +
+        ' <button type="button" class="c-btn c-btn-sm" style="padding:2px 6px;font-size:10px;vertical-align:middle;background:rgba(106,90,205,0.85);color:#fff;border:none;" onclick="renameFamilyMember(' + index + ')" title="修改名字">改名</button></div>' +
         '<div class="meta">' + (safeChild.gender === 'boy' ? '男' : '女') + ' · ' + currentStage.name +
         (isAdult ? ' · 可打工' : '') + (parentText ? ' · ' + parentText : '') + talentLabel + '</div>' +
         '<div style="margin:6px 0;">' + growthInfo.countdownHtml + '</div>' +
@@ -1784,6 +1787,50 @@ function buildFamilyMemberCard(child, index, showTrain) {
         trainHtml + extraActions;
 
     return card;
+}
+
+/** 修改家族成员名字 */
+function renameFamilyMember(index) {
+    var children = (player.children && player.children.children) || [];
+    var child = children[index];
+    if (!child) {
+        logAction('成员不存在', 'error');
+        return;
+    }
+    var oldName = child.name || '';
+    showCustomPrompt('请输入新名字（当前：' + oldName + '，最多12字）:', function (newName) {
+        if (newName == null) return;
+        var name = String(newName).trim().replace(/[<>]/g, '');
+        if (!name) {
+            logAction('名字不能为空', 'error');
+            return;
+        }
+        if (name.length > 12) {
+            logAction('名字最多 12 个字', 'error');
+            return;
+        }
+        if (name === oldName) {
+            logAction('名字未变化', 'info');
+            return;
+        }
+        child.name = name;
+        // 同步远征出征名单中的显示名
+        var exp = player.children && player.children.expedition;
+        if (exp && Array.isArray(exp.memberIds) && Array.isArray(exp.memberNames)) {
+            var mi = exp.memberIds.indexOf(child.id);
+            if (mi >= 0) exp.memberNames[mi] = name;
+        }
+        logAction('已将「' + oldName + '」改名为「' + name + '」', 'success');
+        if (typeof updateChildSystemUI === 'function') updateChildSystemUI();
+        if (typeof updateDisplay === 'function') updateDisplay();
+        saveGame();
+    });
+    var input = document.getElementById('dialogInput');
+    if (input) {
+        input.value = oldName;
+        input.maxLength = 12;
+        try { input.focus(); input.select(); } catch (e) { /* ignore */ }
+    }
 }
 
 function calculateGrowthCountdown(child) {
@@ -1832,6 +1879,60 @@ function calculateGrowthCountdown(child) {
     };
 }
 
+function getChildTrainCostMult() {
+    return (typeof getLineageTrainCostMult === 'function') ? getLineageTrainCostMult() : 1;
+}
+
+function getChildTrainUnitCost(training) {
+    if (!training) return 0;
+    return Math.floor(training.cost * getChildTrainCostMult());
+}
+
+/** 是否可培养（冷却 / 染恙 / 游学 / 闭关） */
+function canFamilyMemberTrain(child) {
+    if (!child) return { ok: false, reason: '成员不存在' };
+    var now = Date.now();
+    if ((now - (child.lastTraining || 0)) < 60 * 60 * 1000) {
+        var minutes = Math.ceil((60 * 60 * 1000 - (now - (child.lastTraining || 0))) / 60000);
+        return { ok: false, reason: '冷却中（' + minutes + '分钟）' };
+    }
+    if (typeof isMemberSick === 'function' && isMemberSick(child) && child.illness) {
+        var def = typeof getIllnessDef === 'function' ? getIllnessDef(child.illness.id) : null;
+        if (def && def.trainBlock) {
+            return { ok: false, reason: '染恙「' + def.name + '」中' };
+        }
+    }
+    var id = child.id;
+    var plus = player.children && player.children.descPlus;
+    if (plus) {
+        if ((plus.travelUntil && (plus.travelUntil[id] || 0) > now)) {
+            return { ok: false, reason: '游学未归' };
+        }
+        if ((plus.secludeUntil && (plus.secludeUntil[id] || 0) > now)) {
+            return { ok: false, reason: '闭关中' };
+        }
+    }
+    return { ok: true };
+}
+
+function getTrainableFamilyMembers() {
+    return (player.children.children || []).filter(function (child) {
+        return canFamilyMemberTrain(child).ok;
+    });
+}
+
+function pickWeakestTrainType(child) {
+    ensureChildAttributes(child);
+    var attrs = child.attributes;
+    var keys = ['intelligence', 'physique', 'charm', 'business'];
+    var weakest = keys[0];
+    for (var i = 1; i < keys.length; i++) {
+        if ((attrs[keys[i]] || 0) < (attrs[weakest] || 0)) weakest = keys[i];
+    }
+    var training = childConfig.trainingTypes.find(function (t) { return t.effect === weakest; });
+    return training || childConfig.trainingTypes[0];
+}
+
 // 更新培养区域
 function updateTrainingSection() {
     const container = document.getElementById('childTrainingSection');
@@ -1839,25 +1940,26 @@ function updateTrainingSection() {
     container.innerHTML = '';
 
     const children = player.children.children || [];
-    const now = Date.now();
-    const availableCount = children.filter(function(child) {
-        return (now - (child.lastTraining || 0)) >= 60 * 60 * 1000;
-    }).length;
+    const availableCount = getTrainableFamilyMembers().length;
+    var costMult = getChildTrainCostMult();
 
     const overview = document.createElement('div');
     overview.style.cssText = 'grid-column:1/-1;';
     overview.innerHTML =
         '<div class="c-stat" style="text-align:center;">可培养 <span style="color:' + (availableCount > 0 ? '#4CAF50' : '#FF6B6B') + ';font-weight:bold;">' +
-        availableCount + '/' + children.length + '</span> · 含子子孙孙</div>';
+        availableCount + '/' + children.length + '</span> · 含子子孙孙' +
+        (costMult < 1 ? ' · <span style="color:#4CAF50;">培养折扣 ' + Math.round((1 - costMult) * 100) + '%</span>' : '') +
+        '</div>';
     container.appendChild(overview);
 
     childConfig.trainingTypes.forEach(function(training) {
+        const unitCost = getChildTrainUnitCost(training);
         const card = document.createElement('div');
         card.className = 'c-train-card';
         card.innerHTML =
             '<div style="font-weight:bold;color:' + getTrainingColor(training.id) + ';">' + training.name + '</div>' +
             '<div class="c-hint">' + training.description + '</div>' +
-            '<div style="font-size:11px;color:#FFD700;margin:6px 0;">' + training.cost + ' 元/人 · ' + getAttributeDisplayName(training.effect) + '+1</div>' +
+            '<div style="font-size:11px;color:#FFD700;margin:6px 0;">' + formatSci(unitCost) + ' 元/人 · ' + getAttributeDisplayName(training.effect) + '+1起</div>' +
             '<button class="c-btn c-btn-pink" style="width:100%;background:' + (availableCount > 0 ? getTrainingColor(training.id) : '#555') + ';" ' +
             'onclick="trainAllChildren(\'' + training.id + '\')" ' + (availableCount === 0 ? 'disabled' : '') + '>全体' + training.name + '（' + availableCount + '）</button>';
         container.appendChild(card);
@@ -1868,7 +1970,7 @@ function updateTrainingSection() {
     smart.style.gridColumn = '1 / -1';
     smart.innerHTML =
         '<div style="font-weight:bold;color:#FF69B4;">智能培养</div>' +
-        '<div class="c-hint">按每位成员最弱属性自动分配培养</div>' +
+        '<div class="c-hint">按每位成员最弱属性自动分配培养（命格/心境等加成与单人培养一致）</div>' +
         '<button class="c-btn c-btn-pink" style="width:100%;margin-top:8px;" onclick="smartTrainAllChildren()" ' +
         (availableCount === 0 ? 'disabled' : '') + '>智能培养（' + availableCount + '）</button>';
     container.appendChild(smart);
@@ -1892,175 +1994,124 @@ function getTrainingColor(trainingType) {
     };
     return colors[trainingType] || '#666';
 }
+
+/** 批量执行培养：走 trainChild（含命格/染恙/游学等包装），合并刷新 */
+function runBatchChildTraining(plans, confirmTitle) {
+    if (!plans || !plans.length) {
+        logAction('没有可培养的成员', 'error');
+        return;
+    }
+    var children = player.children.children || [];
+    var totalCost = 0;
+    var lines = [];
+    plans.forEach(function (plan) {
+        totalCost += getChildTrainUnitCost(plan.training);
+        lines.push(plan.childName + ': ' + plan.training.name +
+            '（' + getAttributeDisplayName(plan.training.effect) + '）');
+    });
+    if (player.investmentGame.userData.availableFunds < totalCost) {
+        logAction('资金不足！需要 ' + formatSci(totalCost) + ' 元', 'error');
+        return;
+    }
+    showCustomConfirm(
+        confirmTitle + '\n\n' + lines.join('\n') + '\n\n总计消耗: ' + formatSci(totalCost) + ' 元',
+        function (confirmed) {
+            if (!confirmed) return;
+            if (player.investmentGame.userData.availableFunds < totalCost) {
+                logAction('资金不足！需要 ' + formatSci(totalCost) + ' 元', 'error');
+                return;
+            }
+            var trainedCount = 0;
+            var skipped = 0;
+            var spent = 0;
+            window.__childTrainBatchOpts = { silent: true, skipUi: true };
+            try {
+                plans.forEach(function (plan) {
+                    var idx = children.findIndex(function (c) { return c.id === plan.childId; });
+                    if (idx < 0) { skipped++; return; }
+                    var child = children[idx];
+                    var gate = canFamilyMemberTrain(child);
+                    if (!gate.ok) { skipped++; return; }
+                    var fundsBefore = player.investmentGame.userData.availableFunds;
+                    var before = child.totalTraining || 0;
+                    trainChild(idx, plan.training.id);
+                    if ((child.totalTraining || 0) > before) {
+                        trainedCount++;
+                        spent += Math.max(0, fundsBefore - player.investmentGame.userData.availableFunds);
+                    } else {
+                        skipped++;
+                    }
+                });
+            } finally {
+                window.__childTrainBatchOpts = null;
+            }
+            if (trainedCount > 0) {
+                logAction('批量培养完成：成功 ' + trainedCount + ' 人' +
+                    (skipped ? ('，跳过 ' + skipped + ' 人') : '') +
+                    '，消耗 ' + formatSci(spent) + ' 元',
+                    'success');
+            } else {
+                logAction('没有成员实际完成培养', 'error');
+            }
+            updateChildSystemUI();
+            updateDisplay();
+            saveGame();
+        }
+    );
+}
+
 function smartTrainAllChildren() {
     const children = player.children.children || [];
     if (children.length === 0) {
-        logAction("没有孩子可以培养", "error");
+        logAction('没有孩子可以培养', 'error');
         return;
     }
-    
-    const now = Date.now();
-    const availableChildren = children.filter(child => {
-        const lastTraining = child.lastTraining || 0;
-        return (now - lastTraining) >= 60 * 60 * 1000;
-    });
-    
+    const availableChildren = getTrainableFamilyMembers();
     if (availableChildren.length === 0) {
-        logAction("所有孩子都在培养冷却中", "error");
+        logAction('当前没有可培养的成员（冷却/染恙/游学/闭关）', 'error');
         return;
     }
-    
-    let totalCost = 0;
-    const trainingPlan = [];
-    
-    // 为每个孩子选择最优的培养方式
-    availableChildren.forEach(child => {
-        // 找出孩子最弱的属性
-        const attributes = child.attributes;
-        const weakestAttribute = Object.keys(attributes).reduce((weakest, attr) => {
-            return attributes[attr] < attributes[weakest] ? attr : weakest;
-        });
-        
-        // 找到对应的培养方式
-        const bestTraining = childConfig.trainingTypes.find(t => t.effect === weakestAttribute);
-        if (bestTraining) {
-            totalCost += bestTraining.cost;
-            trainingPlan.push({
-                childName: child.name,
-                training: bestTraining,
-                attribute: weakestAttribute,
-                currentValue: attributes[weakestAttribute]
-            });
-        }
+    const plans = availableChildren.map(function (child) {
+        var training = pickWeakestTrainType(child);
+        return {
+            childId: child.id,
+            childName: child.name,
+            training: training
+        };
     });
-    
-    if (totalCost === 0) {
-        logAction("无法制定培养计划", "error");
-        return;
-    }
-    
-    if (player.investmentGame.userData.availableFunds < totalCost) {
-        logAction(`资金不足！智能培养需要 ${totalCost} 元`, "error");
-        return;
-    }
-    
-    // 显示培养计划
-    const planText = trainingPlan.map(plan => 
-        `${plan.childName}: ${plan.training.name} (${getAttributeDisplayName(plan.attribute)} ${plan.currentValue}→${plan.currentValue + 1})`
-    ).join('\n');
-    
-    showCustomConfirm(`智能培养计划：\n\n${planText}\n\n总计消耗: ${totalCost} 元`, (confirmed) => {
-        if (confirmed) {
-            let trainedCount = 0;
-            let totalAttributeIncrease = 0;
-            
-            trainingPlan.forEach(plan => {
-                const child = children.find(c => c.name === plan.childName);
-                if (child) {
-                    const oldValue = child.attributes[plan.attribute];
-                    child.attributes[plan.attribute] += 1;
-                    child.lastTraining = now;
-                    child.totalTraining = (child.totalTraining || 0) + 1;
-                    trainedCount++;
-                    totalAttributeIncrease += 1;
-                    
-                    // 检查成长
-                    const childIndex = children.indexOf(child);
-                    if (childIndex !== -1) {
-                        checkChildGrowth(childIndex);
-                    }
-                }
-            });
-            
-            if (trainedCount > 0) {
-                player.investmentGame.userData.availableFunds -= totalCost;
-                logAction(`智能培养了 ${trainedCount} 个孩子，总共增加了 ${totalAttributeIncrease} 点属性`, "success");
-                
-                updateChildSystemUI();
-                updateDisplay();
-                saveGame();
-            }
-        }
-    });
+    runBatchChildTraining(plans, '智能培养计划（按最弱属性）：');
 }
+
 function quickTrainAll() {
-    const children = player.children.children || [];
-    if (children.length === 0) {
-        logAction("没有孩子可以培养", "error");
-        return;
-    }
-    
-    const now = Date.now();
-    const availableChildren = children.filter(child => {
-        const lastTraining = child.lastTraining || 0;
-        return (now - lastTraining) >= 60 * 60 * 1000;
-    });
-    
+    const availableChildren = getTrainableFamilyMembers();
     if (availableChildren.length === 0) {
-        logAction("所有孩子都在培养冷却中", "error");
+        logAction('当前没有可培养的成员', 'error');
         return;
     }
-    
-    // 使用最便宜的教育培养
-    const training = childConfig.trainingTypes[0]; // 教育培养
-    const totalCost = training.cost * availableChildren.length;
-    
-    if (player.investmentGame.userData.availableFunds < totalCost) {
-        logAction(`资金不足！需要 ${totalCost} 元`, "error");
-        return;
-    }
-    
-    showCustomConfirm(`确定要对 ${availableChildren.length} 个孩子进行快速教育培养吗？\n消耗 ${totalCost} 元`, (confirmed) => {
-        if (confirmed) {
-            let trainedCount = 0;
-            
-            availableChildren.forEach(child => {
-                child.attributes.intelligence += 1;
-                child.lastTraining = now;
-                child.totalTraining = (child.totalTraining || 0) + 1;
-                trainedCount++;
-                
-                // 检查成长
-                const childIndex = children.indexOf(child);
-                if (childIndex !== -1) {
-                    checkChildGrowth(childIndex);
-                }
-            });
-            
-            if (trainedCount > 0) {
-                player.investmentGame.userData.availableFunds -= totalCost;
-                logAction(`快速培养了 ${trainedCount} 个孩子，智力+${trainedCount}`, "success");
-                
-                updateChildSystemUI();
-                updateDisplay();
-                saveGame();
-            }
-        }
+    const training = childConfig.trainingTypes[0];
+    const plans = availableChildren.map(function (child) {
+        return { childId: child.id, childName: child.name, training: training };
     });
+    runBatchChildTraining(plans, '快速教育培养：');
 }
+
 // 培养孩子
 function trainChild(childIndex, trainingType = null) {
     try {
-        console.log('开始培养孩子:', childIndex, '培养类型:', trainingType);
-        
+        var batchOpts = window.__childTrainBatchOpts || {};
         const children = player.children.children;
         if (childIndex >= children.length) {
-            logAction("无效的孩子索引", "error");
+            if (!batchOpts.silent) logAction("无效的孩子索引", "error");
             return;
         }
         
         const child = children[childIndex];
-        console.log('目标孩子:', child);
         
-        // 检查培养冷却
-        const now = Date.now();
-        const lastTraining = child.lastTraining || 0;
-        const cooldown = 60 * 60 * 1000; // 1小时冷却
-        const remainingTime = cooldown - (now - lastTraining);
-        
-        if (remainingTime > 0) {
-            const minutesRemaining = Math.ceil(remainingTime / (60 * 1000));
-            logAction(`${child.name} 培养冷却中，还需等待 ${minutesRemaining} 分钟`, "error");
+        var gate = canFamilyMemberTrain(child);
+        if (!gate.ok) {
+            if (!batchOpts.silent) {
+                logAction(child.name + ' ' + gate.reason + '，无法培养', "error");
+            }
             return;
         }
         
@@ -2072,38 +2123,23 @@ function trainChild(childIndex, trainingType = null) {
         
         const training = childConfig.trainingTypes.find(t => t.id === trainingType);
         if (!training) {
-            logAction("无效的培养类型", "error");
+            if (!batchOpts.silent) logAction("无效的培养类型", "error");
             return;
         }
         
-        console.log('选择的培养:', training);
-        var costMult = (typeof getLineageTrainCostMult === 'function') ? getLineageTrainCostMult() : 1;
-        var realCost = Math.floor(training.cost * costMult);
+        var realCost = getChildTrainUnitCost(training);
         
         if (player.investmentGame.userData.availableFunds < realCost) {
-            logAction("资金不足！需要 " + realCost + " 元", "error");
+            if (!batchOpts.silent) logAction("资金不足！需要 " + formatSci(realCost) + " 元", "error");
             return;
         }
-        
-        // 保存旧的属性值用于比较
-        const oldAttributeValue = child.attributes[training.effect];
-        console.log('培养前属性值:', training.effect, '=', oldAttributeValue);
-        
-        
         player.investmentGame.userData.availableFunds -= realCost;
-        console.log('扣除资金:', realCost, '剩余:', player.investmentGame.userData.availableFunds);
+
+        const now = Date.now();
         
         // 确保属性对象存在
-        if (!child.attributes) {
-            child.attributes = {
-                intelligence: 1,
-                physique: 1,
-                charm: 1,
-                business: 1
-            };
-        }
+        ensureChildAttributes(child);
         
-        // 增加属性 - 确保使用正确的属性名
         const effectMapping = {
             'education': 'intelligence',
             'sports': 'physique',
@@ -2112,11 +2148,7 @@ function trainChild(childIndex, trainingType = null) {
         };
         
         const actualEffect = effectMapping[trainingType] || training.effect;
-        console.log('实际影响的属性:', actualEffect);
-        
-        if (child.attributes[actualEffect] === undefined) {
-            child.attributes[actualEffect] = 1; // 初始化属性
-        }
+        const oldAttributeValue = child.attributes[actualEffect];
         
         // 增加属性值（命格可加成）
         var gain = 1;
@@ -2125,7 +2157,6 @@ function trainChild(childIndex, trainingType = null) {
         }
         child.attributes[actualEffect] += gain;
         const newAttributeValue = child.attributes[actualEffect];
-        console.log('培养后属性值:', actualEffect, '=', newAttributeValue);
         
         // 更新其他数据
         child.lastTraining = now;
@@ -2147,21 +2178,24 @@ function trainChild(childIndex, trainingType = null) {
             player.children.trainingHistory = player.children.trainingHistory.slice(-100);
         }
         
-        logAction("对 " + child.name + " 进行了" + training.name + "培养，" + getAttributeDisplayName(actualEffect) + "+" + gain + " (" + oldAttributeValue + " → " + newAttributeValue + ")", "success");
+        if (!batchOpts.silent) {
+            logAction("对 " + child.name + " 进行了" + training.name + "培养，" + getAttributeDisplayName(actualEffect) + "+" + gain + " (" + oldAttributeValue + " → " + newAttributeValue + ")", "success");
+        }
         
         // 检查成长阶段
         checkChildGrowth(childIndex);
         
-        // 强制更新UI
-        updateChildSystemUI();
-        updateDisplay();
-        saveGame();
-        
-        console.log('培养完成，当前孩子属性:', child.attributes);
+        if (!batchOpts.skipUi) {
+            updateChildSystemUI();
+            updateDisplay();
+            saveGame();
+        }
         
     } catch (error) {
         console.error('培养孩子时发生错误:', error);
-        logAction("培养过程中出现错误", "error");
+        if (!(window.__childTrainBatchOpts || {}).silent) {
+            logAction("培养过程中出现错误", "error");
+        }
     }
 }
 
@@ -2169,9 +2203,7 @@ function trainChild(childIndex, trainingType = null) {
 // 全体培养
 function trainAllChildren(trainingType) {
     try {
-        console.log('开始全体培养，类型:', trainingType);
-        
-        const children = player.children.children;
+        const children = player.children.children || [];
         if (children.length === 0) {
             logAction("没有孩子可以培养", "error");
             return;
@@ -2183,74 +2215,17 @@ function trainAllChildren(trainingType) {
             return;
         }
         
-        // 检查哪些孩子可以培养
-        const now = Date.now();
-        const availableChildren = children.filter((child, index) => {
-            const lastTraining = child.lastTraining || 0;
-            const canTrain = (now - lastTraining) >= 60 * 60 * 1000;
-            console.log(`孩子 ${child.name} 可培养:`, canTrain);
-            return canTrain;
-        });
+        const availableChildren = getTrainableFamilyMembers();
         
         if (availableChildren.length === 0) {
-            const cooldownInfo = children.map(child => {
-                const lastTraining = child.lastTraining || 0;
-                const remainingTime = Math.max(0, 60 * 60 * 1000 - (now - lastTraining));
-                const minutesRemaining = Math.ceil(remainingTime / (60 * 1000));
-                return `${child.name}: ${minutesRemaining}分钟`;
-            }).join(', ');
-            
-            logAction(`所有孩子都在培养冷却中: ${cooldownInfo}`, "error");
+            logAction('当前没有可培养的成员（冷却/染恙/游学/闭关）', "error");
             return;
         }
         
-        const totalCost = training.cost * availableChildren.length;
-        if (player.investmentGame.userData.availableFunds < totalCost) {
-            logAction(`资金不足！需要 ${totalCost} 元`, "error");
-            return;
-        }
-        
-        showCustomConfirm(`确定要对 ${availableChildren.length} 个可培养的孩子进行${training.name}培养吗？\n消耗 ${totalCost} 元\n\n效果: ${getAttributeDisplayName(training.effect)}+1/孩子`, (confirmed) => {
-            if (confirmed) {
-                let trainedCount = 0;
-                let totalAttributeIncrease = 0;
-                
-                availableChildren.forEach((child) => {
-                    const childIndex = children.findIndex(c => c.id === child.id);
-                    if (childIndex !== -1) {
-                        // 保存旧值
-                        const oldValue = child.attributes[training.effect] || 1;
-                        
-                        // 增加属性
-                        if (!child.attributes[training.effect]) {
-                            child.attributes[training.effect] = 1;
-                        }
-                        child.attributes[training.effect] += 1;
-                        const newValue = child.attributes[training.effect];
-                        
-                        child.lastTraining = now;
-                        child.totalTraining = (child.totalTraining || 0) + 1;
-                        trainedCount++;
-                        totalAttributeIncrease += (newValue - oldValue);
-                        
-                        console.log(`孩子 ${child.name} ${training.effect}: ${oldValue} → ${newValue}`);
-                        
-                        // 检查成长
-                        checkChildGrowth(childIndex);
-                    }
-                });
-                
-                if (trainedCount > 0) {
-                    player.investmentGame.userData.availableFunds -= totalCost;
-                    
-                    logAction(`对 ${trainedCount} 个孩子进行了${training.name}培养，${getAttributeDisplayName(training.effect)} 总共增加了 ${totalAttributeIncrease} 点`, "success");
-                    
-                    updateChildSystemUI();
-                    updateDisplay();
-                    saveGame();
-                }
-            }
+        const plans = availableChildren.map(function (child) {
+            return { childId: child.id, childName: child.name, training: training };
         });
+        runBatchChildTraining(plans, '全体' + training.name + '培养：');
         
     } catch (error) {
         console.error('全体培养时发生错误:', error);
@@ -2664,19 +2639,23 @@ function updateWorkChildrenList() {
     adultChildren.forEach(function(child) {
         const actualIndex = children.findIndex(function(c) { return c.id === child.id; });
         if (actualIndex < 0) return;
+        ensureChildAttributes(child);
         const workInfo = getChildWorkInfo(child);
         const growthStage = childConfig.growthStages[child.growthStage];
+        const workGate = canFamilyMemberWork(child);
         const card = document.createElement('div');
         card.className = 'c-member gen-' + (child.generation || 1);
+        var statusHtml = workInfo.currentJob
+            ? ('<div style="font-size:12px;color:#4CAF50;">职业 ' + workInfo.currentJob + '</div>' +
+               '<div style="font-size:11px;color:#FFD700;">时薪 ' + formatNumber(workInfo.hourlyIncome) + '</div>' +
+               '<div style="font-size:11px;color:#87CEEB;">已工作 ' + workInfo.hoursWorked.toFixed(1) + 'h · 待收 ' + formatNumber(workInfo.pendingIncome) + '</div>')
+            : ('<div style="font-size:12px;color:#FF6B6B;">待业中</div>' +
+               (!workGate.ok ? '<div style="font-size:10px;color:#FFB74D;">' + workGate.reason + '</div>' : ''));
         card.innerHTML =
             '<span class="c-badge gen">' + getGenerationLabel(child.generation || 1) + '</span>' +
             '<div class="name">' + child.name + '</div>' +
             '<div class="meta">' + (child.gender === 'boy' ? '男' : '女') + ' · ' + (growthStage ? growthStage.name : '成年') + '</div>' +
-            (workInfo.currentJob
-                ? ('<div style="font-size:12px;color:#4CAF50;">职业 ' + workInfo.currentJob + '</div>' +
-                   '<div style="font-size:11px;color:#FFD700;">时薪 ' + formatNumber(workInfo.hourlyIncome) + '</div>' +
-                   '<div style="font-size:11px;color:#87CEEB;">已工作 ' + workInfo.hoursWorked.toFixed(1) + 'h · 待收 ' + formatNumber(workInfo.pendingIncome) + '</div>')
-                : '<div style="font-size:12px;color:#FF6B6B;">待业中</div>') +
+            statusHtml +
             '<div class="attrs" style="margin-top:6px;">' +
             '<div style="color:#2196F3;">智 ' + child.attributes.intelligence + '</div>' +
             '<div style="color:#4CAF50;">体 ' + child.attributes.physique + '</div>' +
@@ -2684,10 +2663,10 @@ function updateWorkChildrenList() {
             '<div style="color:#FF9800;">商 ' + child.attributes.business + '</div></div>' +
             '<div class="c-actions">' +
             (!workInfo.currentJob
-                ? '<button class="c-btn c-btn-sm c-btn-green" onclick="startChildWork(' + actualIndex + ')">开始</button>'
+                ? '<button class="c-btn c-btn-sm c-btn-green" onclick="startChildWork(' + actualIndex + ')" ' + (workGate.ok ? '' : 'disabled') + '>开始</button>'
                 : ('<button class="c-btn c-btn-sm c-btn-orange" onclick="stopChildWork(' + actualIndex + ')">停止</button>' +
                    '<button class="c-btn c-btn-sm c-btn-blue" onclick="collectChildWorkIncome(' + actualIndex + ')">收取</button>')) +
-            '<button class="c-btn c-btn-sm c-btn-purple" onclick="showJobSelection(' + actualIndex + ')">换工作</button>' +
+            '<button class="c-btn c-btn-sm c-btn-purple" onclick="showJobSelection(' + actualIndex + ')" ' + (workGate.ok ? '' : 'disabled') + '>换工作</button>' +
             '</div>';
         container.appendChild(card);
     });
@@ -2696,32 +2675,87 @@ function updateWorkChildrenList() {
 
 function getChildJobDefs() {
     return {
-        "学者": { attribute: "intelligence", baseIncome: 12000 },
-        "运动员": { attribute: "physique", baseIncome: 8400 },
-        "艺人": { attribute: "charm", baseIncome: 5600 },
-        "商人": { attribute: "business", baseIncome: 9500 },
-        "家将": { attribute: "physique", baseIncome: 15000 },
-        "族吏": { attribute: "intelligence", baseIncome: 14000 }
+        "学者": { id: "scholar", attribute: "intelligence", baseIncome: 12000, description: "适合智力高的成员", color: "#2196F3", icon: "📚" },
+        "运动员": { id: "athlete", attribute: "physique", baseIncome: 8400, description: "适合体质高的成员", color: "#4CAF50", icon: "🏃" },
+        "艺人": { id: "artist", attribute: "charm", baseIncome: 5600, description: "适合魅力高的成员", color: "#9C27B0", icon: "🎭" },
+        "商人": { id: "businessman", attribute: "business", baseIncome: 9500, description: "适合商业能力高的成员", color: "#FF9800", icon: "💼" },
+        "家将": { id: "guard", attribute: "physique", baseIncome: 15000, description: "家族护卫，体质越高收入越高（含代际加成）", color: "#E53935", icon: "⚔" },
+        "族吏": { id: "clerk", attribute: "intelligence", baseIncome: 14000, description: "打理族务，智力越高收入越高（含代际加成）", color: "#00897B", icon: "📜" }
     };
+}
+
+function getChildJobList() {
+    var defs = getChildJobDefs();
+    return Object.keys(defs).map(function (name) {
+        return Object.assign({ name: name }, defs[name]);
+    });
+}
+
+function getChildJobById(jobId) {
+    var list = getChildJobList();
+    for (var i = 0; i < list.length; i++) {
+        if (list[i].id === jobId) return list[i];
+    }
+    return null;
+}
+
+/** 是否可开始/更换打工（染恙 / 坐月子 / 游学 / 闭关） */
+function canFamilyMemberWork(child) {
+    if (!child) return { ok: false, reason: '成员不存在' };
+    if (!isFamilyMemberAdult(child)) {
+        var stage = (childConfig.growthStages[child.growthStage] && childConfig.growthStages[child.growthStage].name) || '未成年';
+        return { ok: false, reason: '还是' + stage + '，需成长到青年阶段' };
+    }
+    var now = Date.now();
+    if (child.postpartumUntil && now < child.postpartumUntil) {
+        return { ok: false, reason: '尚在坐月子（约剩 ' + Math.ceil((child.postpartumUntil - now) / 3600000) + ' 小时）' };
+    }
+    if (typeof isMemberSick === 'function' && isMemberSick(child) && child.illness) {
+        var def = typeof getIllnessDef === 'function' ? getIllnessDef(child.illness.id) : null;
+        if (def && def.workBlock) {
+            return { ok: false, reason: '染恙「' + def.name + '」中' };
+        }
+    }
+    var id = child.id;
+    var plus = player.children && player.children.descPlus;
+    if (plus) {
+        if (plus.travelUntil && (plus.travelUntil[id] || 0) > now) {
+            return { ok: false, reason: '游学未归' };
+        }
+        if (plus.secludeUntil && (plus.secludeUntil[id] || 0) > now) {
+            return { ok: false, reason: '闭关中' };
+        }
+    }
+    return { ok: true };
+}
+
+function calcChildHourlyIncome(child, job) {
+    if (!child || !job) return 0;
+    ensureChildAttributes(child);
+    var genMult = getGenerationMult(child.generation || 1);
+    return job.baseIncome * (child.attributes[job.attribute] || 1) * genMult;
 }
 
 function getChildWorkInfo(child) {
     const now = Date.now();
     const jobs = getChildJobDefs();
     
-    if (!child.currentJob) {
+    if (!child.currentJob || child.currentJob === '__sick_skip__') {
         return { currentJob: null, hourlyIncome: 0, hoursWorked: 0, pendingIncome: 0 };
     }
     
     const job = jobs[child.currentJob];
     if (!job) {
+        // 无效职业残留：清掉，避免界面显示待业却无法「开始」
+        child.currentJob = null;
+        child.workStartTime = 0;
         return { currentJob: null, hourlyIncome: 0, hoursWorked: 0, pendingIncome: 0 };
     }
     
+    ensureChildAttributes(child);
     const workStartTime = child.workStartTime || now;
-    const hoursWorked = (now - workStartTime) / (60 * 60 * 1000);
-    const genMult = getGenerationMult(child.generation || 1);
-    const hourlyIncome = job.baseIncome * (child.attributes[job.attribute] || 1) * genMult;
+    const hoursWorked = Math.max(0, (now - workStartTime) / (60 * 60 * 1000));
+    const hourlyIncome = calcChildHourlyIncome(child, job);
     const pendingIncome = Math.floor(hoursWorked * hourlyIncome);
     
     return {
@@ -2732,6 +2766,17 @@ function getChildWorkInfo(child) {
     };
 }
 
+function payoutChildWorkIncome(child, opts) {
+    opts = opts || {};
+    if (!child || !child.currentJob) return 0;
+    var workInfo = getChildWorkInfo(child);
+    if (!(workInfo.pendingIncome > 0)) return 0;
+    player.investmentGame.userData.availableFunds += workInfo.pendingIncome;
+    if (!opts.keepTimer) child.workStartTime = Date.now();
+    if (!opts.skipHook && typeof onLineageCollectHook === 'function') onLineageCollectHook();
+    return workInfo.pendingIncome;
+}
+
 // 孩子工作系统（成年孩子）
 function startChildWork(childIndex) {
     const child = player.children.children[childIndex];
@@ -2740,13 +2785,13 @@ function startChildWork(childIndex) {
         return;
     }
     
-    if (!isFamilyMemberAdult(child)) {
-        const currentStage = childConfig.growthStages[child.growthStage]?.name || '未知';
-        logAction(child.name + " 还是" + currentStage + "，需要成长到青年阶段才能工作", "error");
+    var gate = canFamilyMemberWork(child);
+    if (!gate.ok) {
+        logAction(child.name + ' ' + gate.reason + '，无法打工', "error");
         return;
     }
     
-    if (child.currentJob) {
+    if (child.currentJob && child.currentJob !== '__sick_skip__') {
         logAction(child.name + " 已经在工作了", "error");
         return;
     }
@@ -2766,12 +2811,9 @@ function collectChildWorkIncome(childIndex) {
         return;
     }
     
-    const workInfo = getChildWorkInfo(child);
-    if (workInfo.pendingIncome > 0) {
-        player.investmentGame.userData.availableFunds += workInfo.pendingIncome;
-        child.workStartTime = Date.now(); // 重置工作时间
-        
-        logAction(`收取 ${child.name} 的工作收入: ${formatNumber(workInfo.pendingIncome)} 元`, "success");
+    const paid = payoutChildWorkIncome(child);
+    if (paid > 0) {
+        logAction(`收取 ${child.name} 的工作收入: ${formatNumber(paid)} 元`, "success");
         updateDisplay();
         updateChildSystemUI();
         saveGame();
@@ -2782,11 +2824,11 @@ function collectChildWorkIncome(childIndex) {
 function autoAssignAllJobs() {
     const children = player.children.children || [];
     const adultChildren = children.filter(function(child) {
-        return isFamilyMemberAdult(child) && !child.currentJob;
+        return canFamilyMemberWork(child).ok && (!child.currentJob || child.currentJob === '__sick_skip__');
     });
     
     if (adultChildren.length === 0) {
-        logAction("没有需要分配工作的成员", "info");
+        logAction("没有需要分配工作的成员（或均在染恙/坐月子/游学/闭关中）", "info");
         return;
     }
     
@@ -2805,18 +2847,9 @@ function autoAssignAllJobs() {
     }
 }
 function getBestJobForChild(child) {
-    const jobs = [
-        { name: "学者", attribute: "intelligence", baseIncome: 12000 },
-        { name: "运动员", attribute: "physique", baseIncome: 8400 },
-        { name: "艺人", attribute: "charm", baseIncome: 5600 },
-        { name: "商人", attribute: "business", baseIncome: 9500 },
-        { name: "家将", attribute: "physique", baseIncome: 15000 },
-        { name: "族吏", attribute: "intelligence", baseIncome: 14000 }
-    ];
-    const genMult = getGenerationMult(child.generation || 1);
-    const jobOptions = jobs.map(function(job) {
-        const hourlyIncome = job.baseIncome * (child.attributes[job.attribute] || 1) * genMult;
-        return Object.assign({}, job, { hourlyIncome: hourlyIncome });
+    ensureChildAttributes(child);
+    const jobOptions = getChildJobList().map(function(job) {
+        return Object.assign({}, job, { hourlyIncome: calcChildHourlyIncome(child, job) });
     });
     return jobOptions.reduce(function(best, job) {
         return job.hourlyIncome > best.hourlyIncome ? job : best;
@@ -2824,72 +2857,22 @@ function getBestJobForChild(child) {
 }
 function showJobSelection(childIndex) {
     const child = player.children.children[childIndex];
-    if (!child || !isFamilyMemberAdult(child)) {
-        logAction("只有成年家族成员才能工作", "error");
+    if (!child) {
+        logAction("无效的成员索引", "error");
+        return;
+    }
+    var gate = canFamilyMemberWork(child);
+    if (!gate.ok) {
+        logAction(child.name + ' ' + gate.reason + '，无法换工作', "error");
         return;
     }
     
     const genMult = getGenerationMult(child.generation || 1);
-    const jobs = [
-        { 
-            id: "scholar", 
-            name: "学者", 
-            attribute: "intelligence", 
-            baseIncome: 12000, 
-            description: "适合智力高的成员", 
-            color: "#2196F3",
-            icon: "📚"
-        },
-        { 
-            id: "athlete", 
-            name: "运动员", 
-            attribute: "physique", 
-            baseIncome: 8400, 
-            description: "适合体质高的成员", 
-            color: "#4CAF50",
-            icon: "🏃"
-        },
-        { 
-            id: "artist", 
-            name: "艺人", 
-            attribute: "charm", 
-            baseIncome: 5600, 
-            description: "适合魅力高的成员", 
-            color: "#9C27B0",
-            icon: "🎭"
-        },
-        { 
-            id: "businessman", 
-            name: "商人", 
-            attribute: "business", 
-            baseIncome: 9500, 
-            description: "适合商业能力高的成员", 
-            color: "#FF9800",
-            icon: "💼"
-        },
-        {
-            id: "guard",
-            name: "家将",
-            attribute: "physique",
-            baseIncome: 15000,
-            description: "家族护卫，体质越高收入越高（含代际加成）",
-            color: "#E53935",
-            icon: "⚔"
-        },
-        {
-            id: "clerk",
-            name: "族吏",
-            attribute: "intelligence",
-            baseIncome: 14000,
-            description: "打理族务，智力越高收入越高（含代际加成）",
-            color: "#00897B",
-            icon: "📜"
-        }
-    ];
+    ensureChildAttributes(child);
     
     // 计算每个工作的时薪
-    const jobOptions = jobs.map(job => {
-        const hourlyIncome = job.baseIncome * (child.attributes[job.attribute] || 1) * genMult;
+    const jobOptions = getChildJobList().map(job => {
+        const hourlyIncome = calcChildHourlyIncome(child, job);
         const currentAttribute = child.attributes[job.attribute] || 1;
         const suitability = calculateJobSuitability(child, job);
         
@@ -3037,6 +3020,7 @@ function showJobSelection(childIndex) {
     });
 }
 function calculateJobSuitability(child, job) {
+    ensureChildAttributes(child);
     const attributeValue = child.attributes[job.attribute] || 1;
     const maxAttribute = Math.max(1, ...Object.values(child.attributes));
     
@@ -3053,41 +3037,41 @@ function calculateJobSuitability(child, job) {
 }
 function selectJob(childIndex, jobId) {
     const child = player.children.children[childIndex];
-    if (!child || !isFamilyMemberAdult(child)) {
-        logAction("只有成年家族成员才能工作", "error");
+    if (!child) {
+        logAction("无效的成员索引", "error");
+        return;
+    }
+    var gate = canFamilyMemberWork(child);
+    if (!gate.ok) {
+        logAction(child.name + ' ' + gate.reason + '，无法换工作', "error");
         return;
     }
     
-    const jobs = {
-        "scholar": { name: "学者", attribute: "intelligence", baseIncome: 12000 },
-        "athlete": { name: "运动员", attribute: "physique", baseIncome: 8400 },
-        "artist": { name: "艺人", attribute: "charm", baseIncome: 5600 },
-        "businessman": { name: "商人", attribute: "business", baseIncome: 9500 },
-        "guard": { name: "家将", attribute: "physique", baseIncome: 15000 },
-        "clerk": { name: "族吏", attribute: "intelligence", baseIncome: 14000 }
-    };
-    
-    const selectedJob = jobs[jobId];
+    const selectedJob = getChildJobById(jobId);
     if (!selectedJob) {
         logAction("无效的职业", "error");
         return;
     }
     
     // 先收取当前工作收入（如果有）
-    if (child.currentJob) {
-        collectChildWorkIncome(childIndex);
+    if (child.currentJob && child.currentJob !== '__sick_skip__') {
+        var paid = payoutChildWorkIncome(child);
+        if (paid > 0) {
+            logAction('换职前收取 ' + child.name + ' 收入 ' + formatNumber(paid) + ' 元', 'success');
+        }
     }
     
     child.currentJob = selectedJob.name;
     child.workStartTime = Date.now();
     
+    const hourly = calcChildHourlyIncome(child, selectedJob);
     const genMult = getGenerationMult(child.generation || 1);
-    const hourly = selectedJob.baseIncome * (child.attributes[selectedJob.attribute] || 1) * genMult;
     logAction(child.name + " 现在从事" + selectedJob.name + "工作，时薪 " + formatNumber(hourly) + "（含代际×" + genMult.toFixed(2) + "）", "success");
     
     // 关闭对话框
     closeJobSelection();
     
+    updateDisplay();
     updateChildSystemUI();
     saveGame();
 }
@@ -3150,20 +3134,18 @@ function collectAllChildWorkIncome() {
     let collectedCount = 0;
 
     children.forEach(function(child) {
-        if (isFamilyMemberAdult(child) && child.currentJob) {
-            const workInfo = getChildWorkInfo(child);
-            if (workInfo.pendingIncome > 0) {
-                player.investmentGame.userData.availableFunds += workInfo.pendingIncome;
-                totalIncome += workInfo.pendingIncome;
-                child.workStartTime = Date.now();
+        if (isFamilyMemberAdult(child) && child.currentJob && child.currentJob !== '__sick_skip__') {
+            var paid = payoutChildWorkIncome(child, { skipHook: true });
+            if (paid > 0) {
+                totalIncome += paid;
                 collectedCount++;
             }
         }
     });
 
     if (totalIncome > 0) {
-        logAction("收取了 " + collectedCount + " 人的工作收入，总计: " + formatNumber(totalIncome) + " 元", "success");
         if (typeof onLineageCollectHook === 'function') onLineageCollectHook();
+        logAction("收取了 " + collectedCount + " 人的工作收入，总计: " + formatNumber(totalIncome) + " 元", "success");
         updateDisplay();
         updateChildSystemUI();
         saveGame();
@@ -3190,14 +3172,13 @@ function getGrowthStageInfo(children) {
 
 function stopChildWork(childIndex) {
     const child = player.children.children[childIndex];
-    if (!child || !child.currentJob) {
+    if (!child || !child.currentJob || child.currentJob === '__sick_skip__') {
         logAction("该成员没有在工作", "error");
         return;
     }
-    const workInfo = getChildWorkInfo(child);
-    if (workInfo.pendingIncome > 0) {
-        player.investmentGame.userData.availableFunds += workInfo.pendingIncome;
-        logAction("停止工作并收取 " + child.name + " 收入 " + formatNumber(workInfo.pendingIncome) + " 元", "success");
+    const paid = payoutChildWorkIncome(child, { keepTimer: true });
+    if (paid > 0) {
+        logAction("停止工作并收取 " + child.name + " 收入 " + formatNumber(paid) + " 元", "success");
     } else {
         logAction(child.name + " 已停止工作", "info");
     }

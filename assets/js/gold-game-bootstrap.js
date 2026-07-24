@@ -1945,10 +1945,13 @@ function abyssOpenEquipAction(item, slot, invIdx) {
         }
     }
     var upgradeBtn = document.getElementById('abyssEquipUpgradeBtn');
-    if (upgradeBtn) upgradeBtn.disabled = (equipLv >= runLevel || upgradeStone < 1);
+    if (upgradeBtn) {
+        upgradeBtn.textContent = '升级';
+        upgradeBtn.disabled = (equipLv >= runLevel || upgradeStone < 1);
+    }
     var enhanceBtn = document.getElementById('abyssEquipEnhanceBtn');
     if (enhanceBtn) {
-        enhanceBtn.textContent = '强化(消耗' + nextEnhanceCost + '个)';
+        enhanceBtn.textContent = '强化';
         enhanceBtn.disabled = (abyssRun.materials.enhanceStone || 0) < nextEnhanceCost;
     }
     var disBtn = document.getElementById('abyssEquipDismantleBtn');
@@ -1960,11 +1963,79 @@ function abyssOpenEquipAction(item, slot, invIdx) {
 }
 
 function closeAbyssEquipAction() {
+    closeAbyssEquipUpgradeChoice();
+    closeAbyssEquipEnhanceChoice();
     document.getElementById('abyssEquipActionOverlay').style.display = 'none';
     document.getElementById('abyssEquipActionUI').style.display = 'none';
     abyssEquipActionTarget = null;
     abyssEquipActionSlot = null;
     abyssEquipActionInvIdx = null;
+}
+
+function closeAbyssEquipUpgradeChoice() {
+    var ov = document.getElementById('abyssEquipUpgradeChoiceOverlay');
+    var ui = document.getElementById('abyssEquipUpgradeChoiceUI');
+    if (ov) ov.style.display = 'none';
+    if (ui) ui.style.display = 'none';
+}
+
+function closeAbyssEquipEnhanceChoice() {
+    var ov = document.getElementById('abyssEquipEnhanceChoiceOverlay');
+    var ui = document.getElementById('abyssEquipEnhanceChoiceUI');
+    if (ov) ov.style.display = 'none';
+    if (ui) ui.style.display = 'none';
+}
+
+function abyssShowEquipUpgradeChoice() {
+    if (!abyssEquipActionTarget || !abyssRun) return;
+    closeAbyssEquipEnhanceChoice();
+    var eq = abyssEquipActionTarget;
+    var equipLv = abyssGetEffectiveEquipLevel(eq);
+    var runLevel = Math.max(1, Math.floor((abyssRun.exp || 0) / 100));
+    var stones = abyssRun.materials.upgradeStone || 0;
+    var canLevels = Math.max(0, runLevel - equipLv);
+    var maxDo = Math.min(canLevels, stones);
+    var info = document.getElementById('abyssEquipUpgradeChoiceInfo');
+    if (info) {
+        info.innerHTML = '当前装备等级 Lv.' + equipLv + ' / 上限 ' + runLevel +
+            '<br>升级石: <span style="color:#00bcd4;">' + stones + '</span>（每次消耗1个）' +
+            '<br>一键最多可升 <span style="color:#4caf50;">' + maxDo + '</span> 级';
+    }
+    var onceBtn = document.getElementById('abyssEquipUpgradeOnceBtn');
+    var maxBtn = document.getElementById('abyssEquipUpgradeMaxBtn');
+    if (onceBtn) onceBtn.disabled = (equipLv >= runLevel || stones < 1);
+    if (maxBtn) maxBtn.disabled = (maxDo < 1);
+    document.getElementById('abyssEquipUpgradeChoiceOverlay').style.display = 'block';
+    document.getElementById('abyssEquipUpgradeChoiceUI').style.display = 'block';
+}
+
+function abyssShowEquipEnhanceChoice() {
+    if (!abyssEquipActionTarget || !abyssRun) return;
+    closeAbyssEquipUpgradeChoice();
+    var eq = abyssEquipActionTarget;
+    var curLv = eq.level || 0;
+    var stones = abyssRun.materials.enhanceStone || 0;
+    var nextCost = abyssEnhanceCostForNextLevel(curLv);
+    var previewLv = curLv;
+    var previewStones = stones;
+    var maxDo = 0;
+    while (previewStones >= abyssEnhanceCostForNextLevel(previewLv) && maxDo < 9999) {
+        previewStones -= abyssEnhanceCostForNextLevel(previewLv);
+        previewLv++;
+        maxDo++;
+    }
+    var info = document.getElementById('abyssEquipEnhanceChoiceInfo');
+    if (info) {
+        info.innerHTML = '当前强化 +' + curLv + '（全属性+' + (curLv * 5) + '%）' +
+            '<br>强化石: <span style="color:#ff9800;">' + stones + '</span>（下一级消耗 ' + nextCost + ' 个）' +
+            '<br>一键最多可强化 <span style="color:#4caf50;">' + maxDo + '</span> 级 → +' + previewLv;
+    }
+    var onceBtn = document.getElementById('abyssEquipEnhanceOnceBtn');
+    var maxBtn = document.getElementById('abyssEquipEnhanceMaxBtn');
+    if (onceBtn) onceBtn.disabled = (stones < nextCost);
+    if (maxBtn) maxBtn.disabled = (maxDo < 1);
+    document.getElementById('abyssEquipEnhanceChoiceOverlay').style.display = 'block';
+    document.getElementById('abyssEquipEnhanceChoiceUI').style.display = 'block';
 }
 
 function abyssEquipUpgrade() {
@@ -1976,6 +2047,25 @@ function abyssEquipUpgrade() {
     if (abyssGetEffectiveEquipLevel(eq) >= runLevel) return;
     abyssRun.materials.upgradeStone--;
     eq.equipLevel = currentEquipLv + 1;
+    abyssLog((eq.name || '装备') + ' 升级至 Lv.' + abyssGetEffectiveEquipLevel(eq));
+    closeAbyssEquipAction();
+    openAbyssEquipmentPanel();
+    if (abyssRun && abyssRun.active) updateAbyssRunUI();
+}
+
+function abyssEquipUpgradeMax() {
+    if (!abyssEquipActionTarget || !abyssRun) return;
+    var eq = abyssEquipActionTarget;
+    var runLevel = Math.max(1, Math.floor((abyssRun.exp || 0) / 100));
+    var times = 0;
+    while ((abyssRun.materials.upgradeStone || 0) >= 1 && abyssGetEffectiveEquipLevel(eq) < runLevel && times < 9999) {
+        var currentEquipLv = eq.equipLevel != null ? eq.equipLevel : 1;
+        abyssRun.materials.upgradeStone--;
+        eq.equipLevel = currentEquipLv + 1;
+        times++;
+    }
+    if (times < 1) return;
+    abyssLog((eq.name || '装备') + ' 一键升级 ' + times + ' 级，当前 Lv.' + abyssGetEffectiveEquipLevel(eq));
     closeAbyssEquipAction();
     openAbyssEquipmentPanel();
     if (abyssRun && abyssRun.active) updateAbyssRunUI();
@@ -1997,6 +2087,26 @@ function abyssEquipEnhance() {
     if ((abyssRun.materials.enhanceStone || 0) < cost) return;
     abyssRun.materials.enhanceStone -= cost;
     abyssEquipActionTarget.level = curLv + 1;
+    abyssLog((abyssEquipActionTarget.name || '装备') + ' 强化至 +' + abyssEquipActionTarget.level);
+    closeAbyssEquipAction();
+    openAbyssEquipmentPanel();
+    if (abyssRun && abyssRun.active) updateAbyssRunUI();
+}
+
+function abyssEquipEnhanceMax() {
+    if (!abyssEquipActionTarget || !abyssRun) return;
+    var eq = abyssEquipActionTarget;
+    var times = 0;
+    while (times < 9999) {
+        var curLv = eq.level || 0;
+        var cost = abyssEnhanceCostForNextLevel(curLv);
+        if ((abyssRun.materials.enhanceStone || 0) < cost) break;
+        abyssRun.materials.enhanceStone -= cost;
+        eq.level = curLv + 1;
+        times++;
+    }
+    if (times < 1) return;
+    abyssLog((eq.name || '装备') + ' 一键强化 ' + times + ' 级，当前 +' + (eq.level || 0));
     closeAbyssEquipAction();
     openAbyssEquipmentPanel();
     if (abyssRun && abyssRun.active) updateAbyssRunUI();

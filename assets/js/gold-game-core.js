@@ -1,11 +1,11 @@
-        const GAME_VERSION = "2.0.40";
+        const GAME_VERSION = "2.0.41";
         const GAME_INVENTORY_MAX = 100;
         var WING_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
         var MOUNT_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
         const ARTIFACT_INVENTORY_MAX = 100;
         const SECONDARY_INVENTORY_MAX = 50;
         let versionErrorBlocked = false;
-        var _apiHost = '114.132.157.120';
+        var _apiHost = '218.244.139.4';
         window.GOLD_GAME_API_BASE = window.GOLD_GAME_API_BASE || (typeof location !== 'undefined' && location.protocol === 'https:' ? 'https://' + _apiHost : 'http://' + _apiHost + ':3000');
 
         

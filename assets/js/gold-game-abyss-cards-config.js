@@ -690,7 +690,8 @@ function abyssCalcPetStats(pet) {
         if (ndp.critDmg) p.critDmg = (p.critDmg || 0) + ndp.critDmg * mult;
         if (ndp.lifestealPct) p.lifesteal = (p.lifesteal || 0) + ndp.lifestealPct * mult;
         if (ndp.dodge) p.dodge = (p.dodge || 0) + ndp.dodge * mult;
-        if (ndp.damageReduction) p.damageReduction = (p.damageReduction || 0) + ndp.damageReduction * mult;
+        // 内丹减伤为百分数（如 15 = 15%），转为小数比例
+        if (ndp.damageReduction) p.damageReduction = (p.damageReduction || 0) + (ndp.damageReduction * mult) / 100;
     }
     // 深渊神兽品种被动加成（只对深渊神兽生效，按品种说明粗略解析攻击/防御/生命/闪避/爆伤加成）
     if (pet.isDivine && pet.speciesDesc && typeof pet.speciesDesc === 'string') {
@@ -780,7 +781,9 @@ function abyssCalcPetStats(pet) {
     p.atk = Math.max(1, p.atk);
     p.def = Math.max(0, p.def);
     p.maxHp = Math.max(50, p.maxHp);
-    p.dodge = Math.min(75, (p.dodge || 0));
+    // 宠物闪避强制上限 70%；减伤强制上限 99.9%
+    p.dodge = Math.min(70, (p.dodge || 0));
+    p.damageReduction = Math.min(0.999, Math.max(0, p.damageReduction || 0));
     pet.maxHp = p.maxHp;
     if (abyssRun) { abyssRun._petStatsCache = abyssRun._petStatsCache || {}; abyssRun._petStatsCache[key] = p; }
     return p;

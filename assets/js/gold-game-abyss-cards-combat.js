@@ -1371,17 +1371,22 @@ function abyssAttack() {
         }
         taken = Math.max(1, taken);
         if ((abyssRun.playerClass || 'warrior') === 'warrior' && stats.maxHp > 0 && taken > Math.floor(stats.maxHp * 0.2)) taken = Math.floor(taken * 0.85);
-        if (abyssRun.thisRoundReduceDmg) taken = Math.floor(taken * (1 - (abyssRun.thisRoundReduceDmg || 0) / 100));
-        // 全局减伤上限：不论职业与来源，总减伤最高 99.9%（至少承受 0.1% 原始伤害）
+        // 技能回合减伤强制上限 99.9%
+        if (abyssRun.thisRoundReduceDmg) {
+            var skillDrPct = Math.min(99.9, Math.max(0, abyssRun.thisRoundReduceDmg || 0));
+            taken = Math.floor(taken * (1 - skillDrPct / 100));
+        }
+        // 全局减伤强制上限：不论职业与来源，总减伤最高 99.9%（至少承受 0.1% 原始伤害）
         if (takenBase > 0) {
-            var minRemainFactor = 0.001; // 剩余至少 0.1% 伤害
+            var minRemainFactor = 0.001;
             var minTaken = Math.max(1, Math.floor(takenBase * minRemainFactor));
             if (taken < minTaken) taken = minTaken;
         }
         var abyssFloorForHit = abyssRun.floor || 1;
-        
         var abyssMonsterHitPct = Math.min(60, abyssFloorForHit * 0.3);
-        var dodgeCheck = Math.max(0, (stats.dodge || 0) + (abyssRun.thisRoundDodgeBonus || 0) - abyssMonsterHitPct);
+        // 闪避强制上限 70%（含技能本回合闪避加成），再扣怪物命中
+        var rawDodge = Math.min(70, (stats.dodge || 0) + (abyssRun.thisRoundDodgeBonus || 0));
+        var dodgeCheck = Math.max(0, rawDodge - abyssMonsterHitPct);
         if (Math.random() * 100 < dodgeCheck) { taken = 0; abyssSoulCardOnDodgeSuccess(); abyssLog(m.name + ' 攻击被闪避！'); continue; }
         var guardHit = abyssResolveGuardDamageTargets(taken, m);
         var deployedForHit = guardHit.deployedForHit;
@@ -1449,15 +1454,20 @@ function abyssAttack() {
             var pst = abyssCalcPetStats(pet2);
             if (pst && m.skills) for (var epi = 0; epi < m.skills.length; epi++) if (m.skills[epi].id === 'executePet') { var petHpPct = (pet2.hp != null ? pet2.hp : pst.maxHp) / (pst.maxHp || 1); if (petHpPct < (m.skills[epi].executePetThreshold || 0.35)) { takenPet = Math.floor(takenPet * (1 + (m.skills[epi].executePetBonus || 0.6))); abyssLog(m.name + ' 屠宠！'); } break; }
             
-            var petEffDodge = Math.max(0, ((pst && pst.dodge) || 0) - abyssMonsterHitPct);
+            // 宠物闪避强制上限 70%，再扣怪物命中
+            var petEffDodge = Math.max(0, Math.min(70, (pst && pst.dodge) || 0) - abyssMonsterHitPct);
             if (petEffDodge > 0 && Math.random() * 100 < petEffDodge) {
                 takenPet = 0;
                 abyssLog('宠物【' + pet2.name + '】闪避了攻击');
             } else {
                 var takenPetBase = takenPet;
                 if (pst) takenPet = Math.max(1, takenPet - Math.floor((pst.def || 0) * 0.3));
-                if (pst && (pst.damageReduction || 0) > 0) takenPet = Math.max(1, Math.floor(takenPet * (1 - Math.min(0.999, pst.damageReduction))));
-                // 宠物与深渊神兽全局减伤上限：总减伤最高 99.9%（至少承受 0.1% 原始宠物伤害）
+                // 宠物减伤按小数比例结算，强制上限 99.9%
+                if (pst && (pst.damageReduction || 0) > 0) {
+                    var petDr = Math.min(0.999, Math.max(0, pst.damageReduction));
+                    takenPet = Math.max(1, Math.floor(takenPet * (1 - petDr)));
+                }
+                // 宠物与深渊神兽全局减伤强制上限：总减伤最高 99.9%（至少承受 0.1% 原始宠物伤害）
                 if (takenPetBase > 0) {
                     var petMinRemainFactor = 0.001;
                     var minTakenPet = Math.max(1, Math.floor(takenPetBase * petMinRemainFactor));
