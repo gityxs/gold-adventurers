@@ -668,7 +668,23 @@ function runTradingOfflineIfNeeded() {
             }
         } catch (e) {}
     }
-    if (typeof logAction === 'function') logAction('跑商离线: 检查中(离线' + Math.floor(offMs / 60000) + '分钟, ' + (player ? player.reincarnationCount + '转' : '无玩家') + ')', 'info');
+    // 未开启自动贸易：不结算、也不刷「跑商离线」日志（避免未开跑商的玩家被刷屏）
+    if (!player) {
+        window._tradingOfflineMs = 0;
+        window._tradingOfflineMsSnapshot = 0;
+        return;
+    }
+    if (!player.trading && player.reincarnationCount >= 1000 && typeof initTradingData === 'function') {
+        initTradingData();
+    }
+    if (!player.trading || !player.trading.autoTrade || !player.trading.autoTrade.enabled) {
+        window._tradingOfflineMs = 0;
+        window._tradingOfflineMsSnapshot = 0;
+        return;
+    }
+
+    // 以下仅在已开启「启用自动贸易」时提示/结算
+    if (typeof logAction === 'function') logAction('跑商离线: 检查中(离线' + Math.floor(offMs / 60000) + '分钟, ' + player.reincarnationCount + '转)', 'info');
     if (offMs > 0 && typeof logAction === 'function') logAction('跑商离线: 检测到离线' + Math.floor(offMs / 60000) + '分钟，准备结算…', 'info');
     if (offMs <= 0) {
         window._tradingOfflineMs = 0;
@@ -676,23 +692,10 @@ function runTradingOfflineIfNeeded() {
         if (typeof logAction === 'function') logAction('跑商离线: 未结算 — 原因：离线时长为0（未检测到有效离线间隔，请关页/关游戏一段时间后再打开）', 'info');
         return;
     }
-    if (!player) {
-        window._tradingOfflineMs = 0;
-        window._tradingOfflineMsSnapshot = 0;
-        if (typeof logAction === 'function') logAction('跑商离线: 未结算 — 原因：玩家数据未就绪', 'info');
-        return;
-    }
     if (player.reincarnationCount < 1000) {
         window._tradingOfflineMs = 0;
         window._tradingOfflineMsSnapshot = 0;
         if (typeof logAction === 'function') logAction('跑商离线: 未结算 — 原因：需1000转以上才开启跑商', 'info');
-        return;
-    }
-    if (!player.trading && typeof initTradingData === 'function') initTradingData();
-    if (!player.trading || !player.trading.autoTrade || !player.trading.autoTrade.enabled) {
-        window._tradingOfflineMs = 0;
-        window._tradingOfflineMsSnapshot = 0;
-        if (typeof logAction === 'function') logAction('跑商离线: 未结算 — 原因：请先在跑商中勾选「启用自动贸易」并保存路线后再离线', 'info');
         return;
     }
     if (!player.trading.autoTrade.routes || player.trading.autoTrade.routes.length === 0) {

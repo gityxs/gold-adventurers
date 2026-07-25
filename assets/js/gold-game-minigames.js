@@ -1818,6 +1818,182 @@ function toggleWorldMapAutoBattle() {
     logAction(`世界地图自动战斗${player.worldMapBattle.autoBattle ? '开启' : '关闭'}`, "info");
 }
 
+var WORLD_MAP_INSIGHT_DURATION_MS = 60000;
+var WORLD_MAP_INSIGHT_OFFLINE_RATE = 0.8;
+
+function ensureWorldMapInsightData(opts) {
+    if (!player.worldMapInsight || typeof player.worldMapInsight !== 'object') {
+        player.worldMapInsight = {
+            active: false,
+            startTime: 0,
+            expGained: 0,
+            kills: 0,
+            timerId: null,
+            uiTimerId: null,
+            expPerMinute: 0,
+            killsPerMinute: 0,
+            recordedAt: 0,
+            dimensionLevel: 0,
+            zoneName: ''
+        };
+    }
+    var w = player.worldMapInsight;
+    if (w.expPerMinute == null || !Number.isFinite(Number(w.expPerMinute))) w.expPerMinute = 0;
+    if (w.killsPerMinute == null || !Number.isFinite(Number(w.killsPerMinute))) w.killsPerMinute = 0;
+    if (w.expGained == null || !Number.isFinite(Number(w.expGained))) w.expGained = 0;
+    if (w.kills == null || !Number.isFinite(Number(w.kills))) w.kills = 0;
+    w.active = !!w.active;
+    // 仅读档时清理运行态，避免把进行中的感悟打断
+    if (opts && opts.resetRuntime) {
+        w.timerId = null;
+        w.uiTimerId = null;
+        w.active = false;
+    }
+    return w;
+}
+
+function clearWorldMapInsightTimers() {
+    var w = player && player.worldMapInsight;
+    if (!w) return;
+    if (w.timerId != null) {
+        if (typeof unregisterInterval === 'function') unregisterInterval(w.timerId);
+        else try { clearInterval(w.timerId); } catch (e) {}
+        w.timerId = null;
+    }
+    if (w.uiTimerId != null) {
+        if (typeof unregisterInterval === 'function') unregisterInterval(w.uiTimerId);
+        else try { clearInterval(w.uiTimerId); } catch (e) {}
+        w.uiTimerId = null;
+    }
+    if (window._worldMapInsightTimeoutId != null) {
+        try { clearTimeout(window._worldMapInsightTimeoutId); } catch (e2) {}
+        window._worldMapInsightTimeoutId = null;
+    }
+}
+
+function updateWorldMapInsightStatusUI() {
+    ensureWorldMapInsightData();
+    var w = player.worldMapInsight;
+    var text = '关闭';
+    if (w.active) {
+        var left = Math.max(0, WORLD_MAP_INSIGHT_DURATION_MS - (Date.now() - Number(w.startTime || 0)));
+        text = '记录中 ' + Math.ceil(left / 1000) + 's';
+    } else if (Number(w.expPerMinute) > 0 || Number(w.killsPerMinute) > 0) {
+        text = '已记录';
+    }
+    document.querySelectorAll('#worldMapInsightStatus').forEach(function(el) {
+        el.textContent = text;
+    });
+}
+
+/** 击杀真正死亡并发放经验时调用，供感悟采样 */
+function recordWorldMapInsightKill(expAmount) {
+    if (!player || !player.worldMapInsight || !player.worldMapInsight.active) return;
+    var exp = Number(expAmount) || 0;
+    if (Number.isFinite(exp) && exp > 0) player.worldMapInsight.expGained += exp;
+    player.worldMapInsight.kills = (Number(player.worldMapInsight.kills) || 0) + 1;
+}
+
+function finishWorldMapInsight() {
+    ensureWorldMapInsightData();
+    var w = player.worldMapInsight;
+    clearWorldMapInsightTimers();
+    if (!w.active) {
+        updateWorldMapInsightStatusUI();
+        return;
+    }
+    w.active = false;
+    var elapsed = Math.max(1, Date.now() - Number(w.startTime || Date.now()));
+    var scale = WORLD_MAP_INSIGHT_DURATION_MS / elapsed;
+    w.expPerMinute = Math.max(0, Number(w.expGained) || 0) * scale;
+    w.killsPerMinute = Math.max(0, Number(w.kills) || 0) * scale;
+    w.recordedAt = Date.now();
+    w.dimensionLevel = Number(player.dimensionLevel) || 0;
+    w.zoneName = (player.battle && player.battle.currentZone && player.battle.currentZone.name) ? String(player.battle.currentZone.name) : '';
+    var expText = (typeof formatSci === 'function') ? formatSci(w.expPerMinute) : String(Math.floor(w.expPerMinute));
+    var killText = (w.killsPerMinute >= 100) ? w.killsPerMinute.toFixed(1) : (Math.round(w.killsPerMinute * 100) / 100);
+    logAction('感悟完成：经验 ' + expText + '/分，击杀 ' + killText + '/分（离线按80%结算）', 'success');
+    addBattleLog('感悟完成：' + expText + '经验/分，' + killText + '击杀/分');
+    updateWorldMapInsightStatusUI();
+    if (typeof updateLevelUI === 'function') updateLevelUI();
+    if (typeof saveGame === 'function') saveGame({ silent: true });
+}
+
+function toggleWorldMapInsight() {
+    if (!player) return;
+    if (player.reincarnationCount < 50) {
+        logAction('需要达到50转才能使用感悟（玩家等级系统）', 'error');
+        return;
+    }
+    ensureWorldMapInsightData();
+    var w = player.worldMapInsight;
+    if (w.active) {
+        logAction('感悟记录中，请等待完成（剩余约' + Math.ceil(Math.max(0, WORLD_MAP_INSIGHT_DURATION_MS - (Date.now() - w.startTime)) / 1000) + '秒）', 'info');
+        updateWorldMapInsightStatusUI();
+        return;
+    }
+    if (!player.battle || !player.battle.currentZone) {
+        logAction('请先进入关卡战斗再开启感悟', 'warning');
+        return;
+    }
+    clearWorldMapInsightTimers();
+    w.active = true;
+    w.startTime = Date.now();
+    w.expGained = 0;
+    w.kills = 0;
+    w.dimensionLevel = Number(player.dimensionLevel) || 0;
+    w.zoneName = player.battle.currentZone.name ? String(player.battle.currentZone.name) : '';
+    updateWorldMapInsightStatusUI();
+    addBattleLog('感悟开始：记录1分钟经验与击杀…');
+    logAction('感悟开始：请保持当前次元与关卡战斗1分钟', 'info');
+    if (typeof registerInterval === 'function') {
+        w.uiTimerId = registerInterval(updateWorldMapInsightStatusUI, 1000);
+    } else {
+        w.uiTimerId = setInterval(updateWorldMapInsightStatusUI, 1000);
+    }
+    window._worldMapInsightTimeoutId = setTimeout(function() {
+        window._worldMapInsightTimeoutId = null;
+        finishWorldMapInsight();
+    }, WORLD_MAP_INSIGHT_DURATION_MS);
+}
+
+/** 离线按击杀次数发放世界地图掉落（不含联网币/至尊神器） */
+function grantWorldMapInsightOfflineDrops(killCount) {
+    var kills = Math.floor(Number(killCount) || 0);
+    if (kills <= 0) return;
+    var maxKills = 20000;
+    if (kills > maxKills) kills = maxKills;
+    var prevSilent = window._suppressBattleLog;
+    window._suppressBattleLog = true;
+    try {
+        for (var i = 0; i < kills; i++) {
+            if (typeof safeWorldMapRewardCall === 'function') {
+                safeWorldMapRewardCall(dropMagicMaterial, '法宝材料');
+                safeWorldMapRewardCall(dropRuneMaterials, '符文材料');
+                safeWorldMapRewardCall(dropMount, '坐骑');
+                safeWorldMapRewardCall(dropWing, '翅膀');
+                safeWorldMapRewardCall(tryDropLawPowerMaterial, '法则材料');
+                if (Math.random() < 0.01) safeWorldMapRewardCall(dropItemsByDimension, '次元掉落');
+                safeWorldMapRewardCall(dropReincarnationEquipment, '轮回装备');
+                safeWorldMapRewardCall(tryDropBeastAfterBattle, '轮回神兽');
+                safeWorldMapRewardCall(tryDropPixelSkinAfterBattle, '像素皮肤');
+            } else {
+                if (typeof dropMagicMaterial === 'function') dropMagicMaterial();
+                if (typeof dropRuneMaterials === 'function') dropRuneMaterials();
+                if (typeof dropMount === 'function') dropMount();
+                if (typeof dropWing === 'function') dropWing();
+                if (typeof tryDropLawPowerMaterial === 'function') tryDropLawPowerMaterial();
+                if (Math.random() < 0.01 && typeof dropItemsByDimension === 'function') dropItemsByDimension();
+                if (typeof dropReincarnationEquipment === 'function') dropReincarnationEquipment();
+                if (typeof tryDropBeastAfterBattle === 'function') tryDropBeastAfterBattle();
+                if (typeof tryDropPixelSkinAfterBattle === 'function') tryDropPixelSkinAfterBattle();
+            }
+        }
+    } finally {
+        window._suppressBattleLog = prevSilent;
+    }
+}
+
 // 世界地图联网币掉落请求保护：限制并发与频率，避免长挂机后请求堆积导致卡顿
 window._networkCoinDropRequestInFlight = false;
 window._networkCoinDropLastAt = 0;
@@ -2034,6 +2210,7 @@ function handleMonsterDefeated() {
                 
                 const finalExp = calculateWorldMapExpReward(zone, dimension);
                 addPlayerExp(finalExp);
+                recordWorldMapInsightKill(finalExp);
                 addBattleLog(`获得${formatSci(finalExp)}经验！`);
               
                safeWorldMapRewardCall(dropRuneMaterials, '符文材料');
@@ -2142,6 +2319,7 @@ function tryDropLawPowerMaterial() {
 
 // 添加战斗日志（同时写入 player.battleLog 以便关闭再打开界面仍能看到，并限制长度防泄漏）
 function addBattleLog(message) {
+    if (window._suppressBattleLog) return;
     if (!player.battleLog || !Array.isArray(player.battleLog)) player.battleLog = [];
     var logLine = '[' + new Date().toLocaleTimeString() + '] ' + message;
     player.battleLog.push(logLine);
@@ -2313,6 +2491,7 @@ function backgroundHandleMonsterDefeated() {
         }
         const finalExp = calculateWorldMapExpReward(zone, dimension);
         addPlayerExp(finalExp);
+        recordWorldMapInsightKill(finalExp);
 
        safeWorldMapRewardCall(dropMagicMaterial, '法宝材料');
         safeWorldMapRewardCall(dropRuneMaterials, '符文材料');
@@ -2399,6 +2578,7 @@ function openBattleUI() {
     document.getElementById('battleOverlay').style.display = 'block';
 
     updateWorldMapAutoBattleStatusUI();
+    if (typeof updateWorldMapInsightStatusUI === 'function') updateWorldMapInsightStatusUI();
     if (player.worldMapBattle.autoBattle) {
         syncWorldMapAutoBattleTimers();
     } else {

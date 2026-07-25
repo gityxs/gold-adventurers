@@ -834,11 +834,13 @@
     // ——— UI ———
     function el(id) { return document.getElementById(id); }
     function opts(filterFn) {
-        return (player.children.children || []).map(function (m, i) {
+        var html = (player.children.children || []).map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
             if (filterFn && !filterFn(m)) return '';
             return '<option value="' + i + '">' + m.name + '（' + genLabel(m.generation || 1) +
                 (isMarried(m) ? '·婚' : '') + '·望' + (m.descFame || 0) + '）</option>';
         }).join('');
+        return html || (typeof lineageEmptyMemberOptionHtml === 'function' ? lineageEmptyMemberOptionHtml() : '<option value="">（该代数暂无合适人选）</option>');
     }
 
     function updateSagaEthosPanel() {

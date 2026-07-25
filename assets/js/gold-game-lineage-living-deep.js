@@ -835,10 +835,12 @@
         var members = player.children.children || [];
         var html = '<p class="c-hint"><strong>婚育链：</strong>成年 → <strong>订婚</strong>（相处情谊）→ 成婚 → 恩爱 → 孕育 → 孕养 → 分娩坐月子。</p>';
         var candidates = members.map(function (m, i) { return { m: m, i: i }; }).filter(function (x) {
-            return isAdult(x.m) && !x.m.isMarried && (x.m.generation || 1) < 18;
+            if (!(isAdult(x.m) && !x.m.isMarried && (x.m.generation || 1) < 18)) return false;
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(x.m)) return false;
+            return true;
         });
         if (!candidates.length) {
-            html += '<div class="c-hint">暂无成年未婚成员可订婚</div>';
+            html += '<div class="c-hint">暂无成年未婚成员可订婚（可调整顶部筛选代数）</div>';
             box.innerHTML = html;
             return;
         }
@@ -872,9 +874,15 @@
         ensureDeepData();
         var preg = L().pregnancy;
         var pregnant = (player.children.children || []).map(function (m, i) { return { m: m, i: i }; })
-            .filter(function (x) { return x.m.isPregnant; });
+            .filter(function (x) {
+                if (!x.m.isPregnant) return false;
+                if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(x.m)) return false;
+                return true;
+            });
         var postpartum = (player.children.children || []).filter(function (m) {
-            return m.postpartumUntil && Date.now() < m.postpartumUntil;
+            if (!(m.postpartumUntil && Date.now() < m.postpartumUntil)) return false;
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return false;
+            return true;
         });
         var html = '<p class="c-hint">孕育中可调养，提升新生儿出生属性；分娩后进入坐月子，暂不宜打工。</p>';
         if (postpartum.length) {
@@ -883,7 +891,7 @@
             }).join('、') + '</div>';
         }
         if (!pregnant.length) {
-            html += '<div class="c-hint">当前无人孕育。恩爱达标后可在「传宗」孕育。</div>';
+            html += '<div class="c-hint">当前无人孕育（可调整顶部筛选代数）。恩爱达标后可在「传宗」孕育。</div>';
             box.innerHTML = html;
             return;
         }
@@ -956,6 +964,8 @@
         var fav = player.children.living.deep.neighborFavor || 0;
         var members = player.children.children || [];
         var opts = members.map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
+            
             if (!isAdult(m)) return '';
             return '<option value="' + i + '">' + m.name + '</option>';
         }).join('');
@@ -973,7 +983,10 @@
         if (!box) return;
         ensureDeepData();
         var members = player.children.children || [];
-        var kids = members.map(function (m, i) { return { m: m, i: i }; }).filter(function (x) { return !isAdult(x.m); });
+        var kids = members.map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return null;
+            return { m: m, i: i };
+        }).filter(function (x) { return x && !isAdult(x.m); });
         if (!kids.length) {
             box.innerHTML = '<div class="c-hint">暂无未成年成员。新生儿与少年可在此体验光景。</div>';
             return;

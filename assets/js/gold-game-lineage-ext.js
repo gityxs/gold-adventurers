@@ -388,6 +388,7 @@
         }
         el.innerHTML = '';
         members.forEach(function (m, idx) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return;
             var t = getTalent(m.talentId);
             var card = document.createElement('div');
             card.className = 'c-member gen-' + (m.generation || 1);
@@ -402,6 +403,9 @@
                     : '<div style="color:#FFD700;font-size:11px;margin-top:6px;">命格已觉醒，效果增强</div>');
             el.appendChild(card);
         });
+        if (!el.children.length) {
+            el.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#C9A0B8;padding:16px;">该代数筛选下暂无成员命格</div>';
+        }
     }
 
     window.awakenChildTalent = function (index) {
@@ -470,11 +474,18 @@
     }
 
     function buildAdultOptions(selectedId) {
-        var adults = (player.children.children || []).filter(isFamilyMemberAdult);
+        var adults = (player.children.children || []).filter(function (a) {
+            if (!isFamilyMemberAdult(a)) return false;
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(a)) return false;
+            return true;
+        });
         var html = '<option value="">-- 选择成年成员 --</option>';
         adults.forEach(function (a) {
             html += '<option value="' + a.id + '"' + (a.id === selectedId ? ' selected' : '') + '>' + a.name + '（' + getGenerationLabel(a.generation || 1) + '）</option>';
         });
+        if (adults.length === 0 && typeof lineageEmptyMemberOptionHtml === 'function') {
+            html = lineageEmptyMemberOptionHtml('（该代数暂无成年人选）');
+        }
         return html;
     }
 
@@ -1073,7 +1084,9 @@
         for (var i = 0; i < cfg().prestigeRanks.length; i++) {
             if (cfg().prestigeRanks[i].need > p) { next = cfg().prestigeRanks[i]; break; }
         }
-        var members = (player.children.children || []).slice().sort(function (a, b) {
+        var members = (player.children.children || []).slice().filter(function (m) {
+            return typeof matchLineageSelectGen !== 'function' || matchLineageSelectGen(m);
+        }).sort(function (a, b) {
             return (b.glory || 0) - (a.glory || 0);
         }).slice(0, 8);
 

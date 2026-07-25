@@ -408,6 +408,9 @@
             } finally {
                 _preserveDepth--;
                 if (_preserveDepth === 0) restoreChildSelects(snap);
+                try {
+                    if (typeof applyLineageMemberGenFilterDom === 'function') applyLineageMemberGenFilterDom();
+                } catch (eDom) { /* ignore */ }
             }
         };
     }

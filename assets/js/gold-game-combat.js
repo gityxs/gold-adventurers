@@ -1025,6 +1025,240 @@ function autoSweepProcess() {
     updateOfficialSystemDisplay();
     updateMonsterUI(); 
 }
+
+/** 二项抽样（大批量用正态近似） */
+function _binomialSample(n, p) {
+    n = Math.floor(Number(n) || 0);
+    p = Number(p) || 0;
+    if (n <= 0 || p <= 0) return 0;
+    if (p >= 1) return n;
+    if (n > 40) {
+        var mean = n * p;
+        var sd = Math.sqrt(n * p * (1 - p));
+        var u1 = Math.random() || 1e-12;
+        var u2 = Math.random();
+        var z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        return Math.max(0, Math.min(n, Math.round(mean + sd * z)));
+    }
+    var c = 0;
+    for (var i = 0; i < n; i++) if (Math.random() < p) c++;
+    return c;
+}
+
+function addDungeonEquipmentBulk(rarity, count) {
+    count = Math.floor(Number(count) || 0);
+    if (count <= 0 || !dungeonEquipmentTypes[rarity]) return;
+    var config = dungeonEquipmentTypes[rarity];
+    var existingEq = player.dungeonEquipment.find(function(eq) { return eq.rarity === rarity; });
+    if (!existingEq) {
+        existingEq = {
+            name: config.name,
+            rarity: rarity,
+            level: 1,
+            growthRate: Math.random() * (config.growthRange[1] - config.growthRange[0]) + config.growthRange[0],
+            quantity: 0
+        };
+        player.dungeonEquipment.push(existingEq);
+    }
+    var total = (existingEq.quantity || 0) + count;
+    existingEq.level = (existingEq.level || 1) + Math.floor(total / 3);
+    existingEq.quantity = total % 3;
+}
+
+function addSoulRingBulk(type, count) {
+    count = Math.floor(Number(count) || 0);
+    if (count <= 0 || !soulRingTypes[type]) return;
+    var existing = player.soulRings.find(function(r) { return r.type === type; });
+    if (existing) {
+        existing.level = (existing.level || 1) + count;
+    } else {
+        player.soulRings.push({
+            type: type,
+            level: count,
+            multiplier: soulRingTypes[type].baseMult
+        });
+    }
+}
+
+/**
+ * 离线自动扫荡：需开启自动扫荡；约 1 分钟 3 次完整扫荡（0 → 最大关-1）
+ * 大批量时用概率抽样批量结算，避免卡顿
+ */
+function simulateOfflineAutoSweep(offlineMinutes) {
+    if (!player || !player.battle || !player.battle.autoSweepEnabled) return null;
+    offlineMinutes = Math.floor(Number(offlineMinutes) || 0);
+    if (offlineMinutes < 1) return null;
+    if (!Array.isArray(player.dungeonEquipment)) player.dungeonEquipment = [];
+    if (!Array.isArray(player.soulRings)) player.soulRings = [];
+    if (!player.items) player.items = {};
+
+    var timesWanted = offlineMinutes * 3;
+    var maxStage = Number(player.battle.maxStage) || 0;
+    var targetStage = Math.max(1, maxStage - 1);
+    if (maxStage < 2 || targetStage <= 0) return { times: 0, reason: 'no_stages' };
+
+    var costPerSweep = targetStage * 12;
+    var affordable = Math.floor((Number(player.reincarnationCoin) || 0) / costPerSweep);
+    var times = Math.min(timesWanted, affordable, 10000);
+    if (times <= 0) {
+        if (typeof logAction === 'function') {
+            logAction('离线自动扫荡: 转生币不足（单次约需' + costPerSweep + '），未结算', 'info');
+        }
+        return { times: 0, reason: 'no_coin', costPerSweep: costPerSweep };
+    }
+
+    var totalCost = times * costPerSweep;
+    player.reincarnationCoin -= totalCost;
+
+    var dungeonTotal = 0;
+    var soulTotal = 0;
+    var itemTotal = 0;
+
+    var soulRingTable = [
+        { minStage: 1, type: 'year1', chance: 0.02 },
+        { minStage: 105, type: 'year10', chance: 0.02 },
+        { minStage: 205, type: 'year100', chance: 0.02 },
+        { minStage: 305, type: 'year1000', chance: 0.02 },
+        { minStage: 405, type: 'year10000', chance: 0.01 },
+        { minStage: 505, type: 'year10000', chance: 0.01 },
+        { minStage: 605, type: 'year100000', chance: 0.01 },
+        { minStage: 705, type: 'year1000000', chance: 0.01 },
+        { minStage: 890, type: 'year10000000', chance: 0.01 },
+        { minStage: 920, type: 'year100000000', chance: 0.01 },
+        { minStage: 1040, type: 'year2', chance: 0.01 },
+        { minStage: 1160, type: 'year3', chance: 0.01 },
+        { minStage: 1280, type: 'year4', chance: 0.01 },
+        { minStage: 1300, type: 'year5', chance: 0.01 },
+        { minStage: 1420, type: 'year6', chance: 0.01 },
+        { minStage: 1540, type: 'year7', chance: 0.01 },
+        { minStage: 1660, type: 'year8', chance: 0.01 },
+        { minStage: 1780, type: 'year9', chance: 0.01 },
+        { minStage: 1800, type: 'year11', chance: 0.01 },
+        { minStage: 1920, type: 'year12', chance: 0.01 },
+        { minStage: 2040, type: 'year13', chance: 0.01 },
+        { minStage: 2160, type: 'year14', chance: 0.01 },
+        { minStage: 2280, type: 'year15', chance: 0.01 },
+        { minStage: 2300, type: 'year16', chance: 0.01 },
+        { minStage: 2420, type: 'year17', chance: 0.01 },
+        { minStage: 2540, type: 'year18', chance: 0.01 },
+        { minStage: 2660, type: 'year19', chance: 0.01 },
+        { minStage: 2780, type: 'year20', chance: 0.01 },
+        { minStage: 2800, type: 'year21', chance: 0.01 },
+        { minStage: 2920, type: 'year22', chance: 0.01 },
+        { minStage: 3040, type: 'year23', chance: 0.01 },
+        { minStage: 3100, type: 'year24', chance: 0.01 },
+        { minStage: 3280, type: 'year25', chance: 0.01 },
+        { minStage: 3300, type: 'year26', chance: 0.01 },
+        { minStage: 3420, type: 'year27', chance: 0.01 },
+        { minStage: 3540, type: 'year28', chance: 0.01 },
+        { minStage: 3660, type: 'year29', chance: 0.01 },
+        { minStage: 3780, type: 'year30', chance: 0.01 },
+        { minStage: 3800, type: 'year31', chance: 0.01 },
+        { minStage: 4020, type: 'year32', chance: 0.01 },
+        { minStage: 4140, type: 'year33', chance: 0.01 },
+        { minStage: 4280, type: 'year34', chance: 0.01 },
+        { minStage: 4300, type: 'year35', chance: 0.01 },
+        { minStage: 4420, type: 'year36', chance: 0.01 },
+        { minStage: 4550, type: 'year37', chance: 0.01 },
+        { minStage: 4680, type: 'year38', chance: 0.01 },
+        { minStage: 4800, type: 'year39', chance: 0.01 },
+        { minStage: 4920, type: 'year40', chance: 0.01 },
+        { minStage: 5040, type: 'year41', chance: 0.01 },
+        { minStage: 5160, type: 'year42', chance: 0.01 },
+        { minStage: 5280, type: 'year43', chance: 0.01 },
+        { minStage: 5400, type: 'year44', chance: 0.01 },
+        { minStage: 5520, type: 'year45', chance: 0.01 },
+        { minStage: 5640, type: 'year46', chance: 0.01 },
+        { minStage: 5760, type: 'year47', chance: 0.01 },
+        { minStage: 5880, type: 'year48', chance: 0.01 },
+        { minStage: 6000, type: 'year49', chance: 0.01 },
+        { minStage: 6120, type: 'year50', chance: 0.01 },
+        { minStage: 6240, type: 'year51', chance: 0.01 },
+        { minStage: 6360, type: 'year52', chance: 0.01 },
+        { minStage: 6480, type: 'year53', chance: 0.01 },
+        { minStage: 6600, type: 'year54', chance: 0.01 },
+        { minStage: 6720, type: 'year55', chance: 0.01 },
+        { minStage: 6840, type: 'year56', chance: 0.01 },
+        { minStage: 6960, type: 'year57', chance: 0.01 }
+    ];
+
+    for (var stage = 0; stage < targetStage; stage++) {
+        var rates = getDropRatesByStage(stage);
+        var rolls = times * 3;
+        var entries = Object.entries(rates);
+        var left = rolls;
+        var remainingP = 0;
+        for (var ei = 0; ei < entries.length; ei++) remainingP += entries[ei][1];
+        for (var ri = 0; ri < entries.length; ri++) {
+            var rarity = entries[ri][0];
+            var prob = entries[ri][1];
+            var n;
+            if (ri === entries.length - 1) {
+                n = left;
+            } else {
+                var cond = remainingP > 0 ? Math.min(1, prob / remainingP) : 0;
+                n = _binomialSample(left, cond);
+                left -= n;
+                remainingP -= prob;
+            }
+            if (n > 0) {
+                addDungeonEquipmentBulk(rarity, n);
+                dungeonTotal += n;
+            }
+        }
+
+        var pFail = 1;
+        for (var si = 0; si < soulRingTable.length; si++) {
+            var drop = soulRingTable[si];
+            if (stage < drop.minStage) continue;
+            var pHit = pFail * drop.chance;
+            var sn = _binomialSample(times, pHit);
+            if (sn > 0) {
+                addSoulRingBulk(drop.type, sn);
+                soulTotal += sn;
+            }
+            pFail *= (1 - drop.chance);
+        }
+
+        function bumpItem(key, p) {
+            var cn = _binomialSample(times, p);
+            if (cn > 0) {
+                player.items[key] = (player.items[key] || 0) + cn;
+                itemTotal += cn;
+            }
+        }
+        if (stage >= 1000) bumpItem('refineStone', 0.0001);
+        if (stage >= 1) bumpItem('vipPower', 0.0002);
+        if (stage >= 500) bumpItem('primaryGem', 0.0003);
+        if (stage >= 1000) bumpItem('advancedGem', 0.0002);
+        if (stage >= 1500) bumpItem('superiorGem', 0.0001);
+        if (stage >= 1) bumpItem('rose', 0.001);
+        if (stage >= 2000) bumpItem('rebornDan', 0.0001);
+        if (stage >= 1000) bumpItem('baitCount', 0.0001);
+        if (stage >= 1) bumpItem('companionKey', 0.0001);
+    }
+
+    player.battle.currentStage = targetStage;
+    try { if (typeof generateMonster === 'function') generateMonster(); } catch (e) {}
+    try { if (typeof updateOfficialSystemDisplay === 'function') updateOfficialSystemDisplay(); } catch (e) {}
+    try { if (typeof checkTitleUnlocks === 'function') checkTitleUnlocks(); } catch (e) {}
+
+    if (typeof logAction === 'function') {
+        logAction(
+            '离线自动扫荡×' + times + '（' + offlineMinutes + '分钟×3次/分）：副本装备+' + dungeonTotal +
+            '，魂环+' + soulTotal + '，道具+' + itemTotal + '，消耗转生币' + totalCost,
+            'offline-reward'
+        );
+    }
+    return {
+        times: times,
+        dungeon: dungeonTotal,
+        soul: soulTotal,
+        item: itemTotal,
+        cost: totalCost
+    };
+}
+
 // 静默添加副本装备（不显示提示）
 function addDungeonEquipmentSilent(rarity) {
     const config = dungeonEquipmentTypes[rarity];

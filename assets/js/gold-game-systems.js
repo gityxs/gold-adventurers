@@ -948,9 +948,8 @@ seed_herb4: itemCounts.seed_herb4 || 0,
 seed_herb5: itemCounts.seed_herb5 || 0
     };
 
-    // 更新道具页面显示
+    // 更新道具页面显示（静默重置，不刷日志）
     updateItemDisplay();
-    logAction('道具页面已重置，道具数量保留', 'success');
 }
 
  window._startGameAfterLogin = function() {
@@ -2483,7 +2482,7 @@ function confirmRename() {
         }
 
        function logAction(message, type = 'info') {
-    // 过滤包含"自动购买"的消息
+    // 过滤包含"自动购买"的消息（刷屏）
     if (message.includes('自动购买')) {
         return; // 直接返回，不记录这类消息
     }
@@ -2498,36 +2497,45 @@ function confirmRename() {
     }
     const timestamp = new Date().toLocaleTimeString();
 
-    // 辅助函数：将大数值转换为科学计数法
-    const formatNumber = (value) => formatSci(value);
-
-    // 格式化消息中的数值
-    const formattedMessage = message.replace(/\d+(\.\d+)?/g, (match) => {
-        const number = parseFloat(match);
-        return formatNumber(number);
-    });
-
-    // 添加到统一日志数组
-    player.actionLogs.unshift({ message: formattedMessage, type, timestamp });
-    // 保持日志长度不超过 20 条
-    if (player.actionLogs.length > 20) {
-        player.actionLogs.pop(); // 移除最旧的一条日志
+    if (!player.actionLogs) player.actionLogs = [];
+    // 存原文，避免把 VIP/分钟/转生次数等正常数字误科学计数法化
+    player.actionLogs.unshift({ message: message, type, timestamp });
+    // 保持日志长度不超过 50 条（界面可滚动查看）
+    if (player.actionLogs.length > 50) {
+        player.actionLogs.length = 50;
     }
 
-    // 原有 DOM 更新逻辑保持不变...
+    const logContainer = document.getElementById('actionLog');
+    if (!logContainer) return;
     const logEntry = document.createElement('div');
     logEntry.className = type;
     logEntry.textContent = `[${timestamp}] ${message}`;
+    logEntry.style.wordBreak = 'break-word';
+    logEntry.style.whiteSpace = 'pre-wrap';
 
-    const logContainer = document.getElementById('actionLog');
     if (logContainer.firstChild) {
         logContainer.insertBefore(logEntry, logContainer.firstChild);
     } else {
         logContainer.appendChild(logEntry);
     }
-    if (logContainer.children.length > 20) {
+    while (logContainer.children.length > 50) {
         logContainer.removeChild(logContainer.lastChild);
     }
+}
+
+function renderActionLogsToDom() {
+    var logContainer = document.getElementById('actionLog');
+    if (!logContainer || !player || !Array.isArray(player.actionLogs)) return;
+    logContainer.innerHTML = '';
+    player.actionLogs.forEach(function(log) {
+        if (!log) return;
+        var logEntry = document.createElement('div');
+        logEntry.className = log.type || 'info';
+        logEntry.style.wordBreak = 'break-word';
+        logEntry.style.whiteSpace = 'pre-wrap';
+        logEntry.textContent = '[' + (log.timestamp || '') + '] ' + (log.message || '');
+        logContainer.appendChild(logEntry);
+    });
 }
 
 
@@ -2553,7 +2561,7 @@ function confirmRename() {
         ? (window.goldGameResolveAccountId() || '')
         : '';
     normalizeMainCurrencies();
-    player.actionLogs = player.actionLogs.slice(0, 5);
+    player.actionLogs = player.actionLogs.slice(0, 30);
     if (!Array.isArray(player.lotteryResults)) player.lotteryResults = [];
     player.lotteryResults = player.lotteryResults.slice(0, 20);
    
@@ -2688,7 +2696,7 @@ function confirmRename() {
             }
             function applyGoldGameSaveCompaction(p, aggressive) {
                 if (!p || typeof p !== 'object') return p;
-                if (Array.isArray(p.actionLogs) && p.actionLogs.length > 5) p.actionLogs = p.actionLogs.slice(0, 5);
+                if (Array.isArray(p.actionLogs) && p.actionLogs.length > 30) p.actionLogs = p.actionLogs.slice(0, 30);
                 if (Array.isArray(p.lotteryResults) && p.lotteryResults.length > 20) p.lotteryResults = p.lotteryResults.slice(0, 20);
                 if (Array.isArray(p.battleLog) && p.battleLog.length > (aggressive ? 15 : 50)) {
                     p.battleLog = p.battleLog.slice(0, aggressive ? 15 : 50);
@@ -2744,6 +2752,11 @@ function confirmRename() {
                 }
                 if (p.landlord && Object.prototype.hasOwnProperty.call(p.landlord, '_timerId')) delete p.landlord._timerId;
                 if (p.worldMapBattle && p.worldMapBattle.autoBattleInterval != null) p.worldMapBattle.autoBattleInterval = null;
+                if (p.worldMapInsight) {
+                    p.worldMapInsight.timerId = null;
+                    p.worldMapInsight.uiTimerId = null;
+                    p.worldMapInsight.active = false;
+                }
                 if (p.backgroundBattle && p.backgroundBattle.interval != null) p.backgroundBattle.interval = null;
                 if (aggressive && typeof p.avatar === 'string' && p.avatar.length > 12000) p.avatar = '';
                 return p;

@@ -916,7 +916,11 @@
         if (!box) return;
         ensureLivingData();
         var members = player.children.children || [];
-        var sick = members.map(function (m, i) { return { m: m, i: i }; }).filter(function (x) { return isMemberSick(x.m); });
+        var sick = members.map(function (m, i) { return { m: m, i: i }; }).filter(function (x) {
+            if (!isMemberSick(x.m)) return false;
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(x.m)) return false;
+            return true;
+        });
         var season = currentSeason();
         var html = '<div class="c-hint">时令：' + season.name +
             (season.illnessMult ? '（冬令易感，染恙几率偏高）' : '') +
@@ -968,6 +972,8 @@
         var season = currentSeason();
         var free = Date.now() < (player.children.living.choreFreeUntil || 0);
         var opts = members.map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
+            
             var tag = isMemberSick(m) ? '·病' : '';
             return '<option value="' + i + '">' + m.name + tag + '</option>';
         }).join('');
@@ -991,11 +997,13 @@
         var need = (livingCfg().marital && livingCfg().marital.bondNeedConceive) || 30;
         var members = player.children.children || [];
         var married = members.map(function (m, i) { return { m: m, i: i }; }).filter(function (x) {
-            return isAdult(x.m) && x.m.isMarried;
+            if (!(isAdult(x.m) && x.m.isMarried)) return false;
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(x.m)) return false;
+            return true;
         });
         var html = '<p class="c-hint"><strong>规则：</strong>子嗣须<strong>成年</strong>并<strong>成婚</strong>，且夫妻恩爱达到 <strong>' + need + '</strong>，方可孕育下一代。未成年/未婚不可生育。</p>';
         if (!married.length) {
-            html += '<div class="c-hint">暂无已婚成年成员。请先培养至青年 → 安排成婚 → 再回此页恩爱。</div>';
+            html += '<div class="c-hint">暂无已婚成年成员（可调整顶部筛选代数）。请先培养至青年 → 安排成婚 → 再回此页恩爱。</div>';
             box.innerHTML = html;
             return;
         }

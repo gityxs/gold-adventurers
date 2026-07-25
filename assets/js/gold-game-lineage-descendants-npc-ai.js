@@ -598,9 +598,11 @@
     function el(id) { return document.getElementById(id); }
     function memberOpts() {
         var C = core();
-        return (player.children.children || []).map(function (m, i) {
+        var html = (player.children.children || []).map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
             return '<option value="' + i + '">' + m.name + '</option>';
         }).join('');
+        return html || (typeof lineageEmptyMemberOptionHtml === 'function' ? lineageEmptyMemberOptionHtml() : '<option value="">（该代数暂无合适人选）</option>');
     }
     function npcOpts() {
         var d = player.children.descNpc;

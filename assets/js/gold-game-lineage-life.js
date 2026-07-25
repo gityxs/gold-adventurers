@@ -1175,6 +1175,8 @@
         var act = el('lifeActivityPanel');
         if (act) {
             var opts = members.map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
+            
                 return '<option value="' + i + '">' + m.name + '（' + ((ls.personas.find(function (p) { return p.id === m.personaId; }) || {}).name || '—') + '）</option>';
             }).join('');
             var actDisabled = moodLeft > 0;
@@ -1206,6 +1208,7 @@
         var career = el('lifeCareerPanel');
         if (career) {
             career.innerHTML = members.map(function (m, i) {
+                if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
                 if (!(typeof isFamilyMemberAdult === 'function' ? isFamilyMemberAdult(m) : m.isAdult)) return '';
                 var row = life.careers[m.id];
                 var def = row && ls.careers.find(function (c) { return c.id === row.id; });
@@ -1221,12 +1224,14 @@
                     }).join('') + '</select>' +
                     '<button class="c-btn c-btn-sm c-btn-blue" onclick="assignLifeCareer(' + i + ', document.getElementById(\'careerSel' + i + '\').value)">定志</button> ' +
                     '<button class="c-btn c-btn-sm c-btn-gold" onclick="trainLifeCareer(' + i + ')">' + trainLabel + '</button></div>';
-            }).join('') || '<div class="c-hint">需要成年成员才能定志深造</div>';
+            }).join('') || '<div class="c-hint">需要成年成员才能定志深造（可用顶部筛选代数）</div>';
         }
 
         var bond = el('lifeBondPanel');
         if (bond) {
-            var sel = members.map(function (m, i) { return '<option value="' + i + '">' + m.name + '</option>'; }).join('');
+            var sel = members.map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
+             return '<option value="' + i + '">' + m.name + '</option>'; }).join('');
             bond.innerHTML = '<div class="c-form-row"><label>成员甲</label><select id="bondA" class="c-input">' + sel + '</select></div>' +
                 '<div class="c-form-row"><label>成员乙</label><select id="bondB" class="c-input">' + sel + '</select></div>' +
                 '<button class="c-btn c-btn-pink" style="width:100%;" onclick="deepenFamilyBond(+document.getElementById(\'bondA\').value,+document.getElementById(\'bondB\').value)">夜谈交心（1500万）</button>' +
@@ -1263,13 +1268,14 @@
             var bioCost = 120000000 * Math.pow(10, (life.biographies || []).length);
             var bioTag = typeof lineageCostTag === 'function' ? lineageCostTag(bioCost) : ('（耗资 ' + fmt(bioCost) + '）');
             bio.innerHTML = members.map(function (m, i) {
+                if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
                 if (!(typeof isFamilyMemberAdult === 'function' ? isFamilyMemberAdult(m) : m.isAdult)) return '';
                 var has = (life.biographies || []).indexOf(m.id) >= 0;
                 return '<div class="c-member"><div class="name">' + m.name + '</div><div class="meta">' +
                     getGenerationLabel(m.generation || 1) + (has ? ' · 已有列传' : '') + '</div>' +
                     (has ? '' : '<button class="c-btn c-btn-sm c-btn-gold" onclick="writeMemberBiography(' + i + ')">立传' + bioTag + '</button>') +
                     '</div>';
-            }).join('') || '<div class="c-hint">暂无成年成员可立传</div>';
+            }).join('') || '<div class="c-hint">暂无成年成员可立传（可用顶部筛选代数）</div>';
         }
         var trial = el('lifeTrialPanel');
         if (trial && ls.trial) {
@@ -1277,6 +1283,8 @@
             var next = floor + 1;
             var cost = ls.trial.baseCost * Math.pow(ls.trial.costGrowth, Math.max(0, next - 1));
             var opts = members.map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
+            
                 if (!(typeof isFamilyMemberAdult === 'function' ? isFamilyMemberAdult(m) : m.isAdult)) return '';
                 return '<option value="' + i + '">' + m.name + '</option>';
             }).join('');
@@ -1320,6 +1328,8 @@
         var spirit = el('lineageWarSpiritPanel');
         if (spirit) {
             var opts = (player.children.children || []).map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
+            
                 return '<option value="' + i + '">' + m.name + '</option>';
             }).join('');
             spirit.innerHTML = [0, 1, 2, 3, 4].map(function (slot) {

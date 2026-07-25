@@ -142,22 +142,48 @@ const TSR_WORLD_MONSTER_POOL = {
 };
 
 /* ========== 赛季 ========== */
-function getTsrSeasonKey(d) {
+function getTsrSeasonIndex(d) {
     d = d || new Date();
     const days = Math.floor((d.getTime() - TSR_SEASON_EPOCH_UTC) / 86400000);
-    const idx = Math.floor(Math.max(0, days) / TSR_SEASON_LEN_DAYS) + 1;
-    return 'S' + idx;
+    return Math.floor(Math.max(0, days) / TSR_SEASON_LEN_DAYS) + 1;
+}
+
+function getTsrSeasonKey(d) {
+    return 'S' + getTsrSeasonIndex(d);
+}
+
+/** 当前赛季还剩多少天结束（进入下一赛季）；最少 1 */
+function getTsrSeasonRemainingDays(d) {
+    d = d || new Date();
+    const days = Math.floor((d.getTime() - TSR_SEASON_EPOCH_UTC) / 86400000);
+    const intoSeason = ((Math.max(0, days) % TSR_SEASON_LEN_DAYS) + TSR_SEASON_LEN_DAYS) % TSR_SEASON_LEN_DAYS;
+    return Math.max(1, TSR_SEASON_LEN_DAYS - intoSeason);
 }
 
 function ensureTsrSeason() {
     const tsr = player.timeSecretRealm;
     if (!tsr.season) tsr.season = { key: '', xp: 0, claimed: {}, history: [] };
     const key = getTsrSeasonKey();
+    const idx = getTsrSeasonIndex();
+    const remain = getTsrSeasonRemainingDays();
+    const nextIdx = idx + 1;
+    // 2000转以下不刷时光秘境赛季日志（系统未开启）
+    const canLogSeason = (player.reincarnationCount || 0) >= 2000;
     if (tsr.season.key !== key) {
         if (tsr.season.key) tsr.season.history.push({ key: tsr.season.key, xp: tsr.season.xp });
         if ((tsr.season.history || []).length > 12) tsr.season.history = tsr.season.history.slice(-12);
         tsr.season = { key, xp: 0, claimed: {}, history: tsr.season.history || [] };
-        logAction?.(`🏅 新赛季 ${key} 开启！通行证进度已重置`, 'success');
+        if (canLogSeason) {
+            logAction?.(`🏅 时光秘境第${idx}赛季开启！通行证进度已重置，还有${remain}天结束进入第${nextIdx}赛季`, 'success');
+            tsr.season._statusLogDay = new Date().toISOString().slice(0, 10);
+        }
+    } else if (canLogSeason) {
+        // 每天最多提示一次剩余天数（读档/进秘境时可见）
+        const dayKey = new Date().toISOString().slice(0, 10);
+        if (tsr.season._statusLogDay !== dayKey) {
+            tsr.season._statusLogDay = dayKey;
+            logAction?.(`🏅 时光秘境第${idx}赛季，还有${remain}天结束进入第${nextIdx}赛季`, 'info');
+        }
     }
     return tsr.season;
 }
@@ -218,10 +244,12 @@ function renderTsrSeasonPanel() {
     const next = TSR_SEASON_PASS[Math.min(tier + 1, TSR_SEASON_PASS.length - 1)];
     const cur = TSR_SEASON_PASS[tier];
     const pct = next.xp === cur.xp ? 100 : Math.min(100, ((s.xp - cur.xp) / Math.max(1, next.xp - cur.xp)) * 100);
+    const seasonIdx = typeof getTsrSeasonIndex === 'function' ? getTsrSeasonIndex() : 1;
+    const remainDays = typeof getTsrSeasonRemainingDays === 'function' ? getTsrSeasonRemainingDays() : TSR_SEASON_LEN_DAYS;
     el.innerHTML = `
         <div class="tsr-season-head">
-            <strong>🏅 赛季 ${s.key}</strong>
-            <span>经验 ${s.xp} · 档位 ${tier + 1}/${TSR_SEASON_PASS.length}</span>
+            <strong>🏅 第${seasonIdx}赛季（${s.key}）</strong>
+            <span>经验 ${s.xp} · 档位 ${tier + 1}/${TSR_SEASON_PASS.length} · 还有${remainDays}天进第${seasonIdx + 1}赛季</span>
         </div>
         <div class="tsr-season-track"><div class="tsr-season-fill" style="width:${pct}%"></div></div>
         <div class="tsr-season-tiers">${TSR_SEASON_PASS.map((r, i) => {

@@ -993,6 +993,8 @@ const childConfig = {
 };
 
 var _childOffspringFilter = 'all';
+/** 选人下拉 / 子嗣列表共用的代数筛选（支持单代如 "3"，或区间如 "1-3"） */
+var _lineageSelectGenFilter = 'all';
 var _childActiveTab = 'overview';
 
 function initChildData() {
@@ -1059,6 +1061,7 @@ function toggleChildSystem() {
         if (typeof restoreChildQuickTabs === 'function') restoreChildQuickTabs();
         switchChildTab(_childActiveTab || 'overview');
         updateChildSystemUI();
+        if (typeof syncLineageGenFilterSelects === 'function') syncLineageGenFilterSelects();
         if (typeof applyChildSubTabForPrimary === 'function') {
             try { applyChildSubTabForPrimary(_childActiveTab || 'overview'); } catch (eSub) {}
         }
@@ -1224,27 +1227,198 @@ window.updateChildQuickTabsLabel = function () {
     }
 };
 
-function setOffspringFilter(filter) {
-    _childOffspringFilter = filter || 'all';
-    var chips = document.querySelectorAll('#childSystemUI .c-chip');
+function getLineageSelectGenFilter() {
+    return _lineageSelectGenFilter || 'all';
+}
+
+function matchLineageSelectGen(member) {
+    var f = getLineageSelectGenFilter();
+    if (!f || f === 'all') return true;
+    if (!member) return false;
+    var gen = Number(member.generation) || 1;
+    var s = String(f);
+    if (s.indexOf('-') >= 0) {
+        var parts = s.split('-');
+        var a = Number(parts[0]);
+        var b = Number(parts[1]);
+        if (!isFinite(a) || !isFinite(b)) return true;
+        return gen >= Math.min(a, b) && gen <= Math.max(a, b);
+    }
+    return String(gen) === s;
+}
+
+function lineageGenFilterOptionsHtml() {
+    var maxG = (typeof childConfig !== 'undefined' && childConfig.lineage && childConfig.lineage.maxGeneration) || 18;
+    var cur = String(getLineageSelectGenFilter());
+    var html = '<option value="all"' + (cur === 'all' ? ' selected' : '') + '>全部代数</option>';
+    var ranges = [
+        ['1-3', '近三代（子女～曾孙）'],
+        ['4-6', '四～六代'],
+        ['7-9', '七～九代'],
+        ['10-12', '十～十二代'],
+        ['13-15', '十三～十五代'],
+        ['16-18', '十六～十八代']
+    ];
+    for (var r = 0; r < ranges.length; r++) {
+        html += '<option value="' + ranges[r][0] + '"' + (cur === ranges[r][0] ? ' selected' : '') + '>' + ranges[r][1] + '</option>';
+    }
+    for (var g = 1; g <= maxG; g++) {
+        var label = (typeof getGenerationLabel === 'function') ? getGenerationLabel(g) : ('第' + g + '代');
+        html += '<option value="' + g + '"' + (cur === String(g) ? ' selected' : '') + '>第' + g + '代·' + label + '</option>';
+    }
+    return html;
+}
+
+function lineageEmptyMemberOptionHtml(msg) {
+    return '<option value="-1">' + (msg || '（该代数暂无合适人选）') + '</option>';
+}
+
+/** 带原始下标的成员列表（已按代数筛选） */
+function lineageMemberEntries(extraFilter) {
+    var out = [];
+    var members = (player && player.children && player.children.children) || [];
+    for (var i = 0; i < members.length; i++) {
+        var m = members[i];
+        if (!matchLineageSelectGen(m)) continue;
+        if (typeof extraFilter === 'function' && !extraFilter(m, i)) continue;
+        out.push({ m: m, i: i, member: m, index: i });
+    }
+    return out;
+}
+
+function resolveMemberFromSelectOption(opt, members) {
+    if (!opt) return null;
+    var v = String(opt.value == null ? '' : opt.value);
+    if (!v || v === 'all' || v === 'boy' || v === 'girl') return null;
+    members = members || ((player && player.children && player.children.children) || []);
+    var text = String(opt.textContent || opt.label || '');
+    if (/^\d+$/.test(v)) {
+        var idx = Number(v);
+        if (idx >= 0 && idx < members.length) {
+            var byIdx = members[idx];
+            if (byIdx && (!text || text.indexOf(byIdx.name) >= 0)) return byIdx;
+        }
+    }
+    for (var i = 0; i < members.length; i++) {
+        if (String(members[i].id) === v) {
+            if (!text || text.indexOf(members[i].name) >= 0) return members[i];
+        }
+    }
+    return null;
+}
+
+/** 兜底：把当前界面里所有「选人」下拉再按代数滤一遍（防止漏接 opts） */
+function applyLineageMemberGenFilterDom() {
+    var ui = document.getElementById('childSystemUI');
+    if (!ui || !ui.querySelectorAll) return;
+    var members = (player && player.children && player.children.children) || [];
+    var selects = ui.querySelectorAll('select');
+    for (var s = 0; s < selects.length; s++) {
+        var sel = selects[s];
+        if (!sel || !sel.options) continue;
+        if (sel.id === 'lineageSelectGenFilter' || sel.id === 'offspringGenSelect' || sel.id === 'childGenderSelect') continue;
+        if (sel.classList && sel.classList.contains('lineage-gen-filter')) continue;
+        if (sel.id && /^descGender_/.test(sel.id)) continue;
+        if (sel.id && /^careerSel/.test(sel.id)) continue;
+
+        var hit = 0;
+        for (var i = 0; i < sel.options.length; i++) {
+            if (resolveMemberFromSelectOption(sel.options[i], members)) hit++;
+        }
+        if (hit === 0) continue;
+
+        var prev = sel.value;
+        for (var j = sel.options.length - 1; j >= 0; j--) {
+            var opt = sel.options[j];
+            if (!opt || opt.value === '') continue;
+            var mem = resolveMemberFromSelectOption(opt, members);
+            if (!mem) continue;
+            if (!matchLineageSelectGen(mem)) sel.remove(j);
+        }
+        if (sel.options.length === 0) {
+            sel.innerHTML = lineageEmptyMemberOptionHtml();
+        } else {
+            var still = false;
+            for (var k = 0; k < sel.options.length; k++) {
+                if (String(sel.options[k].value) === String(prev)) { still = true; break; }
+            }
+            if (still) sel.value = prev;
+            else sel.selectedIndex = 0;
+            if (String(sel.value) === '-1' || sel.value === '') {
+                /* 无合适人选，不触发业务 onchange */
+            } else {
+                try {
+                    if (typeof sel.onchange === 'function') sel.onchange();
+                    else if (sel.dispatchEvent) sel.dispatchEvent(new Event('change', { bubbles: true }));
+                } catch (e) { /* ignore */ }
+            }
+        }
+    }
+    updateLineageGenFilterCount();
+}
+
+function updateLineageGenFilterCount() {
+    var node = document.getElementById('lineageSelectGenFilterCount');
+    if (!node) return;
+    var members = (player && player.children && player.children.children) || [];
+    var n = 0;
+    for (var i = 0; i < members.length; i++) {
+        if (matchLineageSelectGen(members[i])) n++;
+    }
+    var f = getLineageSelectGenFilter();
+    if (f === 'all') {
+        node.textContent = '共 ' + members.length + ' 人';
+    } else {
+        node.textContent = '可选 ' + n + ' / ' + members.length + ' 人';
+    }
+}
+
+function syncLineageGenFilterSelects() {
+    var cur = getLineageSelectGenFilter();
+    var nodes = document.querySelectorAll('#lineageSelectGenFilter, #offspringGenSelect, select.lineage-gen-filter');
+    for (var i = 0; i < nodes.length; i++) {
+        var sel = nodes[i];
+        if (!sel) continue;
+        if (!sel._lineageGenOptsReady || sel.options.length < 2) {
+            sel.innerHTML = lineageGenFilterOptionsHtml();
+            sel._lineageGenOptsReady = true;
+        }
+        var want = (cur === 'all') ? 'all' : String(cur);
+        sel.value = want;
+        if (sel.value !== want) sel.value = 'all';
+    }
+    updateLineageGenFilterCount();
+}
+
+function setLineageSelectGenFilter(filter) {
+    var next = (filter == null || filter === '') ? 'all' : String(filter);
+    var prev = String(_lineageSelectGenFilter || 'all');
+    _lineageSelectGenFilter = next;
+    _childOffspringFilter = _lineageSelectGenFilter;
+    var chips = document.querySelectorAll('#childSystemUI .c-chip[data-filter]');
     for (var i = 0; i < chips.length; i++) {
         chips[i].classList.toggle('active', chips[i].getAttribute('data-filter') === String(_childOffspringFilter));
     }
-    var sel = document.getElementById('offspringGenSelect');
-    if (sel) {
-        if (!sel._genFilled) {
-            var maxG = (childConfig.lineage && childConfig.lineage.maxGeneration) || 18;
-            for (var g = 1; g <= maxG; g++) {
-                var opt = document.createElement('option');
-                opt.value = String(g);
-                opt.textContent = '第' + g + '代·' + getGenerationLabel(g);
-                sel.appendChild(opt);
-            }
-            sel._genFilled = true;
-        }
-        sel.value = (_childOffspringFilter === 'all') ? 'all' : String(_childOffspringFilter);
+    syncLineageGenFilterSelects();
+    if (next === prev) {
+        if (typeof applyLineageMemberGenFilterDom === 'function') applyLineageMemberGenFilterDom();
+        updateLineageGenFilterCount();
+        return;
     }
-    updateChildrenList();
+    if (typeof updateChildrenList === 'function') updateChildrenList();
+    if (typeof updateLineageActionList === 'function') updateLineageActionList();
+    if (typeof updateFamilyTreeView === 'function') updateFamilyTreeView();
+    if (typeof updateChildWorkSystem === 'function') updateChildWorkSystem();
+    if (typeof updateChildInteractionSystem === 'function') updateChildInteractionSystem();
+    if (typeof refreshActiveChildTabPanels === 'function') {
+        try { refreshActiveChildTabPanels(); } catch (e) { /* ignore */ }
+    }
+    if (typeof applyLineageMemberGenFilterDom === 'function') applyLineageMemberGenFilterDom();
+    updateLineageGenFilterCount();
+}
+
+function setOffspringFilter(filter) {
+    setLineageSelectGenFilter(filter || 'all');
 }
 
 function getDirectChildrenCount() {
@@ -1284,6 +1458,8 @@ function updateChildSystemUI() {
     if (!document.getElementById('childSystemUI')) return;
     var tab = _childActiveTab || 'overview';
     var force = !!window.__lineageForceFullRefresh;
+
+    if (typeof syncLineageGenFilterSelects === 'function') syncLineageGenFilterSelects();
 
     // 轻量：状态/加成几乎处处需要
     updateFamilyStatus();
@@ -1704,14 +1880,13 @@ function updateChildrenList() {
     const container = document.getElementById('childrenList');
     if (!container) return;
     const children = player.children.children || [];
-    const filter = _childOffspringFilter || 'all';
     const list = children.filter(function(child) {
-        if (filter === 'all') return true;
-        return String(child.generation || 1) === String(filter);
+        return typeof matchLineageSelectGen === 'function' ? matchLineageSelectGen(child) : true;
     });
 
     if (list.length === 0) {
-        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#C9A0B8;padding:24px;">暂无成员</div>';
+        var emptyMsg = (getLineageSelectGenFilter() === 'all') ? '暂无成员' : '该代数筛选下暂无成员';
+        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#C9A0B8;padding:24px;">' + emptyMsg + '</div>';
         return;
     }
 
@@ -2609,11 +2784,18 @@ function updateChildWorkSystem() {
     if (!container) return;
 
     const children = player.children.children || [];
-    const adultChildren = children.filter(isFamilyMemberAdult);
+    const adultChildren = children.filter(function(c) {
+        if (!isFamilyMemberAdult(c)) return false;
+        if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(c)) return false;
+        return true;
+    });
 
     if (adultChildren.length === 0) {
+        var emptyWork = (typeof getLineageSelectGenFilter === 'function' && getLineageSelectGenFilter() !== 'all')
+            ? '该代数筛选下没有可打工的成年成员'
+            : '还没有成年成员可打工';
         container.innerHTML =
-            '<div style="text-align:center;color:#C9A0B8;padding:16px;">还没有成年成员可打工<br><span style="font-size:12px;">需成长至青年阶段 · 当前：' +
+            '<div style="text-align:center;color:#C9A0B8;padding:16px;">' + emptyWork + '<br><span style="font-size:12px;">需成长至青年阶段 · 当前：' +
             getGrowthStageInfo(children) + '</span></div>';
         return;
     }
@@ -2633,7 +2815,11 @@ function updateWorkChildrenList() {
     const container = document.getElementById('workChildrenList');
     if (!container) return;
     const children = player.children.children || [];
-    const adultChildren = children.filter(isFamilyMemberAdult);
+    const adultChildren = children.filter(function(c) {
+        if (!isFamilyMemberAdult(c)) return false;
+        if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(c)) return false;
+        return true;
+    });
     container.innerHTML = '';
 
     adultChildren.forEach(function(child) {
@@ -3107,6 +3293,7 @@ function updateInteractionChildrenList() {
     container.innerHTML = '';
 
     children.forEach(function(child, index) {
+        if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(child)) return;
         const now = Date.now();
         const remainingTime = Math.max(0, 3 * 60 * 60 * 1000 - (now - (child.lastInteraction || 0)));
         const canInteract = remainingTime <= 0;
@@ -3368,11 +3555,16 @@ function updateLineageActionList() {
     if (!container) return;
     const children = player.children.children || [];
     const eligible = children.filter(function(c) {
-        return isFamilyMemberAdult(c) && (c.generation || 1) < childConfig.lineage.maxGeneration;
+        if (!isFamilyMemberAdult(c) || (c.generation || 1) >= childConfig.lineage.maxGeneration) return false;
+        if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(c)) return false;
+        return true;
     });
 
     if (eligible.length === 0) {
-        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#C9A0B8;padding:20px;">暂无成年子女可传宗<br>先培养子女至青年并安排成婚</div>';
+        var emptyLineage = (typeof getLineageSelectGenFilter === 'function' && getLineageSelectGenFilter() !== 'all')
+            ? '该代数筛选下暂无成年成员可传宗'
+            : '暂无成年子女可传宗<br>先培养子女至青年并安排成婚';
+        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#C9A0B8;padding:20px;">' + emptyLineage + '</div>';
         return;
     }
 
@@ -3537,11 +3729,16 @@ function updateFamilyTreeView() {
     if (!el) return;
     const members = player.children.children || [];
     const spouseName = (player.marriage && player.marriage.spouseName) || '配偶';
+    const genFilter = (typeof getLineageSelectGenFilter === 'function') ? getLineageSelectGenFilter() : 'all';
 
     let html = '<div class="c-tree-gen"><div class="c-tree-label">第 0 代 · 本家</div><div class="c-tree-row">' +
         '<div class="c-tree-node c-tree-root"><div class="tn-name">你</div><div class="tn-sub">与 ' + spouseName + '</div></div></div></div>';
+    if (genFilter !== 'all') {
+        html += '<div class="c-hint" style="margin:6px 0 10px;">当前按「筛选代数」高亮显示；未命中的代数会收起。</div>';
+    }
 
     for (var gen = 1; gen <= childConfig.lineage.maxGeneration; gen++) {
+        if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen({ generation: gen })) continue;
         var list = members.filter(function(c) { return (c.generation || 1) === gen; });
         html += '<div class="c-tree-gen"><div class="c-tree-label">第 ' + gen + ' 代 · ' + getGenerationLabel(gen) +
             '（' + list.length + '）</div><div class="c-tree-row">';

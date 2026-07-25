@@ -1219,11 +1219,8 @@ function calculateOfflineCultivationExp(offlineMinutes) {
         return;
     }
     
-    // 检查是否有灵根和血脉
+    // 未获取灵根和血脉：不结算、也不刷离线修仙经验相关日志
     if (!player.cultivation.root || !player.cultivation.bloodline) {
-        if (offlineMinutes >= 1) {
-            logAction("需要先获取灵根和血脉才能获得离线修仙经验", "info");
-        }
         return;
     }
     

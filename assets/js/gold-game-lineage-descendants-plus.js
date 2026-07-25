@@ -782,7 +782,8 @@
     // ——— UI ———
     function el(id) { return document.getElementById(id); }
     function opts(filterFn) {
-        return (player.children.children || []).map(function (m, i) {
+        var html = (player.children.children || []).map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
             if (filterFn && !filterFn(m)) return '';
             var temper = temperOf(m);
             var busy = '';
@@ -791,6 +792,7 @@
             if ((player.children.descPlus.secludeUntil[id] || 0) > Date.now()) busy = '·闭关';
             return '<option value="' + i + '">' + m.name + '（' + genLabel(m.generation || 1) + '·' + temper.name + busy + '）</option>';
         }).join('');
+        return html || (typeof lineageEmptyMemberOptionHtml === 'function' ? lineageEmptyMemberOptionHtml() : '<option value="">（该代数暂无合适人选）</option>');
     }
 
     function updatePlusFilial() {

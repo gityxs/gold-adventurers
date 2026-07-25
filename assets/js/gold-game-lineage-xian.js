@@ -355,6 +355,7 @@
             cul.innerHTML = '<div class="c-hint">修真合计：地图攻+' + (xw.worldAtk * 100).toFixed(0) +
                 '% / 血+' + (xw.worldHp * 100).toFixed(0) + '% / 爆伤+' + (xw.worldCritDmg * 100).toFixed(0) + '%</div>' +
                 members.map(function (m, i) {
+                    if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
                     if (!(typeof isFamilyMemberAdult === 'function' ? isFamilyMemberAdult(m) : m.isAdult)) return '';
                     var cur = m.xianRealm || 0;
                     var r = realms[cur] || realms[0];
@@ -364,12 +365,14 @@
                         '<div style="font-size:11px;color:#d4a84b;">攻+' + (r.atk * 100) + '% 血+' + (r.hp * 100) + '% 爆+' + (r.crit * 100) + '%</div>' +
                         (next ? '<button class="c-btn c-btn-sm c-btn-gold" style="margin-top:6px;" onclick="advanceXianRealm(' + i + ')">突破</button>' : '') +
                         '</div>';
-                }).join('') || '<div class="c-hint">需要成年成员入道修炼</div>';
+                }).join('') || '<div class="c-hint">需要成年成员入道修炼（可先用顶部「筛选代数」缩小范围）</div>';
         }
 
         var sp = el('xianSpiritPanel');
         if (sp) {
             var opts = members.map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
+            
                 if (!(typeof isFamilyMemberAdult === 'function' ? isFamilyMemberAdult(m) : m.isAdult)) return '';
                 return '<option value="' + i + '">' + m.name + '</option>';
             }).join('');
@@ -441,6 +444,8 @@
             var t = xcfg().tribulation;
             var cd = Math.max(0, (player.children.xian.tribCd || 0) - Date.now());
             var opts = members.map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
+            
                 if ((m.xianRealm || 0) < t.needRealm) return '';
                 return '<option value="' + i + '">' + m.name + '（' + (realms[m.xianRealm] || {}).name + '）</option>';
             }).join('');

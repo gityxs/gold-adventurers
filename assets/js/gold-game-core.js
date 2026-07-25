@@ -1,11 +1,11 @@
-        const GAME_VERSION = "2.0.41";
+        const GAME_VERSION = "2.0.43";
         const GAME_INVENTORY_MAX = 100;
         var WING_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
         var MOUNT_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
         const ARTIFACT_INVENTORY_MAX = 100;
         const SECONDARY_INVENTORY_MAX = 50;
         let versionErrorBlocked = false;
-        var _apiHost = '218.244.139.4';
+        var _apiHost = '114.132.157.120';
         window.GOLD_GAME_API_BASE = window.GOLD_GAME_API_BASE || (typeof location !== 'undefined' && location.protocol === 'https:' ? 'https://' + _apiHost : 'http://' + _apiHost + ':3000');
 
         
@@ -542,6 +542,20 @@ runes: {
   worldMapBattle: {
     autoBattle: false,
     autoBattleInterval: null
+},
+  /** 世界地图感悟：记录1分钟经验/击杀，供玩家等级离线收益（按80%） */
+  worldMapInsight: {
+    active: false,
+    startTime: 0,
+    expGained: 0,
+    kills: 0,
+    timerId: null,
+    uiTimerId: null,
+    expPerMinute: 0,
+    killsPerMinute: 0,
+    recordedAt: 0,
+    dimensionLevel: 0,
+    zoneName: ''
 },
 /** 洞天劫修士名录同步到主游戏：用于世界地图经验加成与湮灭诸敌生命/攻击加成 */
 dongtianMaxFloor: 1,
@@ -2640,8 +2654,10 @@ function checkAutoReincarnation() {
     }
 }
 
-// 自动转生逻辑（不弹出确认对话框）
-function autoReincarnate() {
+// 自动转生逻辑（不弹出确认对话框）；options.silent 时不刷日志/UI（离线批量用）
+function autoReincarnate(options) {
+    options = options || {};
+    const silent = !!options.silent;
     // 计算当前转生所需的总等级
     const requiredLevel = 10000 + player.reincarnationCount * 20;
     
@@ -2651,8 +2667,10 @@ function autoReincarnate() {
         .reduce((sum, eq) => sum + eq.level, 0);
     
     if (totalCommonLevel < requiredLevel) {
-        logAction(`自动转生失败：普通装备总等级不足（需要${requiredLevel}级，当前${totalCommonLevel}级）`, "error");
-        return;
+        if (!silent) {
+            logAction(`自动转生失败：普通装备总等级不足（需要${requiredLevel}级，当前${totalCommonLevel}级）`, "error");
+        }
+        return 0;
     }
 
     let totalReincarnationCoin = 0;
@@ -2873,10 +2891,87 @@ function autoReincarnate() {
     // 检查转生成就
     checkReincarnationAchievements();
 
-    logAction(`自动转生成功！获得转生币: ${totalReincarnationCoin.toFixed(4)}`, 'success');
-    updateDisplay();
-    updateTechniqueBonuses(); // 转生后更新功法加成
-    updatePlayerBattleStats(); // 更新战斗属性
+    if (!silent) {
+        logAction(`自动转生成功！获得转生币: ${totalReincarnationCoin.toFixed(4)}`, 'success');
+        updateDisplay();
+        updateTechniqueBonuses(); // 转生后更新功法加成
+        updatePlayerBattleStats(); // 更新战斗属性
+    }
+    return totalReincarnationCoin;
+}
+
+// 离线自动转生：用离线装备等级预算，自动推算可转生次数
+function simulateOfflineAutoReincarnation(offlineMinutes, levelsPerMinute) {
+    if (!player.autoReincarnation || !Array.isArray(player.equipment) || offlineMinutes <= 0) {
+        return { reincCount: 0, coin: 0, levelGainApplied: 0 };
+    }
+    var remaining = offlineMinutes * levelsPerMinute;
+    var reincCount = 0;
+    var coin = 0;
+    var totalLevelApplied = 0;
+    var offlineSeconds = Math.max(1, offlineMinutes * 60);
+    // 安全上限：约等于离线秒数（对齐在线每秒检查）+ 等级预算可支撑次数
+    var maxReinc = offlineSeconds + Math.floor(remaining / 20) + 1000;
+
+    function getCommonInfo() {
+        var commons = player.equipment.filter(function(eq) { return eq.rarity === 'common'; });
+        return {
+            count: commons.length,
+            total: commons.reduce(function(sum, eq) { return sum + (eq.level || 0); }, 0)
+        };
+    }
+
+    function applyLevels(n) {
+        if (n <= 0) return;
+        player.equipment.forEach(function(eq) {
+            eq.level = (eq.level || 1) + n;
+        });
+        remaining -= n;
+        totalLevelApplied += n;
+    }
+
+    while (reincCount < maxReinc) {
+        var required = 10000 + player.reincarnationCount * 20;
+        var info = getCommonInfo();
+
+        if (info.count <= 0) {
+            applyLevels(remaining);
+            remaining = 0;
+            break;
+        }
+
+        if (info.total >= required) {
+            var beforeCount = player.reincarnationCount;
+            var gained = autoReincarnate({ silent: true });
+            if (player.reincarnationCount <= beforeCount) break;
+            coin += gained || 0;
+            reincCount++;
+            continue;
+        }
+
+        if (remaining <= 0) break;
+
+        var need = required - info.total;
+        var perEq = Math.ceil(need / info.count);
+        if (perEq <= remaining) {
+            applyLevels(perEq);
+        } else {
+            applyLevels(remaining);
+            remaining = 0;
+        }
+    }
+
+    if (remaining > 0) {
+        applyLevels(remaining);
+        remaining = 0;
+    }
+
+    if (reincCount > 0) {
+        try { if (typeof updateTechniqueBonuses === 'function') updateTechniqueBonuses(); } catch (e) {}
+        try { if (typeof updatePlayerBattleStats === 'function') updatePlayerBattleStats(); } catch (e) {}
+    }
+
+    return { reincCount: reincCount, coin: coin, levelGainApplied: totalLevelApplied };
 }
 
 
@@ -3934,8 +4029,21 @@ function setTechniqueMaxCost() {
                 if (offlineTime <= 1000) return;
                 const offlineMinutes = Math.floor(offlineSeconds / 60);
                 if (!Array.isArray(player.equipment)) return;
+                // 离线装备升级：基础1000级/分钟，VIP每级+200（如VIP30 → 1000+30×200=7000）
+                var vipLevelForOffline = (player.vip && player.vip.level) ? Number(player.vip.level) || 0 : 0;
+                var levelsPerMinute = 1000 + vipLevelForOffline * 200;
+                var offlineEquipLevelGain = offlineMinutes * levelsPerMinute;
+                var offlineReincInfo = { reincCount: 0, coin: 0, levelGainApplied: 0 };
+                if (player.autoReincarnation && typeof simulateOfflineAutoReincarnation === 'function') {
+                    // 开启自动转生时：用离线等级预算自动推算并结算转生次数
+                    offlineReincInfo = simulateOfflineAutoReincarnation(offlineMinutes, levelsPerMinute);
+                    offlineEquipLevelGain = offlineReincInfo.levelGainApplied;
+                } else {
+                    player.equipment.forEach(eq => {
+                        eq.level = (eq.level || 1) + offlineEquipLevelGain;
+                    });
+                }
                 player.equipment.forEach(eq => {
-                    eq.level = (eq.level || 1) + offlineMinutes * 1000;
                     var config = typeof equipmentTypes !== 'undefined' && equipmentTypes[eq.rarity] ? equipmentTypes[eq.rarity] : (equipmentTypes && equipmentTypes.common) || { gps: 0, click: 0, growthRate: 0.01 };
                     var vipBonus = 1 + (typeof getVipBonus === 'function' ? getVipBonus() : 0);
                     var gpsBonusLv = (player.reincarnationStats && player.reincarnationStats.gpsBonus && player.reincarnationStats.gpsBonus.level) ? player.reincarnationStats.gpsBonus.level : 0;
@@ -3947,7 +4055,10 @@ function setTechniqueMaxCost() {
                 addGold(offlineSeconds * offlineGPS);
                 if (typeof logAction === 'function' && typeof formatTime === 'function') {
                     var fm = (offlineSeconds * offlineGPS) >= 1e8 ? (offlineSeconds * offlineGPS).toExponential(3) : (offlineSeconds * offlineGPS).toLocaleString();
-                    logAction('离线收益: +' + fm + '金币 (' + formatTime(offlineTime) + ')，装备每件+' + (offlineMinutes * 1000) + '级', 'offline-reward');
+                    var reincLog = offlineReincInfo.reincCount > 0
+                        ? ('，自动转生×' + offlineReincInfo.reincCount + '（+' + Number(offlineReincInfo.coin).toFixed(4) + '转生币）')
+                        : (player.autoReincarnation ? '，自动转生×0' : '');
+                    logAction('离线收益: +' + fm + '金币 (' + formatTime(offlineTime) + ')，装备等级预算+' + (offlineMinutes * levelsPerMinute) + '级/件（' + levelsPerMinute + '/分钟，VIP' + vipLevelForOffline + '）' + reincLog, 'offline-reward');
                 }
                 if (typeof simulateOfflineAutoBuy === 'function') simulateOfflineAutoBuy(offlineSeconds);
                 if (player.traditionalLotteryNumbers && player.traditionalLotteryNumbers.length > 0 && typeof checkTraditionalLotteryResult === 'function') {
@@ -3955,6 +4066,12 @@ function setTechniqueMaxCost() {
                     for (var i = 0; i < lotteryIntervals; i++) checkTraditionalLotteryResult();
                 }
                 if (typeof calculateOfflineCultivationExp === 'function') calculateOfflineCultivationExp(offlineMinutes);
+                // 打怪模式离线自动扫荡：需已开启自动扫荡，约 1 分钟 3 次
+                if (player.battle && player.battle.autoSweepEnabled && typeof simulateOfflineAutoSweep === 'function') {
+                    try { simulateOfflineAutoSweep(offlineMinutes); } catch (sweepErr) {
+                        console.warn('离线自动扫荡跳过:', sweepErr);
+                    }
+                }
                 if (typeof calculateBankInterest === 'function') calculateBankInterest();
                 if (player.landlord && player.landlord.seaFishing && (player.landlord.seaFishing.marketListings || []).length > 0 && typeof processSeaFishingMarketOffline === 'function') {
                     try {
@@ -4024,6 +4141,22 @@ function setTechniqueMaxCost() {
                     player.level.nextLevelExp = calculatePlayerNextLevelExp(player.level.current, player.level.ascentionCounta);
                 }
             }
+            // 感悟离线收益须在重建 level 之后结算，避免被上面覆盖
+            (function() {
+                try {
+                    if (typeof clearWorldMapInsightTimers === 'function') clearWorldMapInsightTimers();
+                    if (typeof ensureWorldMapInsightData === 'function') ensureWorldMapInsightData({ resetRuntime: true });
+                    var lastUp = (save.lastUpdate != null ? save.lastUpdate : player.lastUpdate) || Date.now();
+                    var offMs = Math.min(Date.now() - lastUp, 86400 * 1000);
+                    var offMins = Math.floor(offMs / 60000);
+                    if (offMs > 1000 && offMins > 0 && typeof calculateOfflinePlayerLevelInsight === 'function') {
+                        calculateOfflinePlayerLevelInsight(offMins);
+                    }
+                    if (typeof updateWorldMapInsightStatusUI === 'function') updateWorldMapInsightStatusUI();
+                } catch (insightOffErr) {
+                    console.warn('感悟离线结算跳过:', insightOffErr);
+                }
+            })();
             if (typeof ensureLawPowerData === 'function') ensureLawPowerData();
             else {
                 if (!player.lawPower || typeof player.lawPower !== 'object') {
@@ -4137,11 +4270,28 @@ if (speedBoostBtn) {
     var autoReincEl = document.getElementById('autoReincarnationStatus');
     if (autoReincEl) autoReincEl.textContent = player.autoReincarnation ? '开启' : '关闭';
       
-            // 确保日志不超过 20 条
+            // 确保日志不超过 50 条，并回填到界面（读档后原先不渲染会导致日志区空白）
             if (!Array.isArray(player.actionLogs)) player.actionLogs = [];
             if (!Array.isArray(player.lotteryResults)) player.lotteryResults = [];
-            player.actionLogs = player.actionLogs.slice(0, 20);
+            player.actionLogs = player.actionLogs.slice(0, 50);
             player.lotteryResults = player.lotteryResults.slice(0, 20);
+            if (typeof renderActionLogsToDom === 'function') {
+                renderActionLogsToDom();
+            } else {
+                var logBox = document.getElementById('actionLog');
+                if (logBox) {
+                    logBox.innerHTML = '';
+                    player.actionLogs.forEach(function(log) {
+                        if (!log) return;
+                        var el = document.createElement('div');
+                        el.className = log.type || 'info';
+                        el.style.wordBreak = 'break-word';
+                        el.style.whiteSpace = 'pre-wrap';
+                        el.textContent = '[' + (log.timestamp || '') + '] ' + (log.message || '');
+                        logBox.appendChild(el);
+                    });
+                }
+            }
             if (typeof updateLotteryResultsDisplay === 'function') updateLotteryResultsDisplay();
 
          
@@ -4204,6 +4354,14 @@ if (speedBoostBtn) {
                 if (typeof unregisterInterval === 'function') unregisterInterval(player.worldMapBattle.autoBattleInterval);
                 else try { clearInterval(player.worldMapBattle.autoBattleInterval); } catch (e) {}
                 player.worldMapBattle.autoBattleInterval = null;
+            }
+            if (typeof ensureWorldMapInsightData === 'function') ensureWorldMapInsightData({ resetRuntime: true });
+            else if (!player.worldMapInsight) {
+                player.worldMapInsight = {
+                    active: false, startTime: 0, expGained: 0, kills: 0,
+                    timerId: null, uiTimerId: null, expPerMinute: 0, killsPerMinute: 0,
+                    recordedAt: 0, dimensionLevel: 0, zoneName: ''
+                };
             }
             if (!player.backgroundBattle) {
                 player.backgroundBattle = { active: false, interval: null };
@@ -5051,7 +5209,7 @@ function onCollectionAdded(collectionType) {
 
         // 自动购买逻辑
        function checkAutoBuy() {
-    const speedMultiplier = player.autoBuySpeedBoost ? 600 : 1;
+    const speedMultiplier = player.autoBuySpeedBoost ? 1615 : 1;
     player.autoBuy.forEach((enabled, index) => {
         if (enabled) {
             const type = index + 1;

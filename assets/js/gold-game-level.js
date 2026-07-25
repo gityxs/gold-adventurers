@@ -28,23 +28,87 @@ function ascendPlayer() {
         return;
     }
     
-    // 执行飞升
-    player.level.ascentionCount++;
-    player.level.ascentionMultiplier =player.level.ascentionCount+1; // 属性加成
-    player.level.current = 1; // 等级重置为1
-    player.level.exp = 0;
+    performPlayerAscension({ keepExp: false, silent: false });
+}
+
+/** 执行一次飞升；keepExp=true 时保留当前剩余经验，供连续升级/飞升 */
+function performPlayerAscension(options) {
+    options = options || {};
+    var keepExp = !!options.keepExp;
+    var silent = !!options.silent;
+    var remain = keepExp ? (Number(player.level.exp) || 0) : 0;
+    if (!Number.isFinite(remain) || remain < 0) remain = 0;
+
+    player.level.ascentionCount = Math.floor(Number(player.level.ascentionCount) || 0) + 1;
+    player.level.ascentionMultiplier = player.level.ascentionCount + 1;
+    player.level.current = 1;
+    player.level.exp = remain;
     player.level.nextLevelExp = calculatePlayerNextLevelExp(player.level.current, player.level.ascentionCounta);
-    
-    // 更新加成
+
     const huaShengMul = (Number(player.level.huaShengMultiplier) || 1);
     player.level.clickBonus = 1 * player.level.ascentionMultiplier * player.level.ascentionMultipliera * huaShengMul;
     player.level.gpsBonus = 1 * player.level.ascentionMultiplier * player.level.ascentionMultipliera * huaShengMul;
-    
-    logAction(`飞升成功！当前飞升次数：${player.level.ascentionCount}，加成倍数：${player.level.ascentionMultiplier}`, "success");
+
+    if (!silent) {
+        logAction(`飞升成功！当前飞升次数：${player.level.ascentionCount}，加成倍数：${player.level.ascentionMultiplier}`, "success");
+        maybeNotifyReincarnationEligibleOnce();
+        updateLevelUI();
+        updateDisplay();
+    }
+}
+
+/**
+ * 消耗经验连续升级；达标时自动飞升并保留剩余经验继续算级。
+ * @returns {{ levelsGained: number, ascensions: number, hitCap: boolean }}
+ */
+function processPlayerExpUpgrades(options) {
+    options = options || {};
+    var silentAscend = !!options.silentAscend;
+    var maxSteps = Math.max(1, Math.floor(Number(options.maxSteps) || 100000));
+    var levelsGained = 0;
+    var ascensions = 0;
+    var hitCap = false;
+    var steps = 0;
+
+    while (player.level.exp >= player.level.nextLevelExp) {
+        if (steps >= maxSteps) {
+            hitCap = true;
+            break;
+        }
+        steps++;
+
+        var need = Number(player.level.nextLevelExp) || 0;
+        if (!(need > 0) || !Number.isFinite(need)) break;
+
+        player.level.exp -= need;
+        if (!Number.isFinite(player.level.exp) || player.level.exp < 0) player.level.exp = 0;
+        player.level.current++;
+        levelsGained++;
+
+        player.level.nextLevelExp = calculatePlayerNextLevelExp(player.level.current, player.level.ascentionCounta);
+
+        const huaShengMul = (Number(player.level.huaShengMultiplier) || 1);
+        player.level.clickBonus = player.level.current * 1 * player.level.ascentionMultiplier * player.level.ascentionMultipliera * huaShengMul;
+        player.level.gpsBonus = player.level.current * 1 * player.level.ascentionMultiplier * player.level.ascentionMultipliera * huaShengMul;
+
+        const nextAscentionLevel = (player.level.ascentionCount + 1) * 100;
+        if (player.level.current >= nextAscentionLevel) {
+            performPlayerAscension({ keepExp: true, silent: true });
+            ascensions++;
+        }
+    }
+
+    // 在线自动飞升静默；离线由 calculateOfflinePlayerLevelInsight 统一汇总日志
+    if (hitCap && typeof logAction === 'function') {
+        logAction('等级结算步数达到上限，剩余经验已保留，可再次领取/上线继续升级', 'info');
+    }
+
     maybeNotifyReincarnationEligibleOnce();
     updateLevelUI();
     updateDisplay();
+    return { levelsGained: levelsGained, ascensions: ascensions, hitCap: hitCap };
 }
+
 function ascendPlayera() {
     // 计算下次轮回所需等级
     const nextAscentionLevela = (player.level.ascentionCounta + 1) * 10;
@@ -171,6 +235,19 @@ function updateLevelUI() {
     }
     var progress = (player.level.exp / player.level.nextLevelExp) * 100;
     if (c.playerExpProgress) c.playerExpProgress.style.width = progress + '%';
+    var insightExpEl = document.getElementById('insightExpPerMinDisplay');
+    var insightKillEl = document.getElementById('insightKillsPerMinDisplay');
+    if (insightExpEl || insightKillEl) {
+        var wi = player.worldMapInsight;
+        var expPm = wi ? Number(wi.expPerMinute) || 0 : 0;
+        var killPm = wi ? Number(wi.killsPerMinute) || 0 : 0;
+        if (insightExpEl) insightExpEl.textContent = (expPm > 0) ? formatSci(expPm) : '未记录';
+        if (insightKillEl) {
+            insightKillEl.textContent = (killPm > 0)
+                ? (killPm >= 100 ? killPm.toFixed(1) : String(Math.round(killPm * 100) / 100))
+                : '未记录';
+        }
+    }
 }
 
 
@@ -225,41 +302,65 @@ function maybeNotifyReincarnationEligibleOnce() {
 
 // 升级玩家等级
 function upgradePlayerLevel(amount) {
-    for (let i = 0; i < amount; i++) {
-        if (player.level.exp >= player.level.nextLevelExp) {
-            player.level.exp -= player.level.nextLevelExp;
-            player.level.current++;
-            
-           
-            player.level.nextLevelExp = calculatePlayerNextLevelExp(player.level.current, player.level.ascentionCounta);
-            
-            // 计算加成，考虑飞升倍数
-            const huaShengMul = (Number(player.level.huaShengMultiplier) || 1);
-            player.level.clickBonus = player.level.current * 1 * player.level.ascentionMultiplier * player.level.ascentionMultipliera * huaShengMul;
-            player.level.gpsBonus = player.level.current * 1 * player.level.ascentionMultiplier * player.level.ascentionMultipliera * huaShengMul;
-            // 不在游戏日志中逐条输出等级提升（连升多级会刷屏卡顿）；当前等级见顶栏/UI
-            // 检查飞升条件 - 达标自动飞升
-            const nextAscentionLevel = (player.level.ascentionCount + 1) * 100;
-            if (player.level.current >= nextAscentionLevel) {
-                ascendPlayer();
-                break;
-            }
-        } else break;
+    var n = Math.max(1, Math.floor(Number(amount) || 1));
+    // 兼容旧调用：按次数尝试升级，实际仍走统一连续结算
+    for (var i = 0; i < n; i++) {
+        if (player.level.exp < player.level.nextLevelExp) break;
+        processPlayerExpUpgrades({ silentAscend: false, maxSteps: 1 });
     }
-    updateLevelUI();
-    updateDisplay();
 }
 
 // 添加经验
-function addPlayerExp(amount) {
+function addPlayerExp(amount, options) {
     const add = Number(amount) || 0;
-    if (!Number.isFinite(add) || add <= 0) return;
+    if (!Number.isFinite(add) || add <= 0) return { levelsGained: 0, ascensions: 0, hitCap: false };
     player.level.exp += add;
-    
-    // 检查是否可以升级
-    while (player.level.exp >= player.level.nextLevelExp) {
-        upgradePlayerLevel(1);
+    return processPlayerExpUpgrades(options || {});
+}
+
+/**
+ * 玩家等级离线收益：按世界地图「感悟」记录的每分钟经验/击杀，以 80% 发放。
+ * 掉落按击杀次数模拟（不含联网币、至尊神器）。
+ * 须在 loadSave 重建 player.level 之后调用。
+ */
+function calculateOfflinePlayerLevelInsight(offlineMinutes) {
+    var mins = Math.floor(Number(offlineMinutes) || 0);
+    if (mins <= 0 || !player || !player.level) return;
+    if (window._insightOfflineRunThisSession) return;
+    if ((Number(player.reincarnationCount) || 0) < 50) return;
+    if (typeof ensureWorldMapInsightData === 'function') ensureWorldMapInsightData();
+    var w = player.worldMapInsight;
+    if (!w) return;
+    var rate = (typeof WORLD_MAP_INSIGHT_OFFLINE_RATE === 'number') ? WORLD_MAP_INSIGHT_OFFLINE_RATE : 0.8;
+    var expPerMin = Number(w.expPerMinute) || 0;
+    var killsPerMin = Number(w.killsPerMinute) || 0;
+    if (expPerMin <= 0 && killsPerMin <= 0) return;
+
+    window._insightOfflineRunThisSession = true;
+    var totalExp = expPerMin * rate * mins;
+    var totalKills = Math.floor(killsPerMin * rate * mins);
+    var levelBefore = player.level.current;
+    var ascendBefore = Math.floor(Number(player.level.ascentionCount) || 0);
+    var progress = { levelsGained: 0, ascensions: 0, hitCap: false };
+    if (totalExp > 0 && typeof addPlayerExp === 'function') {
+        progress = addPlayerExp(totalExp, { silentAscend: true, maxSteps: 100000 }) || progress;
     }
-    maybeNotifyReincarnationEligibleOnce();
+    if (totalKills > 0 && typeof grantWorldMapInsightOfflineDrops === 'function') {
+        grantWorldMapInsightOfflineDrops(totalKills);
+    }
+    var expText = (typeof formatSci === 'function') ? formatSci(totalExp) : String(Math.floor(totalExp));
+    var perText = (typeof formatSci === 'function') ? formatSci(expPerMin * rate) : String(Math.floor(expPerMin * rate));
+    if (typeof logAction === 'function') {
+        var extra = '';
+        if (progress.ascensions > 0 || progress.levelsGained > 0) {
+            extra = '；升级 ' + (progress.levelsGained || 0) + ' 级';
+            if (progress.ascensions > 0) {
+                extra += '、自动飞升 ×' + progress.ascensions + '（' + ascendBefore + '→' + player.level.ascentionCount + '，现 Lv.' + player.level.current + '）';
+            } else {
+                extra += '（' + levelBefore + '→' + player.level.current + '）';
+            }
+        }
+        logAction('离线感悟收益：+' + expText + ' 经验、约 ' + totalKills + ' 次击杀掉落（' + mins + '分钟 × ' + perText + '经验/分·80%）' + extra, 'offline-reward');
+    }
     updateLevelUI();
 }

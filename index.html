@@ -8,7 +8,7 @@
     <script>
         (function () {
             /** 与 gold-game-core.js 的 GAME_VERSION 对齐；发版时同步修改 */
-            var build = "2.0.41";
+            var build = "2.0.43";
             try {
                 var qs = location.search || "";
                 var m = /[?&]v=([^&]+)/.exec(qs);
@@ -113,9 +113,9 @@
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>2.041更新日志</h4>
-            <h4>QQ群：902481027    有问题可以进群问（存档异常联系群管理修复）</h4>
-            <p>2026/07/24: 修复一些异常显示BUG<p>
+            <h4>2.043更新日志</h4>
+            <h4>QQ群：902481027    有问题可以进群问（存档异常联系群管理修复）</h4> 
+            <p>2026/07/25:老系统更新大量减负，修仙等级加成的100倍自动开宝箱格外在提升3倍数量。自动转生加入离线自动转生效果还是原来1分钟全体1000级（现在加入VIP等级加成每级+200级）离线可以自动转生。打怪模式自动扫荡加入离线功能开启后会自动扫荡（比在线收益会低一点），疯狂地主修复BUG升级后的土地使用道具没效果。传宗接代页面UI加入新的筛选，简单清晰筛选几代，修复培养和打工异常BUG。洞天劫模式灵田药园种植时跳转默认种子BUG。世界地图挂机增加感悟系统：先开启自动攻击在点感悟，会计入1分钟经验收益和掉落，离线后可以享受80%收益。无限深渊装备界面加入一键升级和一键强化功能<p>
             <p>2026/07/22:修复传宗接代有些资金不够异常问题，升级后子女选择异常弹跳问题，增加折叠方便页面，增加所有资金金额显示。修改时光秘境局内界面UI信息，玩家等级化圣后修改现在轮回数不会降低。洞天劫模式修复某些房间异常问题，增加20个墓200个明器40套装，修复之前古，仙，劫局内获得异常没点亮图鉴BUG。主界面聊天加入锁定按钮，锁定后不自动往下。疯狂地主的基因树：增加世界经验：彩光1%炫彩2%琉璃3%，夜店的销售商品初级品数量9999调整99999，高级品999调整9999.<p>
             <p>2026/07/20:修复洞天劫摸金模式图鉴显示异常bug，增加丢失按钮。疯狂地主线性合成增加单独一键合成，更新结婚系统的生孩子系统增加子孙后代。时光秘境时间异常bug修复<p>
             <p>2026/07/17:洞天劫模式副本大厅增加新副本乱星海难度偏高：掉落房主4重铸石 助战2重铸石，装备增加重铸词条数量，重铸后有预览属性选择。疯狂地主增加一键购买有库存商品，合成种子修改成弹窗界面，线型合成一键合成放上面了，基因合成修改3个种子改为2个就可以了（规则不变），可以直接框选择种子，也可以下面最优一键选择，有种子数量可以批量一键合成。修复农场和钓鱼现在不用每次进游戏都要进页面才自动开启，修复疯狂地主不用重启页面才刷新种子商店。<p>
@@ -774,7 +774,7 @@
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v2.0.41</div>
+  <div id="footer">版本号: v2.0.43</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -1416,7 +1416,7 @@
         <button onclick="clearAvatar()" style="padding: 12px 20px; font-size: 16px;">清除头像</button>
         <button onclick="showActivationCodeDialog()" style="padding: 12px 20px; font-size: 16px;">激活码兑换</button>
         <button onclick="saveGame()" style="padding: 12px 20px; font-size: 16px;">保存游戏</button>
-        <button onclick="downloadSave()" style="padding: 12px 20px; font-size: 16px;">下载TXT存档</button>
+         <button onclick="downloadSave()" style="padding: 12px 20px; font-size: 16px;">下载TXT存档</button>
         <button onclick="importEncryptedSave()" style="padding: 12px 20px; font-size: 16px;">导入TXT存档</button>
         <button onclick="resetGame()" style="padding: 12px 20px; font-size: 16px; background-color: #ff4444; color: white; border: none;">重置游戏</button>
     </div>
@@ -3601,6 +3601,10 @@
             <div>化圣次数：<span id="huaShengCountDisplay" style="color:#ffe082; font-weight:bold;">0</span></div>
             <div>化圣属性提升倍率：<span id="huaShengMultiplierDisplay" style="color:#ffcf86; font-weight:bold;">1</span>倍</div>
             <div>下次化圣轮回要求：<span id="nextHuaShengRequirementDisplay" style="color:#d6f6ff; font-weight:bold;">30</span>轮回</div>
+            <div style="grid-column: 1 / -1; margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(247,217,140,0.18); color:#d6c099; font-size:13px;">
+                感悟离线基准：经验 <span id="insightExpPerMinDisplay" style="color:#8ee2ff; font-weight:bold;">未记录</span>/分 · 击杀 <span id="insightKillsPerMinDisplay" style="color:#ffe49c; font-weight:bold;">未记录</span>/分
+                <span style="color:#9a8b6e;">（离线按 80% 发放）</span>
+            </div>
         </div>
     </div>
 
@@ -3723,6 +3727,9 @@
     <div class="battle-controls" style="text-align: center; margin: 20px 0;">
 <button onclick="toggleWorldMapAutoBattle()" style="background: #4CAF50; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px;">
     自动战斗: <span id="worldMapAutoBattleStatus">关闭</span>
+</button>
+<button onclick="toggleWorldMapInsight()" style="background: #2196F3; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer;" title="记录1分钟经验与击杀，作为等级系统离线收益基准（离线按80%）">
+    感悟: <span id="worldMapInsightStatus">关闭</span>
 </button>
     </div>
     
@@ -7001,6 +7008,10 @@
 /* 顶部快捷标签可折叠；窄屏隐藏侧栏 */
 #childSystemUI .c-quick-tabs-items.c-tabs{display:flex!important}
 #childSystemUI .c-quick-tabs.collapsed .c-quick-tabs-items{display:none!important}
+#childSystemUI .c-gen-filter-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:0 0 12px;padding:10px 12px;background:rgba(0,0,0,.28);border:1px solid rgba(212,168,75,.28);border-radius:10px}
+#childSystemUI .c-gen-filter-bar label{color:rgba(243,230,208,.78);font-size:13px;letter-spacing:.06em;white-space:nowrap}
+#childSystemUI .c-gen-filter-bar .lineage-gen-filter{min-width:168px;width:auto;flex:1;max-width:320px;padding:6px 10px}
+#childSystemUI .c-gen-filter-bar .c-gen-filter-count{font-size:12px;color:#d4a84b;white-space:nowrap}
 @media (max-width:820px){#childSystemUI .c-nav{display:none!important}}
 #childSystemOverlay.child-overlay{top:0;right:0;bottom:0;left:0}
 </style>
@@ -7141,6 +7152,15 @@
             <div class="c-tab" data-tab="events" onclick="switchChildTab('events')">轶事</div>
             <div class="c-tab" data-tab="glory" onclick="switchChildTab('glory')">荣耀</div>
             </div>
+        </div>
+
+        <div class="c-gen-filter-bar" id="lineageSelectGenFilterBar" title="筛选后，各页「选人」下拉只显示对应代数">
+            <label for="lineageSelectGenFilter">筛选代数</label>
+            <select id="lineageSelectGenFilter" class="c-input lineage-gen-filter" onchange="setLineageSelectGenFilter(this.value)">
+                <option value="all">全部代数</option>
+            </select>
+            <span class="c-gen-filter-count" id="lineageSelectGenFilterCount">共 0 人</span>
+            <button type="button" class="c-chip" onclick="setLineageSelectGenFilter('all')">重置</button>
         </div>
 
         <div id="childSectionOverview" class="c-section active">

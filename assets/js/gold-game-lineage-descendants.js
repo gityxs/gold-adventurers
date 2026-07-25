@@ -851,11 +851,13 @@
     function el(id) { return document.getElementById(id); }
 
     function opts(filterFn) {
-        return (player.children.children || []).map(function (m, i) {
+        var html = (player.children.children || []).map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
             if (filterFn && !filterFn(m)) return '';
             var tier = fameTier(m);
             return '<option value="' + i + '">' + m.name + '（' + genLabel(m.generation || 1) + '·' + tier.name + '）</option>';
         }).join('');
+        return html || (typeof lineageEmptyMemberOptionHtml === 'function' ? lineageEmptyMemberOptionHtml() : '<option value="">（该代数暂无合适人选）</option>');
     }
 
     function updateDescOverview() {
@@ -870,7 +872,11 @@
             '<div class="c-bonus-item"><div class="lab">嫡系</div><div class="val">' + (heir ? heir.name : '未定') + '</div></div>' +
             '<div class="c-bonus-item"><div class="lab">总声望分</div><div class="val">' + members.reduce(function (s, m) { return s + (m.descFame || 0); }, 0) + '</div></div>' +
             '</div><p class="c-hint">每人有性格、血脉特质、声望档；可立志、修专精、参赛、结友。不改变婚育门禁。</p>';
-        html += '<div class="c-member-grid" style="margin-top:8px;">' + members.slice(0, 12).map(function (m) {
+        var shown = members.filter(function (m) {
+            return typeof matchLineageSelectGen !== 'function' || matchLineageSelectGen(m);
+        });
+        var filteredCount = shown.length;
+        html += '<div class="c-member-grid" style="margin-top:8px;">' + shown.slice(0, 12).map(function (m) {
             var nat = natureOf(m);
             var quirk = quirkOf(m);
             var tier = fameTier(m);
@@ -879,7 +885,7 @@
                 '<br>' + tier.name + '（' + (m.descFame || 0) + '）' +
                 (m.descAmbitionId ? '<br>志：' + (((D().ambitions || []).find(function (a) { return a.id === m.descAmbitionId; }) || {}).name || '') + ' Lv.' + (m.descAmbitionLv || 0) : '') +
                 '</div></div>';
-        }).join('') + (members.length > 12 ? '<div class="c-hint">…另有 ' + (members.length - 12) + ' 人</div>' : '') + '</div>';
+        }).join('') + (filteredCount > 12 ? '<div class="c-hint">…另有 ' + (filteredCount - 12) + ' 人</div>' : (filteredCount === 0 ? '<div class="c-hint">该代数筛选下暂无成员</div>' : '')) + '</div>';
         box.innerHTML = html;
     }
 

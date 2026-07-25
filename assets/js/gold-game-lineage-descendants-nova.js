@@ -872,11 +872,13 @@
     // ——— UI ———
     function el(id) { return document.getElementById(id); }
     function opts(filterFn) {
-        return (player.children.children || []).map(function (m, i) {
+        var html = (player.children.children || []).map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
             if (filterFn && !filterFn(m)) return '';
             var st = sleepTier(m);
             return '<option value="' + i + '">' + m.name + '（' + genLabel(m.generation || 1) + '·' + st.name + '·眠' + (m.nova && m.nova.sleep || 0) + '）</option>';
         }).join('');
+        return html || (typeof lineageEmptyMemberOptionHtml === 'function' ? lineageEmptyMemberOptionHtml() : '<option value="">（该代数暂无合适人选）</option>');
     }
 
     function updateNovaVirtuePanel() {

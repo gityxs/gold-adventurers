@@ -749,7 +749,8 @@
     function el(id) { return document.getElementById(id); }
 
     function memberOptions(filterFn) {
-        return (player.children.children || []).map(function (m, i) {
+        var html = (player.children.children || []).map(function (m, i) {
+            if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(m)) return '';
             if (filterFn && !filterFn(m)) return '';
             var extra = '';
             if (m.comingOfAgeDone) extra += '·礼';
@@ -757,6 +758,7 @@
             if (m.illness && m.illness.id) extra += '·病';
             return '<option value="' + i + '">' + m.name + '（' + genLabel(m.generation || 1) + extra + '）</option>';
         }).join('');
+        return html || (typeof lineageEmptyMemberOptionHtml === 'function' ? lineageEmptyMemberOptionHtml() : '<option value="">（该代数暂无合适人选）</option>');
     }
 
     function updateRealMealsPanel() {
@@ -809,11 +811,15 @@
         ensureRealData();
         var co = R().comingOfAge;
         var list = (player.children.children || []).map(function (m, i) { return { m: m, i: i }; })
-            .filter(function (x) { return isAdult(x.m); });
+            .filter(function (x) {
+                if (!isAdult(x.m)) return false;
+                if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen(x.m)) return false;
+                return true;
+            });
         var free = player.children.living.real.comingFree;
         var html = '<p class="c-hint">成年后须行<strong>弱冠（男）/及笄（女）</strong>礼，方可订婚。礼成赋予字辈字。</p>';
         if (!list.length) {
-            box.innerHTML = html + '<div class="c-hint">暂无成年成员</div>';
+            box.innerHTML = html + '<div class="c-hint">暂无成年成员（可调整顶部筛选代数）</div>';
             return;
         }
         html += list.map(function (row) {
