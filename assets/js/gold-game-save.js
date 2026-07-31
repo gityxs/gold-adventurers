@@ -199,7 +199,12 @@ function formatTime(milliseconds) {
                         critRate: 0,
                          critDamage: 0,
                        multiAttack: 0,
-                         block: 0
+                         block: 0,
+                         healthBonus: 0,
+                         attackBonus: 0,
+                         critRateBonus: 0,
+                         critDamageBonus: 0,
+                         multiAttackBonus: 0
                         },
                         lastUpdate: Date.now(),
                         achievements: {
@@ -720,7 +725,8 @@ function formatTime(milliseconds) {
                             gpsBonus: { level: 0, cost: 1 },
                             equipmentLevelBonus: { level: 0, cost: 1 },
                             clickLimitBonus: { level: 0, cost: 1 },
-                            reincarnationCoinBonus: { level: 0, cost: 1 }
+                            reincarnationCoinBonus: { level: 0, cost: 1 },
+                            offlineEquipBonus: { level: 0, cost: 1000 }
                         },
                         materialChestCost: 1,
                         stockData: { // 新增股票数据
@@ -960,7 +966,12 @@ function formatTime(milliseconds) {
                         critRate: 0,
                          critDamage: 0,
                        multiAttack: 0,
-                         block: 0
+                         block: 0,
+                         healthBonus: 0,
+                         attackBonus: 0,
+                         critRateBonus: 0,
+                         critDamageBonus: 0,
+                         multiAttackBonus: 0
                         },
                         lastUpdate: Date.now(),
                         achievements: {
@@ -1481,7 +1492,8 @@ function formatTime(milliseconds) {
                             gpsBonus: { level: 0, cost: 1 },
                             equipmentLevelBonus: { level: 0, cost: 1 },
                             clickLimitBonus: { level: 0, cost: 1 },
-                            reincarnationCoinBonus: { level: 0, cost: 1 }
+                            reincarnationCoinBonus: { level: 0, cost: 1 },
+                            offlineEquipBonus: { level: 0, cost: 1000 }
                         },
                         materialChestCost: 1,
                         stockData: { // 新增股票数据
@@ -1517,6 +1529,7 @@ function formatTime(milliseconds) {
             } else if (document.visibilityState === 'visible') {
                 window._tradingOfflineRunThisSession = false; // 切回标签允许本次离线结算
                 window._tradingOfflineCheckedThisSession = false;
+                window._mysteryOfflineRunThisSession = false; // 切回标签允许补算离线奥秘
                 // loadSave 会替换 player，必须先停掉旧定时器，否则每次切回都会多挂一套后台战斗
                 if (typeof stopAllWorldMapBattles === 'function') stopAllWorldMapBattles();
                 loadSave();
@@ -1564,13 +1577,27 @@ function formatTime(milliseconds) {
         overlay.style.display = 'none';
     }
 }
+function refreshLunhuiRealmPanel() {
+    var a = Number(player.level && player.level.ascentionCounta) || 0;
+    var el = document.getElementById('lunhuiRealmAscention');
+    if (el) el.textContent = String(a);
+    var cards = document.querySelectorAll('#autoBuyShopa .lunhui-realm-card[data-req]');
+    for (var i = 0; i < cards.length; i++) {
+        var req = Number(cards[i].getAttribute('data-req')) || 0;
+        var locked = a < req;
+        cards[i].classList.toggle('is-locked', locked);
+        cards[i].setAttribute('aria-disabled', locked ? 'true' : 'false');
+    }
+}
 function toggleAutoBuyShopa() {
       if (player.level.ascentionCounta < 1) {
         alert("需要达到轮回1转才能开启轮回副本！");
         return;
     }
     const shop = document.getElementById('autoBuyShopa');
-    shop.style.display = shop.style.display === 'none' ? 'block' : 'none';
+    var opening = shop.style.display === 'none';
+    shop.style.display = opening ? 'block' : 'none';
+    if (opening) refreshLunhuiRealmPanel();
 }
 function toggleAutoBuyShopb() {
       if (player.cultivation.stage < 2) {

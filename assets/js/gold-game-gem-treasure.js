@@ -56,11 +56,37 @@ function updateGemInventory() {
 
 }
 
+// 单颗宝石在指定等级的加成（百分比数值）
+function getSingleGemBonus(type, level) {
+    const levelInt = parseInt(level, 10) || 1;
+    const factor = (Math.pow(3, levelInt) - 1) / 2;
+    switch (type) {
+        case 'red': return 100 * factor;
+        case 'blue': return 5 * factor;
+        case 'black': return 100 * factor;
+        default: return 0;
+    }
+}
+
+function getGemBonusAttrName(type) {
+    const names = { red: '攻击', blue: '生命', black: '爆伤' };
+    return names[type] || '属性';
+}
+
+function formatGemBonusPercent(value) {
+    const n = Number(value) || 0;
+    if (Math.abs(n) >= 10000) {
+        return n.toLocaleString('zh-CN', { maximumFractionDigits: 1 });
+    }
+    return n.toFixed(1);
+}
+
 // 添加宝石类型到UI
 function addGemTypeToUI(type, name, container) {
     const gemTypeDiv = document.createElement('div');
     gemTypeDiv.className = 'gem-type-section';
-    gemTypeDiv.innerHTML = `<h4>${name}</h4>`;
+    const typeTotal = calculateGemBonus(type);
+    gemTypeDiv.innerHTML = `<h4>${name}</h4><div class="gem-type-total" style="font-size:12px;color:#90caf9;margin-top:2px;">合计 +${formatGemBonusPercent(typeTotal)}% ${getGemBonusAttrName(type)}</div>`;
     
     const gemsContainer = document.createElement('div');
     gemsContainer.style.display = 'grid';
@@ -74,12 +100,19 @@ function addGemTypeToUI(type, name, container) {
         const count = player.gems[type][level];
         if (count > 0) {
             hasGems = true;
+            const unitBonus = getSingleGemBonus(type, level);
+            const stackBonus = unitBonus * count;
+            const attrName = getGemBonusAttrName(type);
             const gemDiv = document.createElement('div');
             gemDiv.className = 'gem-item';
             gemDiv.innerHTML = `
                 <div class="gem-icon ${type}">${type.charAt(0).toUpperCase()}</div>
                 <div class="gem-level">${level}</div>
                 <div>数量: ${count}</div>
+                <div class="gem-item-bonus" style="font-size:11px;color:#fff59d;margin:4px 0;line-height:1.35;">
+                    单颗 +${formatGemBonusPercent(unitBonus)}%<br>
+                    合计 +${formatGemBonusPercent(stackBonus)}% ${attrName}
+                </div>
                 <button onclick="upgradeGem('${type}', ${level})" ${count < 3 ? 'disabled' : ''}>合成</button>
             `;
             gemsContainer.appendChild(gemDiv);
@@ -95,14 +128,15 @@ function addGemTypeToUI(type, name, container) {
     container.appendChild(gemTypeDiv);
 }
 
-// 更新宝石加成显示
+// 更新宝石加成显示（仅更新宝石系统面板，不覆盖属性加点页）
 function updateGemBonuses() {
     const bonuses = calculateGemBonuses();
-    
-    document.getElementById('attackBonus').textContent = `${bonuses.attack.toFixed(1)}%`;
-    document.getElementById('healthBonus').textContent = `${bonuses.health.toFixed(1)}%`;
-    document.getElementById('critDamageBonus').textContent = `${bonuses.critDamage.toFixed(1)}%`;
-
+    const attackEl = document.getElementById('gemAttackBonus');
+    const healthEl = document.getElementById('gemHealthBonus');
+    const critEl = document.getElementById('gemCritDamageBonus');
+    if (attackEl) attackEl.textContent = `+${formatGemBonusPercent(bonuses.attack)}%`;
+    if (healthEl) healthEl.textContent = `+${formatGemBonusPercent(bonuses.health)}%`;
+    if (critEl) critEl.textContent = `+${formatGemBonusPercent(bonuses.critDamage)}%`;
 }
 
 
@@ -112,31 +146,17 @@ function calculateGemBonuses() {
         attack: calculateGemBonus('red'),
         health: calculateGemBonus('blue'),
         critDamage: calculateGemBonus('black')
-
-
     };
 }
+
 // 计算单个宝石类型的加成
 function calculateGemBonus(type) {
     let totalBonus = 0;
-    
+    if (!player.gems || !player.gems[type]) return 0;
+
     for (const level in player.gems[type]) {
         const count = player.gems[type][level];
-        const levelInt = parseInt(level);
-        
-        // 不同宝石类型有不同的加成计算方式
-        switch (type) {
-            case 'red': // 攻击加成: 100% * 2^(等级-1)
-                totalBonus += count * 100 * (Math.pow(3, levelInt) - 1) / 2;
-                break;
-            case 'blue': // 生命加成: 5% * 2^(等级-1)
-                totalBonus += count * 5 * (Math.pow(3, levelInt) - 1) / 2;
-                break;
-            case 'black': // 爆伤加成: 100% * 2^(等级-1)
-                totalBonus += count * 100 * (Math.pow(3, levelInt) - 1) / 2;
-                break;
-
-        }
+        totalBonus += count * getSingleGemBonus(type, level);
     }
     
     return totalBonus;

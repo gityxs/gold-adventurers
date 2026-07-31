@@ -369,10 +369,8 @@ function initTradingData(saveForOffline) {
                     if (player.trading.autoTrade && player.trading.autoTrade.enabled) completeAutoTravel();
                     else completeTravel();
                 } else {
-                    if (player.trading.travelInterval) {
-                        clearInterval(player.trading.travelInterval);
-                        player.trading.travelInterval = null;
-                    }
+                    if (typeof clearRegisteredIntervalRef === 'function') clearRegisteredIntervalRef(player.trading, 'travelInterval');
+                    else if (player.trading && player.trading.travelInterval) { clearInterval(player.trading.travelInterval); player.trading.travelInterval = null; }
                     player.trading.travelInterval = registerInterval(checkTravelStatus, 1000);
                 }
             };
@@ -383,10 +381,8 @@ function initTradingData(saveForOffline) {
                     if (player.trading.autoTrade && player.trading.autoTrade.enabled) completeAutoTravel();
                     else completeTravel();
                 } else {
-                    if (player.trading.travelInterval) {
-                        clearInterval(player.trading.travelInterval);
-                        player.trading.travelInterval = null;
-                    }
+                    if (typeof clearRegisteredIntervalRef === 'function') clearRegisteredIntervalRef(player.trading, 'travelInterval');
+                    else if (player.trading && player.trading.travelInterval) { clearInterval(player.trading.travelInterval); player.trading.travelInterval = null; }
                     player.trading.travelInterval = registerInterval(checkTravelStatus, 1000);
                 }
             }

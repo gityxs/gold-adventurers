@@ -8,7 +8,7 @@
     <script>
         (function () {
             /** 与 gold-game-core.js 的 GAME_VERSION 对齐；发版时同步修改 */
-            var build = "2.0.43";
+            var build = "2.0.44";
             try {
                 var qs = location.search || "";
                 var m = /[?&]v=([^&]+)/.exec(qs);
@@ -58,7 +58,7 @@
             <p>9. 打怪模式(必须先打)：1转开启，逃跑等于重置关卡消耗最大关卡*10转生币（取消扫荡增加自动扫荡4秒1次！！！）（优先打！第一次打点逃跑！！！）。每关固定掉落副本装备，并有概率掉落魂环与材料；扫荡/自动扫荡同样结算这些掉落。</p>
             <p>10. 升级属性：第一次加载要转生一次，在点洗点就正常了（总数和实际不一样点一下洗点）。</p>
             <p>11. 功法秘籍：后期比较强，加成属性直接算到玩家属性乘于里面（如果突然没效果了开一个秘法宝箱就好了，正常不会有问题）</p>
-            <p>11. 世界BOSS系统：50转开启，才能打比较难，有连击后期简单。</p>
+            <p>11. 世界BOSS：50转开启。消耗挑战券召唤（上限10，每小时恢复1次）。星级越高血量与转生币奖励越高，按伤害排行结算。</p>
             <p>12. VIP系统：每一级提升大属性，材料宝箱和打怪模式，各种系统掉落。</p>
             <p>13. 职业系统：20转开启，有法师和战士不同搭配属性，对于关卡解锁属性，选择获得属性，通天塔达到层数2转3转。</p>
             <p>14. 称号系统：10转开启，解锁每一个都可以永久获得属性，自由搭配选择称号(不影响属性效果）。</p>
@@ -113,8 +113,9 @@
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>2.043更新日志</h4>
+            <h4>2.044更新日志</h4>
             <h4>QQ群：902481027    有问题可以进群问（存档异常联系群管理修复）</h4> 
+            <p>2026/07/31: 更新轮回副本界面UI，更新疯狂地主田地UI，增加更高品质基础词和天气词条，升级土地更新，加入大量新道具，修复道具使用无法减田地时间，抽奖更新，修复打怪模式卡顿和新号属性异常为0BUG，修复星际探索等级变1存档，修复离线奥秘经验没生效，转生属性加入离线收益加成可以加快转生，修改装备等级转生后直接生效对应等级属性，世界BOSS系统界面UI更新，宝石系统界面UI修改显示属性加成，传宗接代界面增加名字筛选<p>
             <p>2026/07/25:老系统更新大量减负，修仙等级加成的100倍自动开宝箱格外在提升3倍数量。自动转生加入离线自动转生效果还是原来1分钟全体1000级（现在加入VIP等级加成每级+200级）离线可以自动转生。打怪模式自动扫荡加入离线功能开启后会自动扫荡（比在线收益会低一点），疯狂地主修复BUG升级后的土地使用道具没效果。传宗接代页面UI加入新的筛选，简单清晰筛选几代，修复培养和打工异常BUG。洞天劫模式灵田药园种植时跳转默认种子BUG。世界地图挂机增加感悟系统：先开启自动攻击在点感悟，会计入1分钟经验收益和掉落，离线后可以享受80%收益。无限深渊装备界面加入一键升级和一键强化功能<p>
             <p>2026/07/22:修复传宗接代有些资金不够异常问题，升级后子女选择异常弹跳问题，增加折叠方便页面，增加所有资金金额显示。修改时光秘境局内界面UI信息，玩家等级化圣后修改现在轮回数不会降低。洞天劫模式修复某些房间异常问题，增加20个墓200个明器40套装，修复之前古，仙，劫局内获得异常没点亮图鉴BUG。主界面聊天加入锁定按钮，锁定后不自动往下。疯狂地主的基因树：增加世界经验：彩光1%炫彩2%琉璃3%，夜店的销售商品初级品数量9999调整99999，高级品999调整9999.<p>
             <p>2026/07/20:修复洞天劫摸金模式图鉴显示异常bug，增加丢失按钮。疯狂地主线性合成增加单独一键合成，更新结婚系统的生孩子系统增加子孙后代。时光秘境时间异常bug修复<p>
@@ -774,7 +775,7 @@
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v2.0.43</div>
+  <div id="footer">版本号: v2.0.44</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -1416,7 +1417,7 @@
         <button onclick="clearAvatar()" style="padding: 12px 20px; font-size: 16px;">清除头像</button>
         <button onclick="showActivationCodeDialog()" style="padding: 12px 20px; font-size: 16px;">激活码兑换</button>
         <button onclick="saveGame()" style="padding: 12px 20px; font-size: 16px;">保存游戏</button>
-         <button onclick="downloadSave()" style="padding: 12px 20px; font-size: 16px;">下载TXT存档</button>
+        <button onclick="downloadSave()" style="padding: 12px 20px; font-size: 16px;">下载TXT存档</button>
         <button onclick="importEncryptedSave()" style="padding: 12px 20px; font-size: 16px;">导入TXT存档</button>
         <button onclick="resetGame()" style="padding: 12px 20px; font-size: 16px; background-color: #ff4444; color: white; border: none;">重置游戏</button>
     </div>
@@ -2143,19 +2144,98 @@
         <p style="color: #ff4444; font-size: 0.8em; margin-top: 10px;">注意: 合成将消耗主副两只伴侣，且结果随机！</p>
     </div>
 </div>
-<div id="autoBuyShopa" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid #333; z-index: 1000; max-height: 80vh; overflow-y: auto; width: 500px;">
-    <h3>轮回BOSS副本</h3>
-    <div class="auto-buy-container">
-    <button onclick="toggleBlackDragonAbyss()" style="margin-left: 10px; background: linear-gradient(to bottom, #2c003e, #0f0024); color: #ffd700; border: 1px solid #8a2be2; box-shadow: 0 0 10px #8a2be2;">黑龙潭副本</button>
-     <button onclick="toggleHolyBeastIsland()" style="background: linear-gradient(to bottom, #ff0000, #8b0000); color: #ffd700; border: 2px solid #ff4500; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; text-shadow: 0 0 5px #ff0000; box-shadow: 0 0 10px #ff0000;">圣兽岛副本</button>
-      <button onclick="togglePenglaiIsland()" style="background: linear-gradient(to bottom, #ffd700, #daa520); color: #8b4513; border: 2px solid #ffd700; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; text-shadow: 0 0 5px #ffd700; box-shadow: 0 0 10px #ffd700; margin-left: 10px;">蓬莱仙岛副本</button>
-      <button onclick="toggleLunhuiFuben()" style="background: linear-gradient(to bottom, #20b2aa, #008b8b); color: #fff; border: 2px solid #20b2aa; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 10px;">轮回试炼副本</button>
-      <button onclick="toggleLunhuiPenglai()" style="background: linear-gradient(to bottom, #9370db, #4b0082); color: #e6e6fa; border: 2px solid #9370db; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 10px;">轮回仙岛副本</button>
-      <button onclick="toggleLunhuiEliteDungeon(0)" style="background: linear-gradient(to bottom, #1a237e, #0d1642); color: #e8eaf6; border: 2px solid #5c6bc0; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 10px;">九霄星渊境</button>
-      <button onclick="toggleLunhuiEliteDungeon(1)" style="background: linear-gradient(to bottom, #006064, #004d40); color: #e0f7fa; border: 2px solid #26a69a; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 10px;">瑶池云梦洲</button>
-      <button onclick="toggleLunhuiEliteDungeon(2)" style="background: linear-gradient(to bottom, #4e342e, #3e2723); color: #ffccbc; border: 2px solid #8d6e63; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 10px;">归墟鸿蒙阙</button>
+<div id="autoBuyShopa" class="lunhui-realm-panel" style="display: none;">
+    <div class="lunhui-realm-mist" aria-hidden="true"></div>
+    <div class="lunhui-realm-frame">
+        <header class="lunhui-realm-header">
+            <div class="lunhui-realm-deco lunhui-realm-deco-l" aria-hidden="true"></div>
+            <div class="lunhui-realm-heading">
+                <p class="lunhui-realm-eyebrow">诸天秘境 · 轮回证道</p>
+                <h3 class="lunhui-realm-title">轮回BOSS副本</h3>
+                <p class="lunhui-realm-sub">择一界域，破障入劫</p>
+            </div>
+            <div class="lunhui-realm-deco lunhui-realm-deco-r" aria-hidden="true"></div>
+        </header>
+        <div class="lunhui-realm-status">
+            当前轮回：<strong id="lunhuiRealmAscention">0</strong> 转
+            <span class="lunhui-realm-status-hint">未达要求者入口将封禁</span>
+        </div>
+        <div class="lunhui-realm-grid">
+            <button type="button" class="lunhui-realm-card theme-dragon" data-req="1" onclick="toggleBlackDragonAbyss()">
+                <span class="lunhui-realm-card-sigil" aria-hidden="true">龙</span>
+                <span class="lunhui-realm-card-body">
+                    <span class="lunhui-realm-card-name">黑龙潭副本</span>
+                    <span class="lunhui-realm-card-req">进入要求：轮回 1 转</span>
+                    <span class="lunhui-realm-card-loot">掉落：翅膀升级材料 · 大量材料</span>
+                </span>
+                <span class="lunhui-realm-card-lock">未解锁</span>
+            </button>
+            <button type="button" class="lunhui-realm-card theme-beast" data-req="2" onclick="toggleHolyBeastIsland()">
+                <span class="lunhui-realm-card-sigil" aria-hidden="true">兽</span>
+                <span class="lunhui-realm-card-body">
+                    <span class="lunhui-realm-card-name">圣兽岛副本</span>
+                    <span class="lunhui-realm-card-req">进入要求：轮回 2 转</span>
+                    <span class="lunhui-realm-card-loot">掉落：坐骑升级材料 · 大量材料</span>
+                </span>
+                <span class="lunhui-realm-card-lock">未解锁</span>
+            </button>
+            <button type="button" class="lunhui-realm-card theme-penglai" data-req="3" onclick="togglePenglaiIsland()">
+                <span class="lunhui-realm-card-sigil" aria-hidden="true">蓬</span>
+                <span class="lunhui-realm-card-body">
+                    <span class="lunhui-realm-card-name">蓬莱仙岛副本</span>
+                    <span class="lunhui-realm-card-req">进入要求：轮回 3 转</span>
+                    <span class="lunhui-realm-card-loot">掉落：符文升级材料 · 大量材料</span>
+                </span>
+                <span class="lunhui-realm-card-lock">未解锁</span>
+            </button>
+            <button type="button" class="lunhui-realm-card theme-trial" data-req="2" onclick="toggleLunhuiFuben()">
+                <span class="lunhui-realm-card-sigil" aria-hidden="true">试</span>
+                <span class="lunhui-realm-card-body">
+                    <span class="lunhui-realm-card-name">轮回试炼副本</span>
+                    <span class="lunhui-realm-card-req">进入要求：轮回 2 转</span>
+                    <span class="lunhui-realm-card-loot">掉落：T1 轮回装备 · S1 神兽</span>
+                </span>
+                <span class="lunhui-realm-card-lock">未解锁</span>
+            </button>
+            <button type="button" class="lunhui-realm-card theme-island" data-req="3" onclick="toggleLunhuiPenglai()">
+                <span class="lunhui-realm-card-sigil" aria-hidden="true">仙</span>
+                <span class="lunhui-realm-card-body">
+                    <span class="lunhui-realm-card-name">轮回仙岛副本</span>
+                    <span class="lunhui-realm-card-req">进入要求：轮回 3 转</span>
+                    <span class="lunhui-realm-card-loot">掉落：T2 轮回装备 · S2 神兽</span>
+                </span>
+                <span class="lunhui-realm-card-lock">未解锁</span>
+            </button>
+            <button type="button" class="lunhui-realm-card theme-xingyuan" data-req="5" onclick="toggleLunhuiEliteDungeon(0)">
+                <span class="lunhui-realm-card-sigil" aria-hidden="true">星</span>
+                <span class="lunhui-realm-card-body">
+                    <span class="lunhui-realm-card-name">九霄星渊境</span>
+                    <span class="lunhui-realm-card-req">进入要求：轮回 5 转</span>
+                    <span class="lunhui-realm-card-loot">首领：烛照星君 · T3 / S3</span>
+                </span>
+                <span class="lunhui-realm-card-lock">未解锁</span>
+            </button>
+            <button type="button" class="lunhui-realm-card theme-yaochi" data-req="8" onclick="toggleLunhuiEliteDungeon(1)">
+                <span class="lunhui-realm-card-sigil" aria-hidden="true">瑶</span>
+                <span class="lunhui-realm-card-body">
+                    <span class="lunhui-realm-card-name">瑶池云梦洲</span>
+                    <span class="lunhui-realm-card-req">进入要求：轮回 8 转</span>
+                    <span class="lunhui-realm-card-loot">首领：云麒圣尊 · T4 / S4</span>
+                </span>
+                <span class="lunhui-realm-card-lock">未解锁</span>
+            </button>
+            <button type="button" class="lunhui-realm-card theme-guixu" data-req="10" onclick="toggleLunhuiEliteDungeon(2)">
+                <span class="lunhui-realm-card-sigil" aria-hidden="true">墟</span>
+                <span class="lunhui-realm-card-body">
+                    <span class="lunhui-realm-card-name">归墟鸿蒙阙</span>
+                    <span class="lunhui-realm-card-req">进入要求：轮回 10 转</span>
+                    <span class="lunhui-realm-card-loot">首领：鸿蒙御宰 · T5 / S5</span>
+                </span>
+                <span class="lunhui-realm-card-lock">未解锁</span>
+            </button>
+        </div>
+        <button type="button" class="lunhui-realm-close" onclick="toggleAutoBuyShopa()">关闭秘境</button>
     </div>
-    <button onclick="toggleAutoBuyShopa()" style="margin-top: 15px;">关闭界面</button>
 </div>
 
 <!-- 新增自动购买商店界面 -->
@@ -2836,6 +2916,22 @@
             关闭
         </button>
     </div>
+
+    <!-- 当前宝石总加成 -->
+    <div class="gem-bonus-summary" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px;">
+        <div class="gem-bonus-card" style="background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.45); border-radius: 8px; padding: 10px 12px; text-align: center;">
+            <div style="font-size: 12px; color: #ffcdd2; margin-bottom: 4px;">攻击总加成</div>
+            <div id="gemAttackBonus" style="font-size: 16px; font-weight: bold; color: #ff8a80; text-shadow: 0 0 8px rgba(255,138,128,0.6);">+0%</div>
+        </div>
+        <div class="gem-bonus-card" style="background: rgba(100,181,246,0.12); border: 1px solid rgba(100,181,246,0.45); border-radius: 8px; padding: 10px 12px; text-align: center;">
+            <div style="font-size: 12px; color: #bbdefb; margin-bottom: 4px;">生命总加成</div>
+            <div id="gemHealthBonus" style="font-size: 16px; font-weight: bold; color: #82b1ff; text-shadow: 0 0 8px rgba(130,177,255,0.6);">+0%</div>
+        </div>
+        <div class="gem-bonus-card" style="background: rgba(200,200,200,0.1); border: 1px solid rgba(180,180,180,0.4); border-radius: 8px; padding: 10px 12px; text-align: center;">
+            <div style="font-size: 12px; color: #e0e0e0; margin-bottom: 4px;">爆伤总加成</div>
+            <div id="gemCritDamageBonus" style="font-size: 16px; font-weight: bold; color: #eeeeee; text-shadow: 0 0 8px rgba(255,255,255,0.35);">+0%</div>
+        </div>
+    </div>
     
     <!-- 宝石商店 -->
     <div style="margin-bottom: 24px; background: radial-gradient(circle at top, rgba(100,181,255,0.06), rgba(0,10,25,0.95)); padding: 16px 16px 18px; border-radius: 12px; box-shadow: inset 0 0 24px rgba(100,181,255,0.08); border: 1px solid rgba(100,181,255,0.35);">
@@ -2850,6 +2946,7 @@
             <div class="gem-shop-item">
                 <div class="gem-icon red">红</div>
                 <div>红宝石 (攻击)</div>
+                <div style="font-size: 12px; color: #ff8a80; margin: 4px 0;">Lv.1 加成: +100% 攻击</div>
                 <div>价格: 100暗物质 / 个</div>
                 <div style="margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap;">
                     <span style="font-size: 12px; color: #ccc;">数量</span>
@@ -2865,6 +2962,7 @@
             <div class="gem-shop-item">
                 <div class="gem-icon blue">蓝</div>
                 <div>蓝宝石 (生命)</div>
+                <div style="font-size: 12px; color: #82b1ff; margin: 4px 0;">Lv.1 加成: +5% 生命</div>
                 <div>价格: 100暗物质 / 个</div>
                 <div style="margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap;">
                     <span style="font-size: 12px; color: #ccc;">数量</span>
@@ -2880,6 +2978,7 @@
             <div class="gem-shop-item">
                 <div class="gem-icon black">黑</div>
                 <div>黑宝石 (爆伤)</div>
+                <div style="font-size: 12px; color: #eeeeee; margin: 4px 0;">Lv.1 加成: +100% 爆伤</div>
                 <div>价格: 100暗物质 / 个</div>
                 <div style="margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap;">
                     <span style="font-size: 12px; color: #ccc;">数量</span>
@@ -5179,56 +5278,86 @@
     </div>
     <div id="tsrShopItems" class="tsr-shop-catalog"></div>
 </div>
+  <div id="bossOverlay" onclick="toggleWorldBossUI()"></div>
   <div id="worldBossUI">
-        <button class="boss-close-button" onclick="toggleWorldBossUI()">×</button>
-        <div class="boss-summon-count">
-    召唤: <span id="bossSummonCount">1</span>/10
-    <br>
-    下次恢复: <span id="summonCountdown">00:00:00</span>
-</div>
-        <h3>世界BOSS系统</h3>
-        
-        <div class="boss-section">
-            <div class="boss-section-title">BOSS状态</div>
-            <div class="boss-name" id="bossName">未召唤BOSS</div>
-            <div class="boss-world" id="bossWorld"></div>
-            <div class="boss-stars" id="bossStars"></div>
+        <div class="wb-header">
+            <div class="wb-header-main">
+                <h3>世界BOSS</h3>
+                <p class="wb-subtitle">全球征讨 · 伤害排行结算</p>
+            </div>
+            <button type="button" class="boss-close-button" onclick="toggleWorldBossUI()" aria-label="关闭">×</button>
+        </div>
+
+        <div class="wb-ticket-bar">
+            <div class="wb-ticket-left">
+                <span class="wb-ticket-label">挑战券</span>
+                <span class="wb-ticket-value"><span id="bossSummonCount">1</span><span class="wb-ticket-max">/10</span></span>
+            </div>
+            <div class="wb-ticket-right">
+                <span class="wb-ticket-label">下次恢复</span>
+                <span id="summonCountdown" class="wb-countdown">00:00:00</span>
+            </div>
+        </div>
+
+        <div class="wb-arena" id="wbArena">
+            <div class="wb-arena-glow" aria-hidden="true"></div>
+            <div class="wb-float-layer" id="wbFloatLayer" aria-hidden="true"></div>
+            <div class="wb-phase-badge" id="wbPhaseBadge" hidden></div>
+            <div class="wb-combo-badge" id="wbComboBadge" hidden>连击 x1</div>
+            <div class="boss-name" id="bossName">等待召唤</div>
+            <div class="wb-arena-meta">
+                <span class="boss-world" id="bossWorld">开启挑战后降临强敌</span>
+                <span class="boss-stars" id="bossStars"></span>
+            </div>
             <div class="boss-health-bar" id="bossHealthBar">
                 <div class="boss-health-fill" id="bossHealthFill"></div>
-                <div class="boss-health-text" id="bossHealthText">0/0</div>
+                <div class="boss-health-markers" aria-hidden="true">
+                    <span style="left:25%"></span><span style="left:50%"></span><span style="left:75%"></span>
+                </div>
+                <div class="boss-health-text" id="bossHealthText">0 / 0</div>
             </div>
-            <div class="boss-time-left" id="bossTimeLeft">剩余: 未开始</div>
-        </div>
-        
-        <div class="boss-section">
-            <div class="boss-section-title">你的状态</div>
-            <div class="boss-info">攻击: <span id="playerBossAttack">0</span></div>
-            <div class="boss-info">连击: <span id="playerBossMultiAttack">0</span></div>
-            <div class="boss-info">暴击: <span id="playerBossCritRate">0%</span></div>
-            <div class="boss-info">爆伤: <span id="playerBossCritDamage">0%</span></div>
-            <div class="boss-info">伤害: <span id="playerBossDamage">0</span></div>
-            <div class="boss-info">当前排行: <span id="playerBossRank">未排名</span></div>
-            <div style="text-align: center; margin-top: 8px;">
-                <button class="boss-button" id="bossAttackButton" onclick="attackBoss()">攻击</button>
-                <button class="boss-button" id="bossAutoAttackButton" onclick="toggleAutoAttackBoss()">自动</button>
-                <button class="boss-button" id="bossSummonButton" onclick="summonBoss()">召唤</button>
+            <div class="wb-arena-foot">
+                <span class="boss-time-left" id="bossTimeLeft">未开始</span>
+                <span class="wb-dps-hint" id="wbDpsHint"></span>
+                <span class="wb-star-hint" id="bossStarHint">星级越高，血量与奖励越高</span>
+            </div>
+            <div class="wb-result-banner" id="wbResultBanner" hidden>
+                <div class="wb-result-title" id="wbResultTitle"></div>
+                <div class="wb-result-sub" id="wbResultSub"></div>
             </div>
         </div>
-        
-        <div class="boss-section">
-            <div class="boss-section-title">排行榜</div>
-            <div class="boss-rankings" id="bossRankings">
-                <div>尚未开始战斗</div>
-            </div>
+
+        <div class="wb-actions">
+            <button type="button" class="boss-button boss-button-summon" id="bossSummonButton" onclick="summonBoss()">召唤挑战</button>
+            <button type="button" class="boss-button" id="bossAttackButton" onclick="attackBoss()" disabled>全力一击</button>
+            <button type="button" class="boss-button boss-button-auto" id="bossAutoAttackButton" onclick="toggleAutoAttackBoss()">自动: 关</button>
         </div>
-        
-        <div class="boss-section">
-            <div class="boss-section-title">战斗记录</div>
-            <div class="boss-battle-log" id="bossBattleLog"></div>
+
+        <div class="wb-grid">
+            <section class="boss-section wb-panel">
+                <div class="boss-section-title">战况</div>
+                <div class="wb-stat-grid">
+                    <div class="wb-stat"><span>攻击</span><strong id="playerBossAttack">0</strong></div>
+                    <div class="wb-stat"><span>连击</span><strong id="playerBossMultiAttack">0</strong></div>
+                    <div class="wb-stat"><span>暴击</span><strong id="playerBossCritRate">0%</strong></div>
+                    <div class="wb-stat"><span>爆伤</span><strong id="playerBossCritDamage">0%</strong></div>
+                    <div class="wb-stat wb-stat-wide"><span>累计伤害</span><strong id="playerBossDamage">0</strong></div>
+                    <div class="wb-stat wb-stat-wide"><span>当前排名</span><strong id="playerBossRank">未开始</strong></div>
+                </div>
+                <div class="boss-section-title wb-log-title">战斗记录</div>
+                <div class="boss-battle-log" id="bossBattleLog"></div>
+            </section>
+
+            <section class="boss-section wb-panel">
+                <div class="boss-section-title">伤害排行 · Top10</div>
+                <div class="boss-rankings" id="bossRankings">
+                    <div class="wb-empty">尚未开始战斗</div>
+                </div>
+            </section>
         </div>
-        
-        <div class="boss-section">
-            <div class="boss-section-title">奖励</div>
+
+        <section class="boss-section wb-rewards-section">
+            <div class="boss-section-title">排名奖励 <span class="wb-reward-note">（另按星级加成转生币）</span></div>
             <div class="boss-rewards">
                 <div class="boss-reward-tier">
                     <h4>第1名</h4>
@@ -5251,9 +5380,8 @@
                     <div>100转生币</div>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
-    <div id="bossOverlay"></div>
 <!-- 新增宝石商店模态框 -->
 <div id="treasureShopOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;"></div>
 <div id="treasureShopUI" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #9C27B0; border-radius: 10px; z-index: 1001; width: 600px; max-height: 80vh; overflow-y: auto;">
@@ -6218,11 +6346,16 @@
             
             <!-- 田地页面 -->
             <div id="landlordFieldsTab" class="landlord-tab-content">
-                <div id="landlordFieldsContainer" class="landlord-fields-container">
-                    <!-- 地块将通过JavaScript动态生成 -->
-                </div>
-                <div class="landlord-unlock-container" id="landlordUnlockSection">
-                    <!-- 解锁地块信息将动态生成 -->
+                <div class="lf-scene">
+                    <div class="lf-scene-sky" aria-hidden="true"></div>
+                    <div class="lf-scene-glow" aria-hidden="true"></div>
+                    <div id="landlordFieldsToolbarHost" class="lf-toolbar-host"></div>
+                    <div id="landlordFieldsContainer" class="landlord-fields-container">
+                        <!-- 地块将通过JavaScript动态生成 -->
+                    </div>
+                    <div class="landlord-unlock-container" id="landlordUnlockSection">
+                        <!-- 解锁地块信息将动态生成 -->
+                    </div>
                 </div>
             </div>
             
@@ -6317,7 +6450,15 @@
                         <div>金条: <span id="landlordBarGold">0</span></div>
                         <div>钻石条: <span id="landlordBarDiamond">0</span></div>
                         <div>流光条: <span id="landlordBarFlow">0</span></div>
-                        <div style="font-size:0.85em;color:#7f8c8d;margin-top:8px;">仅出售带【银/金/水晶/流光】元素词条的果实各得对应材料条×1；升级田地消耗银/金/钻石/流光条各50。</div>
+                        <div>神辉条: <span id="landlordBarDivine">0</span></div>
+                        <div>太初条: <span id="landlordBarPrimal">0</span></div>
+                        <div>无上条: <span id="landlordBarSupreme">0</span></div>
+                        <div>抽奖次数: <span id="landlordLotteryDrawCountStat">0</span></div>
+                        <div style="font-size:0.85em;color:#7f8c8d;margin-top:8px;">
+                            出售带【银/金/水晶/流光/神辉/太初/无上】基础词条各得对应材料条×1，并可获得抽奖次数。<br>
+                            土地专属词（银土～无上土）只加田地售价倍率，不给材料条、不给抽奖次数。<br>
+                            升级田地各需50条对应材料：银→金→钻石→流光→神辉→太初→无上。
+                        </div>
                     </div>
                 </div>
             </div>
@@ -6418,90 +6559,112 @@
                 </div>
             </div>
         </div>
-
-        <!-- 种子合成弹窗（放在地主 UI 内，全屏时也能用） -->
-        <div id="landlordSynthesisModal" class="landlord-synth-modal" style="display:none;" aria-hidden="true">
-            <div class="landlord-synth-modal-backdrop" onclick="closeLandlordSynthesisModal()"></div>
-            <div class="landlord-synth-modal-card" role="dialog" aria-modal="true" aria-labelledby="landlordSynthModalTitle">
-                <header class="landlord-synth-modal-header">
-                    <div>
-                        <div class="landlord-synth-modal-eyebrow">Seed Atelier</div>
-                        <h2 id="landlordSynthModalTitle">种子合成</h2>
-                        <p class="landlord-synth-modal-sub">线性升阶与基因融合分开进行，互不影响</p>
-                    </div>
-                    <button type="button" class="landlord-synth-modal-close" onclick="closeLandlordSynthesisModal()" aria-label="关闭">×</button>
-                </header>
-                <nav class="landlord-synth-tabs" aria-label="合成类型">
-                    <button type="button" class="landlord-synth-tab is-active" data-synth-tab="linear" onclick="setLandlordSynthesisSubMode('linear')">
-                        <span class="landlord-synth-tab-title">线性合成</span>
-                        <span class="landlord-synth-tab-desc">3 合 1 · 固定升阶</span>
-                    </button>
-                    <button type="button" class="landlord-synth-tab" data-synth-tab="gene" onclick="setLandlordSynthesisSubMode('gene')">
-                        <span class="landlord-synth-tab-title">基因合成</span>
-                        <span class="landlord-synth-tab-desc">2 材料 · 区间随机</span>
-                    </button>
-                </nav>
-                <div class="landlord-synth-modal-body">
-                    <div id="landlordSynthLinearPanel" class="landlord-synth-panel is-active" data-synth-panel="linear"></div>
-                    <div id="landlordSynthGenePanel" class="landlord-synth-panel" data-synth-panel="gene" hidden></div>
-                </div>
-
-                <!-- 基因合成：材料框选种子弹层 -->
-                <div id="landlordGeneSeedPicker" class="landlord-gene-seed-picker" aria-hidden="true">
-                    <div class="landlord-gene-seed-picker-backdrop" onclick="closeGeneSynthesisSeedPicker()"></div>
-                    <div class="landlord-gene-seed-picker-card" role="dialog" aria-modal="true">
-                        <header class="landlord-gene-seed-picker-header">
-                            <div>
-                                <div class="landlord-gene-seed-picker-title" id="landlordGeneSeedPickerTitle">选择材料种子</div>
-                                <div class="landlord-gene-seed-picker-sub">点击种子放入对应材料槽</div>
-                            </div>
-                            <button type="button" class="landlord-synth-modal-close" onclick="closeGeneSynthesisSeedPicker()" aria-label="关闭">×</button>
-                        </header>
-                        <div id="landlordGeneSeedPickerList" class="landlord-gene-seed-picker-list"></div>
-                    </div>
-                </div>
-
-                <!-- 基因一键合成：确认 / 结果信息弹层 -->
-                <div id="landlordGeneBatchInfoModal" class="landlord-gene-batch-info" aria-hidden="true">
-                    <div class="landlord-gene-batch-info-backdrop" onclick="closeGeneBatchInfoModal()"></div>
-                    <div class="landlord-gene-batch-info-card" role="dialog" aria-modal="true" aria-labelledby="landlordGeneBatchInfoTitle">
-                        <header class="landlord-gene-batch-info-header">
-                            <div>
-                                <div class="landlord-gene-batch-info-title" id="landlordGeneBatchInfoTitle">一键合成</div>
-                                <div class="landlord-gene-batch-info-sub" id="landlordGeneBatchInfoSub"></div>
-                            </div>
-                            <button type="button" class="landlord-synth-modal-close" onclick="closeGeneBatchInfoModal()" aria-label="关闭">×</button>
-                        </header>
-                        <div id="landlordGeneBatchInfoBody" class="landlord-gene-batch-info-body"></div>
-                        <footer class="landlord-gene-batch-info-footer" id="landlordGeneBatchInfoFooter"></footer>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
     
     <!-- 通知区域 -->
     <div id="landlordNotificationArea"></div>
     
     <!-- 选择种子模态框 -->
-    <div id="landlordSeedModal" class="landlord-modal">
-        <div class="landlord-modal-content">
-            <h3 style="text-align: center; margin-bottom: 20px;">选择种子</h3>
-            <div id="landlordSeedModalContent" style="max-height: 300px; overflow-y: auto;">
+    <div id="landlordSeedModal" class="landlord-picker-modal">
+        <div class="landlord-picker-modal-backdrop" onclick="closeLandlordSeedModal()"></div>
+        <div class="landlord-picker-modal-card landlord-picker-modal-card--seed">
+            <div class="landlord-picker-modal-header">
+                <div class="landlord-picker-modal-header-text">
+                    <div class="landlord-picker-modal-eyebrow">田地种植</div>
+                    <h2>选择种子</h2>
+                    <p id="landlordSeedModalSubtitle" class="landlord-picker-modal-sub">点击种子即可种植到当前地块</p>
+                </div>
+                <button type="button" class="landlord-picker-modal-close" onclick="closeLandlordSeedModal()" aria-label="关闭">&times;</button>
+            </div>
+            <div id="landlordSeedModalContent" class="landlord-picker-modal-body">
                 <!-- 种子列表将动态生成 -->
             </div>
-            <button onclick="closeLandlordSeedModal()" style="margin-top: 20px; width: 100%; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">取消</button>
+            <div class="landlord-picker-modal-footer">
+                <button type="button" class="landlord-picker-modal-cancel" onclick="closeLandlordSeedModal()">取消</button>
+            </div>
         </div>
     </div>
     
     <!-- 选择道具模态框 -->
-    <div id="landlordItemModal" class="landlord-modal">
-        <div class="landlord-modal-content">
-            <h3 style="text-align: center; margin-bottom: 20px;">选择道具</h3>
-            <div id="landlordItemModalContent" style="max-height: 300px; overflow-y: auto;">
+    <div id="landlordItemModal" class="landlord-picker-modal">
+        <div class="landlord-picker-modal-backdrop" onclick="closeLandlordItemModal()"></div>
+        <div class="landlord-picker-modal-card landlord-picker-modal-card--item">
+            <div class="landlord-picker-modal-header">
+                <div class="landlord-picker-modal-header-text">
+                    <div class="landlord-picker-modal-eyebrow">道具使用</div>
+                    <h2>选择道具</h2>
+                    <p id="landlordItemModalSubtitle" class="landlord-picker-modal-sub">点击道具即可对当前作物生效</p>
+                </div>
+                <button type="button" class="landlord-picker-modal-close" onclick="closeLandlordItemModal()" aria-label="关闭">&times;</button>
+            </div>
+            <div id="landlordItemModalContent" class="landlord-picker-modal-body">
                 <!-- 道具列表将动态生成 -->
             </div>
-            <button onclick="closeLandlordItemModal()" style="margin-top: 20px; width: 100%; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">取消</button>
+            <div class="landlord-picker-modal-footer">
+                <button type="button" class="landlord-picker-modal-cancel" onclick="closeLandlordItemModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 种子合成弹窗（独立于地主 UI，可全屏覆盖） -->
+    <div id="landlordSynthesisModal" class="landlord-synth-modal" aria-hidden="true">
+        <div class="landlord-synth-modal-backdrop" onclick="closeLandlordSynthesisModal()"></div>
+        <div class="landlord-synth-modal-card" role="dialog" aria-modal="true" aria-labelledby="landlordSynthModalTitle">
+            <header class="landlord-synth-modal-header">
+                <div class="landlord-synth-modal-header-text">
+                    <div class="landlord-synth-modal-eyebrow">种子工坊</div>
+                    <h2 id="landlordSynthModalTitle">种子合成</h2>
+                    <p class="landlord-synth-modal-sub">线性升阶与基因融合分开进行，互不影响</p>
+                </div>
+                <button type="button" class="landlord-picker-modal-close" onclick="closeLandlordSynthesisModal()" aria-label="关闭">&times;</button>
+            </header>
+            <nav class="landlord-synth-tabs" aria-label="合成类型">
+                <button type="button" class="landlord-synth-tab is-active" data-synth-tab="linear" onclick="setLandlordSynthesisSubMode('linear')">
+                    <span class="landlord-synth-tab-icon">⬆️</span>
+                    <span class="landlord-synth-tab-title">线性合成</span>
+                    <span class="landlord-synth-tab-desc">3 合 1 · 固定升阶</span>
+                </button>
+                <button type="button" class="landlord-synth-tab" data-synth-tab="gene" onclick="setLandlordSynthesisSubMode('gene')">
+                    <span class="landlord-synth-tab-icon">🧬</span>
+                    <span class="landlord-synth-tab-title">基因合成</span>
+                    <span class="landlord-synth-tab-desc">2 材料 · 区间随机</span>
+                </button>
+            </nav>
+            <div class="landlord-synth-modal-body">
+                <div id="landlordSynthLinearPanel" class="landlord-synth-panel is-active" data-synth-panel="linear"></div>
+                <div id="landlordSynthGenePanel" class="landlord-synth-panel" data-synth-panel="gene" hidden></div>
+            </div>
+
+            <!-- 基因合成：材料框选种子弹层 -->
+            <div id="landlordGeneSeedPicker" class="landlord-gene-seed-picker" aria-hidden="true">
+                <div class="landlord-gene-seed-picker-backdrop" onclick="closeGeneSynthesisSeedPicker()"></div>
+                <div class="landlord-gene-seed-picker-card" role="dialog" aria-modal="true">
+                    <header class="landlord-gene-seed-picker-header">
+                        <div>
+                            <div class="landlord-gene-seed-picker-title" id="landlordGeneSeedPickerTitle">选择材料种子</div>
+                            <div class="landlord-gene-seed-picker-sub">点击种子卡片放入对应材料槽</div>
+                        </div>
+                        <button type="button" class="landlord-picker-modal-close" onclick="closeGeneSynthesisSeedPicker()" aria-label="关闭">&times;</button>
+                    </header>
+                    <div id="landlordGeneSeedPickerList" class="landlord-gene-seed-picker-list"></div>
+                </div>
+            </div>
+
+            <!-- 基因一键合成：确认 / 结果信息弹层 -->
+            <div id="landlordGeneBatchInfoModal" class="landlord-gene-batch-info" aria-hidden="true">
+                <div class="landlord-gene-batch-info-backdrop" onclick="closeGeneBatchInfoModal()"></div>
+                <div class="landlord-gene-batch-info-card" role="dialog" aria-modal="true" aria-labelledby="landlordGeneBatchInfoTitle">
+                    <header class="landlord-gene-batch-info-header">
+                        <div>
+                            <div class="landlord-gene-batch-info-title" id="landlordGeneBatchInfoTitle">一键合成</div>
+                            <div class="landlord-gene-batch-info-sub" id="landlordGeneBatchInfoSub"></div>
+                        </div>
+                        <button type="button" class="landlord-picker-modal-close" onclick="closeGeneBatchInfoModal()" aria-label="关闭">&times;</button>
+                    </header>
+                    <div id="landlordGeneBatchInfoBody" class="landlord-gene-batch-info-body"></div>
+                    <footer class="landlord-gene-batch-info-footer" id="landlordGeneBatchInfoFooter"></footer>
+                </div>
+            </div>
         </div>
     </div>
     <div id="dongtianJieUI">
@@ -6955,10 +7118,11 @@
     <!-- 宝物信息统计 -->
     <div style="margin-bottom: 20px; background: #333; padding: 15px; border-radius: 8px;">
         <h3>宝物统计</h3>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
             <div>总宝物数量: <span id="totalTreasures">0</span></div>
             <div>总价值: <span id="totalTreasureValue">0</span> 资金</div>
             <div>已出售: <span id="totalSoldValue">0</span> 资金</div>
+            <div>出售加成: GPS +<span id="treasureSoldGpsBonus">0</span> 倍 <span style="opacity:0.7;font-size:12px;">(100万资金=1倍)</span></div>
         </div>
     </div>
     
@@ -7154,13 +7318,15 @@
             </div>
         </div>
 
-        <div class="c-gen-filter-bar" id="lineageSelectGenFilterBar" title="筛选后，各页「选人」下拉只显示对应代数">
+        <div class="c-gen-filter-bar" id="lineageSelectGenFilterBar" title="筛选后，各页「选人」下拉只显示对应代数/名字">
             <label for="lineageSelectGenFilter">筛选代数</label>
             <select id="lineageSelectGenFilter" class="c-input lineage-gen-filter" onchange="setLineageSelectGenFilter(this.value)">
                 <option value="all">全部代数</option>
             </select>
+            <label for="lineageSelectNameFilter">名字</label>
+            <input type="text" id="lineageSelectNameFilter" class="c-input lineage-name-filter" placeholder="输入名字筛选" maxlength="20" autocomplete="off" oninput="setLineageSelectNameFilter(this.value)">
             <span class="c-gen-filter-count" id="lineageSelectGenFilterCount">共 0 人</span>
-            <button type="button" class="c-chip" onclick="setLineageSelectGenFilter('all')">重置</button>
+            <button type="button" class="c-chip" onclick="resetLineageSelectFilters()">重置</button>
         </div>
 
         <div id="childSectionOverview" class="c-section active">

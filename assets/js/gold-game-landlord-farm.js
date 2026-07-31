@@ -43,6 +43,10 @@
                 player.landlord.itemStoreItems = {};
                 
                 for (const item in itemProperties) {
+                    if (itemProperties[item].lotteryOnly) {
+                        player.landlord.itemStoreItems[item] = 0;
+                        continue;
+                    }
                     const probability = itemProperties[item].refreshProbability;
                     if (Math.random() * 100 < probability) {
                         player.landlord.itemStoreItems[item] = 1; // 库存1个
@@ -194,6 +198,11 @@
                 return;
             }
             
+            if (item.lotteryOnly) {
+                showLandlordNotification("该稀有道具只能通过抽奖获得！", "warning");
+                return;
+            }
+            
             if (player.landlord.itemStoreItems[itemName] <= 0) {
                 showLandlordNotification("该道具已售罄！", "error");
                 return;
@@ -229,9 +238,13 @@
         function selectLandlordSeedForPlanting(fieldIndex) {
             player.landlord.selectedFieldIndex = fieldIndex;
             
-            // 打开种子选择模态框
             const modal = document.getElementById('landlordSeedModal');
             const content = document.getElementById('landlordSeedModalContent');
+            const subtitle = document.getElementById('landlordSeedModalSubtitle');
+            
+            if (subtitle) {
+                subtitle.textContent = `正在为第 ${fieldIndex + 1} 号地块选择种子，点击卡片即可种植`;
+            }
             
             content.innerHTML = '';
             
@@ -239,18 +252,17 @@
                 if (player.landlord.seedStorage[seedName] > 0) {
                     const seedDiv = document.createElement('div');
                     seedDiv.className = 'landlord-seed-item';
-                    seedDiv.style.cursor = 'pointer';
-                    seedDiv.style.marginBottom = '10px';
                     seedDiv.onclick = () => plantLandlordSeed(fieldIndex, seedName);
                     
                     const seedProps = getLandlordSeedProperties(seedName);
                     const seedColor = seedProps ? seedProps.color : '#8B4513';
+                    const stock = player.landlord.seedStorage[seedName];
                     
                     seedDiv.innerHTML = `
                         <div class="landlord-seed-icon" style="background: ${seedColor};">${getLandlordSeedBaseName(seedName).charAt(0)}</div>
-                        <div>${getLandlordGeneVariantLabelHtml(seedName)}</div>
-                        <div>库存: ${player.landlord.seedStorage[seedName]}</div>
-                        <div style="font-size:0.85em;color:#7f8c8d;">价格: ${formatNumber(seedProps ? seedProps.price : 0)}</div>
+                        <div class="landlord-picker-card-name">${getLandlordGeneVariantLabelHtml(seedName)}</div>
+                        <div class="landlord-picker-card-meta">库存: <strong>${stock}</strong></div>
+                        <div class="landlord-picker-card-price">单价 ${formatNumber(seedProps ? seedProps.price : 0)}</div>
                     `;
                     
                     content.appendChild(seedDiv);
@@ -258,15 +270,16 @@
             }
             
             if (content.children.length === 0) {
-                content.innerHTML = '<div style="text-align: center; padding: 20px;">种子仓库为空</div>';
+                content.innerHTML = '<div class="landlord-picker-empty"><div class="landlord-picker-empty-icon">🌱</div>种子仓库为空<br><span style="font-size:0.88em;margin-top:8px;display:inline-block;">请先去商店购买种子</span></div>';
             }
             
-            modal.style.display = 'block';
+            modal.classList.add('is-open');
         }
 
         // 关闭种子选择模态框
         function closeLandlordSeedModal() {
-            document.getElementById('landlordSeedModal').style.display = 'none';
+            const modal = document.getElementById('landlordSeedModal');
+            if (modal) modal.classList.remove('is-open');
             player.landlord.selectedFieldIndex = null;
         }
 
@@ -274,9 +287,13 @@
         function selectLandlordItemForUsing(fieldIndex) {
             player.landlord.selectedFieldIndex = fieldIndex;
             
-            // 打开道具选择模态框
             const modal = document.getElementById('landlordItemModal');
             const content = document.getElementById('landlordItemModalContent');
+            const subtitle = document.getElementById('landlordItemModalSubtitle');
+            
+            if (subtitle) {
+                subtitle.textContent = `正在为第 ${fieldIndex + 1} 号地块选择道具，点击卡片即可使用`;
+            }
             
             content.innerHTML = '';
             
@@ -284,18 +301,17 @@
                 if (player.landlord.itemStorage[itemName] > 0) {
                     const itemDiv = document.createElement('div');
                     itemDiv.className = 'landlord-item-item';
-                    itemDiv.style.cursor = 'pointer';
-                    itemDiv.style.marginBottom = '10px';
                     itemDiv.onclick = () => useLandlordItem(fieldIndex, itemName);
                     
                     const itemColor = itemProperties[itemName].color;
                     const itemDesc = itemProperties[itemName].description;
+                    const stock = player.landlord.itemStorage[itemName];
                     
                     itemDiv.innerHTML = `
                         <div class="landlord-item-icon" style="background: ${itemColor};">${itemName.charAt(0)}</div>
-                        <div>${itemName}</div>
-                        <div style="font-size: 0.8em; color: #7f8c8d; margin: 5px 0;">${itemDesc}</div>
-                        <div>库存: ${player.landlord.itemStorage[itemName]}</div>
+                        <div class="landlord-picker-card-name">${itemName}</div>
+                        <div class="landlord-picker-card-desc">${itemDesc}</div>
+                        <div class="landlord-picker-card-meta">库存: <strong>${stock}</strong></div>
                     `;
                     
                     content.appendChild(itemDiv);
@@ -303,15 +319,16 @@
             }
             
             if (content.children.length === 0) {
-                content.innerHTML = '<div style="text-align: center; padding: 20px;">道具仓库为空</div>';
+                content.innerHTML = '<div class="landlord-picker-empty"><div class="landlord-picker-empty-icon">🧪</div>道具仓库为空<br><span style="font-size:0.88em;margin-top:8px;display:inline-block;">请先去商店购买道具</span></div>';
             }
             
-            modal.style.display = 'block';
+            modal.classList.add('is-open');
         }
 
         // 关闭道具选择模态框
         function closeLandlordItemModal() {
-            document.getElementById('landlordItemModal').style.display = 'none';
+            const modal = document.getElementById('landlordItemModal');
+            if (modal) modal.classList.remove('is-open');
             player.landlord.selectedFieldIndex = null;
         }
 
@@ -354,6 +371,16 @@
             saveGame();
         }
 
+        /** 叠加加速：每次直接从 plantedAt 减去分钟数（旧逻辑 Math.min(now-X) 导致第二次无效） */
+        function accelerateLandlordPlantGrowth(plant, minutes) {
+            if (!plant || !(minutes > 0)) return;
+            plant.plantedAt = (Number(plant.plantedAt) || Date.now()) - minutes * 60 * 1000;
+            var elapsedMinutes = (Date.now() - plant.plantedAt) / (1000 * 60);
+            if (plant.growTime && elapsedMinutes >= plant.growTime) {
+                plant.isMature = true;
+            }
+        }
+
         // 使用道具
         function useLandlordItem(fieldIndex, itemName) {
             const plant = player.landlord.fields[fieldIndex];
@@ -370,11 +397,22 @@
                 return;
             }
             
+            // 先应用效果；无法使用时不扣道具
+            const result = applyLandlordItemEffect(plant, itemName);
+            const effectMessage = result && typeof result === 'object' ? result.message : result;
+            const refund = !!(result && typeof result === 'object' && result.refund);
+            
+            if (refund) {
+                closeLandlordItemModal();
+                showLandlordNotification(`${itemName}：${effectMessage}`, "warning");
+                return;
+            }
+            
             // 消耗道具
             player.landlord.itemStorage[itemName]--;
-            
-            // 应用道具效果
-            let effectMessage = applyLandlordItemEffect(plant, itemName);
+            if (player.landlord.itemStorage[itemName] <= 0) {
+                delete player.landlord.itemStorage[itemName];
+            }
             
             // 更新统计
             player.landlord.stats.itemsUsed++;
@@ -388,18 +426,26 @@
             saveGame();
         }
 
-        // 应用道具效果
+        // 应用道具效果；无法生效时返回 { message, refund: true }
         function applyLandlordItemEffect(plant, itemName) {
             let effectMessage = "";
+            if (!Array.isArray(plant.weatherMutations)) plant.weatherMutations = [];
+            if (!Array.isArray(plant.mutations)) plant.mutations = [];
+
+            if (typeof LANDLORD_LOTTERY_ITEM_GRANT_TAGS !== 'undefined' && LANDLORD_LOTTERY_ITEM_GRANT_TAGS[itemName]) {
+                return grantLandlordWeatherTagByItem(plant, LANDLORD_LOTTERY_ITEM_GRANT_TAGS[itemName]);
+            }
+            if (typeof LANDLORD_LOTTERY_ITEM_ROLL_TAGS !== 'undefined' && LANDLORD_LOTTERY_ITEM_ROLL_TAGS[itemName]) {
+                var rollCfg = LANDLORD_LOTTERY_ITEM_ROLL_TAGS[itemName];
+                return rollLandlordWeatherTagByItem(plant, rollCfg.tag, rollCfg.chance);
+            }
             
             switch(itemName) {
                 case "普通浇水器":
-                    // 加速成长5分钟
-                    const acceleratedTime1 = Date.now() - 10 * 60 * 1000;
-                    plant.plantedAt = Math.min(plant.plantedAt, acceleratedTime1);
+                    accelerateLandlordPlantGrowth(plant, 10);
                     effectMessage = "生长加速10分钟！";
                     
-                    // 无元素基础突变时才判定（升级田的银土/金土等不算元素基础突变）
+                    // 无元素基础突变且无特殊突变时才判定
                     if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation) {
                         if (Math.random() * 100 < 2) {
                             const hadSpecial = !!plant.specialMutation;
@@ -411,12 +457,9 @@
                     break;
                     
                 case "高级浇水器":
-                    // 加速成长15分钟
-                    const acceleratedTime2 = Date.now() - 20 * 60 * 1000;
-                    plant.plantedAt = Math.min(plant.plantedAt, acceleratedTime2);
+                    accelerateLandlordPlantGrowth(plant, 20);
                     effectMessage = "生长加速20分钟！";
                     
-                    // 无元素基础突变时才判定（升级田的银土/金土等不算元素基础突变）
                     if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation) {
                         if (Math.random() * 100 < 5) {
                             const hadSpecial = !!plant.specialMutation;
@@ -428,12 +471,9 @@
                     break;
                     
                 case "超级浇水器":
-                    // 加速成长30分钟
-                    const acceleratedTime3 = Date.now() - 60 * 60 * 1000;
-                    plant.plantedAt = Math.min(plant.plantedAt, acceleratedTime3);
+                    accelerateLandlordPlantGrowth(plant, 60);
                     effectMessage = "生长加速60分钟！";
                     
-                    // 无元素基础突变时才判定（升级田的银土/金土等不算元素基础突变）
                     if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation) {
                         if (Math.random() * 100 < 10) {
                             const hadSpecial = !!plant.specialMutation;
@@ -444,21 +484,18 @@
                     }
                     break;
                     
-                case "天气附加器":
-                    // 直接获得一个没有获得的天气突变
-                    const availableWeathers = weatherList.filter(weather => 
-                        !plant.weatherMutations.includes(weather)
-                    );
-                    
+                case "天气附加器": {
+                    const availableWeathers = getLandlordCommonWeatherPool(plant);
                     if (availableWeathers.length > 0) {
                         const randomWeather = availableWeathers[Math.floor(Math.random() * availableWeathers.length)];
                         plant.weatherMutations.push(randomWeather);
                         player.landlord.stats.weatherMutations++;
                         effectMessage = `获得了${randomWeather}天气突变！`;
                     } else {
-                        effectMessage = "已拥有所有天气突变！";
+                        return { message: "已拥有所有普通天气突变！", refund: true };
                     }
                     break;
+                }
             case "流星棒":
             if (plant.weatherMutations.length > 0) {
                 if (!plant.weatherMutations.includes("亮晶晶")) {
@@ -466,10 +503,10 @@
                     player.landlord.stats.weatherMutations++;
                     effectMessage = "获得了亮晶晶词条！";
                 } else {
-                    effectMessage = "已有亮晶晶词条！";
+                    return { message: "已有亮晶晶词条！", refund: true };
                 }
             } else {
-                effectMessage = "没有天气词条，无法使用！";
+                return { message: "没有天气词条，无法使用！", refund: true };
             }
             break;
             
@@ -480,10 +517,10 @@
                     player.landlord.stats.weatherMutations++;
                     effectMessage = "获得了灼热词条！";
                 } else {
-                    effectMessage = "已有灼热词条！";
+                    return { message: "已有灼热词条！", refund: true };
                 }
             } else {
-                effectMessage = "没有天气词条，无法使用！";
+                return { message: "没有天气词条，无法使用！", refund: true };
             }
             break;
             
@@ -494,10 +531,10 @@
                     player.landlord.stats.weatherMutations++;
                     effectMessage = "获得了龙卷风词条！";
                 } else {
-                    effectMessage = "已有龙卷风词条！";
+                    return { message: "已有龙卷风词条！", refund: true };
                 }
             } else {
-                effectMessage = "没有天气词条，无法使用！";
+                return { message: "没有天气词条，无法使用！", refund: true };
             }
             break;
             
@@ -508,10 +545,10 @@
                     player.landlord.stats.weatherMutations++;
                     effectMessage = "获得了落雷词条！";
                 } else {
-                    effectMessage = "已有落雷词条！";
+                    return { message: "已有落雷词条！", refund: true };
                 }
             } else {
-                effectMessage = "没有天气词条，无法使用！";
+                return { message: "没有天气词条，无法使用！", refund: true };
             }
             break;
             
@@ -522,10 +559,10 @@
                     player.landlord.stats.weatherMutations++;
                     effectMessage = "获得了覆雪词条！";
                 } else {
-                    effectMessage = "已有覆雪词条！";
+                    return { message: "已有覆雪词条！", refund: true };
                 }
             } else {
-                effectMessage = "没有天气词条，无法使用！";
+                return { message: "没有天气词条，无法使用！", refund: true };
             }
             break;
             
@@ -536,10 +573,10 @@
                     player.landlord.stats.weatherMutations++;
                     effectMessage = "获得了生机词条！";
                 } else {
-                    effectMessage = "已有生机词条！";
+                    return { message: "已有生机词条！", refund: true };
                 }
             } else {
-                effectMessage = "没有天气词条，无法使用！";
+                return { message: "没有天气词条，无法使用！", refund: true };
             }
             break;
             
@@ -550,10 +587,10 @@
                     player.landlord.stats.weatherMutations++;
                     effectMessage = "获得了臭气词条！";
                 } else {
-                    effectMessage = "已有臭气词条！";
+                    return { message: "已有臭气词条！", refund: true };
                 }
             } else {
-                effectMessage = "没有天气词条，无法使用！";
+                return { message: "没有天气词条，无法使用！", refund: true };
             }
             break;
             
@@ -564,10 +601,10 @@
                     player.landlord.stats.weatherMutations++;
                     effectMessage = "获得了腐烂词条！";
                 } else {
-                    effectMessage = "已有腐烂词条！";
+                    return { message: "已有腐烂词条！", refund: true };
                 }
             } else {
-                effectMessage = "没有天气词条，无法使用！";
+                return { message: "没有天气词条，无法使用！", refund: true };
             }
             break;
             
@@ -578,94 +615,97 @@
                     player.landlord.stats.weatherMutations++;
                     effectMessage = "获得了迷雾词条！";
                 } else {
-                    effectMessage = "已有迷雾词条！";
+                    return { message: "已有迷雾词条！", refund: true };
                 }
             } else {
-                effectMessage = "没有天气词条，无法使用！";
+                return { message: "没有天气词条，无法使用！", refund: true };
             }
             break;
             
         case "时光沙漏":
+            // 外层 8% 已是触发率，命中后应直接给基础突变，避免再叠一层 5% 判定导致几乎永不生效
             const sandMinutes = 15 + Math.floor(Math.random() * 31);
-            const sandAccel = Date.now() - sandMinutes * 60 * 1000;
-            plant.plantedAt = Math.min(plant.plantedAt, sandAccel);
+            accelerateLandlordPlantGrowth(plant, sandMinutes);
             effectMessage = `随机加速了${sandMinutes}分钟！`;
-            if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation && Math.random() * 100 < 8) {
-                applyLandlordBasicMutation(plant, { rollElement: true });
+            if (!landlordHasElementBasicMutation(plant) && Math.random() * 100 < 8) {
+                applyLandlordBasicMutation(plant, { guaranteeBasic: true });
                 effectMessage += " 触发了基础突变！";
             }
             break;
             
-        case "幸运四叶草":
+        case "幸运四叶草": {
+            const availableW = getLandlordCommonWeatherPool(plant);
+            if (availableW.length === 0) {
+                return { message: "已拥有所有普通天气突变！", refund: true };
+            }
             if (Math.random() * 100 < 10) {
-                const availableW = weatherList.filter(w => !plant.weatherMutations.includes(w));
-                if (availableW.length > 0) {
-                    const rw = availableW[Math.floor(Math.random() * availableW.length)];
-                    plant.weatherMutations.push(rw);
-                    player.landlord.stats.weatherMutations++;
-                    effectMessage = `幸运触发！获得了${rw}天气突变！`;
-                } else {
-                    effectMessage = "已拥有所有天气突变！";
-                }
+                const rw = availableW[Math.floor(Math.random() * availableW.length)];
+                plant.weatherMutations.push(rw);
+                player.landlord.stats.weatherMutations++;
+                effectMessage = `幸运触发！获得了${rw}天气突变！`;
             } else {
                 effectMessage = "未触发幸运，下次一定！";
             }
             break;
+        }
             
         case "大地祝福":
-            if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation) {
+            // 描述：无基础突变则必出；有则加速。不应因已有特殊突变而跳过给基础突变
+            if (!landlordHasElementBasicMutation(plant)) {
                 applyLandlordBasicMutation(plant, { guaranteeBasic: true });
                 effectMessage = "大地祝福！必出基础突变！";
             } else {
-                const earthAccel = Date.now() - 25 * 60 * 1000;
-                plant.plantedAt = Math.min(plant.plantedAt, earthAccel);
+                accelerateLandlordPlantGrowth(plant, 25);
                 effectMessage = "额外加速成长25分钟！";
             }
             break;
             
-        case "丰收号角":
-            const hornAccel = Date.now() - 40 * 60 * 1000;
-            plant.plantedAt = Math.min(plant.plantedAt, hornAccel);
+        case "丰收号角": {
+            accelerateLandlordPlantGrowth(plant, 40);
             effectMessage = "丰收号角！加速成长40分钟！";
-            if (plant.weatherMutations.length < weatherList.length && Math.random() * 100 < 15) {
-                const availW = weatherList.filter(w => !plant.weatherMutations.includes(w));
-                if (availW.length > 0) {
-                    const rw = availW[Math.floor(Math.random() * availW.length)];
-                    plant.weatherMutations.push(rw);
-                    player.landlord.stats.weatherMutations++;
-                    effectMessage += ` 获得了${rw}词条！`;
-                }
+            const availW = getLandlordCommonWeatherPool(plant);
+            if (availW.length > 0 && Math.random() * 100 < 15) {
+                const rw = availW[Math.floor(Math.random() * availW.length)];
+                plant.weatherMutations.push(rw);
+                player.landlord.stats.weatherMutations++;
+                effectMessage += ` 获得了${rw}词条！`;
             }
             break;
+        }
             
-        case "月光精华":
-            if (plant.weatherMutations.length > 0) {
-                const hasRare = plant.weatherMutations.some(w => ["流光", "霓虹", "渡劫", "陨石", "红月", "水晶"].includes(w));
-                if (!hasRare && !plant.weatherMutations.includes("霓虹") && Math.random() * 100 < 20) {
-                    plant.weatherMutations.push("霓虹");
-                    player.landlord.stats.weatherMutations++;
-                    effectMessage = "月光精华！获得了霓虹词条！";
-                } else {
-                    effectMessage = "月光精华生效，未触发霓虹。";
-                }
+        case "月光精华": {
+            if (plant.weatherMutations.length === 0) {
+                return { message: "需要先有天气词条才能使用月光精华！", refund: true };
+            }
+            if (plant.weatherMutations.includes("霓虹")) {
+                return { message: "已有霓虹词条！", refund: true };
+            }
+            const hasRare = plant.weatherMutations.some(w => ["流光", "霓虹", "渡劫", "陨石", "红月", "水晶", "虚空潮", "神罚雷", "混沌雨", "天道虹", "创世霞", "永恒极光", "日曜", "月蚀", "焚天", "苍穹裂", "虹彩"].includes(w));
+            if (hasRare) {
+                return { message: "已有更高稀有度词条，月光精华无法生效！", refund: true };
+            }
+            if (Math.random() * 100 < 20) {
+                plant.weatherMutations.push("霓虹");
+                player.landlord.stats.weatherMutations++;
+                effectMessage = "月光精华！获得了霓虹词条！";
             } else {
-                effectMessage = "需要先有天气词条才能使用月光精华！";
+                effectMessage = "月光精华生效，未触发霓虹。";
             }
             break;
+        }
             
         case "闪电催化":
-            const lightningAccel = Date.now() - 20 * 60 * 1000;
-            plant.plantedAt = Math.min(plant.plantedAt, lightningAccel);
+            // 描述：必定触发一次基础突变判定（5%成功），不是必出
+            accelerateLandlordPlantGrowth(plant, 20);
             effectMessage = "闪电催化！加速20分钟！";
-            if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation) {
+            if (!landlordHasElementBasicMutation(plant)) {
                 applyLandlordBasicMutation(plant, { rollElement: true });
                 if (landlordHasElementBasicMutation(plant)) effectMessage += " 触发了基础突变！";
                 else effectMessage += " 基础突变判定未中。";
             }
             break;
         case "晨曦露珠":
-            const dawnAccel = Date.now() - 8 * 60 * 1000;
-            plant.plantedAt = Math.min(plant.plantedAt, dawnAccel);
+            accelerateLandlordPlantGrowth(plant, 8);
             effectMessage = "晨曦露珠！加速8分钟！";
             if (plant.weatherMutations.length > 0 && !plant.weatherMutations.includes("生机") && Math.random() * 100 < 5) {
                 plant.weatherMutations.push("生机"); player.landlord.stats.weatherMutations++; effectMessage += " 获得了生机词条！";
@@ -674,66 +714,69 @@
         case "烈日镜":
             if (plant.weatherMutations.length > 0) {
                 if (!plant.weatherMutations.includes("灼热")) { plant.weatherMutations.push("灼热"); player.landlord.stats.weatherMutations++; effectMessage = "获得了灼热词条！"; }
-                else { effectMessage = "已有灼热词条！"; }
-            } else { effectMessage = "没有天气词条，无法使用！"; }
+                else { return { message: "已有灼热词条！", refund: true }; }
+            } else { return { message: "没有天气词条，无法使用！", refund: true }; }
             break;
         case "秋收镰刀":
-            const sickleAccel = Date.now() - 35 * 60 * 1000;
-            plant.plantedAt = Math.min(plant.plantedAt, sickleAccel);
+            accelerateLandlordPlantGrowth(plant, 35);
             effectMessage = "秋收镰刀！加速35分钟！";
             break;
         case "冬眠药剂":
-            const sleepAccel = Date.now() - 5 * 60 * 1000;
-            plant.plantedAt = Math.min(plant.plantedAt, sleepAccel);
+            accelerateLandlordPlantGrowth(plant, 5);
             effectMessage = "冬眠药剂生效，加速5分钟！";
             break;
         case "春风扇":
-            const springAccel = Date.now() - 12 * 60 * 1000;
-            plant.plantedAt = Math.min(plant.plantedAt, springAccel);
+            // 外层 3% 已是触发率，命中后直接给基础突变
+            accelerateLandlordPlantGrowth(plant, 12);
             effectMessage = "春风扇！加速12分钟！";
-            if (!landlordHasElementBasicMutation(plant) && !plant.specialMutation && Math.random() * 100 < 3) {
-                applyLandlordBasicMutation(plant, { rollElement: true });
+            if (!landlordHasElementBasicMutation(plant) && Math.random() * 100 < 3) {
+                applyLandlordBasicMutation(plant, { guaranteeBasic: true });
                 effectMessage += " 触发了基础突变！";
             }
             break;
         case "雷云发生器":
             if (plant.weatherMutations.length > 0) {
                 if (!plant.weatherMutations.includes("落雷")) { plant.weatherMutations.push("落雷"); player.landlord.stats.weatherMutations++; effectMessage = "获得了落雷词条！"; }
-                else { effectMessage = "已有落雷词条！"; }
-            } else { effectMessage = "没有天气词条，无法使用！"; }
+                else { return { message: "已有落雷词条！", refund: true }; }
+            } else { return { message: "没有天气词条，无法使用！", refund: true }; }
             break;
         case "彩虹喷雾":
-            if (plant.weatherMutations.length > 0 && !plant.weatherMutations.includes("彩虹") && Math.random() * 100 < 3) {
+            if (plant.weatherMutations.length === 0) {
+                return { message: "没有天气词条，无法使用！", refund: true };
+            }
+            if (plant.weatherMutations.includes("彩虹")) {
+                return { message: "已有彩虹词条！", refund: true };
+            }
+            if (Math.random() * 100 < 3) {
                 plant.weatherMutations.push("彩虹"); player.landlord.stats.weatherMutations++; effectMessage = "获得了彩虹词条！";
-            } else { effectMessage = "彩虹喷雾生效，未触发彩虹。"; }
+            } else {
+                effectMessage = "彩虹喷雾生效，未触发彩虹。";
+            }
             break;
         case "星尘粉":
             const starMin = 10 + Math.floor(Math.random() * 16);
-            plant.plantedAt = Math.min(plant.plantedAt, Date.now() - starMin * 60 * 1000);
+            accelerateLandlordPlantGrowth(plant, starMin);
             effectMessage = `星尘粉！随机加速了${starMin}分钟！`;
             break;
         case "月光瓶":
-            const moonAccel = Date.now() - 15 * 60 * 1000;
-            plant.plantedAt = Math.min(plant.plantedAt, moonAccel);
+            accelerateLandlordPlantGrowth(plant, 15);
             effectMessage = "月光瓶！加速15分钟！";
             if (plant.weatherMutations.length > 0 && !plant.weatherMutations.includes("荧光") && Math.random() * 100 < 8) {
                 plant.weatherMutations.push("荧光"); player.landlord.stats.weatherMutations++; effectMessage += " 获得了荧光词条！";
             }
             break;
         case "日光灯":
-            const sunAccel = Date.now() - 18 * 60 * 1000;
-            plant.plantedAt = Math.min(plant.plantedAt, sunAccel);
+            accelerateLandlordPlantGrowth(plant, 18);
             effectMessage = "日光灯！加速18分钟！";
             break;
         case "露水收集器":
             if (plant.weatherMutations.length > 0) {
                 if (!plant.weatherMutations.includes("潮湿")) { plant.weatherMutations.push("潮湿"); player.landlord.stats.weatherMutations++; effectMessage = "获得了潮湿词条！"; }
-                else { effectMessage = "已有潮湿词条！"; }
-            } else { effectMessage = "没有天气词条，无法使用！"; }
+                else { return { message: "已有潮湿词条！", refund: true }; }
+            } else { return { message: "没有天气词条，无法使用！", refund: true }; }
             break;
         case "暖阳石":
-            const warmAccel = Date.now() - 10 * 60 * 1000;
-            plant.plantedAt = Math.min(plant.plantedAt, warmAccel);
+            accelerateLandlordPlantGrowth(plant, 10);
             effectMessage = "暖阳石！加速10分钟！";
             if (plant.weatherMutations.length > 0 && !plant.weatherMutations.includes("沙尘") && Math.random() * 100 < 10) {
                 plant.weatherMutations.push("沙尘"); player.landlord.stats.weatherMutations++; effectMessage += " 获得了沙尘词条！";
@@ -742,47 +785,272 @@
         case "冰晶":
             if (plant.weatherMutations.length > 0) {
                 if (!plant.weatherMutations.includes("冰冻")) { plant.weatherMutations.push("冰冻"); player.landlord.stats.weatherMutations++; effectMessage = "获得了冰冻词条！"; }
-                else { effectMessage = "已有冰冻词条！"; }
-            } else { effectMessage = "没有天气词条，无法使用！"; }
+                else { return { message: "已有冰冻词条！", refund: true }; }
+            } else { return { message: "没有天气词条，无法使用！", refund: true }; }
             break;
         case "风铃":
-            if (plant.weatherMutations.length > 0 && !plant.weatherMutations.includes("龙卷风") && Math.random() * 100 < 5) {
+            if (plant.weatherMutations.length === 0) {
+                return { message: "没有天气词条，无法使用！", refund: true };
+            }
+            if (plant.weatherMutations.includes("龙卷风")) {
+                return { message: "已有龙卷风词条！", refund: true };
+            }
+            if (Math.random() * 100 < 5) {
                 plant.weatherMutations.push("龙卷风"); player.landlord.stats.weatherMutations++; effectMessage = "风铃作响！获得了龙卷风词条！";
-            } else { effectMessage = "风铃轻响，未触发龙卷风。"; }
+            } else {
+                effectMessage = "风铃轻响，未触发龙卷风。";
+            }
             break;
         case "雨伞":
             if (plant.weatherMutations.length > 0) {
                 if (!plant.weatherMutations.includes("潮湿")) { plant.weatherMutations.push("潮湿"); player.landlord.stats.weatherMutations++; effectMessage = "获得了潮湿词条！"; }
-                else { effectMessage = "已有潮湿词条！"; }
-            } else { effectMessage = "没有天气词条，无法使用！"; }
+                else { return { message: "已有潮湿词条！", refund: true }; }
+            } else { return { message: "没有天气词条，无法使用！", refund: true }; }
             break;
+
+        /* —— 稀有 / 高级道具 —— */
+        case "紫金匣": {
+            const goldPool = (typeof LANDLORD_ADVANCED_WEATHER_TAGS !== 'undefined' ? LANDLORD_ADVANCED_WEATHER_TAGS : [])
+                .filter(function (w) {
+                    return (mutationMultipliers[w] || 1) >= 20 && (mutationMultipliers[w] || 1) < 25
+                        && !plant.weatherMutations.includes(w);
+                });
+            if (!goldPool.length) return { message: "已拥有全部金色天气词条！", refund: true };
+            const gPick = goldPool[Math.floor(Math.random() * goldPool.length)];
+            plant.weatherMutations.push(gPick);
+            player.landlord.stats.weatherMutations++;
+            effectMessage = "紫金匣开启！获得了金色词条「" + gPick + "」！";
+            break;
+        }
+        case "紫霄匣": {
+            const purplePool = (typeof LANDLORD_ADVANCED_WEATHER_TAGS !== 'undefined' ? LANDLORD_ADVANCED_WEATHER_TAGS : [])
+                .filter(function (w) {
+                    return (mutationMultipliers[w] || 1) >= 15 && (mutationMultipliers[w] || 1) < 20
+                        && !plant.weatherMutations.includes(w);
+                });
+            if (!purplePool.length) return { message: "已拥有全部紫色天气词条！", refund: true };
+            const pPick = purplePool[Math.floor(Math.random() * purplePool.length)];
+            plant.weatherMutations.push(pPick);
+            player.landlord.stats.weatherMutations++;
+            effectMessage = "紫霄匣开启！获得了紫色词条「" + pPick + "」！";
+            break;
+        }
+        case "虹彩敕": {
+            const rainPool = (typeof LANDLORD_ADVANCED_WEATHER_TAGS !== 'undefined' ? LANDLORD_ADVANCED_WEATHER_TAGS : [])
+                .filter(function (w) {
+                    return (mutationMultipliers[w] || 1) >= 25 && (mutationMultipliers[w] || 1) < 40
+                        && !plant.weatherMutations.includes(w);
+                });
+            if (!rainPool.length) return { message: "已拥有全部彩色天气词条！", refund: true };
+            const rPick = rainPool[Math.floor(Math.random() * rainPool.length)];
+            plant.weatherMutations.push(rPick);
+            player.landlord.stats.weatherMutations++;
+            effectMessage = "虹彩敕显灵！获得了彩色词条「" + rPick + "」！";
+            break;
+        }
+        case "超彩残卷": {
+            const ultraPool = (typeof LANDLORD_ULTRA_WEATHER_TAGS !== 'undefined' ? LANDLORD_ULTRA_WEATHER_TAGS : [])
+                .filter(function (w) { return !plant.weatherMutations.includes(w); });
+            if (!ultraPool.length) return { message: "已拥有全部超彩天气词条！", refund: true };
+            if (!plant.weatherMutations.length) return { message: "没有天气词条，无法使用！", refund: true };
+            if (Math.random() * 100 < 3) {
+                const uPick = ultraPool[Math.floor(Math.random() * ultraPool.length)];
+                plant.weatherMutations.push(uPick);
+                player.landlord.stats.weatherMutations++;
+                effectMessage = "超彩残卷共鸣！获得了「" + uPick + "」！";
+            } else {
+                effectMessage = "残卷晦暗，未唤出超彩……";
+            }
+            break;
+        }
+        case "元素坩埚":
+            if (landlordHasElementBasicMutation(plant)) {
+                return { message: "已有基础词条！", refund: true };
+            }
+            if (Math.random() * 100 < 25) {
+                applyLandlordBasicMutation(plant, { guaranteeBasic: true });
+                effectMessage = "元素坩埚！炼出了基础突变！";
+            } else {
+                effectMessage = "坩埚沸腾，却未凝出基础词……";
+            }
+            break;
+        case "永恒沙漏":
+            accelerateLandlordPlantGrowth(plant, 180);
+            effectMessage = "永恒沙漏！加速成长180分钟！";
+            break;
+        case "重天鼓": {
+            accelerateLandlordPlantGrowth(plant, 90);
+            effectMessage = "重天鼓！加速90分钟！";
+            const drumPool = (typeof LANDLORD_ADVANCED_WEATHER_TAGS !== 'undefined' ? LANDLORD_ADVANCED_WEATHER_TAGS : [])
+                .filter(function (w) { return !plant.weatherMutations.includes(w); });
+            if (drumPool.length && Math.random() * 100 < 8) {
+                const dPick = drumPool[Math.floor(Math.random() * drumPool.length)];
+                plant.weatherMutations.push(dPick);
+                player.landlord.stats.weatherMutations++;
+                effectMessage += " 雷鸣唤来「" + dPick + "」！";
+            }
+            break;
+        }
+        case "双生风铃": {
+            if (!plant.weatherMutations.length) {
+                return { message: "没有天气词条，无法使用！", refund: true };
+            }
+            const twinPool = getLandlordCommonWeatherPool(plant);
+            if (!twinPool.length) {
+                return { message: "已拥有全部普通天气词条！", refund: true };
+            }
+            let gained = [];
+            let pool = twinPool.slice();
+            for (let ti = 0; ti < 2 && pool.length; ti++) {
+                if (Math.random() * 100 >= 30) continue;
+                const idx = Math.floor(Math.random() * pool.length);
+                const tw = pool.splice(idx, 1)[0];
+                plant.weatherMutations.push(tw);
+                player.landlord.stats.weatherMutations++;
+                gained.push(tw);
+            }
+            effectMessage = gained.length
+                ? ("双生风铃作响！获得了「" + gained.join("」「") + "」！")
+                : "风铃轻响，未唤来新词条……";
+            break;
+        }
+        case "时空怀表":
+            accelerateLandlordPlantGrowth(plant, 120);
+            effectMessage = "时空怀表！加速成长120分钟！";
+            break;
+        case "鸿蒙露":
+            accelerateLandlordPlantGrowth(plant, 60);
+            effectMessage = "鸿蒙露！加速60分钟！";
+            if (!landlordHasElementBasicMutation(plant) && Math.random() * 100 < 10) {
+                applyLandlordBasicMutation(plant, { guaranteeBasic: true });
+                effectMessage += " 触发了基础突变！";
+            }
+            break;
+        case "万象附加器": {
+            const advPool = (typeof LANDLORD_ADVANCED_WEATHER_TAGS !== 'undefined' ? LANDLORD_ADVANCED_WEATHER_TAGS : [])
+                .filter(function (w) { return !plant.weatherMutations.includes(w); });
+            if (!advPool.length) {
+                return { message: "已拥有全部高级天气词条！", refund: true };
+            }
+            const pick = advPool[Math.floor(Math.random() * advPool.length)];
+            plant.weatherMutations.push(pick);
+            player.landlord.stats.weatherMutations++;
+            effectMessage = "万象附加器！获得了高级词条「" + pick + "」！";
+            break;
+        }
+        case "天机罗盘": {
+            const rarePool = (typeof LANDLORD_ADVANCED_WEATHER_TAGS !== 'undefined' ? LANDLORD_ADVANCED_WEATHER_TAGS : [])
+                .filter(function (w) { return !plant.weatherMutations.includes(w); });
+            if (!rarePool.length) {
+                return { message: "已拥有全部高级天气词条！", refund: true };
+            }
+            if (Math.random() * 100 < 15) {
+                const pick = rarePool[Math.floor(Math.random() * rarePool.length)];
+                plant.weatherMutations.push(pick);
+                player.landlord.stats.weatherMutations++;
+                effectMessage = "天机罗盘显灵！获得了「" + pick + "」！";
+            } else {
+                effectMessage = "天机未显，罗盘空转……";
+            }
+            break;
+        }
+        default:
+            return { message: "未知道具，无法使用！", refund: true };
             }
             
             return effectMessage;
         }
 
+        /** 自然天气池：普通倍率<22；超彩三档均可出现，圣劫/至道更稀有 */
+        function pickLandlordNaturalWeather() {
+            var common = weatherList.filter(function (w) {
+                return (mutationMultipliers[w] || 1) < 22;
+            });
+            function inWeatherList(tags) {
+                return (tags || []).filter(function (w) { return weatherList.indexOf(w) >= 0; });
+            }
+            var aurora = inWeatherList(typeof LANDLORD_AURORA_WEATHER_TAGS !== 'undefined' ? LANDLORD_AURORA_WEATHER_TAGS : []);
+            var stellar = inWeatherList(typeof LANDLORD_STELLAR_WEATHER_TAGS !== 'undefined' ? LANDLORD_STELLAR_WEATHER_TAGS : []);
+            var genesis = inWeatherList(typeof LANDLORD_GENESIS_WEATHER_TAGS !== 'undefined' ? LANDLORD_GENESIS_WEATHER_TAGS : []);
+            // 加权：普通×30，仙霓档×3，圣劫档×2，至道档×1
+            var bag = [];
+            var i, c;
+            for (i = 0; i < common.length; i++) {
+                for (c = 0; c < 30; c++) bag.push(common[i]);
+            }
+            for (i = 0; i < aurora.length; i++) {
+                for (c = 0; c < 3; c++) bag.push(aurora[i]);
+            }
+            for (i = 0; i < stellar.length; i++) {
+                for (c = 0; c < 2; c++) bag.push(stellar[i]);
+            }
+            for (i = 0; i < genesis.length; i++) bag.push(genesis[i]);
+            if (!bag.length) bag = weatherList.slice();
+            return bag[Math.floor(Math.random() * bag.length)];
+        }
+
+        /** 普通道具可抽取的天气（不含金顶/彩色/超彩） */
+        function getLandlordCommonWeatherPool(plant) {
+            return weatherList.filter(function (w) {
+                return (mutationMultipliers[w] || 1) < 22
+                    && (!plant || !plant.weatherMutations || !plant.weatherMutations.includes(w));
+            });
+        }
+
+        /** 已有天气词条时必得指定词条；否则退还 */
+        function grantLandlordWeatherTagByItem(plant, tagName) {
+            if (!plant.weatherMutations.length) {
+                return { message: "没有天气词条，无法使用！", refund: true };
+            }
+            if (plant.weatherMutations.includes(tagName)) {
+                return { message: "已有" + tagName + "词条！", refund: true };
+            }
+            plant.weatherMutations.push(tagName);
+            player.landlord.stats.weatherMutations++;
+            return "获得了" + tagName + "词条！";
+        }
+
+        /** 已有天气词条时按概率获得指定词条 */
+        function rollLandlordWeatherTagByItem(plant, tagName, chancePercent) {
+            if (!plant.weatherMutations.length) {
+                return { message: "没有天气词条，无法使用！", refund: true };
+            }
+            if (plant.weatherMutations.includes(tagName)) {
+                return { message: "已有" + tagName + "词条！", refund: true };
+            }
+            if (Math.random() * 100 < chancePercent) {
+                plant.weatherMutations.push(tagName);
+                player.landlord.stats.weatherMutations++;
+                return "触发成功！获得了" + tagName + "词条！";
+            }
+            return "生效了，但未触发" + tagName + "……";
+        }
+
         function ensureLandlordBars(ll) {
             if (!ll) return;
-            if (!ll.bars || typeof ll.bars !== 'object') ll.bars = { silver: 0, gold: 0, diamond: 0, flow: 0 };
-            ['silver', 'gold', 'diamond', 'flow'].forEach(function (k) {
+            if (!ll.bars || typeof ll.bars !== 'object') {
+                ll.bars = { silver: 0, gold: 0, diamond: 0, flow: 0, divine: 0, primal: 0, supreme: 0 };
+            }
+            ['silver', 'gold', 'diamond', 'flow', 'divine', 'primal', 'supreme'].forEach(function (k) {
                 if (typeof ll.bars[k] !== 'number' || !Number.isFinite(ll.bars[k])) ll.bars[k] = 0;
             });
         }
 
         function ensureLandlordFieldTiers(ll) {
             if (!ll) return;
+            var maxTier = (typeof LANDLORD_FIELD_TIER_MAX === 'number') ? LANDLORD_FIELD_TIER_MAX : 7;
             var out = new Array(50);
             var i;
             var src = ll.fieldTiers;
             if (Array.isArray(src)) {
                 for (i = 0; i < 50; i++) {
                     var v = Number(src[i]);
-                    out[i] = Number.isFinite(v) ? Math.max(0, Math.min(4, Math.floor(v))) : 0;
+                    out[i] = Number.isFinite(v) ? Math.max(0, Math.min(maxTier, Math.floor(v))) : 0;
                 }
             } else if (src && typeof src === 'object') {
                 for (i = 0; i < 50; i++) {
                     var v2 = Number(src[i]);
-                    out[i] = Number.isFinite(v2) ? Math.max(0, Math.min(4, Math.floor(v2))) : 0;
+                    out[i] = Number.isFinite(v2) ? Math.max(0, Math.min(maxTier, Math.floor(v2))) : 0;
                 }
             } else {
                 for (i = 0; i < 50; i++) out[i] = 0;
@@ -2750,9 +3018,9 @@
             ensureLandlordFieldTiers(player.landlord);
             const tier = Number(player.landlord.fieldTiers[fieldIndex]) || 0;
             plant.fieldTier = tier;
-            if (tier >= 1 && tier <= 4) {
+            if (tier >= 1 && tier <= LANDLORD_FIELD_TIER_MAX) {
                 const affix = LANDLORD_TIER_LAND_AFFIX[tier];
-                // 只校正田地专属词条（银土/金土/钻石土/流光土），与 upgradeLandlordFieldTier 一致；
+                // 只校正田地专属词条，与 upgradeLandlordFieldTier 一致；
                 // 勿过滤元素类基础突变（银/金/水晶/流光），否则每次读档/刷新页面都会把道具等叠上的元素词条清掉。
                 plant.mutations = (plant.mutations || []).filter(function (m) {
                     return LANDLORD_ALL_LAND_AFFIXES.indexOf(m) < 0;
@@ -2763,7 +3031,7 @@
 
         function applyLandlordLandExclusivePriceMult(plant, price) {
             const tier = Number(plant.fieldTier) || 0;
-            if (tier < 1 || tier > 4) return price;
+            if (tier < 1 || tier > LANDLORD_FIELD_TIER_MAX) return price;
             const affix = LANDLORD_TIER_LAND_AFFIX[tier];
             const mult = LANDLORD_TIER_EXCLUSIVE_PRICE_MULT[affix];
             if (mult && mult > 1 && plant.mutations && plant.mutations.indexOf(affix) >= 0) {
@@ -2774,8 +3042,14 @@
 
         function grantLandlordBarsForSoldFruit(fruit) {
             ensureLandlordBars(player.landlord);
-            const map = { '银': 'silver', '金': 'gold', '水晶': 'diamond', '流光': 'flow' };
-            const labels = { silver: '银条', gold: '金条', diamond: '钻石条', flow: '流光条' };
+            const map = {
+                '银': 'silver', '金': 'gold', '水晶': 'diamond', '流光': 'flow',
+                '神辉': 'divine', '太初': 'primal', '无上': 'supreme'
+            };
+            const labels = {
+                silver: '银条', gold: '金条', diamond: '钻石条', flow: '流光条',
+                divine: '神辉条', primal: '太初条', supreme: '无上条'
+            };
             const parts = [];
             (fruit.mutations || []).forEach(function (m) {
                 const k = map[m];
@@ -2797,8 +3071,8 @@
             ensureLandlordFieldTiers(player.landlord);
             ensureLandlordBars(player.landlord);
             const cur = Number(player.landlord.fieldTiers[fieldIndex]) || 0;
-            if (cur >= 4) {
-                showLandlordNotification('该田地已是最高级流光土地！', 'info');
+            if (cur >= LANDLORD_FIELD_TIER_MAX) {
+                showLandlordNotification('该田地已是最高级无上土地！', 'info');
                 return;
             }
             const cost = LANDLORD_TIER_UPGRADE_COST[cur];
@@ -2883,7 +3157,7 @@
             return Math.max(minWeight, Math.min(maxWeight, maxWeight * weightPercentage));
         }
 
-        // 是否已有元素基础突变（银/金/水晶/流光）；升级田专属词条银土/金土等不算
+        // 是否已有元素基础突变（银/金/水晶/流光/神辉/太初/无上）；升级田专属词条银土/金土等不算
         function landlordHasElementBasicMutation(plant) {
             if (!plant || !Array.isArray(plant.mutations)) return false;
             return plant.mutations.some(function (m) {
@@ -2891,17 +3165,20 @@
             });
         }
 
-        // 追加一条元素基础突变；guaranteed 时权重 2:1:1:1，否则按种植时 5% 概率判定
+        // 追加一条元素基础突变；guaranteed 时偏向低阶，高阶极稀有；否则约 5% 判定
         function landlordPushElementBasicMutation(plant, guaranteed) {
             if (!plant) return false;
             if (!Array.isArray(plant.mutations)) plant.mutations = [];
             if (landlordHasElementBasicMutation(plant)) return false;
             if (guaranteed) {
-                const r = Math.random() * 5;
-                if (r < 2) plant.mutations.push("银");
-                else if (r < 3) plant.mutations.push("金");
-                else if (r < 4) plant.mutations.push("水晶");
-                else plant.mutations.push("流光");
+                const r = Math.random() * 100;
+                if (r < 40) plant.mutations.push("银");
+                else if (r < 65) plant.mutations.push("金");
+                else if (r < 80) plant.mutations.push("水晶");
+                else if (r < 90) plant.mutations.push("流光");
+                else if (r < 96) plant.mutations.push("神辉");
+                else if (r < 99) plant.mutations.push("太初");
+                else plant.mutations.push("无上");
                 player.landlord.stats.basicMutations++;
                 return true;
             }
@@ -2909,20 +3186,23 @@
             if (random < 95) return false;
             if (random < 97) plant.mutations.push("银");
             else if (random < 98) plant.mutations.push("金");
-            else if (random < 99) plant.mutations.push("水晶");
-            else plant.mutations.push("流光");
+            else if (random < 98.7) plant.mutations.push("水晶");
+            else if (random < 99.2) plant.mutations.push("流光");
+            else if (random < 99.55) plant.mutations.push("神辉");
+            else if (random < 99.85) plant.mutations.push("太初");
+            else plant.mutations.push("无上");
             player.landlord.stats.basicMutations++;
             return true;
         }
 
-        // 应用基础突变；专属田地 fieldTier 1~4 必出 银土/金土/钻石土/流光土（与元素词条可共存）；
-        // opts.guaranteeBasic 必出元素词条；opts.rollElement 按普通概率判定元素词条（用于道具）
+        // 应用基础突变；专属田地 fieldTier 1~7 必出对应土词条（与元素词条可共存）；
+        // 升级地也会正常判定银/金/水晶/流光/神辉/太初/无上；opts.guaranteeBasic 必出元素词条
         function applyLandlordBasicMutation(plant, opts) {
             opts = opts || {};
             const fieldTier = opts.fieldTier != null ? opts.fieldTier : (Number(plant.fieldTier) || 0);
             if (!Array.isArray(plant.mutations)) plant.mutations = [];
 
-            if (fieldTier >= 1 && fieldTier <= 4) {
+            if (fieldTier >= 1 && fieldTier <= LANDLORD_FIELD_TIER_MAX) {
                 const affix = LANDLORD_TIER_LAND_AFFIX[fieldTier];
                 const hadLand = plant.mutations.some(function (m) {
                     return LANDLORD_ALL_LAND_AFFIXES.indexOf(m) >= 0;
@@ -2936,7 +3216,7 @@
 
                 if (opts.guaranteeBasic) {
                     landlordPushElementBasicMutation(plant, true);
-                } else if (opts.rollElement) {
+                } else if (opts.rollElement !== false) {
                     landlordPushElementBasicMutation(plant, false);
                 }
             } else if (opts.guaranteeBasic) {
@@ -3100,7 +3380,7 @@
             }
 
             const tier = Number(plant.fieldTier) || 0;
-            if (tier >= 1 && tier <= 4) {
+            if (tier >= 1 && tier <= LANDLORD_FIELD_TIER_MAX) {
                 const affix = LANDLORD_TIER_LAND_AFFIX[tier];
                 const em = LANDLORD_TIER_EXCLUSIVE_PRICE_MULT[affix];
                 if (em && em > 1 && plant.mutations && plant.mutations.indexOf(affix) >= 0) {

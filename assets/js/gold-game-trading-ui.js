@@ -758,10 +758,8 @@ function resetAutoTradeState() {
     
     // 停止所有旅行
     if (player.trading.isTraveling) {
-        if (player.trading.travelInterval) {
-            clearInterval(player.trading.travelInterval);
-            player.trading.travelInterval = null;
-        }
+        if (typeof clearRegisteredIntervalRef === 'function') clearRegisteredIntervalRef(player.trading, 'travelInterval');
+                    else if (player.trading && player.trading.travelInterval) { clearInterval(player.trading.travelInterval); player.trading.travelInterval = null; }
         player.trading.isTraveling = false;
         player.trading.travelDestination = '';
     }

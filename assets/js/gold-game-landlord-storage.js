@@ -79,7 +79,9 @@
                 player.landlord.lastWeatherChange = now; // 无论是否改天气都重置，保证下一个10分钟再判定
                 // 40%几率改变天气
                 if (Math.random() * 100 < 40) {
-                    const newWeather = weatherList[Math.floor(Math.random() * weatherList.length)];
+                    const newWeather = (typeof pickLandlordNaturalWeather === 'function')
+                        ? pickLandlordNaturalWeather()
+                        : weatherList[Math.floor(Math.random() * weatherList.length)];
                     player.landlord.weather = newWeather;
                     
                     // 应用天气突变
@@ -92,6 +94,7 @@
                 
                 updateLandlordStats();
             }
+            if (typeof updateLandlordFieldWeatherDisplay === 'function') updateLandlordFieldWeatherDisplay();
         }
 
         // 应用天气突变（每块有作物的地 15% 几率获得当前天气词条）；silent 为 true 时不弹窗、不逐格重绘（离线批量用）
@@ -258,6 +261,12 @@
             
             for (const itemName in itemProperties) {
                 const item = itemProperties[itemName];
+                if (item.lotteryOnly) {
+                    if (player.landlord.itemStoreItems && player.landlord.itemStoreItems[itemName]) {
+                        player.landlord.itemStoreItems[itemName] = 0;
+                    }
+                    continue;
+                }
                 const stock = player.landlord.itemStoreItems[itemName] || 0;
                 if (inStockOnly && stock <= 0) continue;
                 const canAfford = player.landlord.coins >= item.price;
@@ -290,6 +299,205 @@
             updateLandlordItemRefreshTimer();
         }
 
+        // —— 田地卡片：词条整理与折叠（默认收起） ——
+        window.__landlordFieldTagsExpanded = window.__landlordFieldTagsExpanded || {};
+
+        function getLandlordMutationDisplayMult(name) {
+            if (!name) return 1;
+            if (typeof mutationMultipliers !== 'undefined' && mutationMultipliers[name] != null) {
+                return Number(mutationMultipliers[name]) || 1;
+            }
+            return 1;
+        }
+
+        function collectLandlordFieldMutationEntries(plant) {
+            const entries = [];
+            (plant.mutations || []).forEach(function (m) {
+                entries.push({ name: m, kind: 'basic', mult: getLandlordMutationDisplayMult(m) });
+            });
+            (plant.weatherMutations || []).forEach(function (m) {
+                entries.push({ name: m, kind: 'weather', mult: getLandlordMutationDisplayMult(m) });
+            });
+            if (plant.specialMutation) {
+                const specialName = (typeof specialMutations !== 'undefined' && specialMutations[getLandlordSeedBaseName(plant.type)])
+                    ? specialMutations[getLandlordSeedBaseName(plant.type)]
+                    : '特殊突变';
+                entries.push({ name: specialName, kind: 'special', mult: 5 });
+            }
+            entries.sort(function (a, b) { return b.mult - a.mult; });
+            return entries;
+        }
+
+        function landlordFieldTagsToggleLabel(expanded, restCount) {
+            return expanded ? '收起词条' : ('展开词条 +' + restCount);
+        }
+
+        function buildLandlordFieldTagsHtml(plant, fieldIndex) {
+            const entries = collectLandlordFieldMutationEntries(plant);
+            if (!entries.length) {
+                return '<div class="lf-tags lf-tags--empty">暂无词条</div>';
+            }
+            const previewMax = 4;
+            // 默认收起；仅用户点过展开的地块才保持展开
+            const expanded = window.__landlordFieldTagsExpanded[fieldIndex] === true;
+            const preview = entries.slice(0, previewMax);
+            const rest = entries.slice(previewMax);
+            let html = '<div class="lf-tags' + (expanded ? ' is-expanded' : '') + '" data-field="' + fieldIndex + '">';
+            html += '<div class="lf-tags-head"><span class="lf-tags-title">词缀光华</span><span class="lf-tags-meta">' + entries.length + ' 条</span></div>';
+            html += '<div class="lf-tags-preview">';
+            preview.forEach(function (e) {
+                const colorClass = e.kind === 'special'
+                    ? 'landlord-mutation-rainbow'
+                    : getLandlordMutationColorClass(e.name);
+                html += '<span class="landlord-mutation-tag lf-tag ' + colorClass + '">' + e.name + '</span>';
+            });
+            html += '</div>';
+            if (rest.length) {
+                html += '<div class="lf-tags-extra"' + (expanded ? '' : ' hidden') + '>';
+                rest.forEach(function (e) {
+                    const colorClass = e.kind === 'special'
+                        ? 'landlord-mutation-rainbow'
+                        : getLandlordMutationColorClass(e.name);
+                    html += '<span class="landlord-mutation-tag lf-tag ' + colorClass + '">' + e.name + '</span>';
+                });
+                html += '</div>';
+                html += '<button type="button" class="lf-tags-toggle" onclick="event.stopPropagation();toggleLandlordFieldTagsExpand(' + fieldIndex + ', this)">' +
+                    landlordFieldTagsToggleLabel(expanded, rest.length) + '</button>';
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function toggleLandlordFieldTagsExpand(fieldIndex, btn) {
+            const fi = typeof fieldIndex === 'number' ? fieldIndex : parseInt(fieldIndex, 10);
+            if (!Number.isFinite(fi)) return;
+            const card = (btn && btn.closest) ? btn.closest('.landlord-field') : null;
+            const wrap = (card && card.querySelector('.lf-tags')) ||
+                document.querySelector('.lf-tags[data-field="' + fi + '"]');
+            if (!wrap) return;
+            const extra = wrap.querySelector('.lf-tags-extra');
+            const willExpand = !wrap.classList.contains('is-expanded');
+            wrap.classList.toggle('is-expanded', willExpand);
+            window.__landlordFieldTagsExpanded[fi] = willExpand;
+            if (extra) {
+                if (willExpand) extra.removeAttribute('hidden');
+                else extra.setAttribute('hidden', '');
+            }
+            if (btn) {
+                const n = extra ? extra.querySelectorAll('.lf-tag').length : 0;
+                btn.textContent = landlordFieldTagsToggleLabel(willExpand, n);
+            }
+        }
+        window.toggleLandlordFieldTagsExpand = toggleLandlordFieldTagsExpand;
+
+        function buildLandlordFieldCardMarkup(i) {
+            const plant = player.landlord.fields[i];
+            const isLocked = !!player.landlord.lockedFields[i];
+            const tier = Number(player.landlord.fieldTiers[i]) || 0;
+            const tierName = LANDLORD_FIELD_TIER_NAMES[tier] || '普通地';
+            let tierUpgradeRow = '';
+            if (tier < LANDLORD_FIELD_TIER_MAX) {
+                const cost = LANDLORD_TIER_UPGRADE_COST[tier];
+                const enough = cost && (player.landlord.bars[cost.barKey] || 0) >= cost.amount;
+                tierUpgradeRow = '<div class="lf-upgrade"><button type="button" class="landlord-tier-upgrade-btn landlord-tier-next-' + (tier + 1) + '" ' +
+                    (enough ? '' : 'disabled ') +
+                    'onclick="upgradeLandlordFieldTier(' + i + ')">升级 ' + LANDLORD_FIELD_TIER_NAMES[tier + 1] +
+                    '<span class="lf-upgrade-cost">' + cost.amount + cost.label + '</span></button></div>';
+            } else {
+                tierUpgradeRow = '<div class="lf-upgrade lf-upgrade--max">已满级 · 无上土地</div>';
+            }
+
+            const className = 'landlord-field lf-card landlord-field-tier-' + tier +
+                (!plant ? ' empty' : '') +
+                (isLocked ? ' locked' : '') +
+                (plant && plant.isMature ? ' is-mature' : '') +
+                (plant && !plant.isMature ? ' is-growing' : '');
+
+            const lockBtn = '<button type="button" class="landlord-lock-button lf-lock ' + (isLocked ? 'active' : '') + '" ' +
+                'onclick="toggleFieldLock(' + i + ')" title="' + (isLocked ? '解锁田地' : '锁定田地') + '">' +
+                (isLocked ? '🔓' : '🔒') + '</button>';
+
+            const headHtml =
+                '<div class="lf-head">' +
+                    '<div class="lf-head-left">' +
+                        '<span class="lf-plot">#' + (i + 1) + '</span>' +
+                        '<span class="lf-tier landlord-field-tier-label">' + tierName + '</span>' +
+                    '</div>' +
+                    lockBtn +
+                '</div>';
+
+            const fxLayers = tier >= 1
+                ? (
+                    '<div class="lf-veil" aria-hidden="true"></div>' +
+                    '<div class="lf-shine" aria-hidden="true"></div>' +
+                    '<div class="lf-shine lf-shine--lag" aria-hidden="true"></div>' +
+                    '<div class="lf-sparks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>' +
+                    '<div class="lf-rim" aria-hidden="true"></div>'
+                )
+                : '';
+
+            let html;
+            if (!plant) {
+                html =
+                    fxLayers +
+                    (tier >= 1 ? '<div class="lf-leaf" aria-hidden="true"></div>' : '') +
+                    headHtml +
+                    '<div class="lf-empty-body">' +
+                        '<div class="lf-seed" aria-hidden="true"><span></span></div>' +
+                        '<div class="lf-empty-mark">空闲地块</div>' +
+                        '<p class="lf-empty-hint">播下一颗种子，静候生长</p>' +
+                        '<button type="button" class="landlord-plant-button lf-btn-plant" onclick="selectLandlordSeedForPlanting(' + i + ')">种植</button>' +
+                    '</div>' +
+                    tierUpgradeRow;
+            } else {
+                const timeLeft = plant.isMature ? 0 :
+                    Math.max(0, Math.ceil(plant.growTime - (Date.now() - plant.plantedAt) / (1000 * 60)));
+                const progress = plant.isMature ? 100 :
+                    Math.min(100, Math.floor(((Date.now() - plant.plantedAt) / (1000 * 60)) / plant.growTime * 100));
+                const statusChip = plant.isMature
+                    ? '<span class="lf-chip lf-chip--ready">可收获</span>'
+                    : '<span class="lf-chip lf-chip--grow">成长 ' + timeLeft + ' 分</span>';
+                const lockChip = isLocked ? '<span class="lf-chip lf-chip--lock">已锁定</span>' : '';
+                const weightChip = '<span class="lf-chip lf-chip--weight">' + plant.weight.toFixed(2) + ' kg</span>';
+                const tagsHtml = buildLandlordFieldTagsHtml(plant, i);
+                const progressHtml = plant.isMature
+                    ? '<div class="lf-progress lf-progress--ready" title="已成熟"><div class="lf-progress-fill" style="width:100%"></div><span class="lf-progress-label">成熟可收</span></div>'
+                    : '<div class="lf-progress" title="成长进度 ' + progress + '%">' +
+                        '<div class="lf-progress-fill" style="width:' + progress + '%"></div>' +
+                        '<span class="lf-progress-label">' + progress + '%</span>' +
+                      '</div>';
+
+                html =
+                    fxLayers +
+                    headHtml +
+                    '<div class="lf-hero">' +
+                        '<div class="lf-crop plant-name">' + getLandlordGeneVariantLabelHtml(plant.type) + '</div>' +
+                        '<div class="lf-status-row">' + statusChip + weightChip + lockChip + '</div>' +
+                    '</div>' +
+                    '<div class="lf-panel">' +
+                        progressHtml +
+                        tagsHtml +
+                        '<div class="lf-actions landlord-field-actions">' +
+                            (plant.isMature
+                                ? '<button type="button" class="landlord-harvest-button lf-btn" onclick="harvestLandlordPlant(' + i + ')">收获</button>'
+                                : '<button type="button" class="landlord-growth-button lf-btn lf-btn--muted" disabled>成长中</button>') +
+                            '<button type="button" class="landlord-item-button lf-btn" onclick="selectLandlordItemForUsing(' + i + ')">道具</button>' +
+                            '<button type="button" class="landlord-remove-button lf-btn lf-btn--danger" onclick="removeLandlordPlant(' + i + ')">铲除</button>' +
+                        '</div>' +
+                    '</div>' +
+                    tierUpgradeRow;
+            }
+            return { className: className, html: html };
+        }
+
+        function applyLandlordFieldCard(fieldDiv, i) {
+            if (!fieldDiv) return;
+            const built = buildLandlordFieldCardMarkup(i);
+            fieldDiv.className = built.className;
+            fieldDiv.setAttribute('data-field-index', String(i));
+            fieldDiv.innerHTML = built.html;
+        }
+
         // 渲染田地
         function renderLandlordFields() {
     const fieldsContainer = document.getElementById('landlordFieldsContainer');
@@ -303,121 +511,8 @@
     fieldsContainer.innerHTML = '';
     
     for (let i = 0; i < player.landlord.unlockedFields; i++) {
-        const plant = player.landlord.fields[i];
-        const isLocked = player.landlord.lockedFields[i];
-        const tier = Number(player.landlord.fieldTiers[i]) || 0;
-        let tierUpgradeRow = '';
-        if (tier < 4) {
-            const cost = LANDLORD_TIER_UPGRADE_COST[tier];
-            const enough = (player.landlord.bars[cost.barKey] || 0) >= cost.amount;
-            tierUpgradeRow = '<div class="landlord-field-upgrade-row"><button type="button" class="landlord-tier-upgrade-btn landlord-tier-next-' + (tier + 1) + '" ' +
-                (enough ? '' : 'disabled ') +
-                'onclick="upgradeLandlordFieldTier(' + i + ')">升级→' + LANDLORD_FIELD_TIER_NAMES[tier + 1] +
-                '（' + cost.amount + cost.label + '）</button></div>';
-        } else {
-            tierUpgradeRow = '<div class="landlord-field-tier-max">已满级·流光土地</div>';
-        }
-        const tierLabel = '<div class="landlord-field-tier-label">' + LANDLORD_FIELD_TIER_NAMES[tier] + '</div>';
         const fieldDiv = document.createElement('div');
-        fieldDiv.className = 'landlord-field landlord-field-tier-' + tier + ' ' + (!plant ? 'empty' : '') + ' ' + (isLocked ? 'locked' : '');
-        
-        if (!plant) {
-            fieldDiv.innerHTML = `
-                <div class="landlord-field-header">
-                    <div class="landlord-field-info">
-                        <div class="landlord-field-number">田地 ${i + 1}</div>
-                        ${tierLabel}
-                        <div class="landlord-field-status">空闲</div>
-                    </div>
-                    <button class="landlord-lock-button ${isLocked ? 'active' : ''}" 
-                            onclick="toggleFieldLock(${i})" 
-                            title="${isLocked ? '解锁田地' : '锁定田地'}">
-                        ${isLocked ? '🔓' : '🔒'}
-                    </button>
-                </div>
-                ${tierUpgradeRow}
-                <div class="landlord-empty-content">
-                    <div style="font-size: 3em; color: rgba(0,0,0,0.1); margin: 20px 0;">+</div>
-                    <button class="landlord-plant-button" onclick="selectLandlordSeedForPlanting(${i})">种植</button>
-                </div>
-            `;
-        } else {
-            const timeLeft = plant.isMature ? 0 : 
-                Math.max(0, Math.ceil(plant.growTime - (Date.now() - plant.plantedAt) / (1000 * 60)));
-            
-            const progress = plant.isMature ? 100 : 
-                Math.min(100, Math.floor(((Date.now() - plant.plantedAt) / (1000 * 60)) / plant.growTime * 100));
-            
-            // 突变标签
-            let mutationTags = '';
-            
-            plant.mutations.forEach(mutation => {
-                const colorClass = getLandlordMutationColorClass(mutation);
-                mutationTags += `<span class="landlord-mutation-tag ${colorClass}">${mutation}</span>`;
-            });
-            
-            plant.weatherMutations.forEach(mutation => {
-                const colorClass = getLandlordMutationColorClass(mutation);
-                mutationTags += `<span class="landlord-mutation-tag ${colorClass}">${mutation}</span>`;
-            });
-            
-                    if (plant.specialMutation) {
-                const specialName = specialMutations[getLandlordSeedBaseName(plant.type)] || '特殊突变';
-                mutationTags += `<span class="landlord-mutation-tag landlord-mutation-rainbow">${specialName}</span>`;
-            }
-            
-            fieldDiv.innerHTML = `
-                <div class="landlord-field-header">
-                    <div class="landlord-field-info">
-                        <div class="landlord-field-number">田地 ${i + 1}</div>
-                        ${tierLabel}
-                        <div class="landlord-field-status">
-                            <span class="plant-name">${getLandlordGeneVariantLabelHtml(plant.type)}</span>
-                            ${plant.isMature ? '<span class="mature-badge">已成熟</span>' : ''}
-                            ${isLocked ? '<span class="lock-badge">已锁定</span>' : ''}
-                        </div>
-                    </div>
-                    <button class="landlord-lock-button ${isLocked ? 'active' : ''}" 
-                            onclick="toggleFieldLock(${i})" 
-                            title="${isLocked ? '解锁田地' : '锁定田地'}">
-                        ${isLocked ? '🔓' : '🔒'}
-                    </button>
-                </div>
-                ${tierUpgradeRow}
-                <div class="landlord-plant-details">
-                    <div class="landlord-plant-info">
-                        <div class="plant-weight">重量: <span>${plant.weight.toFixed(2)}kg</span></div>
-                        <div class="plant-growth">
-                            ${plant.isMature ? 
-                                '<span style="color: #27ae60;">✓ 可收获</span>' : 
-                                `<span style="color: #f39c12;">成长中... ${timeLeft}分钟</span>`
-                            }
-                        </div>
-                        ${mutationTags ? `<div class="landlord-mutations-list">${mutationTags}</div>` : ''}
-                    </div>
-                    
-                    ${!plant.isMature ? `
-                        <div class="landlord-progress-bar">
-                            <div class="landlord-progress-fill" style="width: ${progress}%"></div>
-                        </div>
-                    ` : ''}
-                    
-                    <div class="landlord-field-actions">
-                        <div class="landlord-action-row">
-                            ${plant.isMature ? 
-                                `<button class="landlord-harvest-button" onclick="harvestLandlordPlant(${i})">收获</button>` : 
-                                `<button class="landlord-growth-button" disabled>${progress}%</button>`
-                            }
-                            <button class="landlord-remove-button" onclick="removeLandlordPlant(${i})">铲除</button>
-                        </div>
-                        <div class="landlord-action-row">
-                            <button class="landlord-item-button" onclick="selectLandlordItemForUsing(${i})">使用道具</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
+        applyLandlordFieldCard(fieldDiv, i);
         fieldsContainer.appendChild(fieldDiv);
     }
             
@@ -445,16 +540,18 @@
             
             if (unlockCost > 0) {
                 unlockSection.innerHTML = `
-                    <h3>解锁更多田地</h3>
-                    <p>解锁${player.landlord.unlockedFields + 1}-${player.landlord.unlockedFields + 5}号田地</p>
-                    <p>需要: ${formatNumber(unlockCost)} 地主币</p>
-                    <button class="landlord-unlock-button" ${player.landlord.coins >= unlockCost ? '' : 'disabled'} 
-                            onclick="unlockLandlordField()">
-                        ${player.landlord.coins >= unlockCost ? '解锁' : '货币不足'}
-                    </button>
+                    <div class="lf-unlock-card">
+                        <div class="lf-unlock-title">拓荒新地</div>
+                        <div class="lf-unlock-desc">解锁第 ${player.landlord.unlockedFields + 1}-${player.landlord.unlockedFields + 5} 号田地</div>
+                        <div class="lf-unlock-cost">需要 <strong>${formatNumber(unlockCost)}</strong> 地主币</div>
+                        <button class="landlord-unlock-button lf-unlock-btn" ${player.landlord.coins >= unlockCost ? '' : 'disabled'}
+                                onclick="unlockLandlordField()">
+                            ${player.landlord.coins >= unlockCost ? '解锁五块田地' : '货币不足'}
+                        </button>
+                    </div>
                 `;
             } else {
-                unlockSection.innerHTML = '<p>所有田地已解锁！</p>';
+                unlockSection.innerHTML = '<div class="lf-unlock-card lf-unlock-card--done">全部田地已解锁</div>';
             }
         }
 
@@ -528,7 +625,7 @@
             <div>
                 <div style="font-weight: bold; color: #856404;">🎯 抽奖提示</div>
                 <div style="font-size: 0.9em; color: #8d6a00; margin-top: 5px;">
-                    出售带有【银、金、水晶、流光】词条的果实可获得抽奖机会
+                    出售带有【银/金/水晶/流光/神辉/太初/无上】基础词条的果实可获得抽奖机会
                 </div>
                 <div style="font-size: 0.8em; color: #8d6a00; margin-top: 3px;">
                     当前可获抽奖次数: <span style="font-weight: bold;">${eligibleCount}</span> 次
@@ -717,6 +814,16 @@
             if (bd) bd.textContent = formatNumber(player.landlord.bars.diamond || 0);
             var bf = document.getElementById('landlordBarFlow');
             if (bf) bf.textContent = formatNumber(player.landlord.bars.flow || 0);
+            var bdv = document.getElementById('landlordBarDivine');
+            if (bdv) bdv.textContent = formatNumber(player.landlord.bars.divine || 0);
+            var bp = document.getElementById('landlordBarPrimal');
+            if (bp) bp.textContent = formatNumber(player.landlord.bars.primal || 0);
+            var bsp = document.getElementById('landlordBarSupreme');
+            if (bsp) bsp.textContent = formatNumber(player.landlord.bars.supreme || 0);
+            var ldc = document.getElementById('landlordLotteryDrawCountStat');
+            if (ldc && player.landlord.lottery) {
+                ldc.textContent = formatNumber(player.landlord.lottery.drawCount || 0);
+            }
              // 计算种子和果实数量
             let seedCount = 0;
             for (const seed in player.landlord.seedStorage) {
@@ -789,12 +896,16 @@
 
         // 获取突变颜色类
         function getLandlordMutationColorClass(mutation) {
+            // 超彩基础词 / 顶级土地 / 超彩天气（比彩色更炫）
+            if (["至道", "无上", "无上土"].includes(mutation)) return "landlord-mutation-genesis";
+            if (["圣劫", "太初", "太初土"].includes(mutation)) return "landlord-mutation-stellar";
+            if (["仙霓", "神辉", "神辉土"].includes(mutation)) return "landlord-mutation-aurora";
             // 基础突变颜色
             if (["银", "银土", "落雷", "冰冻", "陶化"].includes(mutation)) return "landlord-mutation-green";
             if (["金", "金土", "荧光", "彩虹"].includes(mutation)) return "landlord-mutation-blue";
-            if (["星环", "瓷化", "亮晶晶"].includes(mutation)) return "landlord-mutation-purple";
-            if (["水晶", "钻石土", "红月"].includes(mutation)) return "landlord-mutation-gold";
-            if (["流光", "流光土", "霓虹"].includes(mutation)) return "landlord-mutation-rainbow";
+            if (["星环", "瓷化", "亮晶晶", "星陨", "幻潮", "雷狱", "霜龙"].includes(mutation)) return "landlord-mutation-purple";
+            if (["水晶", "钻石土", "红月", "日曜", "月蚀", "焚天", "苍穹裂"].includes(mutation)) return "landlord-mutation-gold";
+            if (["流光", "流光土", "霓虹", "虚空潮", "神罚雷", "混沌雨", "天道虹", "创世霞", "永恒极光"].includes(mutation)) return "landlord-mutation-rainbow";
             
             // 天气突变颜色
             if (weatherMutationColors[mutation]) {
@@ -931,53 +1042,34 @@ function renderGeneSynthesisInterface(container) {
     const selection = normalizeGeneSynthesisSelection();
 
     const infoDiv = document.createElement('div');
-    infoDiv.style.background = '#fff8e8';
-    infoDiv.style.padding = '12px 14px';
-    infoDiv.style.borderRadius = '8px';
-    infoDiv.style.marginBottom = '14px';
-    infoDiv.style.borderLeft = '4px solid #e67e22';
+    infoDiv.className = 'landlord-synth-info-box landlord-synth-info-box--gene';
     infoDiv.innerHTML = `
-        <h4 style="margin: 0 0 6px 0; color: #d35400; font-size: 1.02em;">基因合成规则</h4>
-        <div style="font-size: 0.9em; color: #5d6d7e; line-height: 1.5;">
-            <div>• 选 2 个种子各耗 1 个，按价区间随机产出</div>
-            <div>• 40% 变异：彩光80% / 炫彩14% / 琉璃5% / 琥珀1%</div>
-            <div>• 点击材料框弹出列表选种</div>
-        </div>
+        <h4>基因合成规则</h4>
+        <ul>
+            <li>选 2 个种子各耗 1 个，按价区间随机产出</li>
+            <li>40% 变异：彩光80% / 炫彩14% / 琉璃5% / 琥珀1%</li>
+            <li>点击材料框弹出列表选种</li>
+        </ul>
     `;
     container.appendChild(infoDiv);
 
     const slotsDiv = document.createElement('div');
-    slotsDiv.style.display = 'flex';
-    slotsDiv.style.gap = '14px';
-    slotsDiv.style.marginBottom = '14px';
-    slotsDiv.style.flexWrap = 'wrap';
+    slotsDiv.className = 'landlord-synth-gene-slots';
     for (let i = 0; i < 2; i++) {
         const slot = document.createElement('div');
-        slot.className = 'gene-synthesis-slot';
-        slot.style.flex = '1';
-        slot.style.minWidth = '180px';
-        slot.style.minHeight = '140px';
-        slot.style.padding = '22px';
-        slot.style.border = '2px dashed ' + (selection[i] ? '#e67e22' : '#c5ced6');
-        slot.style.borderRadius = '12px';
-        slot.style.textAlign = 'center';
-        slot.style.background = selection[i] ? '#fffaf0' : '#f8f9fa';
-        slot.style.cursor = 'pointer';
-        slot.style.display = 'flex';
-        slot.style.flexDirection = 'column';
-        slot.style.justifyContent = 'center';
+        slot.className = 'landlord-synth-gene-slot' + (selection[i] ? ' is-filled' : '');
         slot.title = selection[i] ? '点击更换种子' : '点击选择种子';
         if (selection[i]) {
             slot.innerHTML = `
-                <div style="font-size: 0.88em; color: #7f8c8d; margin-bottom: 6px;">材料 ${i + 1}</div>
-                <div style="font-weight: 700; margin-bottom: 10px; font-size: 1.06em;">${getLandlordGeneVariantLabelHtml(selection[i])}</div>
-                <button type="button" data-gene-remove="${i}" style="background:#e74c3c;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.86em;">移除</button>
+                <div class="landlord-synth-gene-slot-label">材料 ${i + 1}</div>
+                <div class="landlord-synth-gene-slot-name">${getLandlordGeneVariantLabelHtml(selection[i])}</div>
+                <button type="button" class="landlord-synth-btn landlord-synth-btn--ghost" data-gene-remove="${i}">移除</button>
             `;
         } else {
             slot.innerHTML = `
-                <div style="font-size: 0.88em; color: #95a5a6; margin-bottom: 6px;">材料 ${i + 1}</div>
-                <div style="color: #c5ced6; font-size: 1.7em; line-height: 1;">+</div>
-                <div style="font-size: 0.88em; color: #95a5a6; margin-top: 6px;">点击选择种子</div>
+                <div class="landlord-synth-gene-slot-label">材料 ${i + 1}</div>
+                <div class="landlord-synth-gene-slot-plus">+</div>
+                <div class="landlord-synth-gene-slot-hint">点击选择种子</div>
             `;
         }
         slot.addEventListener('click', (function (slotIndex) {
@@ -994,118 +1086,110 @@ function renderGeneSynthesisInterface(container) {
     }
     container.appendChild(slotsDiv);
 
-    const actionDiv = document.createElement('div');
-    actionDiv.style.display = 'flex';
-    actionDiv.style.justifyContent = 'space-between';
-    actionDiv.style.alignItems = 'center';
-    actionDiv.style.marginBottom = '14px';
-    actionDiv.style.gap = '10px';
-    actionDiv.style.flexWrap = 'wrap';
     const filledCount = (selection[0] ? 1 : 0) + (selection[1] ? 1 : 0);
     const canSynth = filledCount === 2;
     const batchTimes = canSynth ? getGeneSynthesisBatchTimes(selection[0], selection[1]) : 0;
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'landlord-synth-gene-toolbar';
+    const countDiv = document.createElement('div');
+    countDiv.className = 'landlord-synth-gene-count';
+    countDiv.innerHTML = '已选 <strong>' + filledCount + '</strong> / 2' +
+        (batchTimes > 1 ? ' · 可连合 <strong>' + batchTimes + '</strong> 次' : '');
+    const actionRight = document.createElement('div');
+    actionRight.className = 'landlord-synth-gene-actions';
     const clearBtn = document.createElement('button');
     clearBtn.type = 'button';
+    clearBtn.className = 'landlord-synth-btn landlord-synth-btn--ghost';
     clearBtn.textContent = '清空';
-    clearBtn.style.cssText = 'background:#95a5a6;color:white;border:none;padding:9px 14px;border-radius:8px;cursor:pointer;font-size:0.9em;';
     clearBtn.addEventListener('click', function () { clearGeneSynthesisSelection(); });
     const synthBtn = document.createElement('button');
     synthBtn.type = 'button';
+    synthBtn.className = 'landlord-synth-btn ' + (canSynth ? 'landlord-synth-btn--warning' : 'landlord-synth-btn--muted');
     synthBtn.textContent = canSynth ? '基因合成' : '需选满2个';
     synthBtn.disabled = !canSynth;
-    synthBtn.style.cssText = 'background:' + (canSynth ? '#e67e22' : '#bdc3c7') + ';color:white;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.9em;min-width:110px;';
     synthBtn.addEventListener('click', function () { executeGeneSynthesis(); });
     const batchBtn = document.createElement('button');
     batchBtn.type = 'button';
+    batchBtn.className = 'landlord-synth-btn ' + (batchTimes > 0 ? 'landlord-synth-btn--warning' : 'landlord-synth-btn--muted');
     batchBtn.textContent = batchTimes > 0 ? ('一键合成×' + batchTimes) : '一键合成';
     batchBtn.disabled = batchTimes < 1;
     batchBtn.title = batchTimes > 0 ? '按当前材料连续合成，直到数量不足' : '需选满2个且库存足够';
-    batchBtn.style.cssText = 'background:' + (batchTimes > 0 ? '#d35400' : '#bdc3c7') + ';color:white;border:none;padding:9px 16px;border-radius:8px;cursor:' + (batchTimes > 0 ? 'pointer' : 'not-allowed') + ';font-weight:700;font-size:0.9em;min-width:120px;';
     batchBtn.addEventListener('click', function () { executeGeneSynthesisBatch(); });
-    const countDiv = document.createElement('div');
-    countDiv.style.cssText = 'font-size:0.95em;color:#7f8c8d;';
-    countDiv.innerHTML = '已选 <strong style="color:#e67e22;">' + filledCount + '</strong> / 2' +
-        (batchTimes > 1 ? ' · 可连合 <strong style="color:#d35400;">' + batchTimes + '</strong> 次' : '');
-    const actionRight = document.createElement('div');
-    actionRight.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
     actionRight.appendChild(clearBtn);
     actionRight.appendChild(synthBtn);
     actionRight.appendChild(batchBtn);
-    actionDiv.appendChild(countDiv);
-    actionDiv.appendChild(actionRight);
-    container.appendChild(actionDiv);
+    toolbar.appendChild(countDiv);
+    toolbar.appendChild(actionRight);
+    container.appendChild(toolbar);
 
-    // 一键最优放入
     const autoDiv = document.createElement('div');
-    autoDiv.style.background = '#fff8e6';
-    autoDiv.style.padding = '14px 16px';
-    autoDiv.style.borderRadius = '10px';
-    autoDiv.style.marginBottom = '12px';
-    autoDiv.style.border = '1px solid #f0e0b8';
-    const autoTitle = document.createElement('div');
-    autoTitle.style.marginBottom = '10px';
-    autoTitle.innerHTML = '<div style="font-weight:700;color:#856404;font-size:1em;">选择目标 · 一键最优放入</div><div style="font-size:0.86em;color:#9a7b2e;margin-top:4px;">点目标自动放入成功率最高的 2 个材料</div>';
-    autoDiv.appendChild(autoTitle);
+    autoDiv.className = 'landlord-synth-auto-section';
+    autoDiv.innerHTML = '<div class="landlord-synth-action-bar-title">选择目标 · 一键最优放入</div><div class="landlord-synth-action-bar-desc">点击卡片自动放入成功率最高的 2 个材料</div>';
     try {
         const autoTargets = typeof listGeneSynthesisAutoTargets === 'function' ? listGeneSynthesisAutoTargets() : [];
         if (!autoTargets.length) {
             const emptyAuto = document.createElement('div');
-            emptyAuto.style.cssText = 'text-align:center;padding:14px;color:#8d6a00;font-size:0.9em;';
+            emptyAuto.className = 'landlord-synth-empty';
+            emptyAuto.style.padding = '24px';
             emptyAuto.textContent = '当前仓库暂无可合成目标';
             autoDiv.appendChild(emptyAuto);
         } else {
             const autoList = document.createElement('div');
-            autoList.style.cssText = 'display:flex;flex-direction:column;gap:8px;max-height:420px;overflow-y:auto;';
+            autoList.className = 'landlord-synth-auto-grid';
             for (let ti = 0; ti < autoTargets.length; ti++) {
                 const t = autoTargets[ti];
-                const row = document.createElement('div');
-                row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fffaf0;border:1px solid #f0dcc0;border-radius:8px;padding:12px 14px;';
-                const pairLabel = (t.pair || []).map(function (p) {
-                    return typeof getLandlordGeneVariantLabelHtml === 'function' ? getLandlordGeneVariantLabelHtml(p) : String(p);
-                }).join(' + ');
-                const leftWrap = document.createElement('div');
-                leftWrap.style.cssText = 'display:flex;align-items:center;gap:10px;min-width:0;';
-                leftWrap.innerHTML = '<div style="min-width:30px;height:30px;border-radius:50%;background:#e67e22;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.86em;flex-shrink:0;">' + t.chainIndex + '</div>';
-                const textWrap = document.createElement('div');
-                textWrap.style.minWidth = '0';
-                const nameEl = document.createElement('div');
-                nameEl.style.cssText = 'font-weight:700;color:#2c3e50;font-size:0.98em;';
-                nameEl.textContent = t.base;
-                const metaEl = document.createElement('div');
-                metaEl.style.cssText = 'font-size:0.84em;color:#9a7b2e;margin-top:2px;';
-                metaEl.innerHTML = pairLabel + ' · 约 ' + t.chanceText;
-                textWrap.appendChild(nameEl);
-                textWrap.appendChild(metaEl);
-                leftWrap.appendChild(textWrap);
-                row.appendChild(leftWrap);
+                const card = document.createElement('div');
+                card.className = 'landlord-synth-auto-card';
+                const pair = t.pair || [];
+                const matA = pair[0] ? (typeof getLandlordGeneVariantLabelHtml === 'function' ? getLandlordGeneVariantLabelHtml(pair[0]) : String(pair[0])) : '-';
+                const matB = pair[1] ? (typeof getLandlordGeneVariantLabelHtml === 'function' ? getLandlordGeneVariantLabelHtml(pair[1]) : String(pair[1])) : '-';
+                card.innerHTML =
+                    '<div class="landlord-synth-auto-card-top">' +
+                        '<div class="landlord-synth-auto-card-index">' + t.chainIndex + '</div>' +
+                        '<div class="landlord-synth-auto-card-chance">约 ' + t.chanceText + '</div>' +
+                    '</div>' +
+                    '<div class="landlord-synth-auto-card-target">' + t.base + '</div>' +
+                    '<div class="landlord-synth-auto-card-materials">' +
+                        '<div class="landlord-synth-auto-card-material">' + matA + '</div>' +
+                        '<div class="landlord-synth-auto-card-plus">+</div>' +
+                        '<div class="landlord-synth-auto-card-material">' + matB + '</div>' +
+                    '</div>' +
+                    '<div class="landlord-synth-auto-card-meta">' + (t.candidateCount ? ('候选 ' + t.candidateCount + ' 种 · ') : '') + '价值 ' + formatNumber(t.price || 0) + '</div>';
                 const fillBtn = document.createElement('button');
                 fillBtn.type = 'button';
-                fillBtn.textContent = '放入';
-                fillBtn.style.cssText = 'flex-shrink:0;background:#f39c12;color:white;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:700;font-size:0.88em;';
+                fillBtn.className = 'landlord-synth-auto-card-btn';
+                fillBtn.textContent = '一键放入';
                 fillBtn.addEventListener('click', (function (baseName) {
-                    return function () { autoFillGeneSynthesisForTarget(baseName); };
+                    return function (e) {
+                        e.stopPropagation();
+                        autoFillGeneSynthesisForTarget(baseName);
+                    };
                 })(t.base));
-                row.appendChild(fillBtn);
-                autoList.appendChild(row);
+                card.appendChild(fillBtn);
+                card.addEventListener('click', (function (baseName) {
+                    return function (e) {
+                        if (e.target.closest('button')) return;
+                        autoFillGeneSynthesisForTarget(baseName);
+                    };
+                })(t.base));
+                autoList.appendChild(card);
             }
             autoDiv.appendChild(autoList);
         }
     } catch (autoErr) {
         console.warn('gene auto targets render failed', autoErr);
         const errDiv = document.createElement('div');
-        errDiv.style.cssText = 'color:#c0392b;font-size:0.9em;';
+        errDiv.style.cssText = 'color:#c0392b;font-size:0.92em;margin-top:10px;';
         errDiv.textContent = '一键列表加载失败，可点材料框手动选种。';
         autoDiv.appendChild(errDiv);
     }
     container.appendChild(autoDiv);
 
     const statsDiv = document.createElement('div');
-    statsDiv.style.background = '#f8f9fa';
-    statsDiv.style.padding = '10px 12px';
-    statsDiv.style.borderRadius = '8px';
-    statsDiv.style.marginTop = '8px';
-    statsDiv.style.textAlign = 'center';
-    statsDiv.innerHTML = '<div style="font-size: 0.9em; color: #7f8c8d;">基因合成次数: <strong style="color:#e67e22;">' + (player.landlord.stats.geneSynthesisCount || 0) + '</strong></div>';
+    statsDiv.className = 'landlord-synth-stats-bar';
+    statsDiv.innerHTML =
+        '<div><div class="landlord-synth-stat-value landlord-synth-stat-value--orange">' + (player.landlord.stats.geneSynthesisCount || 0) + '</div><div class="landlord-synth-stat-label">基因合成次数</div></div>';
     container.appendChild(statsDiv);
 }
 
@@ -1179,7 +1263,6 @@ function openLandlordSynthesisModal(preferredMode) {
         showLandlordNotification('合成弹窗未找到！', 'error');
         return;
     }
-    modal.style.display = 'flex';
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
     syncLandlordSynthesisModalTabs();
@@ -1203,7 +1286,6 @@ function closeLandlordSynthesisModal() {
     var modal = document.getElementById('landlordSynthesisModal');
     if (modal) {
         modal.classList.remove('is-open');
-        modal.style.display = 'none';
         modal.setAttribute('aria-hidden', 'true');
     }
     if (player && player.landlord) {
@@ -1240,18 +1322,12 @@ function populateGeneSynthesisSeedPickerList(slotIndex) {
         btn.type = 'button';
         btn.className = 'landlord-gene-seed-pick-item';
         btn.disabled = !canPick;
-        if (!canPick) {
-            btn.style.opacity = '0.5';
-            btn.style.cursor = 'not-allowed';
-        }
         btn.innerHTML =
-            '<div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">' +
-                '<div style="min-width:28px;height:28px;border-radius:50%;background:#e67e22;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85em;flex-shrink:0;">' + (chainIndex > 0 ? chainIndex : '-') + '</div>' +
-                '<div class="landlord-gene-seed-pick-item-main">' +
-                    '<div class="landlord-gene-seed-pick-item-name">' + getLandlordGeneVariantLabelHtml(seedName) + '</div>' +
-                    '<div class="landlord-gene-seed-pick-item-meta">价格 ' + formatNumber(seedProps ? seedProps.price : 0) +
-                        (selectedCount > 0 ? ' · 已选 ' + selectedCount : '') + '</div>' +
-                '</div>' +
+            '<div class="landlord-gene-seed-pick-item-index">' + (chainIndex > 0 ? chainIndex : '-') + '</div>' +
+            '<div class="landlord-gene-seed-pick-item-main">' +
+                '<div class="landlord-gene-seed-pick-item-name">' + getLandlordGeneVariantLabelHtml(seedName) + '</div>' +
+                '<div class="landlord-gene-seed-pick-item-meta">价格 ' + formatNumber(seedProps ? seedProps.price : 0) +
+                    (selectedCount > 0 ? ' · 已选 ' + selectedCount : '') + '</div>' +
             '</div>' +
             '<div class="landlord-gene-seed-pick-item-qty">×' + count + '</div>';
         if (canPick) {
@@ -1263,8 +1339,8 @@ function populateGeneSynthesisSeedPickerList(slotIndex) {
     }
     if (!hasSeeds) {
         var empty = document.createElement('div');
-        empty.style.cssText = 'text-align:center;padding:28px 12px;color:#95a5a6;font-size:0.85em;';
-        empty.textContent = '种子仓库为空';
+        empty.className = 'landlord-gene-seed-picker-empty';
+        empty.innerHTML = '<div class="landlord-synth-empty-icon">🌱</div>种子仓库为空';
         list.appendChild(empty);
     }
 }
@@ -1283,7 +1359,6 @@ function openGeneSynthesisSeedPicker(slotIndex) {
     if (title) title.textContent = '选择材料 ' + (idx + 1);
     populateGeneSynthesisSeedPickerList(idx);
     if (picker) {
-        picker.style.display = 'flex';
         picker.classList.add('is-open');
         picker.setAttribute('aria-hidden', 'false');
     }
@@ -1293,7 +1368,6 @@ function closeGeneSynthesisSeedPicker() {
     var picker = document.getElementById('landlordGeneSeedPicker');
     if (picker) {
         picker.classList.remove('is-open');
-        picker.style.display = 'none';
         picker.setAttribute('aria-hidden', 'true');
     }
     if (player && player.landlord) {
@@ -1430,7 +1504,6 @@ function executeGeneSynthesisBatch() {
 function openGeneBatchInfoModal() {
     var modal = document.getElementById('landlordGeneBatchInfoModal');
     if (!modal) return null;
-    modal.style.display = 'flex';
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
     return modal;
@@ -1440,7 +1513,6 @@ function closeGeneBatchInfoModal() {
     var modal = document.getElementById('landlordGeneBatchInfoModal');
     if (modal) {
         modal.classList.remove('is-open');
-        modal.style.display = 'none';
         modal.setAttribute('aria-hidden', 'true');
     }
     var footer = document.getElementById('landlordGeneBatchInfoFooter');
@@ -1481,7 +1553,7 @@ function openGeneBatchConfirmModal(seedA, seedB, planned) {
                 '<div class="landlord-gene-batch-info-row"><div class="landlord-gene-batch-info-row-name">材料2：' + labelBHtml + '</div><div class="landlord-gene-batch-info-row-qty">×' + stockB + '</div></div>' +
                 '<div class="landlord-gene-batch-info-row"><div class="landlord-gene-batch-info-row-name">每次消耗</div><div class="landlord-gene-batch-info-row-qty">' + (seedA === seedB ? '同种×2' : '各×1') + '</div></div>' +
             '</div>' +
-            '<div style="font-size:0.86em;color:#8a939c;line-height:1.45;">确认后将立即执行全部合成，结果会以弹窗汇总展示。</div>';
+            '<div class="landlord-gene-batch-info-hint">确认后将立即执行全部合成，结果会以弹窗汇总展示。</div>';
     }
     var footer = document.getElementById('landlordGeneBatchInfoFooter');
     if (footer) {
@@ -1635,158 +1707,103 @@ window.toggleSynthesisMode = toggleSynthesisMode;
 
 
 function renderSynthesisInterface(container) {
-    // 合成说明
     const infoDiv = document.createElement('div');
-    infoDiv.style.background = '#e8f4fd';
-    infoDiv.style.padding = '12px 14px';
-    infoDiv.style.borderRadius = '8px';
-    infoDiv.style.marginBottom = '14px';
-    infoDiv.style.borderLeft = '4px solid #3498db';
+    infoDiv.className = 'landlord-synth-info-box';
     infoDiv.innerHTML = `
-        <h4 style="margin: 0 0 6px 0; color: #2c3e50; font-size: 1.02em;">种子合成规则</h4>
-        <div style="font-size: 0.9em; color: #5d6d7e; line-height: 1.5;">
-            <div>• 3 个低级种子可合成 1 个高级种子</div>
-            <div>• 合成不可逆；神秘果为最高级，无法继续</div>
-        </div>
+        <h4>种子合成规则</h4>
+        <ul>
+            <li>3 个低级种子可合成 1 个高级种子</li>
+            <li>合成不可逆；神秘果为最高级，无法继续</li>
+        </ul>
     `;
     container.appendChild(infoDiv);
-    
-    // 合成统计
+
     const statsDiv = document.createElement('div');
-    statsDiv.style.background = '#f8f9fa';
-    statsDiv.style.padding = '12px 14px';
-    statsDiv.style.borderRadius = '8px';
-    statsDiv.style.marginBottom = '14px';
-    statsDiv.style.textAlign = 'center';
+    statsDiv.className = 'landlord-synth-stats-bar';
     statsDiv.innerHTML = `
-        <div style="font-weight: 700; color: #2c3e50; font-size: 0.98em;">合成统计</div>
-        <div style="display: flex; justify-content: space-around; margin-top: 10px;">
-            <div>
-                <div style="font-size: 1.28em; color: #e74c3c; font-weight:700;">${player.landlord.stats.synthesisCount || 0}</div>
-                <div style="font-size: 0.86em; color: #7f8c8d;">总合成次数</div>
-            </div>
-            <div>
-                <div style="font-size: 1.28em; color: #27ae60; font-weight:700;">${player.landlord.stats.seedsUpgraded || 0}</div>
-                <div style="font-size: 0.86em; color: #7f8c8d;">升级种子数</div>
-            </div>
+        <div>
+            <div class="landlord-synth-stat-value">${player.landlord.stats.synthesisCount || 0}</div>
+            <div class="landlord-synth-stat-label">总合成次数</div>
+        </div>
+        <div>
+            <div class="landlord-synth-stat-value landlord-synth-stat-value--green">${player.landlord.stats.seedsUpgraded || 0}</div>
+            <div class="landlord-synth-stat-label">升级种子数</div>
         </div>
     `;
     container.appendChild(statsDiv);
 
-    // 一键合成放在列表上方，避免长列表时要滚到底
     const autoSynthesisDiv = document.createElement('div');
-    autoSynthesisDiv.style.background = '#fff8e6';
-    autoSynthesisDiv.style.padding = '14px 16px';
-    autoSynthesisDiv.style.borderRadius = '8px';
-    autoSynthesisDiv.style.marginBottom = '14px';
-    autoSynthesisDiv.style.border = '1px solid #f0e0b8';
+    autoSynthesisDiv.className = 'landlord-synth-action-bar';
     autoSynthesisDiv.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
-            <div>
-                <div style="font-weight: 700; color: #856404; font-size: 1em;">一键合成</div>
-                <div style="font-size: 0.86em; color: #9a7b2e; margin-top: 4px;">
-                    自动合成所有可合成种子
-                </div>
-            </div>
-            <button onclick="autoSynthesizeAll()" class="auto-synthesis-button"
-                    style="background: #f39c12; color: white; border: none; 
-                           padding: 10px 18px; border-radius: 8px; cursor: pointer;
-                           font-weight: 700; font-size: 0.9em; flex-shrink:0;">
-                一键合成全部
-            </button>
+        <div>
+            <div class="landlord-synth-action-bar-title">一键合成</div>
+            <div class="landlord-synth-action-bar-desc">自动合成所有可合成种子</div>
         </div>
+        <button onclick="autoSynthesizeAll()" class="landlord-synth-btn landlord-synth-btn--warning">一键合成全部</button>
     `;
     container.appendChild(autoSynthesisDiv);
-    
-    // 合成列表
+
     const synthesisList = document.createElement('div');
-    synthesisList.className = 'synthesis-list';
-    
+    synthesisList.className = 'landlord-synth-linear-grid';
+
     let hasSynthesisOptions = false;
-    
+
     for (const seedName in seedSynthesisRules) {
         const rule = seedSynthesisRules[seedName];
-        if (!rule.nextLevel) continue; // 跳过最高级种子
-        
+        if (!rule.nextLevel) continue;
+
         const currentCount = player.landlord.seedStorage[seedName] || 0;
         const canSynthesize = currentCount >= rule.required;
         const nextSeedValue = seedProperties[rule.nextLevel] ? seedProperties[rule.nextLevel].price : 0;
         const currentSeedValue = seedProperties[seedName] ? seedProperties[seedName].price : 0;
         const valueIncrease = nextSeedValue - (currentSeedValue * rule.required);
-        
-        const synthesisItem = document.createElement('div');
-        synthesisItem.className = 'synthesis-item';
-        synthesisItem.style.background = canSynthesize ? '#f8fff8' : '#f8f9fa';
-        synthesisItem.style.border = canSynthesize ? '2px solid #27ae60' : '1px solid #e5e8eb';
-        synthesisItem.style.padding = '14px 16px';
-        synthesisItem.style.borderRadius = '10px';
-        synthesisItem.style.marginBottom = '10px';
-        synthesisItem.style.transition = 'all 0.2s';
-        
-        synthesisItem.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="flex: 1;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <div style="font-weight: bold; font-size: 1.1em;">${seedName} → ${rule.nextLevel}</div>
-                        <span style="background: ${canSynthesize ? '#27ae60' : '#95a5a6'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">
-                            ${canSynthesize ? '可合成' : '材料不足'}
-                        </span>
-                    </div>
-                    
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 8px;">
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <span style="font-weight: bold; color: #e74c3c;">${currentCount}</span>
-                            <span style="color: #7f8c8d;">/</span>
-                            <span style="font-weight: bold;">${rule.required}</span>
-                            <span style="color: #7f8c8d;">个${seedName}</span>
-                        </div>
-                        <div style="color: #7f8c8d;">→</div>
-                        <div style="font-weight: bold; color: #27ae60;">1个${rule.nextLevel}</div>
-                    </div>
-                    
-                    <div style="font-size: 0.8em; color: #7f8c8d;">
-                        ${rule.description}
-                        ${valueIncrease > 0 ? 
-                            `<span style="color: #27ae60;"> (价值提升: +${formatNumber(valueIncrease)})</span>` : 
-                            ''}
-                    </div>
-                </div>
-                
-                <div style="margin-left: 15px; display: flex; flex-direction: column; gap: 8px;">
-                    <button onclick="synthesizeSeed('${seedName}')" 
-                            ${canSynthesize ? '' : 'disabled'}
-                            class="synthesis-button"
-                            style="background: ${canSynthesize ? '#27ae60' : '#bdc3c7'}; 
-                                   color: white; border: none; padding: 8px 15px; 
-                                   border-radius: 5px; cursor: pointer; min-width: 80px;">
-                        ${canSynthesize ? '合成' : '材料不足'}
-                    </button>
-                    <button onclick="autoSynthesizeSeed('${seedName}')" 
-                            ${canSynthesize ? '' : 'disabled'}
-                            class="auto-synthesis-seed-button"
-                            style="background: ${canSynthesize ? '#f39c12' : '#bdc3c7'}; 
-                                   color: white; border: none; padding: 8px 15px; 
-                                   border-radius: 5px; cursor: pointer; min-width: 80px; font-weight: 700;">
-                        ${canSynthesize ? ('一键合成×' + Math.floor(currentCount / rule.required)) : '一键合成'}
-                    </button>
-                </div>
+        const batchCount = Math.floor(currentCount / rule.required);
+
+        const card = document.createElement('div');
+        card.className = 'landlord-synth-linear-card' + (canSynthesize ? ' is-ready' : '');
+
+        card.innerHTML = `
+            <div class="landlord-synth-linear-card-top">
+                <span class="landlord-synth-linear-card-badge${canSynthesize ? ' is-ready' : ''}">${canSynthesize ? '可合成' : '材料不足'}</span>
+            </div>
+            <div class="landlord-synth-linear-card-route">${seedName} → ${rule.nextLevel}</div>
+            <div class="landlord-synth-linear-card-formula">
+                <span class="landlord-synth-linear-card-from"><strong>${currentCount}</strong> / ${rule.required} 个${seedName}</span>
+                <span class="landlord-synth-linear-card-arrow">↓</span>
+                <span class="landlord-synth-linear-card-to">1 个${rule.nextLevel}</span>
+            </div>
+            <div class="landlord-synth-linear-card-desc">
+                ${rule.description}
+                ${valueIncrease > 0 ? '<span class="value-up">价值 +' + formatNumber(valueIncrease) + '</span>' : ''}
+            </div>
+            <div class="landlord-synth-linear-card-actions">
+                <button onclick="synthesizeSeed('${seedName}')"
+                        ${canSynthesize ? '' : 'disabled'}
+                        class="landlord-synth-btn ${canSynthesize ? 'landlord-synth-btn--primary' : 'landlord-synth-btn--muted'}">
+                    ${canSynthesize ? '合成' : '材料不足'}
+                </button>
+                <button onclick="autoSynthesizeSeed('${seedName}')"
+                        ${canSynthesize ? '' : 'disabled'}
+                        class="landlord-synth-btn ${canSynthesize ? 'landlord-synth-btn--warning' : 'landlord-synth-btn--muted'}">
+                    ${canSynthesize ? ('一键×' + batchCount) : '一键合成'}
+                </button>
             </div>
         `;
-        
-        synthesisList.appendChild(synthesisItem);
+
+        synthesisList.appendChild(card);
         hasSynthesisOptions = true;
     }
-    
+
     if (!hasSynthesisOptions) {
         synthesisList.innerHTML = `
-            <div style="text-align: center; padding: 40px; color: #7f8c8d;">
-                <div style="font-size: 3em; margin-bottom: 10px;">🌱</div>
+            <div class="landlord-synth-empty">
+                <div class="landlord-synth-empty-icon">🌱</div>
                 <div>暂无可合成的种子</div>
-                <div style="font-size: 0.9em; margin-top: 5px;">请先收集足够的低级种子</div>
+                <div style="font-size:0.85em;margin-top:6px;color:#95a5a6;">请先收集足够的低级种子</div>
             </div>
         `;
     }
-    
+
     container.appendChild(synthesisList);
 }
 function synthesizeSeed(seedName) {
@@ -1935,7 +1952,7 @@ function showSynthesisAnimation(fromSeed, toSeed) {
     animationContainer.style.top = '50%';
     animationContainer.style.left = '50%';
     animationContainer.style.transform = 'translate(-50%, -50%)';
-    animationContainer.style.zIndex = '1100';
+    animationContainer.style.zIndex = '1005';
     animationContainer.style.pointerEvents = 'none';
     
     animationContainer.innerHTML = `
@@ -1953,41 +1970,8 @@ function showSynthesisAnimation(fromSeed, toSeed) {
     }, 1000);
 }
 
-// 8. 添加合成相关CSS样式
+// 8. 添加合成相关CSS样式（动画与基因特效）
 const synthesisStyles = `
-    .synthesis-toggle-button:hover {
-        background: #8e44ad !important;
-        transform: translateY(-2px);
-    }
-    
-    .synthesis-button:hover:not(:disabled) {
-        background: #219653 !important;
-        transform: scale(1.05);
-    }
-    
-    .synthesis-button:disabled {
-        cursor: not-allowed;
-    }
-    
-    .auto-synthesis-button:hover {
-        background: #e67e22 !important;
-        transform: translateY(-2px);
-    }
-
-    .auto-synthesis-seed-button:hover:not(:disabled) {
-        background: #e67e22 !important;
-        transform: scale(1.05);
-    }
-
-    .auto-synthesis-seed-button:disabled {
-        cursor: not-allowed;
-    }
-    
-    .synthesis-item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    
     @keyframes synthesisPop {
         0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
         70% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
@@ -2086,7 +2070,9 @@ if (typeof player.landlord.geneSynthesisSelection === 'undefined') {
                 const weatherChangeCount = Math.floor(effectiveOfflineMinutes / 10);
                 for (let i = 0; i < weatherChangeCount; i++) {
                     if (Math.random() * 100 < 40) {
-                        const newWeather = weatherList[Math.floor(Math.random() * weatherList.length)];
+                        const newWeather = (typeof pickLandlordNaturalWeather === 'function')
+                            ? pickLandlordNaturalWeather()
+                            : weatherList[Math.floor(Math.random() * weatherList.length)];
                         player.landlord.weather = newWeather;
                         applyLandlordWeatherMutation(true);
                     } else {
@@ -2108,6 +2094,10 @@ if (typeof player.landlord.geneSynthesisSelection === 'undefined') {
                     
                     // 刷新道具商店
                     for (const item in itemProperties) {
+                        if (itemProperties[item].lotteryOnly) {
+                            player.landlord.itemStoreItems[item] = 0;
+                            continue;
+                        }
                         const probability = itemProperties[item].refreshProbability;
                         if (Math.random() * 100 < probability) {
                             player.landlord.itemStoreItems[item] = 1;

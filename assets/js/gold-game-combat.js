@@ -45,13 +45,10 @@ function enterLandscapeFullscreen() {
     const monsterUI = document.getElementById('monsterUI');
     monsterUI.style.display = monsterUI.style.display === 'none' ? 'block' : 'none';
     if (monsterUI.style.display === 'block') {
-        // 重新生成玩家属性，但不重新生成怪物
-        player.battle.playerHealth = player.reincarnationCount;
-        player.battle.playerAttack = getTotalClickValue();
-      updateOfficialSystemDisplay();
-        updateMonsterUI(); // 更新UI显示
-      updatePlayerBattleStats();
-      
+        // 打开时全量刷新一次属性；战斗中击杀不再重复全量重算
+        if (typeof updatePlayerBattleStats === 'function') updatePlayerBattleStats();
+        else updateMonsterUI();
+        if (typeof updateOfficialSystemDisplay === 'function') updateOfficialSystemDisplay();
     }
 }
 
@@ -199,122 +196,142 @@ function generateMonster() {
     };
 }
 
-       function updateMonsterUI() {
-    document.getElementById('playerHealth').textContent = formatSci(player.battle.playerHealth);
-    document.getElementById('playerAttack').textContent = formatSci(player.battle.playerAttack);
-    document.getElementById('playerCritRate').textContent = `${((player.battle.playerCritRate + player.attributes.critRate * 0.0005) * 100).toFixed(1)}%`; // 更新暴击率显示
-    document.getElementById('playerCritDamage').textContent = `${((player.battle.playerCritDamage + player.attributes.critDamage * 0.005) * 100).toFixed(1)}%`; // 更新爆伤显示
-    document.getElementById('playerAccuracy').textContent = `${(player.battle.playerAccuracy * 100).toFixed(1)}%`;
-    document.getElementById('playerDodge').textContent = `${(player.battle.playerDodge * 100).toFixed(1)}%`;
-
-    document.getElementById('currentStage').textContent = player.battle.currentStage + 1;
-    document.getElementById('monsterName').textContent = player.battle.monster.name;
-    document.getElementById('monsterRank').textContent = player.battle.monster.rank;
-    document.getElementById('monsterHealth').textContent = formatSci(player.battle.monster.health);
-    document.getElementById('monsterAttack').textContent = formatSci(player.battle.monster.attack);
-
-    // 显示怪物词条
-    const modifiers = player.battle.monster.modifiers.join(', ');
-    document.getElementById('monsterModifiers').textContent = ` ${modifiers}`;
-     
+var _monsterUIEls = null;
+function getMonsterUIEls() {
+    if (_monsterUIEls && _monsterUIEls.root && document.body.contains(_monsterUIEls.root)) return _monsterUIEls;
+    _monsterUIEls = {
+        root: document.getElementById('monsterUI'),
+        playerHealth: document.getElementById('playerHealth'),
+        playerAttack: document.getElementById('playerAttack'),
+        playerCritRate: document.getElementById('playerCritRate'),
+        playerCritDamage: document.getElementById('playerCritDamage'),
+        playerAccuracy: document.getElementById('playerAccuracy'),
+        playerDodge: document.getElementById('playerDodge'),
+        currentStage: document.getElementById('currentStage'),
+        monsterName: document.getElementById('monsterName'),
+        monsterRank: document.getElementById('monsterRank'),
+        monsterHealth: document.getElementById('monsterHealth'),
+        monsterAttack: document.getElementById('monsterAttack'),
+        monsterModifiers: document.getElementById('monsterModifiers')
+    };
+    return _monsterUIEls;
 }
-       function attackMonster() {
-const now = Date.now();
-            // 移除超过1秒的点击记录
-            player.clickTimestamps = player.clickTimestamps.filter(timestamp => now - timestamp < 1000);
 
-            const clickLimit = 10 + player.reincarnationStats.clickLimitBonus.level; // 每级增加1次点击上限
-            if (player.clickTimestamps.length >= clickLimit) {
-                logAction("点击速度过快，请稍后再试！", "error");
-                return;
-            }
-
-            player.clickTimestamps.push(now);
-    const monster = player.battle.monster;
-    
-    // 应用属性加成
-    const playerAttack = player.battle.playerAttack;
-    const playerCritRate = player.battle.playerCritRate;
-    const playerCritDamage = player.battle.playerCritDamage;
-    const playerMultiAttack = player.battle.playerMultiAttack;
-    const playerBlock = Math.floor(player.attributes.block / 5000000); // 每5000000点抵消属性点抵消1次攻击
-
-    // 新增：统计变量
-    let totalDamage = bigSciToStorageValue(0); // 总伤害（大数）
-    let dodgeCount = 0;            // 闪避次数
-    let critCount = 0;             // 暴击次数
-    let normalDamage = bigSciToStorageValue(0); // 普通伤害总和（大数）
-    const totalAttacks = playerMultiAttack + 1; // 总连击次数
-
-    // 连击次数
-    for (let i = 0; i < totalAttacks; i++) {
-        // 计算命中
-        if (Math.random() < monster.dodgeChance) {
-            dodgeCount++; // 记录闪避次数
-            continue;
-        }
-
-        // 计算伤害
-        let damage = multiplyBigByFinite(playerAttack, monster.damageTakenMultiplier);
-        damage = multiplyBigByFinite(damage, (1 - monster.damageReduction)); // 应用伤害减免
-
-        // 抵消效果
-        if (monster.blockCount > 0) {
-            monster.blockCount--;
-            logBattleAction(`你的攻击被抵消了！怪物剩余抵消次数：${monster.blockCount}`);
-            continue;
-        }
-
-        // 暴击计算
-        if (Math.random() < playerCritRate) {
-            damage = multiplyBigByFinite(damage, playerCritDamage); // 应用爆伤加成
-            critCount++;
-            totalDamage = bigSciToStorageValue(addBigSci(totalDamage, damage));
-        } else {
-            normalDamage = bigSciToStorageValue(addBigSci(normalDamage, damage));
-            totalDamage = bigSciToStorageValue(addBigSci(totalDamage, damage));
-        }
-
-        // 应用伤害
-        monster.health = bSub(monster.health, damage);
-
-        if (bLteZero(monster.health)) {
-            break; // 如果怪物被击败，跳出连击循环
-        }
-    }
-
-    // 新增：输出综合攻击日志
-    logBattleAction(`你造成了${formatSci(totalDamage)}点伤害 (${totalAttacks}连击) - 普通伤害: ${formatSci(normalDamage)}, 闪避x${dodgeCount} 暴击x${critCount}`);
-
-    // 检查怪物是否被击败
-    if (bLteZero(monster.health)) {
-        logBattleAction(`你击败了${monster.name}，通关第${player.battle.currentStage + 1}关！`);
-        player.battle.currentStage++;
-        player.battle.maxStage = Math.max(player.battle.maxStage, player.battle.currentStage);
-        
+function restoreMonsterBattleHealth() {
+    if (player.battle.playerMaxHealth != null) {
+        player.battle.playerHealth = player.battle.playerMaxHealth;
+    } else if (typeof updatePlayerBattleStats === 'function') {
         updatePlayerBattleStats();
-        // 更新总属性点
-        player.attributes.totalPoints = player.reincarnationCount * 1 + player.battle.maxStage * 10;
-        // 检查最大关卡成就
-        checkMaxStageAchievements();
-        // 新增：检查称号解锁
-        checkTitleUnlocks();
-        updateOfficialSystemDisplay();
-        // 掉落副本装备
-        dropDungeonEquipment(player.battle.currentStage);
+    }
+}
 
-        // 掉落魂环
-        dropSoulRing(player.battle.currentStage);
-       
-        // 掉落道具
-        dropItemsAfterBattle();
-                 
-        generateMonster();
+/**
+ * 高效连击结算：少量次数精确掷骰，大量次数用二项期望+方差近似，避免万级循环卡顿。
+ * @returns {{totalDamage, normalDamage, critCount, dodgeCount, blockedCount, hits, attacks, blockCountLeft}}
+ */
+function resolveBattleMultiHit(opts) {
+    var attacks = Math.max(0, Math.floor(Number(opts && opts.attacks) || 0));
+    var dodgeChance = Math.max(0, Math.min(0.99, Number(opts && opts.dodgeChance) || 0));
+    var critRate = Math.max(0, Math.min(1, Number(opts && opts.critRate) || 0));
+    var critDamage = Math.max(1, Number(opts && opts.critDamage) || 1);
+    var blockCount = Math.max(0, Math.floor(Number(opts && opts.blockCount) || 0));
+    var attack = opts && opts.attack;
+    var dmgMul = Number(opts && opts.dmgMul);
+    if (!(dmgMul > 0)) dmgMul = 1;
+
+    var dodgeCount = 0;
+    var critCount = 0;
+    var blockedCount = 0;
+    var hits = 0;
+    var remaining = attacks;
+    var PRECISE_CAP = 40;
+
+    function sampleCount(n, p) {
+        if (n <= 0 || p <= 0) return 0;
+        if (p >= 1) return n;
+        if (n <= PRECISE_CAP) {
+            var c = 0;
+            for (var i = 0; i < n; i++) if (Math.random() < p) c++;
+            return c;
+        }
+        // 正态近似二项分布，保留随机感且 O(1)
+        var mean = n * p;
+        var sd = Math.sqrt(n * p * (1 - p));
+        var u1 = Math.random() || 1e-12;
+        var u2 = Math.random();
+        var z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        var v = Math.round(mean + z * sd);
+        if (v < 0) v = 0;
+        if (v > n) v = n;
+        return v;
     }
 
-    updateMonsterUI();
+    // 抵消次数很少，优先精确消耗
+    while (remaining > 0 && blockCount > 0) {
+        remaining--;
+        if (Math.random() < dodgeChance) {
+            dodgeCount++;
+            continue;
+        }
+        blockCount--;
+        blockedCount++;
+    }
 
-    function checkMaxStageAchievements() {
+    if (remaining > 0) {
+        var hitChance = 1 - dodgeChance;
+        hits = sampleCount(remaining, hitChance);
+        dodgeCount += remaining - hits;
+        critCount = sampleCount(hits, critRate);
+    }
+
+    var normalHits = Math.max(0, hits - critCount);
+    var zero = bigSciToStorageValue(0);
+    var normalDamage = normalHits > 0
+        ? multiplyBigByFinite(attack, dmgMul * normalHits)
+        : zero;
+    var critPart = critCount > 0
+        ? multiplyBigByFinite(attack, dmgMul * critCount * critDamage)
+        : zero;
+    var totalDamage = (normalHits > 0 && critCount > 0)
+        ? bigSciToStorageValue(addBigSci(normalDamage, critPart))
+        : (critCount > 0 ? bigSciToStorageValue(critPart) : bigSciToStorageValue(normalDamage));
+
+    return {
+        totalDamage: totalDamage,
+        normalDamage: bigSciToStorageValue(normalDamage),
+        critCount: critCount,
+        dodgeCount: dodgeCount,
+        blockedCount: blockedCount,
+        hits: hits,
+        attacks: attacks,
+        blockCountLeft: blockCount
+    };
+}
+
+function updateMonsterUI() {
+    if (!player.battle || !player.battle.monster) return;
+    var els = getMonsterUIEls();
+    if (els.playerHealth) els.playerHealth.textContent = formatSci(player.battle.playerHealth);
+    if (els.playerAttack) els.playerAttack.textContent = formatSci(player.battle.playerAttack);
+    if (els.playerCritRate) {
+        els.playerCritRate.textContent = ((player.battle.playerCritRate + (player.attributes.critRate || 0) * 0.0005) * 100).toFixed(1) + '%';
+    }
+    if (els.playerCritDamage) {
+        els.playerCritDamage.textContent = ((player.battle.playerCritDamage + (player.attributes.critDamage || 0) * 0.005) * 100).toFixed(1) + '%';
+    }
+    if (els.playerAccuracy) els.playerAccuracy.textContent = ((player.battle.playerAccuracy || 0) * 100).toFixed(1) + '%';
+    if (els.playerDodge) els.playerDodge.textContent = ((player.battle.playerDodge || 0) * 100).toFixed(1) + '%';
+
+    if (els.currentStage) els.currentStage.textContent = player.battle.currentStage + 1;
+    var mon = player.battle.monster;
+    if (els.monsterName) els.monsterName.textContent = mon.name;
+    if (els.monsterRank) els.monsterRank.textContent = mon.rank;
+    if (els.monsterHealth) els.monsterHealth.textContent = formatSci(mon.health);
+    if (els.monsterAttack) els.monsterAttack.textContent = formatSci(mon.attack);
+    if (els.monsterModifiers) els.monsterModifiers.textContent = ' ' + (mon.modifiers || []).join(', ');
+}
+
+function checkMaxStageAchievements() {
     const maxStage = player.battle.maxStage;
     const achievements = [
         { stage: 10, key: 'max_stage_10' },
@@ -333,6 +350,7 @@ const now = Date.now();
         { stage: 1000, key: 'max_stage_1000' },
     ];
 
+    var needFullRecalc = false;
     achievements.forEach(({ stage, key }) => {
         if (maxStage >= stage && !player.achievements[key]) {
             player.achievements[key] = true;
@@ -340,32 +358,111 @@ const now = Date.now();
             if (reward) {
                 player.gpsMultiplier += reward.gpsMultiplier;
                 logAction(`成就达成：${reward.description}，GPS奖励 +${reward.gpsMultiplier * 100}%`, 'success');
-                updatePlayerBattleStats();
+                needFullRecalc = true;
             }
         }
     });
+    if (needFullRecalc && typeof updatePlayerBattleStats === 'function') updatePlayerBattleStats();
 }
-    // 怪物反击逻辑
-    if (monster.health > 0) {
-        for (let i = 0; i < monster.attackCount; i++) {
+
+function attackMonster() {
+    const now = Date.now();
+    if (!Array.isArray(player.clickTimestamps)) player.clickTimestamps = [];
+    // 原地清理过期点击，避免每次 filter 产生新数组
+    var ts = player.clickTimestamps;
+    var write = 0;
+    for (var ti = 0; ti < ts.length; ti++) {
+        if (now - ts[ti] < 1000) ts[write++] = ts[ti];
+    }
+    ts.length = write;
+
+    const clickLimit = 10 + ((player.reincarnationStats && player.reincarnationStats.clickLimitBonus && player.reincarnationStats.clickLimitBonus.level) || 0);
+    if (ts.length >= clickLimit) {
+        logAction("点击速度过快，请稍后再试！", "error");
+        return;
+    }
+    ts.push(now);
+
+    const monster = player.battle.monster;
+    if (!monster) return;
+
+    const playerAttack = player.battle.playerAttack;
+    const playerCritRate = player.battle.playerCritRate;
+    const playerCritDamage = player.battle.playerCritDamage;
+    const playerMultiAttack = Number(player.battle.playerMultiAttack) || 1;
+    let playerBlock = Math.floor((player.attributes.block || 0) / 5000000);
+
+    const totalAttacks = Math.max(1, Math.floor(playerMultiAttack) + 1);
+    const dmgMul = (monster.damageTakenMultiplier || 1) * (1 - (monster.damageReduction || 0));
+    const hitResult = resolveBattleMultiHit({
+        attacks: totalAttacks,
+        attack: playerAttack,
+        dmgMul: dmgMul,
+        dodgeChance: monster.dodgeChance || 0,
+        critRate: playerCritRate,
+        critDamage: playerCritDamage,
+        blockCount: monster.blockCount || 0
+    });
+    monster.blockCount = hitResult.blockCountLeft;
+    monster.health = bSub(monster.health, hitResult.totalDamage);
+
+    var logParts = [
+        '你造成了' + formatSci(hitResult.totalDamage) + '点伤害 (' + totalAttacks + '连击)',
+        '闪避x' + hitResult.dodgeCount,
+        '暴击x' + hitResult.critCount
+    ];
+    if (hitResult.blockedCount > 0) logParts.push('抵消x' + hitResult.blockedCount);
+    logBattleAction(logParts.join(' - '));
+
+    var monsterDefeated = bLteZero(monster.health);
+    if (monsterDefeated) {
+        logBattleAction('你击败了' + monster.name + '，通关第' + (player.battle.currentStage + 1) + '关！');
+        player.battle.currentStage++;
+        player.battle.maxStage = Math.max(player.battle.maxStage, player.battle.currentStage);
+
+        // 击杀后只恢复生命，避免每关全量重算装备/称号/宝石等
+        restoreMonsterBattleHealth();
+        if (player.attributes) {
+            player.attributes.totalPoints = (Number(player.reincarnationCount) || 0) + player.battle.maxStage * 10 + ((player.tower && player.tower.currentFloor) || 0);
+        }
+        checkMaxStageAchievements();
+        dropDungeonEquipment(player.battle.currentStage);
+        dropSoulRing(player.battle.currentStage);
+        dropItemsAfterBattle();
+        if (typeof checkTitleUnlocks === 'function') checkTitleUnlocks();
+        generateMonster();
+    } else {
+        // 怪物反击：合并日志，减少 DOM 写入
+        var counterHits = 0;
+        var counterDodges = 0;
+        var counterBlocks = 0;
+        var counterDmg = bigSciToStorageValue(0);
+        var atkCount = Math.max(1, monster.attackCount || 1);
+        for (let i = 0; i < atkCount; i++) {
             if (Math.random() > player.battle.playerDodge) {
                 if (playerBlock > 0) {
-                    playerBlock--; // 消耗一次抵消次数
-                    logBattleAction(`你抵消了怪物的攻击！剩余抵消次数：${playerBlock}`);
+                    playerBlock--;
+                    counterBlocks++;
                 } else {
-                    player.battle.playerHealth = bSub(player.battle.playerHealth, monster.attack); // 如果没有抵消次数，玩家受到伤害
-                    logBattleAction(`${monster.name}对你造成了${formatSci(monster.attack)}点伤害`);
+                    player.battle.playerHealth = bSub(player.battle.playerHealth, monster.attack);
+                    counterDmg = bigSciToStorageValue(addBigSci(counterDmg, monster.attack));
+                    counterHits++;
                 }
             } else {
-                logBattleAction('你闪避了怪物的攻击！');
+                counterDodges++;
             }
         }
-    // 检查玩家是否被击败
+        if (counterHits > 0 || counterDodges > 0 || counterBlocks > 0) {
+            var cParts = [];
+            if (counterHits > 0) cParts.push(monster.name + '造成' + formatSci(counterDmg) + '伤害x' + counterHits);
+            if (counterBlocks > 0) cParts.push('你抵消x' + counterBlocks);
+            if (counterDodges > 0) cParts.push('你闪避x' + counterDodges);
+            logBattleAction(cParts.join('，'));
+        }
         if (bLteZero(player.battle.playerHealth)) {
             logBattleAction('你被怪物击败了！');
-            monster.health = powScaledBig(1.148698355, player.battle.currentStage, 10000); // 重置怪物生命
-          updatePlayerBattleStats();
-       updateOfficialSystemDisplay();
+            monster.health = powScaledBig(1.148698355, player.battle.currentStage, 10000);
+            restoreMonsterBattleHealth();
         }
     }
 
@@ -464,10 +561,9 @@ function updateItemDisplay() {
             }
 
             drops.forEach(rarity => {
-                addDungeonEquipment(rarity);
+                if (typeof addDungeonEquipmentSilent === 'function') addDungeonEquipmentSilent(rarity);
+                else addDungeonEquipment(rarity);
                 logBattleAction(`获得了副本装备：${dungeonEquipmentTypes[rarity].name}`);
-          // 新增：检查称号解锁
-            checkTitleUnlocks();
             });
         }
 
@@ -544,8 +640,6 @@ function updateItemDisplay() {
         if (stage >= drop.minStage && Math.random() < drop.chance) {
             addSoulRing(drop.type);
             logBattleAction(`获得了${soulRingTypes[drop.type].name}`);
-          // 新增：检查称号解锁
-                checkTitleUnlocks();
             // 检查成就
             const ring = player.soulRings.find(r => r.type === drop.type);
             if (ring) {
@@ -892,16 +986,16 @@ function simulateItemDrop(stage) {
     return formatSci(value);
 }
         function logBattleAction(message) {
-    const formattedMessage = String(message);
-
-    const timestamp = new Date().toLocaleTimeString();
-    const logEntry = `<div class="battle-log-entry">[${timestamp}] ${formattedMessage}</div>`;
-    
     const logContainer = document.getElementById("battleLogContent");
-    logContainer.insertAdjacentHTML("afterbegin", logEntry);
-    
+    if (!logContainer) return;
+
+    const entry = document.createElement('div');
+    entry.className = 'battle-log-entry';
+    entry.textContent = '[' + new Date().toLocaleTimeString() + '] ' + String(message);
+    logContainer.insertBefore(entry, logContainer.firstChild);
+
     // 保持最多20条日志
-    if (logContainer.children.length > 20) {
+    while (logContainer.children.length > 20) {
         logContainer.removeChild(logContainer.lastChild);
     }
 }
@@ -1471,34 +1565,49 @@ function resetAttributes() {
     
 }
 function updatePlayerAttributesDisplay() {
+    if (!player.attributes || typeof player.attributes !== 'object') {
+        player.attributes = {};
+    }
+    var attrs = player.attributes;
+    // 新存档/旧档可能缺功法加成字段，未进打怪前 updateTechniqueBonuses 未跑会得到 NaN
+    ['health', 'attack', 'critRate', 'critDamage', 'multiAttack', 'block',
+     'healthBonus', 'attackBonus', 'critRateBonus', 'critDamageBonus', 'multiAttackBonus',
+     'totalPoints', 'remainingPoints'].forEach(function (k) {
+        if (attrs[k] == null || isNaN(Number(attrs[k]))) attrs[k] = 0;
+    });
+    var maxStage = (player.battle && player.battle.maxStage != null) ? Number(player.battle.maxStage) : 0;
+    var towerFloor = (player.tower && player.tower.currentFloor != null) ? Number(player.tower.currentFloor) : 0;
+    if (isNaN(maxStage)) maxStage = 0;
+    if (isNaN(towerFloor)) towerFloor = 0;
+
     // 计算总属性点
-    const totalAttributePoints = player.reincarnationCount * 1 + player.battle.maxStage * 10 + player.tower.currentFloor * 1;
-    player.attributes.totalPoints = totalAttributePoints;
+    const totalAttributePoints = (Number(player.reincarnationCount) || 0) * 1 + maxStage * 10 + towerFloor * 1;
+    attrs.totalPoints = totalAttributePoints;
 
     // 更新总属性点和剩余属性点
-    document.getElementById("totalAttributePoints").textContent = player.attributes.totalPoints;
-    document.getElementById("remainingAttributePoints").textContent = player.attributes.remainingPoints;
+    document.getElementById("totalAttributePoints").textContent = attrs.totalPoints;
+    document.getElementById("remainingAttributePoints").textContent = attrs.remainingPoints;
 
     // 更新各属性加成显示和已投入点数
     document.getElementById("healthBonus").textContent = 
-        (player.attributes.health * 1 + player.attributes.healthBonus * 100).toFixed(2) + "%";
-    document.getElementById("healthPoints").textContent = player.attributes.health;
+        (attrs.health * 1 + attrs.healthBonus * 100).toFixed(2) + "%";
+    document.getElementById("healthPoints").textContent = attrs.health;
     
     document.getElementById("attackBonus").textContent = 
-        (player.attributes.attack * 1 + player.attributes.attackBonus * 100).toFixed(2) + "%";
-    document.getElementById("attackPoints").textContent = player.attributes.attack;
+        (attrs.attack * 1 + attrs.attackBonus * 100).toFixed(2) + "%";
+    document.getElementById("attackPoints").textContent = attrs.attack;
     
     document.getElementById("critRateBonus").textContent = 
-        (player.attributes.critRate * 0.05 + player.attributes.critRateBonus * 100).toFixed(3) + "%";
-    document.getElementById("critRatePoints").textContent = player.attributes.critRate;
+        (attrs.critRate * 0.05 + attrs.critRateBonus * 100).toFixed(3) + "%";
+    document.getElementById("critRatePoints").textContent = attrs.critRate;
     
     document.getElementById("critDamageBonus").textContent = 
-        (player.attributes.critDamage * 0.50 + player.attributes.critDamageBonus * 100).toFixed(2) + "%";
-    document.getElementById("critDamagePoints").textContent = player.attributes.critDamage;
+        (attrs.critDamage * 0.50 + attrs.critDamageBonus * 100).toFixed(2) + "%";
+    document.getElementById("critDamagePoints").textContent = attrs.critDamage;
     
     document.getElementById("multiAttackBonus").textContent = 
-        Math.floor(player.attributes.multiAttack / 300) + player.attributes.multiAttackBonus;
-    document.getElementById("multiAttackPoints").textContent = player.attributes.multiAttack;
+        Math.floor(attrs.multiAttack / 300) + attrs.multiAttackBonus;
+    document.getElementById("multiAttackPoints").textContent = attrs.multiAttack;
 }
 function updateTechniqueBonuses() {
     // 重置所有加成
@@ -1633,6 +1742,8 @@ let wingHealthBonus = 0;
         worldMapAbyssCombinedMul,
         geneTreeHpMul,
     ]);
+    // 缓存满血值，打怪击杀后可直接恢复，避免每关全量重算
+    player.battle.playerMaxHealth = player.battle.playerHealth;
 
     // 3. 计算玩家攻击（大数安全）
     player.battle.playerAttack = multiplyBigByFactors(getTotalClickValue(), [
@@ -1681,12 +1792,13 @@ let wingHealthBonus = 0;
        (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage) * (1 + supremeBonus.critDamage) * (1 + pixelBonus.critDamage) * (1+player.fiveElements.water.level * 3.00) * (1 + networkPetCritDmgPct) * (1 + (lawBonuses.critDamage || 0)) * worldMapAbyssCombinedMul * geneTreeCritMul * (1 + ((player.children.childBonuses && player.children.childBonuses.worldCritDmgBonus) || 0)); // 应用伴侣爆伤加成 + 无限深渊最佳层数 + 神兽图鉴 + 地主基因树 + 家族传承爆伤（世界地图）
 
     // 6. 计算连击次数（应用伴侣连击加成）
-    player.battle.playerMultiAttack = Math.max(1,
-        Math.floor(player.attributes.multiAttack / 300) + 
-        player.attributes.multiAttackBonus +
-        companionBonuses.combo+ (1+techBonuses.multiAttack* 0.02) +
-        (1+runeBonuses.combo))  // 应用伴侣连击加成
-    ;
+    player.battle.playerMultiAttack = Math.max(1, Math.floor(
+        Math.floor((Number(player.attributes.multiAttack) || 0) / 300) +
+        (Number(player.attributes.multiAttackBonus) || 0) +
+        (Number(companionBonuses.combo) || 0) +
+        (1 + (Number(techBonuses.multiAttack) || 0) * 0.02) +
+        (1 + (Number(runeBonuses.combo) || 0))
+    ));
 
     // 更新UI显示
     updateMonsterUI();
@@ -1719,65 +1831,94 @@ function getMiningDiminishingExpGemMultiplier(count) {
     return 1 + 100 * 0.01 + (n - 100) * 0.0001; // 之后衰减：每个+0.01%
 }
 
-// 新增：计算离线奥秘经验
-function calculateOfflineMysteryExp() {
-    if (!player.mystery || !player.mystery.lastUpdateTime) return;
-    
-    const now = Date.now();
-    const timeDiff = now - player.mystery.lastUpdateTime;
-   // 时间回退检测
-    if (timeDiff < 0) {
-        console.warn("检测到时间回退，重置奥秘经验");
-        player.mystery.exp = 0;
-        player.mystery.lastUpdateTime = now;
-        return;
-    }
-    const minutesPassed = Math.floor(timeDiff / (1000 * 60));
-    
-    if (minutesPassed > 0) {
-        const towerFloor = player.tower.currentFloor || 0;
-        const vipLevel = player.vip.level || 1;
-        const expGained = minutesPassed * towerFloor * vipLevel;
-        
-        if (expGained > 0) {
-            const classBonuses = calculateClassBonuses();
-            const mysteryExpMultiplier = classBonuses.mysteryExpMultiplier || 1;
-            const lawMysteryMul = 1 + (((typeof getLawPowerBonuses === 'function' ? getLawPowerBonuses().mysteryExp : 0) || 0));
-            const miningMysteryCount = Number(player.mining && player.mining.gems ? player.mining.gems.mysteryGem : 0) || 0;
-            const miningMysteryMul = getMiningDiminishingExpGemMultiplier(miningMysteryCount);
-            player.mystery.exp += expGained * mysteryExpMultiplier * lawMysteryMul * miningMysteryMul;
-            logAction(`离线获得 ${expGained} 奥秘经验`, 'success');
+// 计算离线奥秘经验（优先用传入的离线分钟数，与修仙/金币离线同源；避免依赖易被 saveGame 改写的 mystery.lastUpdateTime）
+function calculateOfflineMysteryExp(offlineMinutesOpt) {
+    try {
+        if (!player.mystery || typeof player.mystery !== 'object') {
+            player.mystery = { stage: 1, level: 1, exp: 0, bonus: 1, lastUpdateTime: Date.now() };
         }
+        const now = Date.now();
+        var minutesPassed = 0;
+        if (offlineMinutesOpt != null && Number.isFinite(Number(offlineMinutesOpt))) {
+            minutesPassed = Math.max(0, Math.floor(Number(offlineMinutesOpt)));
+        } else {
+            // 回退：mystery 时间戳 → 主存档 lastUpdate（saveGame 会同步写两者，但读档中途 mystery 时间戳可能被提前刷成 now）
+            var anchor = Number(player.mystery.lastUpdateTime) || Number(player.lastUpdate) || 0;
+            if (!anchor) {
+                player.mystery.lastUpdateTime = now;
+                return;
+            }
+            var timeDiff = now - anchor;
+            if (timeDiff < 0) {
+                console.warn("检测到时间回退，跳过奥秘离线结算");
+                player.mystery.lastUpdateTime = now;
+                return;
+            }
+            // 与其它离线系统一致：最长 24 小时
+            timeDiff = Math.min(timeDiff, 86400 * 1000);
+            minutesPassed = Math.floor(timeDiff / (1000 * 60));
+        }
+
+        if (minutesPassed > 0) {
+            const towerFloor = Number(player.tower && player.tower.currentFloor) || 0;
+            const vipLevel = Number(player.vip && player.vip.level) || 1;
+            const baseExp = minutesPassed * towerFloor * vipLevel;
+
+            if (baseExp > 0) {
+                var mysteryExpMultiplier = 1;
+                try {
+                    if (typeof calculateClassBonuses === 'function') {
+                        mysteryExpMultiplier = (calculateClassBonuses().mysteryExpMultiplier || 1);
+                    }
+                } catch (classErr) {
+                    console.warn('离线奥秘职业加成跳过:', classErr);
+                }
+                const lawMysteryMul = 1 + (((typeof getLawPowerBonuses === 'function' ? getLawPowerBonuses().mysteryExp : 0) || 0));
+                const miningMysteryCount = Number(player.mining && player.mining.gems ? player.mining.gems.mysteryGem : 0) || 0;
+                const miningMysteryMul = getMiningDiminishingExpGemMultiplier(miningMysteryCount);
+                const totalExp = baseExp * mysteryExpMultiplier * lawMysteryMul * miningMysteryMul;
+                player.mystery.exp = (Number(player.mystery.exp) || 0) + totalExp;
+                if (typeof logAction === 'function') {
+                    logAction('离线获得 ' + Math.floor(totalExp).toLocaleString() + ' 奥秘经验（' + minutesPassed + '分钟）', 'success');
+                }
+            }
+        }
+
+        player.mystery.lastUpdateTime = now;
+    } catch (e) {
+        console.warn('离线奥秘经验结算失败:', e);
     }
-    
-    // 更新最后更新时间
-    player.mystery.lastUpdateTime = now;
 }
 // 定时增加经验
 registerInterval(() => {
-    if (player.mystery) {
-        const towerFloor = parseInt(document.getElementById('towerFloor').textContent) || 0;
-        const vipLevel = parseInt(document.getElementById('vipLevel').textContent) || 1;
+    if (!player || !player.mystery) return;
+    try {
+        const towerFloor = Number(player.tower && player.tower.currentFloor)
+            || parseInt((document.getElementById('towerFloor') || {}).textContent, 10)
+            || 0;
+        const vipLevel = Number(player.vip && player.vip.level)
+            || parseInt((document.getElementById('vipLevel') || {}).textContent, 10)
+            || 1;
         let expPerMinute = towerFloor * vipLevel;
-        
+
         if (expPerMinute > 0) {
-            // 获取探险家职业的奥秘经验加成
-            const classBonuses = calculateClassBonuses();
-            const mysteryExpMultiplier = classBonuses.mysteryExpMultiplier || 1;
-            
-            // 应用加成
+            var mysteryExpMultiplier = 1;
+            try {
+                if (typeof calculateClassBonuses === 'function') {
+                    mysteryExpMultiplier = (calculateClassBonuses().mysteryExpMultiplier || 1);
+                }
+            } catch (eClass) {}
             const lawMysteryMul = 1 + (((typeof getLawPowerBonuses === 'function' ? getLawPowerBonuses().mysteryExp : 0) || 0));
             const miningMysteryCount = Number(player.mining && player.mining.gems ? player.mining.gems.mysteryGem : 0) || 0;
             const miningMysteryMul = getMiningDiminishingExpGemMultiplier(miningMysteryCount);
             expPerMinute = expPerMinute * mysteryExpMultiplier * lawMysteryMul * miningMysteryMul;
-            
-            // 奥秘每分钟增加一次，这里按秒计算
-            player.mystery.exp += expPerMinute / 60;
-            player.mystery.lastUpdateTime = new Date().getTime();
+
+            player.mystery.exp = (Number(player.mystery.exp) || 0) + expPerMinute / 60;
+            player.mystery.lastUpdateTime = Date.now();
             var mysteryUi = document.getElementById('mysterySystemUI');
             if (mysteryUi && mysteryUi.style.display === 'block') updateMysterySystemDisplay();
         }
-    }
+    } catch (eTick) {}
 }, 1000);
 
 // 切换奥秘系统界面
@@ -4446,11 +4587,13 @@ function startLiveStream() {
     player.liveStream.danmakuPassword = null;
     player.liveStream.danmakuPasswordParticipants = [];
     // 弹幕口令定时器（每10分钟一轮）
-    if (player.liveStream.danmakuPasswordInterval) { clearInterval(player.liveStream.danmakuPasswordInterval); player.liveStream.danmakuPasswordInterval = null; }
+    if (typeof clearRegisteredIntervalRef === 'function') clearRegisteredIntervalRef(player.liveStream, 'danmakuPasswordInterval');
+    else if (player.liveStream.danmakuPasswordInterval) { clearInterval(player.liveStream.danmakuPasswordInterval); player.liveStream.danmakuPasswordInterval = null; }
     player.liveStream.danmakuPasswordInterval = registerInterval(triggerDanmakuPassword, 600000);
     setTimeout(triggerDanmakuPassword, 30000); // 30秒后第一次口令
     // 心愿单定时器（每5分钟可能刷新）
-    if (player.liveStream.wishListInterval) { clearInterval(player.liveStream.wishListInterval); player.liveStream.wishListInterval = null; }
+    if (typeof clearRegisteredIntervalRef === 'function') clearRegisteredIntervalRef(player.liveStream, 'wishListInterval');
+    else if (player.liveStream.wishListInterval) { clearInterval(player.liveStream.wishListInterval); player.liveStream.wishListInterval = null; }
     player.liveStream.wishListInterval = registerInterval(maybeTriggerWishList, 300000);
     setTimeout(maybeTriggerWishList, 60000); // 1分钟后可能出心愿单
      

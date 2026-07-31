@@ -1618,20 +1618,22 @@ function updateTitleModalSummary() {
 // 检查并解锁称号
 function checkTitleUnlocks() {
     let newlyUnlocked = false;
+    const unlockedSet = new Set(player.titles.unlocked || []);
     // 遍历所有分支的称号
     Object.values(titleConfig).forEach(branch => {
         branch.forEach(title => {
-            if (!player.titles.unlocked.includes(title.name) && title.condition(player)) {
-                player.titles.unlocked.push(title.name);
-                newlyUnlocked = true;
-                
-                // 应用称号加成
-                if (title.bonus) {
-                    applyTitleBonus(title.bonus);
-                }
-                
-                logAction(`解锁新称号：${title.name}`, 'success');
+            if (unlockedSet.has(title.name)) return;
+            if (!title.condition(player)) return;
+            player.titles.unlocked.push(title.name);
+            unlockedSet.add(title.name);
+            newlyUnlocked = true;
+
+            // 应用称号加成
+            if (title.bonus) {
+                applyTitleBonus(title.bonus);
             }
+
+            logAction(`解锁新称号：${title.name}`, 'success');
         });
     });
     if (newlyUnlocked) {
@@ -1696,35 +1698,32 @@ function selectTitle(titleName) {
     }
 }
 // 计算称号总加成（在属性计算处调用）
+var _titleBonusLookup = null;
+function getTitleBonusLookup() {
+    if (_titleBonusLookup) return _titleBonusLookup;
+    _titleBonusLookup = Object.create(null);
+    Object.values(titleConfig).forEach(function (branch) {
+        branch.forEach(function (title) {
+            _titleBonusLookup[title.name] = title.bonus || null;
+        });
+    });
+    return _titleBonusLookup;
+}
 function calculateTotalBonuses() {
     const bonuses = {
         attackMultiplier: 1,
         healthMultiplier: 1,
         critMultiplier: 1
     };
-    
-    // 累加所有已解锁称号的加成
-    player.titles.unlocked.forEach(titleName => {
-        // 查找对应的称号配置
-        for (const branch of Object.values(titleConfig)) {
-            for (const title of branch) {
-                if (title.name === titleName && title.bonus) {
-                    // 累乘加成
-                    if (title.bonus.attackMultiplier) {
-                        bonuses.attackMultiplier *= title.bonus.attackMultiplier;
-                    }
-                    if (title.bonus.healthMultiplier) {
-                        bonuses.healthMultiplier *= title.bonus.healthMultiplier;
-                    }
-                    if (title.bonus.critMultiplier) {
-                        bonuses.critMultiplier *= title.bonus.critMultiplier;
-                    }
-                    break;
-                }
-            }
-        }
-    });
-    
+    const lookup = getTitleBonusLookup();
+    const unlocked = (player.titles && player.titles.unlocked) || [];
+    for (var i = 0; i < unlocked.length; i++) {
+        var bonus = lookup[unlocked[i]];
+        if (!bonus) continue;
+        if (bonus.attackMultiplier) bonuses.attackMultiplier *= bonus.attackMultiplier;
+        if (bonus.healthMultiplier) bonuses.healthMultiplier *= bonus.healthMultiplier;
+        if (bonus.critMultiplier) bonuses.critMultiplier *= bonus.critMultiplier;
+    }
     return bonuses;
 }
 

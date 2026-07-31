@@ -259,10 +259,8 @@ function validateAutoTradeState() {
         
         // 如果当前正在旅行，取消旅行
         if (player.trading.isTraveling) {
-            if (player.trading.travelInterval) {
-                clearInterval(player.trading.travelInterval);
-                player.trading.travelInterval = null;
-            }
+            if (typeof clearRegisteredIntervalRef === 'function') clearRegisteredIntervalRef(player.trading, 'travelInterval');
+                    else if (player.trading && player.trading.travelInterval) { clearInterval(player.trading.travelInterval); player.trading.travelInterval = null; }
             player.trading.isTraveling = false;
             player.trading.travelDestination = '';
         }
@@ -1041,9 +1039,8 @@ function startAutoTravel(destination) {
     // 离线模拟时不创建真实定时器，由 simulateOfflineAutoTrade 的循环按模拟时间推进并判定到达
     if (player.trading._simulatedNow != null) return;
     // 确保清除之前的计时器
-    if (player.trading.travelInterval) {
-        clearInterval(player.trading.travelInterval);
-    }
+    if (typeof clearRegisteredIntervalRef === 'function') clearRegisteredIntervalRef(player.trading, 'travelInterval');
+                    else if (player.trading && player.trading.travelInterval) { clearInterval(player.trading.travelInterval); player.trading.travelInterval = null; }
     // 启动旅行计时器
     player.trading.travelInterval = registerInterval(checkTravelStatus, 1000);
 }
@@ -1063,10 +1060,8 @@ function updateAutoTravel(elapsed) {
 }
 
 function completeAutoTravel() {
-    if (player.trading.travelInterval) {
-        clearInterval(player.trading.travelInterval);
-        player.trading.travelInterval = null;
-    }
+    if (typeof clearRegisteredIntervalRef === 'function') clearRegisteredIntervalRef(player.trading, 'travelInterval');
+                    else if (player.trading && player.trading.travelInterval) { clearInterval(player.trading.travelInterval); player.trading.travelInterval = null; }
     // 记录本次旅行时长（用于短途收益衰减）
     if (player.trading.autoTrade && typeof player.trading.autoTrade.totalTravelTime === 'number') {
         player.trading.lastTravelTimeMinutes = player.trading.autoTrade.totalTravelTime / 60000;

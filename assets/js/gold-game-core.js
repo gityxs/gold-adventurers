@@ -1,4 +1,4 @@
-        const GAME_VERSION = "2.0.43";
+        const GAME_VERSION = "2.0.44";
         const GAME_INVENTORY_MAX = 100;
         var WING_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
         var MOUNT_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
@@ -66,9 +66,16 @@
             window[storeKey] = registerInterval(fn, ms);
             return window[storeKey];
         }
+        /** 停止并清空对象上的 interval 字段（与 registerInterval 成对，避免 _gameIntervals 残留） */
+        function clearRegisteredIntervalRef(obj, key) {
+            if (!obj || key == null || obj[key] == null) return;
+            unregisterInterval(obj[key]);
+            obj[key] = null;
+        }
         window.registerInterval = registerInterval;
         window.unregisterInterval = unregisterInterval;
         window.registerSingletonInterval = registerSingletonInterval;
+        window.clearRegisteredIntervalRef = clearRegisteredIntervalRef;
 
         // 初始化玩家数据
     let player = {
@@ -872,7 +879,12 @@ timeSecretRealm: {
              critRate: 0,
               critDamage: 0,
              multiAttack: 0,
-           block: 0
+           block: 0,
+           healthBonus: 0,
+           attackBonus: 0,
+           critRateBonus: 0,
+           critDamageBonus: 0,
+           multiAttackBonus: 0
             },
       farm: {
     level: 1,
@@ -1411,7 +1423,8 @@ timeSecretRealm: {
                 gpsBonus: { level: 0, cost: 1 },
                 equipmentLevelBonus: { level: 0, cost: 1 },
                 clickLimitBonus: { level: 0, cost: 1 },
-                reincarnationCoinBonus: { level: 0, cost: 1 }
+                reincarnationCoinBonus: { level: 0, cost: 1 },
+                offlineEquipBonus: { level: 0, cost: 1000 }
             },
             materialChestCost: 1,
             techniqueChestCost: 1,
@@ -2849,8 +2862,12 @@ function autoReincarnate(options) {
     // 重置装备等级
     player.equipment.forEach(eq => {
         eq.level = 1 + player.reincarnationStats.equipmentLevelBonus.level * 200; // 转生属性加成
-        eq.gps = equipmentTypes[eq.rarity].gps * (1 + player.reincarnationStats.gpsBonus.level); // 每级装备属性乘以100%
-        eq.click = equipmentTypes[eq.rarity].click * (1 + player.reincarnationStats.gpsBonus.level); // 每级装备属性乘以100%
+        if (typeof recalculateEquipmentPower === 'function') {
+            recalculateEquipmentPower(eq);
+        } else {
+            eq.gps = equipmentTypes[eq.rarity].gps * (1 + player.reincarnationStats.gpsBonus.level);
+            eq.click = equipmentTypes[eq.rarity].click * (1 + player.reincarnationStats.gpsBonus.level);
+        }
     });
 
     // 清空货币
@@ -3168,8 +3185,12 @@ function simulateOfflineAutoReincarnation(offlineMinutes, levelsPerMinute) {
             // 重置装备等级
             player.equipment.forEach(eq => {
                 eq.level = 1 + player.reincarnationStats.equipmentLevelBonus.level * 200; // 转生属性加成
-                eq.gps = equipmentTypes[eq.rarity].gps * (1 + player.reincarnationStats.gpsBonus.level); // 每级装备属性乘以100%
-                eq.click = equipmentTypes[eq.rarity].click * (1 + player.reincarnationStats.gpsBonus.level); // 每级装备属性乘以100%
+                if (typeof recalculateEquipmentPower === 'function') {
+                    recalculateEquipmentPower(eq);
+                } else {
+                    eq.gps = equipmentTypes[eq.rarity].gps * (1 + player.reincarnationStats.gpsBonus.level);
+                    eq.click = equipmentTypes[eq.rarity].click * (1 + player.reincarnationStats.gpsBonus.level);
+                }
             });
 
             // 清空货币
@@ -4029,9 +4050,11 @@ function setTechniqueMaxCost() {
                 if (offlineTime <= 1000) return;
                 const offlineMinutes = Math.floor(offlineSeconds / 60);
                 if (!Array.isArray(player.equipment)) return;
-                // 离线装备升级：基础1000级/分钟，VIP每级+200（如VIP30 → 1000+30×200=7000）
+                // 离线装备升级：基础1000级/分钟，VIP每级+200，转生属性「离线收益」每级+200
                 var vipLevelForOffline = (player.vip && player.vip.level) ? Number(player.vip.level) || 0 : 0;
-                var levelsPerMinute = 1000 + vipLevelForOffline * 200;
+                var offlineEquipBonusLv = (player.reincarnationStats && player.reincarnationStats.offlineEquipBonus)
+                    ? (Number(player.reincarnationStats.offlineEquipBonus.level) || 0) : 0;
+                var levelsPerMinute = 1000 + vipLevelForOffline * 200 + offlineEquipBonusLv * 200;
                 var offlineEquipLevelGain = offlineMinutes * levelsPerMinute;
                 var offlineReincInfo = { reincCount: 0, coin: 0, levelGainApplied: 0 };
                 if (player.autoReincarnation && typeof simulateOfflineAutoReincarnation === 'function') {
@@ -4058,7 +4081,7 @@ function setTechniqueMaxCost() {
                     var reincLog = offlineReincInfo.reincCount > 0
                         ? ('，自动转生×' + offlineReincInfo.reincCount + '（+' + Number(offlineReincInfo.coin).toFixed(4) + '转生币）')
                         : (player.autoReincarnation ? '，自动转生×0' : '');
-                    logAction('离线收益: +' + fm + '金币 (' + formatTime(offlineTime) + ')，装备等级预算+' + (offlineMinutes * levelsPerMinute) + '级/件（' + levelsPerMinute + '/分钟，VIP' + vipLevelForOffline + '）' + reincLog, 'offline-reward');
+                    logAction('离线收益: +' + fm + '金币 (' + formatTime(offlineTime) + ')，装备等级预算+' + (offlineMinutes * levelsPerMinute) + '级/件（' + levelsPerMinute + '/分钟，VIP' + vipLevelForOffline + (offlineEquipBonusLv > 0 ? '+离线' + offlineEquipBonusLv : '') + '）' + reincLog, 'offline-reward');
                 }
                 if (typeof simulateOfflineAutoBuy === 'function') simulateOfflineAutoBuy(offlineSeconds);
                 if (player.traditionalLotteryNumbers && player.traditionalLotteryNumbers.length > 0 && typeof checkTraditionalLotteryResult === 'function') {
@@ -4066,6 +4089,16 @@ function setTechniqueMaxCost() {
                     for (var i = 0; i < lotteryIntervals; i++) checkTraditionalLotteryResult();
                 }
                 if (typeof calculateOfflineCultivationExp === 'function') calculateOfflineCultivationExp(offlineMinutes);
+                // 奥秘离线经验：与金币/修仙同源用 offlineMinutes，避免 setTimeout 期间 saveGame 把 mystery.lastUpdateTime 刷成 now
+                // 仅在实际有离线分钟时打标，避免「0 分钟结算」锁死本会话后续切页/云档补结算
+                if (!window._mysteryOfflineRunThisSession && typeof calculateOfflineMysteryExp === 'function') {
+                    try {
+                        calculateOfflineMysteryExp(offlineMinutes);
+                        if (offlineMinutes > 0) window._mysteryOfflineRunThisSession = true;
+                    } catch (mysteryOffErr) {
+                        console.warn('离线奥秘经验跳过:', mysteryOffErr);
+                    }
+                }
                 // 打怪模式离线自动扫荡：需已开启自动扫荡，约 1 分钟 3 次
                 if (player.battle && player.battle.autoSweepEnabled && typeof simulateOfflineAutoSweep === 'function') {
                     try { simulateOfflineAutoSweep(offlineMinutes); } catch (sweepErr) {
@@ -4089,8 +4122,12 @@ function setTechniqueMaxCost() {
             })();
             // 银行利息：离线块在 offlineTime<=1s 时会提前 return，此处再结算一次，避免读档/切回标签后漏算
             if (typeof calculateBankInterest === 'function') calculateBankInterest();
-            // 恢复星域探索舰队属性，避免重启后变回1级
-            if (typeof restoreExplorationDataFromSave === 'function') restoreExplorationDataFromSave(save);
+            // 恢复星域探索舰队属性，避免重启后变回1级（优先存档，并回落 player.exploration）
+            if (typeof restoreExplorationDataFromSave === 'function') {
+                try { restoreExplorationDataFromSave(save); } catch (eRestExp) { console.warn('restoreExplorationDataFromSave', eRestExp); }
+            } else if (player.exploration && typeof window !== 'undefined') {
+                window.__pendingExplorationRestore = save && save.exploration ? save.exploration : player.exploration;
+            }
             if (save.battle && save.battle.autoSweepEnabled !== undefined) {
             player.battle.autoSweepEnabled = save.battle.autoSweepEnabled;
         }
@@ -4152,6 +4189,9 @@ function setTechniqueMaxCost() {
                     if (offMs > 1000 && offMins > 0 && typeof calculateOfflinePlayerLevelInsight === 'function') {
                         calculateOfflinePlayerLevelInsight(offMins);
                     }
+                    if (player.level && player.level.exp >= player.level.nextLevelExp && typeof settlePlayerExpFully === 'function') {
+                        settlePlayerExpFully({ maxTotalMs: typeof PLAYER_EXP_SETTLE_OFFLINE_MS === 'number' ? PLAYER_EXP_SETTLE_OFFLINE_MS : 10000 });
+                    }
                     if (typeof updateWorldMapInsightStatusUI === 'function') updateWorldMapInsightStatusUI();
                 } catch (insightOffErr) {
                     console.warn('感悟离线结算跳过:', insightOffErr);
@@ -4203,8 +4243,23 @@ function setTechniqueMaxCost() {
          
            
            if (typeof updateTowerUI === 'function') updateTowerUI();
-          // 延后执行，避免在 classConfig 尚未定义时（如首次初始化）访问导致 TDZ 报错
-          setTimeout(calculateOfflineMysteryExp, 0);
+          // 离线奥秘：主离线块已结算；此处仅作补结算（职业脚本未就绪/离线块未跑到时），用存档 lastUpdate 分钟数
+          if (!window._mysteryOfflineRunThisSession && typeof calculateOfflineMysteryExp === 'function') {
+              var _mysteryOffMins = 0;
+              try {
+                  var _mAnchor = (save.lastUpdate != null ? save.lastUpdate : player.lastUpdate) || 0;
+                  if (_mAnchor) _mysteryOffMins = Math.floor(Math.min(Date.now() - _mAnchor, 86400 * 1000) / 60000);
+              } catch (eMysteryMins) {}
+              setTimeout(function() {
+                  if (window._mysteryOfflineRunThisSession) return;
+                  try {
+                      calculateOfflineMysteryExp(_mysteryOffMins);
+                      if (_mysteryOffMins > 0) window._mysteryOfflineRunThisSession = true;
+                  } catch (eMysteryDeferred) {
+                      console.warn('延后奥秘离线结算失败:', eMysteryDeferred);
+                  }
+              }, 0);
+          }
             // 重置并重新计算收藏物效果
             resetAllCollectionEffects();
          // 新增：加载存档后自动计算并更新VIP等级
@@ -4273,6 +4328,13 @@ if (speedBoostBtn) {
             // 确保日志不超过 50 条，并回填到界面（读档后原先不渲染会导致日志区空白）
             if (!Array.isArray(player.actionLogs)) player.actionLogs = [];
             if (!Array.isArray(player.lotteryResults)) player.lotteryResults = [];
+            player.actionLogs = player.actionLogs.filter(function(log, idx, arr) {
+                if (!log || typeof log.message !== 'string') return true;
+                if (log.message.indexOf('等级结算步数达到上限') !== 0) return true;
+                return arr.findIndex(function(other) {
+                    return other && typeof other.message === 'string' && other.message.indexOf('等级结算步数达到上限') === 0;
+                }) === idx;
+            });
             player.actionLogs = player.actionLogs.slice(0, 50);
             player.lotteryResults = player.lotteryResults.slice(0, 20);
             if (typeof renderActionLogsToDom === 'function') {
@@ -4664,6 +4726,11 @@ function handleVipPowerGain() {
         },
         dungeonEquipment: oldSave.dungeonEquipment || [],
         soulRings: oldSave.soulRings || [],
+        attributes: Object.assign({
+            totalPoints: 0, remainingPoints: 0,
+            health: 0, attack: 0, critRate: 0, critDamage: 0, multiAttack: 0, block: 0,
+            healthBonus: 0, attackBonus: 0, critRateBonus: 0, critDamageBonus: 0, multiAttackBonus: 0
+        }, (oldSave.attributes && typeof oldSave.attributes === 'object') ? oldSave.attributes : {}),
         achievements: oldSave.achievements || player.achievements,
         autoBuy: oldSave.autoBuy || [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 新增宝箱自动购买状态
         autoBuyMaterialChest: oldSave.autoBuyMaterialChest || false,
@@ -4700,7 +4767,8 @@ function handleVipPowerGain() {
             gpsBonus: { level: 0, cost: 1 },
             equipmentLevelBonus: { level: 0, cost: 1 },
             clickLimitBonus: { level: 0, cost: 1 },
-            reincarnationCoinBonus: { level: 0, cost: 1 }
+            reincarnationCoinBonus: { level: 0, cost: 1 },
+            offlineEquipBonus: { level: 0, cost: 1000 }
         },
         materialChestCost: oldSave.materialChestCost || 1,
         stockData: oldSave.stockData || {
@@ -4723,7 +4791,70 @@ function handleVipPowerGain() {
         lawPower: Object.assign({
             attack: 0, health: 0, critDamage: 0, critRate: 0, worldExp: 0, cultivationExp: 0, mysteryExp: 0
         }, (oldSave.lawPower && typeof oldSave.lawPower === 'object') ? oldSave.lawPower : {}),
-        landlord: mergeLandlordSaveFromOld(oldSave.landlord, player.landlord)
+        mystery: Object.assign({
+            stage: 1, level: 1, exp: 0, bonus: 1,
+            lastUpdateTime: (oldSave && oldSave.lastUpdate != null) ? oldSave.lastUpdate : Date.now()
+        }, (oldSave.mystery && typeof oldSave.mystery === 'object') ? oldSave.mystery : {}),
+        landlord: mergeLandlordSaveFromOld(oldSave.landlord, player.landlord),
+        // 星域探索：显式合并；有存档字段则以存档为准（切号不串档），缺字段才回落默认
+        exploration: (function mergeExplorationSaveFromOld(saved, defaults) {
+            var d = defaults || {
+                speed: { level: 1, cost: 100 },
+                capacity: { level: 1, cost: 100 },
+                durability: { level: 1, cost: 100 },
+                resources: { stardust: 0, darkMatter: 0, cosmicCrystal: 0, artifactFragment: 0 },
+                activeMission: null,
+                missionEndTime: 0,
+                logs: []
+            };
+            function cloneAttr(attr, fallback) {
+                var lv = Math.floor(Number(attr && attr.level)) || 0;
+                if (lv < 1) {
+                    lv = Math.max(1, Math.floor(Number(fallback && fallback.level)) || 1);
+                    return {
+                        level: lv,
+                        cost: (fallback && fallback.cost != null) ? fallback.cost : 100
+                    };
+                }
+                return {
+                    level: lv,
+                    cost: (attr && attr.cost != null && attr.cost !== '') ? attr.cost
+                        : ((fallback && fallback.cost != null) ? fallback.cost : 100)
+                };
+            }
+            if (!saved || typeof saved !== 'object') {
+                return {
+                    speed: cloneAttr(null, d.speed),
+                    capacity: cloneAttr(null, d.capacity),
+                    durability: cloneAttr(null, d.durability),
+                    resources: Object.assign({ stardust: 0, darkMatter: 0, cosmicCrystal: 0, artifactFragment: 0 }, d.resources || {}),
+                    activeMission: d.activeMission || null,
+                    missionEndTime: d.missionEndTime || 0,
+                    logs: Array.isArray(d.logs) ? d.logs.slice() : []
+                };
+            }
+            return {
+                speed: cloneAttr(saved.speed, d.speed),
+                capacity: cloneAttr(saved.capacity, d.capacity),
+                durability: cloneAttr(saved.durability, d.durability),
+                resources: Object.assign(
+                    { stardust: 0, darkMatter: 0, cosmicCrystal: 0, artifactFragment: 0 },
+                    d.resources || {},
+                    saved.resources || {}
+                ),
+                activeMission: saved.activeMission !== undefined ? saved.activeMission : (d.activeMission || null),
+                missionEndTime: saved.missionEndTime !== undefined ? saved.missionEndTime : (d.missionEndTime || 0),
+                logs: Array.isArray(saved.logs) ? saved.logs : (Array.isArray(d.logs) ? d.logs.slice() : [])
+            };
+        })(oldSave.exploration, {
+            speed: { level: 1, cost: 100 },
+            capacity: { level: 1, cost: 100 },
+            durability: { level: 1, cost: 100 },
+            resources: { stardust: 0, darkMatter: 0, cosmicCrystal: 0, artifactFragment: 0 },
+            activeMission: null,
+            missionEndTime: 0,
+            logs: []
+        })
     };
 }
 
@@ -4829,6 +4960,8 @@ const gpsBonusssqaa = (Number(_landlordStats && _landlordStats.totalCoinsEarned)
  const gpsBonusssqaawq = (1 + (Number(_landlordStats && _landlordStats.marketFishCoinsEarned) || 0) * 0.02) * (1 + (Number(_landlordStats && _landlordStats.ranchCoinsEarned) || 0) * 0.015);  
  const gpsBonussbb = (player.mining && player.mining.gems && Number(player.mining.gems.diamond)) || 0;  
    const gpsBonusssqasa = 1+player.abyssTower.bestFloor * 2.00;  
+   // 稀有宝物已出售资金：每 1000000 资金 = +1 倍 GPS
+   const treasureSoldGpsBonus = (Number(player.treasures && player.treasures.totalSold) || 0) / 1000000;
 const gpsEnhancementsp =  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 1];
     const _sectLv = (player.sect && Number(player.sect.level)) || 0;
     const _sectIdx = _sectLv <= 0 ? 0 : Math.min(_sectLv, gpsEnhancementsp.length) - 1;
@@ -4845,7 +4978,7 @@ const farmGPSEnhancementp  = gpsEnhancementsp[_sectIdx] || gpsEnhancementsp[gpsE
     const equipBase = bigSciToStorageValue(addBigSci(1, equipSum));
     const totalMul = (Number(player.gpsMultiplier) || 1)
         * (1 + gpsBonus)
-        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements * cultivationBonus * (Number(gpsBonuss) || 0) * (1 + gpsBonusssq) * farmGPSEnhancementp * (1 + gpsBonusssqaa) * (1 + (Number(gpsBonussbb) || 0)) * farmGPSEnhancemezts * marriageBonus * childBonus * gpsBonuqqqq * gpsBonuqqqa * gpsBonusssqasa * sectTributeBonus * pkGpsMult * gpsBonusssqaawq;
+        * petMultiplier * (1 + dungeonBonus) * (1 + soulRingBonus) * towerMultiplier * mysteryBonus * farmGPSEnhancement * farmGPSEnhancements * cultivationBonus * (Number(gpsBonuss) || 0) * (1 + gpsBonusssq) * farmGPSEnhancementp * (1 + gpsBonusssqaa) * (1 + (Number(gpsBonussbb) || 0)) * farmGPSEnhancemezts * marriageBonus * childBonus * gpsBonuqqqq * gpsBonuqqqa * gpsBonusssqasa * sectTributeBonus * pkGpsMult * gpsBonusssqaawq * (1 + treasureSoldGpsBonus);
     var familyGpsMult = (typeof window.isGoldGameFamilyBuffActive === 'function' && window.isGoldGameFamilyBuffActive('gps')) ? 10000 : 1;
     return multiplyBigByFinite(equipBase, totalMul * familyGpsMult);
 }
@@ -5163,29 +5296,47 @@ function onCollectionAdded(collectionType) {
     checkAchievement(rarity);
 }
 
-        function upgradeExistingEquipment(index, rarity) {
-    const eq = player.equipment[index];
-    const config = equipmentTypes[rarity] || equipmentTypes.common;
-    eq.level++;
-            const vipBonus = 1 + getVipBonus();
-            const factor = (1 + (config.growthRate * eq.level * 0.01)) * (1 + player.reincarnationStats.gpsBonus.level) * vipBonus;
+        // 按当前等级/转生收益加成/VIP，重算单件装备 gps、click（与重复获得装备时的公式一致）
+        function recalculateEquipmentPower(eq) {
+            if (!eq || !eq.rarity) return;
+            const config = (typeof equipmentTypes !== 'undefined' && equipmentTypes[eq.rarity])
+                ? equipmentTypes[eq.rarity]
+                : null;
+            if (!config) return;
+            const vipBonus = 1 + (typeof getVipBonus === 'function' ? getVipBonus() : 0);
+            const gpsBonusLv = (player.reincarnationStats && player.reincarnationStats.gpsBonus)
+                ? (Number(player.reincarnationStats.gpsBonus.level) || 0) : 0;
+            const growthRate = (eq.growthRate != null ? Number(eq.growthRate) : Number(config.growthRate)) || 0;
+            const level = Math.max(1, Number(eq.level) || 1);
+            const factor = (1 + (growthRate * level * 0.01)) * (1 + gpsBonusLv) * vipBonus;
             eq.gps = multiplyBigByFinite(config.gps, factor);
             eq.click = multiplyBigByFinite(config.click, factor);
+        }
 
+        function recalculateAllEquipmentPower() {
+            if (!player || !Array.isArray(player.equipment)) return;
+            player.equipment.forEach(recalculateEquipmentPower);
+        }
+
+        function upgradeExistingEquipment(index, rarity) {
+            const eq = player.equipment[index];
+            eq.level++;
+            recalculateEquipmentPower(eq);
         }
 
         function addNewEquipment(rarity) {
             const config = equipmentTypes[rarity] || equipmentTypes.common;
             const newEq = {
                 name: config.name,
-                gps: multiplyBigByFinite(config.gps, (1 + player.reincarnationStats.gpsBonus.level)),
-                click: multiplyBigByFinite(config.click, (1 + player.reincarnationStats.gpsBonus.level)),
+                gps: 0,
+                click: 0,
                 rarity: rarity,
                 level: 1 + player.reincarnationStats.equipmentLevelBonus.level * 200, // 转生属性加成
                 growthRate: config.growthRate,
                 gemMultiplier: 0,
                 collectionMultiplier: 0
             };
+            recalculateEquipmentPower(newEq);
             player.equipment.push(newEq);
             logAction(`获得 ${newEq.name}装备`, rarity);
         }

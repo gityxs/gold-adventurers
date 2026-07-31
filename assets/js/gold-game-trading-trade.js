@@ -1528,10 +1528,8 @@ function cancelTravel() {
     
     showCustomConfirm("确定要取消当前旅行吗？已花费的时间将不会返还。", (confirmed) => {
         if (confirmed) {
-            if (player.trading.travelInterval) {
-                clearInterval(player.trading.travelInterval);
-                player.trading.travelInterval = null;
-            }
+            if (typeof clearRegisteredIntervalRef === 'function') clearRegisteredIntervalRef(player.trading, 'travelInterval');
+                    else if (player.trading && player.trading.travelInterval) { clearInterval(player.trading.travelInterval); player.trading.travelInterval = null; }
             
             player.trading.isTraveling = false;
             player.trading.travelDestination = '';
@@ -1590,9 +1588,8 @@ function startTravel() {
     logAction(`开始前往${destination}，预计需要${actualTime.toFixed(1)}分钟`, "info");
     
     // 确保清除之前的计时器
-    if (player.trading.travelInterval) {
-        clearInterval(player.trading.travelInterval);
-    }
+    if (typeof clearRegisteredIntervalRef === 'function') clearRegisteredIntervalRef(player.trading, 'travelInterval');
+                    else if (player.trading && player.trading.travelInterval) { clearInterval(player.trading.travelInterval); player.trading.travelInterval = null; }
     
     // 启动旅行计时器
     player.trading.travelInterval = registerInterval(checkTravelStatus, 1000);
@@ -1619,10 +1616,8 @@ function checkTravelStatus() {
 }
 // 完成旅行
 function completeTravel() {
-    if (player.trading.travelInterval) {
-        clearInterval(player.trading.travelInterval);
-        player.trading.travelInterval = null;
-    }
+    if (typeof clearRegisteredIntervalRef === 'function') clearRegisteredIntervalRef(player.trading, 'travelInterval');
+                    else if (player.trading && player.trading.travelInterval) { clearInterval(player.trading.travelInterval); player.trading.travelInterval = null; }
     // 记录本次旅行时长（用于短途收益衰减，抑制王都↔附近城市刷钱）
     if (player.trading.travelEndTime != null && player.trading.travelStartTime != null) {
         player.trading.lastTravelTimeMinutes = (player.trading.travelEndTime - player.trading.travelStartTime) / 60000;

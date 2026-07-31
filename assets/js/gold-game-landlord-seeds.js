@@ -310,7 +310,134 @@
     "暖阳石": { price: 45000, color: "#CD853F", refreshProbability: 15, description: "加速10分钟，10%获得沙尘词条" },
     "冰晶": { price: 55000, color: "#ADD8E6", refreshProbability: 12, description: "已有天气词条时，若无冰冻则获得冰冻词条" },
     "风铃": { price: 140000, color: "#DDA0DD", refreshProbability: 5, description: "已有天气词条时，5%获得龙卷风词条" },
-    "雨伞": { price: 12000, color: "#6495ED", refreshProbability: 60, description: "已有天气词条时，若无潮湿则获得潮湿词条" }
+    "雨伞": { price: 12000, color: "#6495ED", refreshProbability: 60, description: "已有天气词条时，若无潮湿则获得潮湿词条" },
+    /* —— 稀有 / 高级道具 —— */
+    "星陨杖": { price: 480000, color: "#7B68EE", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无星陨则直接获得星陨词条（×15）（仅抽奖获得）" },
+    "幻潮珠": { price: 520000, color: "#00CED1", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无幻潮则直接获得幻潮词条（×16）（仅抽奖获得）" },
+    "雷狱柱": { price: 560000, color: "#8A2BE2", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无雷狱则直接获得雷狱词条（×16）（仅抽奖获得）" },
+    "霜龙笛": { price: 580000, color: "#B0C4DE", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无霜龙则直接获得霜龙词条（×17）（仅抽奖获得）" },
+    "日曜镜": { price: 720000, color: "#FF8C00", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无日曜则直接获得日曜词条（×20）（仅抽奖获得）" },
+    "月蚀灯": { price: 750000, color: "#708090", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无月蚀则直接获得月蚀词条（×21）（仅抽奖获得）" },
+    "焚天炉": { price: 800000, color: "#DC143C", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无焚天则直接获得焚天词条（×21）（仅抽奖获得）" },
+    "苍穹卷轴": { price: 850000, color: "#4169E1", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无苍穹裂则直接获得苍穹裂词条（×22）（仅抽奖获得）" },
+    "虚空棱镜": { price: 980000, color: "#483D8B", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，8%获得虚空潮词条（×26）（仅抽奖获得）" },
+    "神罚符": { price: 1050000, color: "#FFD700", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，5%获得神罚雷词条（×27）（仅抽奖获得）" },
+    "混沌瓶": { price: 1200000, color: "#4B0082", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，3%获得混沌雨词条（×28）（仅抽奖获得）" },
+    "天道铃": { price: 1350000, color: "#FF1493", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，2%获得天道虹词条（×30）（仅抽奖获得）" },
+    "创世喷雾": { price: 1500000, color: "#FF69B4", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，1.5%获得创世霞词条（×30）（仅抽奖获得）" },
+    "永恒极光仪": { price: 1600000, color: "#00FA9A", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，1%获得永恒极光词条（×32）（仅抽奖获得）" },
+    "仙霓壶": { price: 2800000, color: "#7FFFD4", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.5%获得仙霓词条（×50）（仅抽奖获得）" },
+    "圣劫印": { price: 4500000, color: "#E6C200", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.2%获得圣劫词条（×100）（仅抽奖获得）" },
+    "至道玉": { price: 8000000, color: "#FFF8DC", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.08%获得至道词条（×200）（仅抽奖获得）" },
+    "紫金匣": { price: 900000, color: "#DAA520", refreshProbability: 0, lotteryOnly: true, description: "直接获得一个尚未拥有的金色天气词条（仅抽奖获得）" },
+    "虹彩敕": { price: 1800000, color: "#FF69B4", refreshProbability: 0, lotteryOnly: true, description: "直接获得一个尚未拥有的彩色天气词条（仅抽奖获得）" },
+    "超彩残卷": { price: 5000000, color: "#E0FFFF", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，3%随机获得一个尚未拥有的超彩天气词条（仅抽奖获得）" },
+    /* —— 新增多量稀有道具（仅抽奖） —— */
+    "紫电符": { price: 500000, color: "#9B59B6", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无紫电则直接获得紫电（×15）（仅抽奖）" },
+    "冥潮珠": { price: 510000, color: "#5D6D7E", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无冥潮则直接获得冥潮（×15）（仅抽奖）" },
+    "冰魄镜": { price: 530000, color: "#AED6F1", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无冰魄则直接获得冰魄（×16）（仅抽奖）" },
+    "星砂袋": { price: 540000, color: "#F5B7B1", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无星砂则直接获得星砂（×16）（仅抽奖）" },
+    "玄霜瓶": { price: 550000, color: "#D6EAF8", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无玄霜则直接获得玄霜（×16）（仅抽奖）" },
+    "雷蟒鞭": { price: 570000, color: "#8E44AD", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无雷蟒则直接获得雷蟒（×17）（仅抽奖）" },
+    "暗潮螺": { price: 575000, color: "#1A5276", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无暗潮则直接获得暗潮（×17）（仅抽奖）" },
+    "雪凰羽": { price: 580000, color: "#FCF3CF", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无雪凰则直接获得雪凰（×17）（仅抽奖）" },
+    "魔岚扇": { price: 600000, color: "#6C3483", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无魔岚则直接获得魔岚（×18）（仅抽奖）" },
+    "幽萤灯": { price: 610000, color: "#58D68D", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无幽萤则直接获得幽萤（×18）（仅抽奖）" },
+    "金乌镜": { price: 740000, color: "#E67E22", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无金乌则直接获得金乌（×20）（仅抽奖）" },
+    "银蟾灯": { price: 760000, color: "#BDC3C7", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无银蟾则直接获得银蟾（×20）（仅抽奖）" },
+    "劫火炉": { price: 780000, color: "#C0392B", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无劫火则直接获得劫火（×21）（仅抽奖）" },
+    "天裂卷": { price: 800000, color: "#2980B9", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无天裂则直接获得天裂（×21）（仅抽奖）" },
+    "帝晖印": { price: 820000, color: "#F4D03F", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无帝晖则直接获得帝晖（×21）（仅抽奖）" },
+    "龙息笛": { price: 860000, color: "#1ABC9C", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无龙息则直接获得龙息（×22）（仅抽奖）" },
+    "凤羽扇": { price: 870000, color: "#E74C3C", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无凤羽则直接获得凤羽（×22）（仅抽奖）" },
+    "星坠杖": { price: 880000, color: "#5B2C6F", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无星坠则直接获得星坠（×22）（仅抽奖）" },
+    "月华刃": { price: 890000, color: "#85929E", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无月华杀则直接获得月华杀（×22）（仅抽奖）" },
+    "日冕冠": { price: 900000, color: "#F39C12", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，若无日冕则直接获得日冕（×22）（仅抽奖）" },
+    "万法潮瓶": { price: 1000000, color: "#3498DB", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，8%获得万法潮（×26）（仅抽奖）" },
+    "九霄雷符": { price: 1080000, color: "#8E44AD", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，6%获得九霄雷（×27）（仅抽奖）" },
+    "阴阳雨壶": { price: 1150000, color: "#2C3E50", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，5%获得阴阳雨（×28）（仅抽奖）" },
+    "诸天虹铃": { price: 1250000, color: "#E91E63", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，4%获得诸天虹（×29）（仅抽奖）" },
+    "开天霞雾": { price: 1320000, color: "#FF8A65", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，3.5%获得开天霞（×30）（仅抽奖）" },
+    "不灭极光仪": { price: 1450000, color: "#00BCD4", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，3%获得不灭极光（×31）（仅抽奖）" },
+    "轮回霓珠": { price: 1550000, color: "#AB47BC", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，2.5%获得轮回霓（×32）（仅抽奖）" },
+    "破界渡符": { price: 1650000, color: "#FF7043", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，2%获得破界渡（×33）（仅抽奖）" },
+    "星河瀑瓶": { price: 1700000, color: "#5C6BC0", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，1.8%获得星河瀑（×34）（仅抽奖）" },
+    "神域岚灯": { price: 1750000, color: "#26A69A", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，1.5%获得神域岚（×34）（仅抽奖）" },
+    "道韵潮鼎": { price: 1850000, color: "#7E57C2", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，1.2%获得道韵潮（×35）（仅抽奖）" },
+    "元初虹玉": { price: 1900000, color: "#EC407A", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，1%获得元初虹（×35）（仅抽奖）" },
+    "瑶光劫壶": { price: 2600000, color: "#80DEEA", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.4%获得瑶光劫（×48）（仅抽奖）" },
+    "紫微霓印": { price: 2700000, color: "#CE93D8", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.35%获得紫微霓（×52）（仅抽奖）" },
+    "天河裂卷": { price: 2900000, color: "#90CAF9", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.3%获得天河裂（×55）（仅抽奖）" },
+    "帝星陨杖": { price: 4200000, color: "#FFD54F", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.15%获得帝星陨（×85）（仅抽奖）" },
+    "昊天劫印": { price: 4600000, color: "#FFB74D", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.12%获得昊天劫（×95）（仅抽奖）" },
+    "太上极光仪": { price: 9000000, color: "#FFF59D", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.015%获得太上极光（×220）（仅抽奖）" },
+    "月阙岚瓶": { price: 2750000, color: "#81D4FA", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.32%获得月阙岚（×54）（仅抽奖）" },
+    "青霄霓印": { price: 2850000, color: "#80CBC4", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.28%获得青霄霓（×56）（仅抽奖）" },
+    "灵泉劫壶": { price: 3000000, color: "#A5D6A7", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.25%获得灵泉劫（×62）（仅抽奖）" },
+    "紫极罚符": { price: 4800000, color: "#B39DDB", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.1%获得紫极罚（×105）（仅抽奖）" },
+    "穹苍陨杖": { price: 5200000, color: "#FFCC80", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.08%获得穹苍陨（×115）（仅抽奖）" },
+    "天衡劫印": { price: 5600000, color: "#FFE082", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.06%获得天衡劫（×125）（仅抽奖）" },
+    "混沌元珠": { price: 7200000, color: "#F8BBD0", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.04%获得混沌元（×165）（仅抽奖）" },
+    "玄黄裂卷": { price: 8000000, color: "#FFE0B2", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.025%获得玄黄裂（×190）（仅抽奖）" },
+    "无极霞玉": { price: 9500000, color: "#E1BEE7", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，0.012%获得无极霞（×230）（仅抽奖）" },
+    "紫霄匣": { price: 850000, color: "#9C27B0", refreshProbability: 0, lotteryOnly: true, description: "直接获得一个尚未拥有的紫色天气词条（仅抽奖）" },
+    "元素坩埚": { price: 950000, color: "#FF5722", refreshProbability: 0, lotteryOnly: true, description: "若尚无基础词，25%必出基础突变（含神辉/太初/无上）（仅抽奖）" },
+    "永恒沙漏": { price: 1200000, color: "#607D8B", refreshProbability: 0, lotteryOnly: true, description: "大幅加速成长180分钟（仅抽奖）" },
+    "重天鼓": { price: 1100000, color: "#795548", refreshProbability: 0, lotteryOnly: true, description: "加速90分钟，且8%获得一个尚未拥有的高级天气词条（仅抽奖）" },
+    "双生风铃": { price: 780000, color: "#4DB6AC", refreshProbability: 0, lotteryOnly: true, description: "已有天气词条时，连续尝试获得最多2个未拥有的普通天气词条（各30%）（仅抽奖）" },
+    "时空怀表": { price: 680000, color: "#2F4F4F", refreshProbability: 0, lotteryOnly: true, description: "大幅加速成长120分钟（仅抽奖获得）" },
+    "鸿蒙露": { price: 900000, color: "#9370DB", refreshProbability: 0, lotteryOnly: true, description: "加速60分钟，且10%必出基础突变（若尚无）（仅抽奖获得）" },
+    "万象附加器": { price: 2000000, color: "#FF4500", refreshProbability: 0, lotteryOnly: true, description: "直接获得一个尚未拥有的高级天气词条（紫/金/彩）（仅抽奖获得）" },
+    "天机罗盘": { price: 1100000, color: "#20B2AA", refreshProbability: 0, lotteryOnly: true, description: "15%获得一个尚未拥有的紫色及以上天气词条（仅抽奖获得）" }
+        };
+
+        /** 稀有道具：直接赋予指定天气词条 */
+        const LANDLORD_LOTTERY_ITEM_GRANT_TAGS = {
+            "星陨杖": "星陨", "幻潮珠": "幻潮", "雷狱柱": "雷狱", "霜龙笛": "霜龙",
+            "日曜镜": "日曜", "月蚀灯": "月蚀", "焚天炉": "焚天", "苍穹卷轴": "苍穹裂",
+            "紫电符": "紫电", "冥潮珠": "冥潮", "冰魄镜": "冰魄", "星砂袋": "星砂", "玄霜瓶": "玄霜",
+            "雷蟒鞭": "雷蟒", "暗潮螺": "暗潮", "雪凰羽": "雪凰", "魔岚扇": "魔岚", "幽萤灯": "幽萤",
+            "金乌镜": "金乌", "银蟾灯": "银蟾", "劫火炉": "劫火", "天裂卷": "天裂", "帝晖印": "帝晖",
+            "龙息笛": "龙息", "凤羽扇": "凤羽", "星坠杖": "星坠", "月华刃": "月华杀", "日冕冠": "日冕"
+        };
+        /** 稀有道具：概率赋予指定天气词条 */
+        const LANDLORD_LOTTERY_ITEM_ROLL_TAGS = {
+            "虚空棱镜": { tag: "虚空潮", chance: 8 },
+            "神罚符": { tag: "神罚雷", chance: 5 },
+            "混沌瓶": { tag: "混沌雨", chance: 3 },
+            "天道铃": { tag: "天道虹", chance: 2 },
+            "创世喷雾": { tag: "创世霞", chance: 1.5 },
+            "永恒极光仪": { tag: "永恒极光", chance: 1 },
+            "仙霓壶": { tag: "仙霓", chance: 0.5 },
+            "圣劫印": { tag: "圣劫", chance: 0.2 },
+            "至道玉": { tag: "至道", chance: 0.08 },
+            "万法潮瓶": { tag: "万法潮", chance: 8 },
+            "九霄雷符": { tag: "九霄雷", chance: 6 },
+            "阴阳雨壶": { tag: "阴阳雨", chance: 5 },
+            "诸天虹铃": { tag: "诸天虹", chance: 4 },
+            "开天霞雾": { tag: "开天霞", chance: 3.5 },
+            "不灭极光仪": { tag: "不灭极光", chance: 3 },
+            "轮回霓珠": { tag: "轮回霓", chance: 2.5 },
+            "破界渡符": { tag: "破界渡", chance: 2 },
+            "星河瀑瓶": { tag: "星河瀑", chance: 1.8 },
+            "神域岚灯": { tag: "神域岚", chance: 1.5 },
+            "道韵潮鼎": { tag: "道韵潮", chance: 1.2 },
+            "元初虹玉": { tag: "元初虹", chance: 1 },
+            "瑶光劫壶": { tag: "瑶光劫", chance: 0.4 },
+            "紫微霓印": { tag: "紫微霓", chance: 0.35 },
+            "天河裂卷": { tag: "天河裂", chance: 0.3 },
+            "帝星陨杖": { tag: "帝星陨", chance: 0.15 },
+            "昊天劫印": { tag: "昊天劫", chance: 0.12 },
+            "太上极光仪": { tag: "太上极光", chance: 0.015 },
+            "月阙岚瓶": { tag: "月阙岚", chance: 0.32 },
+            "青霄霓印": { tag: "青霄霓", chance: 0.28 },
+            "灵泉劫壶": { tag: "灵泉劫", chance: 0.25 },
+            "紫极罚符": { tag: "紫极罚", chance: 0.1 },
+            "穹苍陨杖": { tag: "穹苍陨", chance: 0.08 },
+            "天衡劫印": { tag: "天衡劫", chance: 0.06 },
+            "混沌元珠": { tag: "混沌元", chance: 0.04 },
+            "玄黄裂卷": { tag: "玄黄裂", chance: 0.025 },
+            "无极霞玉": { tag: "无极霞", chance: 0.012 }
         };
 // 突变倍率
         const mutationMultipliers = {
@@ -323,12 +450,32 @@
             "金": 10, "荧光": 10, "彩虹": 10,"龙卷风": 10,
             // 紫色词条
             "星环": 15, "瓷化": 15, "亮晶晶": 15, "台风": 15,
+            "星陨": 15, "幻潮": 16, "雷狱": 16, "霜龙": 17,
+            "紫电": 15, "冥潮": 15, "冰魄": 16, "星砂": 16, "玄霜": 16,
+            "雷蟒": 17, "暗潮": 17, "雪凰": 17, "魔岚": 18, "幽萤": 18,
             // 金色词条
             "水晶": 20, "红月": 20, "陨石": 20,
+            "日曜": 20, "月蚀": 21, "焚天": 21, "苍穹裂": 22,
+            "金乌": 20, "银蟾": 20, "劫火": 21, "天裂": 21, "帝晖": 21,
+            "龙息": 22, "凤羽": 22, "星坠": 22, "月华杀": 22, "日冕": 22,
             // 彩色词条
             "流光": 25, "霓虹": 25, "渡劫": 25,
-            // 田地专属词条（与银/金/水晶/流光元素词条不同；售价主要靠田地倍率，此处×1不参与元素倍率）
-            "银土": 1, "金土": 1, "钻石土": 1, "流光土": 1,
+            "虚空潮": 26, "神罚雷": 27, "混沌雨": 28, "天道虹": 30, "创世霞": 30, "永恒极光": 32,
+            "万法潮": 26, "九霄雷": 27, "阴阳雨": 28, "诸天虹": 29, "开天霞": 30,
+            "不灭极光": 31, "轮回霓": 32, "破界渡": 33, "星河瀑": 34, "神域岚": 34,
+            "道韵潮": 35, "元初虹": 35, "三界霓": 33, "灵霄劫": 34, "太虚雨": 32,
+            // 超彩基础词（对应神辉/太初/无上土地材料；极低获得）
+            "神辉": 40, "太初": 55, "无上": 80,
+            // 超彩天气词条（彩色之上，极低获得）
+            "仙霓": 50, "圣劫": 100, "至道": 200,
+            "瑶光劫": 48, "紫微霓": 52, "天河裂": 55, "仙阙潮": 58, "星君怒": 60,
+            "月阙岚": 54, "青霄霓": 56, "灵泉劫": 62,
+            "帝星陨": 85, "昊天劫": 95, "万灵罚": 100, "混元雷": 110, "太乙虹": 120,
+            "紫极罚": 105, "穹苍陨": 115, "天衡劫": 125,
+            "鸿蒙裂": 150, "大道潮": 170, "无极虹": 180, "真如劫": 200, "太上极光": 220,
+            "混沌元": 165, "玄黄裂": 190, "无极霞": 230,
+            // 田地专属词条（与银/金/水晶/流光/神辉/太初/无上元素词条不同；售价主要靠田地倍率，此处×1不参与元素倍率）
+            "银土": 1, "金土": 1, "钻石土": 1, "流光土": 1, "神辉土": 1, "太初土": 1, "无上土": 1,
             // 稀有词条
             "极光": 18, "极昼": 18,
             "霞光": 12, "霜华": 12,
@@ -340,17 +487,61 @@
             "虹彩": 22
         };
 
-        // 田地等级：0 普通 → 1 银 → 2 金 → 3 钻石 → 4 流光；专属词条为 银土/金土/钻石土/流光土（与元素词条 银/金/水晶/流光 不同）
-        const LANDLORD_FIELD_TIER_NAMES = ['普通地', '银土地', '金土地', '钻石土地', '流光土地'];
-        const LANDLORD_TIER_LAND_AFFIX = ['', '银土', '金土', '钻石土', '流光土'];
-        const LANDLORD_ALL_LAND_AFFIXES = ['银土', '金土', '钻石土', '流光土'];
-        const LANDLORD_ELEMENT_BASIC_MUTATIONS = ['银', '金', '水晶', '流光'];
-        const LANDLORD_TIER_EXCLUSIVE_PRICE_MULT = { '银土': 2, '金土': 3, '钻石土': 5, '流光土': 10 };
+        /** 高级天气词条（紫及以上至彩色），供稀有道具抽取（不含银/金/水晶/流光等元素基础突变、不含超彩） */
+        const LANDLORD_ADVANCED_WEATHER_TAGS = [
+            "星环", "瓷化", "亮晶晶", "台风", "星陨", "幻潮", "雷狱", "霜龙",
+            "紫电", "冥潮", "冰魄", "星砂", "玄霜", "雷蟒", "暗潮", "雪凰", "魔岚", "幽萤",
+            "极光", "极昼", "暴雪", "雾凇",
+            "红月", "陨石", "日曜", "月蚀", "焚天", "苍穹裂", "晨曦", "热浪", "霞蔚", "虹彩",
+            "金乌", "银蟾", "劫火", "天裂", "帝晖", "龙息", "凤羽", "星坠", "月华杀", "日冕",
+            "霓虹", "渡劫", "虚空潮", "神罚雷", "混沌雨", "天道虹", "创世霞", "永恒极光",
+            "万法潮", "九霄雷", "阴阳雨", "诸天虹", "开天霞", "不灭极光", "轮回霓", "破界渡",
+            "星河瀑", "神域岚", "道韵潮", "元初虹", "三界霓", "灵霄劫", "太虚雨"
+        ];
+        /** 超彩词条（不进万象/天机普通高级池，仅专属道具） */
+        const LANDLORD_ULTRA_WEATHER_TAGS = [
+            "仙霓", "圣劫", "至道",
+            "瑶光劫", "紫微霓", "天河裂", "仙阙潮", "星君怒",
+            "月阙岚", "青霄霓", "灵泉劫",
+            "帝星陨", "昊天劫", "万灵罚", "混元雷", "太乙虹",
+            "紫极罚", "穹苍陨", "天衡劫",
+            "鸿蒙裂", "大道潮", "无极虹", "真如劫", "太上极光",
+            "混沌元", "玄黄裂", "无极霞"
+        ];
+        /** 仙霓档超彩：可进入自然天气刷新 */
+        const LANDLORD_AURORA_WEATHER_TAGS = [
+            "仙霓", "瑶光劫", "紫微霓", "天河裂", "仙阙潮", "星君怒",
+            "月阙岚", "青霄霓", "灵泉劫"
+        ];
+        /** 圣劫档超彩：可进自然天气，权重大幅低于仙霓档 */
+        const LANDLORD_STELLAR_WEATHER_TAGS = [
+            "圣劫", "帝星陨", "昊天劫", "万灵罚", "混元雷", "太乙虹",
+            "紫极罚", "穹苍陨", "天衡劫"
+        ];
+        /** 至道档超彩：可进自然天气，权重最低 */
+        const LANDLORD_GENESIS_WEATHER_TAGS = [
+            "至道", "鸿蒙裂", "大道潮", "无极虹", "真如劫", "太上极光",
+            "混沌元", "玄黄裂", "无极霞"
+        ];
+
+        // 田地等级：0 普通 → 1 银 → 2 金 → 3 钻石 → 4 流光 → 5 神辉 → 6 太初 → 7 无上
+        const LANDLORD_FIELD_TIER_MAX = 7;
+        const LANDLORD_FIELD_TIER_NAMES = ['普通地', '银土地', '金土地', '钻石土地', '流光土地', '神辉土地', '太初土地', '无上土地'];
+        const LANDLORD_TIER_LAND_AFFIX = ['', '银土', '金土', '钻石土', '流光土', '神辉土', '太初土', '无上土'];
+        const LANDLORD_ALL_LAND_AFFIXES = ['银土', '金土', '钻石土', '流光土', '神辉土', '太初土', '无上土'];
+        const LANDLORD_ELEMENT_BASIC_MUTATIONS = ['银', '金', '水晶', '流光', '神辉', '太初', '无上'];
+        const LANDLORD_TIER_EXCLUSIVE_PRICE_MULT = {
+            '银土': 2, '金土': 3, '钻石土': 5, '流光土': 10,
+            '神辉土': 25, '太初土': 50, '无上土': 100
+        };
         const LANDLORD_TIER_UPGRADE_COST = [
             { barKey: 'silver', label: '银条', amount: 50 },
             { barKey: 'gold', label: '金条', amount: 50 },
             { barKey: 'diamond', label: '钻石条', amount: 50 },
-            { barKey: 'flow', label: '流光条', amount: 50 }
+            { barKey: 'flow', label: '流光条', amount: 50 },
+            { barKey: 'divine', label: '神辉条', amount: 50 },
+            { barKey: 'primal', label: '太初条', amount: 50 },
+            { barKey: 'supreme', label: '无上条', amount: 50 }
         ];
 
         // 通天藤：果实类目顺序与种子合成链一致（土豆→…→大道果），每级需100个对应果实；每级世界地图经验+5%
@@ -459,7 +650,23 @@
             "彩虹", "星环", "亮晶晶", "霓虹", "红月", "渡劫", "陨石",
             "极光", "极昼",
             "霞光", "霜华",
-            "暮色", "晨曦", "薄雾", "浓雾", "雷暴", "细雨", "暴雨", "晴空", "阴云", "露珠", "霜冻", "冰雹", "热浪", "寒潮", "季风", "微风", "暴雪", "雾凇", "霞蔚", "虹彩"
+            "暮色", "晨曦", "薄雾", "浓雾", "雷暴", "细雨", "暴雨", "晴空", "阴云", "露珠", "霜冻", "冰雹", "热浪", "寒潮", "季风", "微风", "暴雪", "雾凇", "霞蔚", "虹彩",
+            /* 高级新增 */
+            "星陨", "幻潮", "雷狱", "霜龙",
+            "日曜", "月蚀", "焚天", "苍穹裂",
+            "虚空潮", "神罚雷", "混沌雨", "天道虹", "创世霞", "永恒极光",
+            "仙霓", "圣劫", "至道",
+            /* 高品天气大批量扩展 */
+            "紫电", "冥潮", "冰魄", "星砂", "玄霜", "雷蟒", "暗潮", "雪凰", "魔岚", "幽萤",
+            "金乌", "银蟾", "劫火", "天裂", "帝晖", "龙息", "凤羽", "星坠", "月华杀", "日冕",
+            "万法潮", "九霄雷", "阴阳雨", "诸天虹", "开天霞", "不灭极光", "轮回霓", "破界渡",
+            "星河瀑", "神域岚", "道韵潮", "元初虹", "三界霓", "灵霄劫", "太虚雨",
+            "瑶光劫", "紫微霓", "天河裂", "仙阙潮", "星君怒",
+            "月阙岚", "青霄霓", "灵泉劫",
+            "帝星陨", "昊天劫", "万灵罚", "混元雷", "太乙虹",
+            "紫极罚", "穹苍陨", "天衡劫",
+            "鸿蒙裂", "大道潮", "无极虹", "真如劫", "太上极光",
+            "混沌元", "玄黄裂", "无极霞"
         ];
 
         // 天气突变颜色映射
@@ -492,7 +699,24 @@
             "极昼": "blue",
             "霞光": "gold",
             "霜华": "green",
-            "暮色": "grey", "晨曦": "gold", "薄雾": "grey", "浓雾": "grey", "雷暴": "green", "细雨": "grey", "暴雨": "blue", "晴空": "blue", "阴云": "grey", "露珠": "green", "霜冻": "green", "冰雹": "blue", "热浪": "gold", "寒潮": "blue", "季风": "blue", "微风": "green", "暴雪": "purple", "雾凇": "purple", "霞蔚": "gold", "虹彩": "rainbow"
+            "暮色": "grey", "晨曦": "gold", "薄雾": "grey", "浓雾": "grey", "雷暴": "green", "细雨": "grey", "暴雨": "blue", "晴空": "blue", "阴云": "grey", "露珠": "green", "霜冻": "green", "冰雹": "blue", "热浪": "gold", "寒潮": "blue", "季风": "blue", "微风": "green", "暴雪": "purple", "雾凇": "purple", "霞蔚": "gold", "虹彩": "rainbow",
+            "星陨": "purple", "幻潮": "purple", "雷狱": "purple", "霜龙": "purple",
+            "紫电": "purple", "冥潮": "purple", "冰魄": "purple", "星砂": "purple", "玄霜": "purple",
+            "雷蟒": "purple", "暗潮": "purple", "雪凰": "purple", "魔岚": "purple", "幽萤": "purple",
+            "日曜": "gold", "月蚀": "gold", "焚天": "gold", "苍穹裂": "gold",
+            "金乌": "gold", "银蟾": "gold", "劫火": "gold", "天裂": "gold", "帝晖": "gold",
+            "龙息": "gold", "凤羽": "gold", "星坠": "gold", "月华杀": "gold", "日冕": "gold",
+            "虚空潮": "rainbow", "神罚雷": "rainbow", "混沌雨": "rainbow", "天道虹": "rainbow", "创世霞": "rainbow", "永恒极光": "rainbow",
+            "万法潮": "rainbow", "九霄雷": "rainbow", "阴阳雨": "rainbow", "诸天虹": "rainbow", "开天霞": "rainbow",
+            "不灭极光": "rainbow", "轮回霓": "rainbow", "破界渡": "rainbow", "星河瀑": "rainbow", "神域岚": "rainbow",
+            "道韵潮": "rainbow", "元初虹": "rainbow", "三界霓": "rainbow", "灵霄劫": "rainbow", "太虚雨": "rainbow",
+            "仙霓": "aurora", "圣劫": "stellar", "至道": "genesis",
+            "瑶光劫": "aurora", "紫微霓": "aurora", "天河裂": "aurora", "仙阙潮": "aurora", "星君怒": "aurora",
+            "月阙岚": "aurora", "青霄霓": "aurora", "灵泉劫": "aurora",
+            "帝星陨": "stellar", "昊天劫": "stellar", "万灵罚": "stellar", "混元雷": "stellar", "太乙虹": "stellar",
+            "紫极罚": "stellar", "穹苍陨": "stellar", "天衡劫": "stellar",
+            "鸿蒙裂": "genesis", "大道潮": "genesis", "无极虹": "genesis", "真如劫": "genesis", "太上极光": "genesis",
+            "混沌元": "genesis", "玄黄裂": "genesis", "无极霞": "genesis"
                     };
 const seedSynthesisRules = {
     "土豆": {
@@ -1117,7 +1341,7 @@ function performLandlordGeneSynthesis(selectedSeeds) {
 
 const lotterySystem = {
     // 可抽奖的词条
-    eligibleMutations: ["银", "金", "水晶", "流光"],
+    eligibleMutations: ["银", "金", "水晶", "流光", "神辉", "太初", "无上"],
     
     // 奖品池
     prizePool: [
@@ -1138,26 +1362,188 @@ const lotterySystem = {
       { name: "蟠桃", probability: 0.22,  weight: 1  },
       { name: "红毛丹", probability: 0.1,  weight: 1  },
         { name: "人参树", probability: 0.1,  weight: 1  },
+        /* 1亿以下高价种子（权重偏低，越贵越稀有） */
+        { name: "向日葵", probability: 0.1, weight: 1 },
+        { name: "松树", probability: 0.08, weight: 1 },
+        { name: "大王菊", probability: 0.07, weight: 1 },
+        { name: "火龙果", probability: 0.055, weight: 1 },
+        { name: "闫闫果", probability: 0.045, weight: 1 },
+        { name: "菠萝", probability: 0.04, weight: 1 },
+        { name: "葡萄", probability: 0.032, weight: 1 },
+        { name: "惊奇菇", probability: 0.025, weight: 1 },
+        { name: "泡泡果", probability: 0.018, weight: 1 },
       { name: "榴莲", probability: 0.01,  weight: 1  },
       { name: "百香果", probability: 0.001,  weight: 1  },
       { name: "杨桃", probability: 0.001,  weight: 1  },
-        { name: "随机牧场动物", probability: 10, weight: 1, prizeType: "ranchAnimal" }
+        { name: "随机牧场动物", probability: 10, weight: 1, prizeType: "ranchAnimal" },
+        /* 稀有道具（权重较低，按归一化概率抽取） */
+        { name: "超级浇水器", probability: 0.45, weight: 1, prizeType: "item" },
+        { name: "天气附加器", probability: 0.22, weight: 1, prizeType: "item" },
+        { name: "时空怀表", probability: 0.28, weight: 1, prizeType: "item" },
+        { name: "永恒沙漏", probability: 0.12, weight: 1, prizeType: "item" },
+        { name: "鸿蒙露", probability: 0.2, weight: 1, prizeType: "item" },
+        { name: "元素坩埚", probability: 0.14, weight: 1, prizeType: "item" },
+        { name: "重天鼓", probability: 0.1, weight: 1, prizeType: "item" },
+        { name: "双生风铃", probability: 0.13, weight: 1, prizeType: "item" },
+        { name: "星陨杖", probability: 0.16, weight: 1, prizeType: "item" },
+        { name: "幻潮珠", probability: 0.14, weight: 1, prizeType: "item" },
+        { name: "雷狱柱", probability: 0.12, weight: 1, prizeType: "item" },
+        { name: "霜龙笛", probability: 0.11, weight: 1, prizeType: "item" },
+        { name: "紫电符", probability: 0.12, weight: 1, prizeType: "item" },
+        { name: "冥潮珠", probability: 0.11, weight: 1, prizeType: "item" },
+        { name: "冰魄镜", probability: 0.1, weight: 1, prizeType: "item" },
+        { name: "星砂袋", probability: 0.1, weight: 1, prizeType: "item" },
+        { name: "玄霜瓶", probability: 0.095, weight: 1, prizeType: "item" },
+        { name: "雷蟒鞭", probability: 0.09, weight: 1, prizeType: "item" },
+        { name: "暗潮螺", probability: 0.09, weight: 1, prizeType: "item" },
+        { name: "雪凰羽", probability: 0.085, weight: 1, prizeType: "item" },
+        { name: "魔岚扇", probability: 0.08, weight: 1, prizeType: "item" },
+        { name: "幽萤灯", probability: 0.08, weight: 1, prizeType: "item" },
+        { name: "紫霄匣", probability: 0.05, weight: 1, prizeType: "item" },
+        { name: "日曜镜", probability: 0.08, weight: 1, prizeType: "item" },
+        { name: "月蚀灯", probability: 0.08, weight: 1, prizeType: "item" },
+        { name: "焚天炉", probability: 0.07, weight: 1, prizeType: "item" },
+        { name: "苍穹卷轴", probability: 0.07, weight: 1, prizeType: "item" },
+        { name: "金乌镜", probability: 0.07, weight: 1, prizeType: "item" },
+        { name: "银蟾灯", probability: 0.07, weight: 1, prizeType: "item" },
+        { name: "劫火炉", probability: 0.065, weight: 1, prizeType: "item" },
+        { name: "天裂卷", probability: 0.065, weight: 1, prizeType: "item" },
+        { name: "帝晖印", probability: 0.06, weight: 1, prizeType: "item" },
+        { name: "龙息笛", probability: 0.055, weight: 1, prizeType: "item" },
+        { name: "凤羽扇", probability: 0.055, weight: 1, prizeType: "item" },
+        { name: "星坠杖", probability: 0.05, weight: 1, prizeType: "item" },
+        { name: "月华刃", probability: 0.05, weight: 1, prizeType: "item" },
+        { name: "日冕冠", probability: 0.048, weight: 1, prizeType: "item" },
+        { name: "紫金匣", probability: 0.025, weight: 1, prizeType: "item" },
+        { name: "天机罗盘", probability: 0.06, weight: 1, prizeType: "item" },
+        { name: "虚空棱镜", probability: 0.045, weight: 1, prizeType: "item" },
+        { name: "神罚符", probability: 0.035, weight: 1, prizeType: "item" },
+        { name: "混沌瓶", probability: 0.028, weight: 1, prizeType: "item" },
+        { name: "万法潮瓶", probability: 0.04, weight: 1, prizeType: "item" },
+        { name: "九霄雷符", probability: 0.032, weight: 1, prizeType: "item" },
+        { name: "阴阳雨壶", probability: 0.028, weight: 1, prizeType: "item" },
+        { name: "诸天虹铃", probability: 0.024, weight: 1, prizeType: "item" },
+        { name: "开天霞雾", probability: 0.02, weight: 1, prizeType: "item" },
+        { name: "天道铃", probability: 0.02, weight: 1, prizeType: "item" },
+        { name: "创世喷雾", probability: 0.015, weight: 1, prizeType: "item" },
+        { name: "永恒极光仪", probability: 0.012, weight: 1, prizeType: "item" },
+        { name: "不灭极光仪", probability: 0.014, weight: 1, prizeType: "item" },
+        { name: "轮回霓珠", probability: 0.012, weight: 1, prizeType: "item" },
+        { name: "破界渡符", probability: 0.01, weight: 1, prizeType: "item" },
+        { name: "星河瀑瓶", probability: 0.009, weight: 1, prizeType: "item" },
+        { name: "神域岚灯", probability: 0.008, weight: 1, prizeType: "item" },
+        { name: "道韵潮鼎", probability: 0.007, weight: 1, prizeType: "item" },
+        { name: "元初虹玉", probability: 0.006, weight: 1, prizeType: "item" },
+        { name: "虹彩敕", probability: 0.01, weight: 1, prizeType: "item" },
+        { name: "万象附加器", probability: 0.008, weight: 1, prizeType: "item" },
+        { name: "超彩残卷", probability: 0.003, weight: 1, prizeType: "item" },
+        { name: "仙霓壶", probability: 0.004, weight: 1, prizeType: "item" },
+        { name: "瑶光劫壶", probability: 0.0035, weight: 1, prizeType: "item" },
+        { name: "紫微霓印", probability: 0.003, weight: 1, prizeType: "item" },
+        { name: "天河裂卷", probability: 0.0025, weight: 1, prizeType: "item" },
+        { name: "帝星陨杖", probability: 0.0018, weight: 1, prizeType: "item" },
+        { name: "昊天劫印", probability: 0.0014, weight: 1, prizeType: "item" },
+        { name: "圣劫印", probability: 0.0015, weight: 1, prizeType: "item" },
+        { name: "至道玉", probability: 0.0005, weight: 1, prizeType: "item" },
+        { name: "太上极光仪", probability: 0.0003, weight: 1, prizeType: "item" },
+        { name: "月阙岚瓶", probability: 0.0028, weight: 1, prizeType: "item" },
+        { name: "青霄霓印", probability: 0.0024, weight: 1, prizeType: "item" },
+        { name: "灵泉劫壶", probability: 0.002, weight: 1, prizeType: "item" },
+        { name: "紫极罚符", probability: 0.0011, weight: 1, prizeType: "item" },
+        { name: "穹苍陨杖", probability: 0.0009, weight: 1, prizeType: "item" },
+        { name: "天衡劫印", probability: 0.0007, weight: 1, prizeType: "item" },
+        { name: "混沌元珠", probability: 0.00045, weight: 1, prizeType: "item" },
+        { name: "玄黄裂卷", probability: 0.00035, weight: 1, prizeType: "item" },
+        { name: "无极霞玉", probability: 0.00025, weight: 1, prizeType: "item" }
     ],
     
     // 抽奖消耗
     costPerDraw: 1, // 每次抽奖消耗1次抽奖次数
-    
-    // 初始化抽奖概率
+
+    /** 大类总概率：种子 / 牧场动物 / 道具 */
+    categoryTargets: { seed: 80, ranchAnimal: 10, item: 10 },
+
+    _prizeCategory: function(prize) {
+        if (prize.prizeType === 'item') return 'item';
+        if (prize.prizeType === 'ranchAnimal') return 'ranchAnimal';
+        return 'seed';
+    },
+
+    /** 类内相对权重：种子越贵越低；道具均分；动物固定 */
+    _relativeWeight: function(prize) {
+        const cat = this._prizeCategory(prize);
+        if (cat === 'item' || cat === 'ranchAnimal') return 1;
+        var price = 30000;
+        if (typeof seedProperties !== 'undefined' && seedProperties[prize.name]) {
+            price = Number(seedProperties[prize.name].price);
+            if (!(price > 0)) price = 1000;
+        }
+        // 价格越高权重越低（0.8 次方，避免顶级种子几乎抽不到）
+        return 1 / Math.pow(price, 0.8);
+    },
+
+    // 初始化抽奖概率（按大类目标占比，再按类内相对权重拆分）
     initPrizeProbabilities: function() {
-        let totalProbability = 0;
-        this.prizePool.forEach(prize => {
-            totalProbability += prize.probability;
+        const targets = this.categoryTargets || { seed: 80, ranchAnimal: 10, item: 10 };
+        const buckets = { seed: [], ranchAnimal: [], item: [] };
+        this.prizePool.forEach((prize) => {
+            buckets[this._prizeCategory(prize)].push(prize);
         });
-        
-        // 计算实际概率
-        this.prizePool.forEach(prize => {
-            prize.actualProbability = (prize.probability / totalProbability * 100).toFixed(2);
+        Object.keys(buckets).forEach((key) => {
+            const list = buckets[key];
+            let sum = 0;
+            list.forEach((p) => {
+                p._relWeight = this._relativeWeight(p);
+                sum += p._relWeight;
+            });
+            const catTarget = Number(targets[key]) || 0;
+            list.forEach((p) => {
+                const share = sum > 0 ? p._relWeight / sum : 0;
+                p.actualProbability = (share * catTarget).toFixed(2);
+                p._drawWeight = share * catTarget;
+            });
         });
+    },
+
+    /** 按大类目标 + 类内相对权重抽取 */
+    pickPrize: function() {
+        this.initPrizeProbabilities();
+        const targets = this.categoryTargets || { seed: 80, ranchAnimal: 10, item: 10 };
+        const buckets = { seed: [], ranchAnimal: [], item: [] };
+        this.prizePool.forEach((prize) => {
+            buckets[this._prizeCategory(prize)].push(prize);
+        });
+        let catTotal = 0;
+        const cats = [];
+        ['seed', 'ranchAnimal', 'item'].forEach((key) => {
+            if (buckets[key].length > 0 && (Number(targets[key]) || 0) > 0) {
+                cats.push(key);
+                catTotal += Number(targets[key]) || 0;
+            }
+        });
+        if (!cats.length) return this.prizePool[0];
+        let r = Math.random() * catTotal;
+        let chosenCat = cats[cats.length - 1];
+        for (let i = 0; i < cats.length; i++) {
+            r -= Number(targets[cats[i]]) || 0;
+            if (r <= 0) {
+                chosenCat = cats[i];
+                break;
+            }
+        }
+        const list = buckets[chosenCat];
+        let sum = 0;
+        for (let i = 0; i < list.length; i++) {
+            list[i]._relWeight = this._relativeWeight(list[i]);
+            sum += list[i]._relWeight;
+        }
+        if (sum <= 0) return list[0];
+        let rr = Math.random() * sum;
+        for (let i = 0; i < list.length; i++) {
+            rr -= list[i]._relWeight;
+            if (rr <= 0) return list[i];
+        }
+        return list[list.length - 1];
     }
 };
 

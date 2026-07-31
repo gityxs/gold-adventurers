@@ -3247,14 +3247,54 @@ function getExplorationResources() {
     return explorationData.resources;
 }
 
-/** 将 explorationData 写回 player.exploration，保证存档与内存一致 */
+/** 解析舰队属性等级（兼容 number / 数字字符串，避免严格 typeof 导致读档失败） */
+function parseExplorationAttrLevel(v) {
+    var n = Number(v);
+    if (!Number.isFinite(n) || n < 1) return 0;
+    return Math.floor(n);
+}
+
+/** 将单条舰队属性从 src 合并进 explorationData：取更高等级，并同步对应 cost */
+function mergeExplorationAttrIntoData(attrKey, srcAttr) {
+    if (!srcAttr || typeof srcAttr !== 'object') return;
+    if (!explorationData[attrKey] || typeof explorationData[attrKey] !== 'object') {
+        explorationData[attrKey] = { level: 1, cost: 100 };
+    }
+    var srcLv = parseExplorationAttrLevel(srcAttr.level);
+    var curLv = parseExplorationAttrLevel(explorationData[attrKey].level) || 1;
+    if (srcLv > curLv) {
+        explorationData[attrKey].level = srcLv;
+        if (srcAttr.cost != null && srcAttr.cost !== '' && (typeof srcAttr.cost === 'number' || typeof srcAttr.cost === 'string')) {
+            explorationData[attrKey].cost = srcAttr.cost;
+        }
+    } else if (srcLv === curLv && (explorationData[attrKey].cost == null || explorationData[attrKey].cost === '')
+        && srcAttr.cost != null && srcAttr.cost !== ''
+        && (typeof srcAttr.cost === 'number' || typeof srcAttr.cost === 'string')) {
+        explorationData[attrKey].cost = srcAttr.cost;
+    }
+}
+
+/** 读档后若 player 与 explorationData 舰队等级分叉，取较大值，避免默认1级误覆盖 */
+function mergeExplorationFleetFromPlayer() {
+    try {
+        if (typeof player === 'undefined' || !player || !player.exploration) return;
+        var pe = player.exploration;
+        ['speed', 'capacity', 'durability'].forEach(function(k) {
+            mergeExplorationAttrIntoData(k, pe[k]);
+        });
+    } catch (e) { /* 忽略 */ }
+}
+
+/** 将 explorationData 写回 player.exploration，保证存档与内存一致（写前先抬高分叉等级，防误清空） */
 function syncExplorationDataToPlayer() {
     try {
         if (typeof player === 'undefined' || !player) return;
+        mergeExplorationFleetFromPlayer();
+        mergeExplorationResourcesFromPlayer();
         player.exploration = {
-            speed: explorationData.speed,
-            capacity: explorationData.capacity,
-            durability: explorationData.durability,
+            speed: { level: explorationData.speed.level, cost: explorationData.speed.cost },
+            capacity: { level: explorationData.capacity.level, cost: explorationData.capacity.cost },
+            durability: { level: explorationData.durability.level, cost: explorationData.durability.cost },
             resources: getExplorationResources(),
             activeMission: explorationData.activeMission,
             missionEndTime: explorationData.missionEndTime,
@@ -3280,31 +3320,55 @@ function mergeExplorationResourcesFromPlayer() {
 /** 从存档对象恢复星域探索数据到全局 explorationData（用于加载/导入后避免舰队属性变1级）；loadSave 可能早于 explorationData 定义执行，用 try-catch 避免 TDZ 报错 */
 function restoreExplorationDataFromSave(save) {
     try {
-        var exp = (save && save.exploration) ? save.exploration : save;
+        var fromSaveObj = !!(save && save.exploration && typeof save.exploration === 'object');
+        var exp = null;
+        if (fromSaveObj) exp = save.exploration;
+        else if (save && save.speed && (save.speed.level != null)) { exp = save; fromSaveObj = true; }
+        else if (typeof player !== 'undefined' && player && player.exploration) exp = player.exploration;
         if (!exp || typeof exp !== 'object') return;
-        if (exp.speed && typeof exp.speed.level === 'number') {
-            explorationData.speed.level = exp.speed.level;
-            if (typeof exp.speed.cost === 'number' || typeof exp.speed.cost === 'string') explorationData.speed.cost = exp.speed.cost;
-        }
-        if (exp.capacity && typeof exp.capacity.level === 'number') {
-            explorationData.capacity.level = exp.capacity.level;
-            if (typeof exp.capacity.cost === 'number' || typeof exp.capacity.cost === 'string') explorationData.capacity.cost = exp.capacity.cost;
-        }
-        if (exp.durability && typeof exp.durability.level === 'number') {
-            explorationData.durability.level = exp.durability.level;
-            if (typeof exp.durability.cost === 'number' || typeof exp.durability.cost === 'string') explorationData.durability.cost = exp.durability.cost;
-        }
+
+        ['speed', 'capacity', 'durability'].forEach(function(k) {
+            var src = exp[k];
+            if (!src || typeof src !== 'object') return;
+            var lv = parseExplorationAttrLevel(src.level);
+            if (lv < 1) return;
+            // 来自存档对象：强制覆盖（切号/云档必须以存档为准）；仅 player 回落时才取 max 防误清空
+            if (fromSaveObj) {
+                explorationData[k].level = lv;
+                if (src.cost != null && src.cost !== '' && (typeof src.cost === 'number' || typeof src.cost === 'string')) {
+                    explorationData[k].cost = src.cost;
+                }
+            } else {
+                mergeExplorationAttrIntoData(k, src);
+            }
+        });
         if (exp.resources && typeof exp.resources === 'object') {
-            if (typeof exp.resources.stardust === 'number') explorationData.resources.stardust = exp.resources.stardust;
-            if (typeof exp.resources.darkMatter === 'number') explorationData.resources.darkMatter = exp.resources.darkMatter;
-            if (typeof exp.resources.cosmicCrystal === 'number') explorationData.resources.cosmicCrystal = exp.resources.cosmicCrystal;
-            if (typeof exp.resources.artifactFragment === 'number') explorationData.resources.artifactFragment = exp.resources.artifactFragment;
+            var er = getExplorationResources();
+            ['stardust', 'darkMatter', 'cosmicCrystal', 'artifactFragment'].forEach(function(k) {
+                var v = Number(exp.resources[k]);
+                if (!Number.isFinite(v) || v < 0) return;
+                if (fromSaveObj) er[k] = v;
+                else er[k] = Math.max(Number(er[k]) || 0, v);
+            });
         }
-        explorationData.activeMission = exp.activeMission ?? null;
-        explorationData.missionEndTime = exp.missionEndTime ?? 0;
+        if (exp.activeMission !== undefined) explorationData.activeMission = exp.activeMission ?? null;
+        if (exp.missionEndTime !== undefined) explorationData.missionEndTime = exp.missionEndTime ?? 0;
         if (Array.isArray(exp.logs)) explorationData.logs = exp.logs;
+        // 存档缺字段时，再用 player 侧补齐更高舰队等级（防默认1级）
+        if (!fromSaveObj) mergeExplorationFleetFromPlayer();
         mergeExplorationResourcesFromPlayer();
-        syncExplorationDataToPlayer();
+        // 直接写回，不再二次 mergeFleet（避免把未读档的旧内存等级抬回来）
+        if (typeof player !== 'undefined' && player) {
+            player.exploration = {
+                speed: { level: explorationData.speed.level, cost: explorationData.speed.cost },
+                capacity: { level: explorationData.capacity.level, cost: explorationData.capacity.cost },
+                durability: { level: explorationData.durability.level, cost: explorationData.durability.cost },
+                resources: getExplorationResources(),
+                activeMission: explorationData.activeMission,
+                missionEndTime: explorationData.missionEndTime,
+                logs: explorationData.logs
+            };
+        }
     } catch (e) {
         /* explorationData 尚未初始化时跳过恢复，避免存档加载失败 */
     }
@@ -3467,7 +3531,9 @@ function upgradeAttribute(attribute) {
         explorationData[attribute].cost = bigSciToStorageValue(mulBigSci(cost, 10));
         
         addLog(`${attribute === 'speed' ? '速度' : attribute === 'capacity' ? '容量' : '耐久'}升级到 ${explorationData[attribute].level}级`);
+        syncExplorationDataToPlayer();
         updateExplorationUI();
+        if (typeof saveGame === 'function') saveGame({ silent: true });
         logAction(`星域探索: ${attribute}升级成功`, 'success');
     } else {
         logAction(`转生币不足！需要${formatNumber(cost)}转生币`, "error");
@@ -3491,7 +3557,9 @@ function upgradeAllAttributes() {
     
     if (upgraded) {
         addLog("一键升级全部属性成功");
+        syncExplorationDataToPlayer();
         updateExplorationUI();
+        if (typeof saveGame === 'function') saveGame({ silent: true });
         logAction("星域探索: 一键升级成功", 'success');
     } else {
         const costs = attributes.map(attr => explorationData[attr].cost);
@@ -3643,6 +3711,14 @@ function initExplorationSystem() {
         explorationData.activeMission = explorationData.activeMission || null;
         explorationData.missionEndTime = explorationData.missionEndTime || 0;
         explorationData.logs = explorationData.logs || [];
+
+        // 关键：若 restore 因时序跳过，从 pending / player.exploration 抬回舰队等级，禁止用默认1级回写存档
+        if (window.__pendingExplorationRestore) {
+            try { restoreExplorationDataFromSave({ exploration: window.__pendingExplorationRestore }); } catch (ePend) {}
+            window.__pendingExplorationRestore = null;
+        }
+        mergeExplorationFleetFromPlayer();
+        mergeExplorationResourcesFromPlayer();
         
         if (explorationData.activeMission && explorationData.missionEndTime > Date.now()) {
             var remaining = explorationData.missionEndTime - Date.now();
@@ -3651,8 +3727,10 @@ function initExplorationSystem() {
         } else if (explorationData.activeMission && explorationData.missionEndTime <= Date.now()) {
             completeMission();
         }
-        mergeExplorationResourcesFromPlayer();
         syncExplorationDataToPlayer();
+        if (typeof updateExplorationUI === 'function') {
+            try { updateExplorationUI(); } catch (eUi) { /* UI 未就绪 */ }
+        }
     } catch (e) {
         /* explorationData 尚未初始化时跳过，避免存档加载失败 */
     }

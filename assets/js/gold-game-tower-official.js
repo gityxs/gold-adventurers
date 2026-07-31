@@ -158,96 +158,70 @@ function generateTowerMonster() {
 
 // 攻击通天塔怪物
 function attackTowerMonster() {
-const now = Date.now();
-            // 移除超过1秒的点击记录
-            player.clickTimestamps = player.clickTimestamps.filter(timestamp => now - timestamp < 1000);
+    const now = Date.now();
+    if (!Array.isArray(player.clickTimestamps)) player.clickTimestamps = [];
+    var ts = player.clickTimestamps;
+    var write = 0;
+    for (var ti = 0; ti < ts.length; ti++) {
+        if (now - ts[ti] < 1000) ts[write++] = ts[ti];
+    }
+    ts.length = write;
 
-            const clickLimit = 10 + player.reincarnationStats.clickLimitBonus.level; // 每级增加1次点击上限
-            if (player.clickTimestamps.length >= clickLimit) {
-                logAction("点击速度过快，请稍后再试！", "error");
-                return;
-            }
-
-            player.clickTimestamps.push(now);
-// 使用打怪模式属性
-    const playerAttack = bigSciToStorageValue(player.battle.playerAttack);
-    const playerCritRate = player.battle.playerCritRate;
-    const playerCritDamage = player.battle.playerCritDamage;
-    const playerMultiAttack = player.battle.playerMultiAttack;
+    const clickLimit = 10 + ((player.reincarnationStats && player.reincarnationStats.clickLimitBonus && player.reincarnationStats.clickLimitBonus.level) || 0);
+    if (ts.length >= clickLimit) {
+        logAction("点击速度过快，请稍后再试！", "error");
+        return;
+    }
+    ts.push(now);
 
     if (!player.tower.monster) return;
-    
+
     const monster = player.tower.monster;
-    let totalDamage = bigSciToStorageValue(0);
-    let normalDamage = bigSciToStorageValue(0);
-    let critDamage = bigSciToStorageValue(0);
-    let critCount = 0;
-    let dodgeCount = 0;
-    let totalAttacks = player.tower.playerMultiAttack || 1;
+    const totalAttacks = Math.max(1, Math.floor(Number(player.tower.playerMultiAttack) || Number(player.battle.playerMultiAttack) || 1));
+    const dmgMul = (monster.damageTakenMultiplier || 1) * (1 - (monster.damageReduction || 0));
+    const hitResult = (typeof resolveBattleMultiHit === 'function')
+        ? resolveBattleMultiHit({
+            attacks: totalAttacks,
+            attack: player.tower.playerAttack || player.battle.playerAttack,
+            dmgMul: dmgMul,
+            dodgeChance: monster.dodgeChance || 0,
+            critRate: player.tower.playerCritRate || player.battle.playerCritRate,
+            critDamage: player.tower.playerCritDamage || player.battle.playerCritDamage,
+            blockCount: monster.blockCount || 0
+        })
+        : null;
+
     let battleLogs = [];
     let monsterDefeated = false;
 
-    // 玩家攻击
-    for (let i = 0; i < totalAttacks; i++) {
-        // 检查是否已被击败
-        if (bLteZero(monster.health)) break;
-        
-        // 检查闪避
-        if (Math.random() < monster.dodgeChance) {
-            dodgeCount++;
-            battleLogs.push(`${monster.name}闪避了你的攻击！`);
-            continue;
-        }
-        
-        // 计算基础伤害
-        let damage = bigSciToStorageValue(player.tower.playerAttack);
-        
-        // 应用伤害减免
-        damage = multiplyBigByFinite(damage, (1 - monster.damageReduction));
-        
-        // 应用伤害乘数
-        damage = multiplyBigByFinite(damage, monster.damageTakenMultiplier);
-        
-        // 检查暴击
-        let isCrit = Math.random() < player.tower.playerCritRate;
-        if (isCrit) {
-            damage = multiplyBigByFinite(damage, player.tower.playerCritDamage);
-            critCount++;
-            critDamage = bigSciToStorageValue(addBigSci(critDamage, damage));
-        } else {
-            normalDamage = bigSciToStorageValue(addBigSci(normalDamage, damage));
-        }
-        
-        // 应用伤害
-        monster.health = bSub(monster.health, damage);
-        totalDamage = bigSciToStorageValue(addBigSci(totalDamage, damage));
-        
-        battleLogs.push(`你对${monster.name}造成了${formatSci(damage)}点伤害${isCrit ? '（暴击！）' : ''}`);
-        
-        // 检查怪物是否被击败
-        if (bLteZero(monster.health)) {
-            // 检查是否还有复活次数
-            if (monster.resurrectionsLeft > 0) {
-                monster.resurrectionsLeft--;
-                monster.health = monster.maxHealth; // 复活回满血
-                battleLogs.push(`${monster.name}复活了！剩余复活次数: ${monster.resurrectionsLeft}`);
-                
-                // BOSS复活后立刻攻击玩家1次
-                towerMonsterCounterAttack();
-            } else {
-                battleLogs.push(`你击败了${monster.name}！`);
-                monsterDefeated = true;
-            }
-            break; // 结束当前连击
-          initTowerPlayerStats();
-         updateOfficialSystemDisplay();
-        updateMonsterUI(); // 更新UI显示
+    if (hitResult) {
+        monster.blockCount = hitResult.blockCountLeft;
+        monster.health = bSub(monster.health, hitResult.totalDamage);
+        battleLogs.push(
+            '你造成了' + formatSci(hitResult.totalDamage) + '点伤害 (' + totalAttacks + '连击) - 普通伤害: ' +
+            formatSci(hitResult.normalDamage) + ', 闪避x' + hitResult.dodgeCount + ', 暴击x' + hitResult.critCount
+        );
+        if (hitResult.blockedCount > 0) {
+            battleLogs.push('怪物抵消了' + hitResult.blockedCount + '次攻击');
         }
     }
 
-    // 输出综合攻击日志
-    battleLogs.push(`你造成了${formatSci(totalDamage)}点伤害 (${totalAttacks}连击) - 普通伤害: ${formatSci(normalDamage)}, 闪避x${dodgeCount}, 暴击x${critCount}`);
-    
+    if (bLteZero(monster.health)) {
+        if (monster.resurrectionsLeft > 0) {
+            monster.resurrectionsLeft--;
+            monster.health = monster.maxHealth;
+            battleLogs.push(monster.name + '复活了！剩余复活次数: ' + monster.resurrectionsLeft);
+            towerMonsterCounterAttack();
+            if (typeof initTowerPlayerStats === 'function') initTowerPlayerStats();
+            if (typeof updateOfficialSystemDisplay === 'function') updateOfficialSystemDisplay();
+        } else {
+            battleLogs.push('你击败了' + monster.name + '！');
+            monsterDefeated = true;
+            if (typeof initTowerPlayerStats === 'function') initTowerPlayerStats();
+            if (typeof updateOfficialSystemDisplay === 'function') updateOfficialSystemDisplay();
+        }
+    }
+
     // 批量写入战斗日志，不逐条刷新 DOM，最后统一由 updateTowerUI 刷新
     battleLogs.forEach(log => addTowerBattleLog(log, true));
 
@@ -337,8 +311,11 @@ function startTowerAutoAttack() {
 
 // 停止通天塔自动攻击
 function stopTowerAutoAttack() {
-    if (player.tower.autoAttackInterval) {
-        clearInterval(player.tower.autoAttackInterval);
+    if (typeof clearRegisteredIntervalRef === 'function') {
+        clearRegisteredIntervalRef(player.tower, 'autoAttackInterval');
+    } else if (player.tower.autoAttackInterval) {
+        if (typeof unregisterInterval === 'function') unregisterInterval(player.tower.autoAttackInterval);
+        else clearInterval(player.tower.autoAttackInterval);
         player.tower.autoAttackInterval = null;
     }
 }

@@ -1218,10 +1218,8 @@ function recoverFromAutoTradeError() {
     
     // 停止所有旅行
     player.trading.isTraveling = false;
-    if (player.trading.travelInterval) {
-        clearInterval(player.trading.travelInterval);
-        player.trading.travelInterval = null;
-    }
+    if (typeof clearRegisteredIntervalRef === 'function') clearRegisteredIntervalRef(player.trading, 'travelInterval');
+                    else if (player.trading && player.trading.travelInterval) { clearInterval(player.trading.travelInterval); player.trading.travelInterval = null; }
     
     // 尝试重新开始自动贸易
     if (player.trading.autoTrade.enabled && player.trading.autoTrade.routes.length > 0) {

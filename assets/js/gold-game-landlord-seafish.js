@@ -2045,161 +2045,44 @@
             window.__pendingSeaFishingMarketOfflineMs = 0;
         }
         
-        // 顾客逻辑不依赖当前是否在看海钓标签：只要已开启海钓就定时跑，这样切到其他子标签时顾客也会来，切回海钓即可看到最新记录（使用 registerInterval 便于页面卸载时统一清理，避免定时器泄漏）
-        if (typeof registerInterval === 'function') {
-            registerInterval(function() {
+        // 顾客逻辑不依赖当前是否在看海钓标签；单例注册避免脚本重复执行时叠层
+        (function startSeaFishingCustomerLoop() {
+            function tick() {
                 if (typeof player === 'undefined' || !player.landlord || !player.landlord.seaFishing) return;
                 var listings = (player.landlord.seaFishing.marketListings || []);
                 if (listings.length === 0) return;
                 tickSeaFishingCustomer();
-            }, 5000);
-        } else {
-            setInterval(function() {
-                if (typeof player === 'undefined' || !player.landlord || !player.landlord.seaFishing) return;
-                var listings = (player.landlord.seaFishing.marketListings || []);
-                if (listings.length === 0) return;
-                tickSeaFishingCustomer();
-            }, 5000);
-        }
+            }
+            if (typeof registerSingletonInterval === 'function') {
+                registerSingletonInterval('_seaFishingCustomerLoopId', tick, 5000);
+            } else if (typeof registerInterval === 'function') {
+                if (window._seaFishingCustomerLoopId != null && typeof unregisterInterval === 'function') {
+                    unregisterInterval(window._seaFishingCustomerLoopId);
+                }
+                window._seaFishingCustomerLoopId = registerInterval(tick, 5000);
+            } else {
+                if (window._seaFishingCustomerLoopId != null) clearInterval(window._seaFishingCustomerLoopId);
+                window._seaFishingCustomerLoopId = setInterval(tick, 5000);
+            }
+        })();
 
-        // 渲染单个地块
+        // 渲染单个地块（与整表渲染同一套卡片结构）
         function renderLandlordField(fieldIndex) {
             const fieldsContainer = document.getElementById('landlordFieldsContainer');
             if (!fieldsContainer) return;
-            
             const fieldDiv = fieldsContainer.children[fieldIndex];
             if (!fieldDiv) return;
-            
-            const plant = player.landlord.fields[fieldIndex];
-             const isLocked = player.landlord.lockedFields[fieldIndex];
-           if (!plant) {
-        fieldDiv.className = `landlord-field empty ${player.landlord.lockedFields[fieldIndex] ? 'locked' : ''}`;
-        fieldDiv.innerHTML = `
-            <div class="landlord-field-header">
-                <div class="landlord-field-status">空闲${player.landlord.lockedFields[fieldIndex] ? ' 🔒' : ''}</div>
-                <label class="field-lock-toggle">
-                    <input type="checkbox" ${player.landlord.lockedFields[fieldIndex] ? 'checked' : ''} 
-                           onchange="toggleFieldLock(${fieldIndex})">
-                    <span class="lock-icon">🔒</span>
-                </label>
-            </div>
-            <div style="font-size: 3em; color: rgba(0,0,0,0.1); margin: 20px 0;">+</div>
-            <button class="landlord-plant-button" onclick="selectLandlordSeedForPlanting(${fieldIndex})">种植</button>
-        `;
-            } else {
-                const timeLeft = plant.isMature ? 0 : 
-                    Math.max(0, Math.ceil(plant.growTime - (Date.now() - plant.plantedAt) / (1000 * 60)));
-                
-                const progress = plant.isMature ? 100 : 
-                    Math.min(100, Math.floor(((Date.now() - plant.plantedAt) / (1000 * 60)) / plant.growTime * 100));
-                
-                // 突变标签
-                let mutationTags = '';
-                
-                // 基础突变标签
-                plant.mutations.forEach(mutation => {
-                    const colorClass = getLandlordMutationColorClass(mutation);
-                    mutationTags += `<span class="landlord-mutation-tag ${colorClass}">${mutation}</span>`;
-                });
-                
-                // 天气突变标签
-                plant.weatherMutations.forEach(mutation => {
-                    const colorClass = getLandlordMutationColorClass(mutation);
-                    mutationTags += `<span class="landlord-mutation-tag ${colorClass}">${mutation}</span>`;
-                });
-                
-                // 特殊突变标签
-                if (plant.specialMutation) {
-                    const specialName = specialMutations[getLandlordSeedBaseName(plant.type)] || '特殊突变';
-                    mutationTags += `<span class="landlord-mutation-tag landlord-mutation-rainbow">${specialName}</span>`;
-                }
-                
-                fieldDiv.className = `landlord-field ${player.landlord.lockedFields[fieldIndex] ? 'locked' : ''}`;
-                fieldDiv.innerHTML = `
-            <div class="landlord-field-header">
-                <div class="landlord-field-status">${getLandlordGeneVariantLabelHtml(plant.type)}${player.landlord.lockedFields[fieldIndex] ? ' 🔒' : ''}</div>
-                <label class="field-lock-toggle">
-                    <input type="checkbox" ${player.landlord.lockedFields[fieldIndex] ? 'checked' : ''} 
-                           onchange="toggleFieldLock(${fieldIndex})">
-                    <span class="lock-icon">🔒</span>
-                </label>
-            </div>
-                    <div class="landlord-plant-info">
-                        <div>重量: ${plant.weight.toFixed(2)}kg</div>
-                        <div>${plant.isMature ? '已成熟' : `成长中... ${timeLeft}分钟`}</div>
-                        ${mutationTags ? `<div class="landlord-mutations-list">${mutationTags}</div>` : ''}
-                    </div>
-                    <div class="landlord-field-actions">
-                        <div class="landlord-action-row">
-                            ${plant.isMature ? 
-                                `<button class="landlord-harvest-button" onclick="harvestLandlordPlant(${fieldIndex})">收获</button>` : 
-                                `<button class="landlord-action-button" style="background: #7f8c8d; color: white;" disabled>${progress}%</button>`
-                            }
-                            <button class="landlord-remove-button" onclick="removeLandlordPlant(${fieldIndex})">铲除</button>
-                        </div>
-                        <div class="landlord-action-row">
-                            <button class="landlord-item-button" onclick="selectLandlordItemForUsing(${fieldIndex})">使用道具</button>
-                        </div>
-                    </div>
-                `;
-                
-                // 添加生长进度条
-                if (!plant.isMature) {
-                    const progressBar = document.createElement('div');
-                    progressBar.className = 'landlord-progress-bar';
-                    progressBar.style.marginTop = '10px';
-                    progressBar.innerHTML = `<div class="landlord-progress-fill" style="width: ${progress}%"></div>`;
-                    fieldDiv.querySelector('.landlord-plant-info').appendChild(progressBar);
-                }
+            if (typeof ensureLandlordFieldTiers === 'function') ensureLandlordFieldTiers(player.landlord);
+            if (typeof ensureLandlordBars === 'function') ensureLandlordBars(player.landlord);
+            if (typeof applyLandlordFieldCard === 'function') {
+                applyLandlordFieldCard(fieldDiv, fieldIndex);
             }
- if (isLocked) {
-        // 为锁定的田地添加额外的装饰元素
-        if (!fieldDiv.querySelector('.lock-decoration')) {
-            const lockDecoration = document.createElement('div');
-            lockDecoration.className = 'lock-decoration';
-            lockDecoration.style.position = 'absolute';
-            lockDecoration.style.top = '5px';
-            lockDecoration.style.right = '5px';
-            lockDecoration.style.fontSize = '0.8em';
-            lockDecoration.style.color = 'rgba(212, 212, 170, 0.5)';
-            lockDecoration.style.zIndex = '1';
-            lockDecoration.textContent = '🔒 已锁定';
-            fieldDiv.appendChild(lockDecoration);
-            
-            // 添加角标
-            const cornerLock = document.createElement('div');
-            cornerLock.className = 'corner-lock';
-            cornerLock.style.position = 'absolute';
-            cornerLock.style.top = '0';
-            cornerLock.style.left = '0';
-            cornerLock.style.width = '0';
-            cornerLock.style.height = '0';
-            cornerLock.style.borderTop = '20px solid #556b2f';
-            cornerLock.style.borderRight = '20px solid transparent';
-            cornerLock.style.zIndex = '2';
-            fieldDiv.appendChild(cornerLock);
-            
-            const lockIcon = document.createElement('div');
-            lockIcon.className = 'corner-lock-icon';
-            lockIcon.style.position = 'absolute';
-            lockIcon.style.top = '2px';
-            lockIcon.style.left = '2px';
-            lockIcon.style.color = '#d4d4aa';
-            lockIcon.style.fontSize = '0.8em';
-            lockIcon.style.zIndex = '3';
-            lockIcon.textContent = '🔒';
-            fieldDiv.appendChild(lockIcon);
         }
-    }
-       }
 
-        // 启动定时器（避免每次打开界面重复创建导致定时器泄漏）
+        // 启动定时器（单例：重复读档/打开界面不会叠层）
         function startLandlordTimers() {
-            if (player.landlord._timerId) {
-                clearInterval(player.landlord._timerId);
-                player.landlord._timerId = null;
-            }
-            player.landlord._timerId = registerInterval(() => {
+            if (!player.landlord) return;
+            function tick() {
                 checkLandlordPlantGrowth();
                 // 到点真正刷新商店库存；未到点只更新倒计时文案（避免每秒整表重绘）
                 const now = Date.now();
@@ -2217,12 +2100,30 @@
                 updateLandlordWeather();
                 if (typeof landlordRanchSimulateToNow === 'function') landlordRanchSimulateToNow();
                 if (typeof updateLandlordRanchPenTimers === 'function') updateLandlordRanchPenTimers();
-                
+
                 // 每60秒自动保存一次
                 if (Date.now() - (player.landlord.lastSaveTime || 0) > 60000) {
                     saveGame();
                 }
-            }, 1000);
+            }
+            // 先清 player 上可能残留的旧句柄（含仅 delete 未 clear 的历史泄漏）
+            if (player.landlord._timerId != null) {
+                if (typeof unregisterInterval === 'function') unregisterInterval(player.landlord._timerId);
+                else clearInterval(player.landlord._timerId);
+                player.landlord._timerId = null;
+            }
+            var id;
+            if (typeof registerSingletonInterval === 'function') {
+                id = registerSingletonInterval('_landlordMainTimerId', tick, 1000);
+            } else if (typeof registerInterval === 'function') {
+                id = registerInterval(tick, 1000);
+                window._landlordMainTimerId = id;
+            } else {
+                if (window._landlordMainTimerId != null) clearInterval(window._landlordMainTimerId);
+                id = setInterval(tick, 1000);
+                window._landlordMainTimerId = id;
+            }
+            player.landlord._timerId = id;
         }
 
         // 渲染所有UI
@@ -2400,7 +2301,8 @@
         // 在游戏加载时初始化疯狂地主数据
         function loadLandlordGameData() {
             initLandlordGameData();
-            if (player.landlord && player.landlord._timerId != null) {
+            // 读档字段里的 _timerId 是陈旧数字，不能当运行中句柄；清掉以免误 clear 到别的 interval
+            if (player.landlord && Object.prototype.hasOwnProperty.call(player.landlord, '_timerId')) {
                 delete player.landlord._timerId;
             }
             if (!player.landlord.lockedFields || player.landlord.lockedFields.length < player.landlord.unlockedFields) {

@@ -57,6 +57,113 @@ function performPlayerAscension(options) {
     }
 }
 
+var _playerExpUpgradeContinuationScheduled = false;
+var LEVEL_SETTLE_CAP_LOG = '等级结算步数达到上限，剩余经验正在后台继续结算';
+var PLAYER_EXP_SETTLE_FRAME_MS = 48;
+var PLAYER_EXP_SETTLE_OFFLINE_MS = 10000;
+var _levelExpCycleCache = { cycle: -1, cycleMul: 5600 };
+
+function getLevelExpCycleConstants(cycleCount) {
+    var cycle = Math.max(0, Math.floor(Number(cycleCount) || 0));
+    if (_levelExpCycleCache.cycle === cycle) return _levelExpCycleCache;
+    var baseExp = 5600;
+    var cycleLinear = 1 + cycle * 0.68;
+    var cycleStage = getReincarnationLevelExpMultiplier(cycle);
+    var cyclePower = Math.pow(1.065, cycle);
+    var lateCycleBoost = cycle >= 20 ? Math.pow(1.18, cycle - 19) : 1;
+    var post30StepBoost = 1;
+    if (cycle >= 30) {
+        var tierCount = Math.floor((cycle - 30) / 10) + 1;
+        for (var i = 1; i <= tierCount; i++) post30StepBoost *= Math.pow(1.45, i);
+    }
+    var cycle20PlusFactor = cycle >= 20 ? 1.28 : 1;
+    var earlyCycleEase = cycle < 10 ? 0.78 : 1;
+    _levelExpCycleCache = {
+        cycle: cycle,
+        cycleMul: baseExp * cycleLinear * cyclePower * lateCycleBoost * post30StepBoost * cycleStage * cycle20PlusFactor * 1.06 * earlyCycleEase
+    };
+    return _levelExpCycleCache;
+}
+
+function calculatePlayerNextLevelExpFast(level, ascent, cycleCount) {
+    var lv = Math.max(1, Math.floor(Number(level) || 1));
+    var ascentN = Math.max(0, Math.floor(Number(ascent) || 0));
+    var ctx = getLevelExpCycleConstants(cycleCount);
+    var out = Math.floor(ctx.cycleMul * Math.pow(lv, 1.12) * Math.pow(1 + ascentN * 0.2, 1.32));
+    return Number.isFinite(out) && out > 0 ? out : 5600;
+}
+
+function syncPlayerLevelBonuses() {
+    if (!player || !player.level) return;
+    var huaShengMul = Number(player.level.huaShengMultiplier) || 1;
+    var bonus = player.level.current * player.level.ascentionMultiplier * player.level.ascentionMultipliera * huaShengMul;
+    player.level.clickBonus = bonus;
+    player.level.gpsBonus = bonus;
+}
+
+function finalizePlayerExpSettlement() {
+    syncPlayerLevelBonuses();
+    if (typeof maybeNotifyReincarnationEligibleOnce === 'function') maybeNotifyReincarnationEligibleOnce();
+    if (typeof updateLevelUI === 'function') updateLevelUI();
+    if (typeof updateDisplay === 'function') updateDisplay();
+}
+
+/** 单批结算后若仍有剩余经验，异步续算（按时间片批量处理，减少 DOM 刷新） */
+function schedulePlayerExpUpgradeContinuation() {
+    if (_playerExpUpgradeContinuationScheduled) return;
+    if (!player || !player.level || player.level.exp < player.level.nextLevelExp) return;
+    _playerExpUpgradeContinuationScheduled = true;
+    var run = function() {
+        _playerExpUpgradeContinuationScheduled = false;
+        if (!player || !player.level || player.level.exp < player.level.nextLevelExp) {
+            finalizePlayerExpSettlement();
+            return;
+        }
+        var result = processPlayerExpUpgrades({
+            silentAscend: true,
+            silentCap: true,
+            deferUi: true,
+            timeBudgetMs: PLAYER_EXP_SETTLE_FRAME_MS,
+            maxSteps: 5000000
+        });
+        if (!result.hitCap) finalizePlayerExpSettlement();
+    };
+    setTimeout(run, 0);
+}
+
+/** 读档/离线等场景：同步尽量算完，超时部分再走后台续算 */
+function settlePlayerExpFully(options) {
+    options = options || {};
+    _playerExpUpgradeContinuationScheduled = false;
+    var maxTotalMs = Math.max(0, Number(options.maxTotalMs) || PLAYER_EXP_SETTLE_OFFLINE_MS);
+    var started = Date.now();
+    var total = { levelsGained: 0, ascensions: 0, hitCap: false };
+    while (player && player.level && player.level.exp >= player.level.nextLevelExp) {
+        var remaining = maxTotalMs - (Date.now() - started);
+        if (remaining <= 0) {
+            total.hitCap = true;
+            schedulePlayerExpUpgradeContinuation();
+            break;
+        }
+        var batch = processPlayerExpUpgrades({
+            silentAscend: true,
+            silentCap: true,
+            deferUi: true,
+            timeBudgetMs: Math.min(remaining, 120),
+            maxSteps: 5000000
+        });
+        total.levelsGained += batch.levelsGained || 0;
+        total.ascensions += batch.ascensions || 0;
+        if (!batch.hitCap) {
+            total.hitCap = false;
+            break;
+        }
+        total.hitCap = true;
+    }
+    if (!total.hitCap) finalizePlayerExpSettlement();
+    return total;
+}
+
 /**
  * 消耗经验连续升级；达标时自动飞升并保留剩余经验继续算级。
  * @returns {{ levelsGained: number, ascensions: number, hitCap: boolean }}
@@ -64,14 +171,21 @@ function performPlayerAscension(options) {
 function processPlayerExpUpgrades(options) {
     options = options || {};
     var silentAscend = !!options.silentAscend;
+    var silentCap = !!options.silentCap;
+    var deferUi = !!(options.deferUi || silentCap || silentAscend);
     var maxSteps = Math.max(1, Math.floor(Number(options.maxSteps) || 100000));
+    var timeBudgetMs = Math.max(0, Number(options.timeBudgetMs) || 0);
+    var deadline = timeBudgetMs > 0 ? (Date.now() + timeBudgetMs) : 0;
+    if (!deadline && !deferUi) deadline = Date.now() + 16;
     var levelsGained = 0;
     var ascensions = 0;
     var hitCap = false;
     var steps = 0;
+    var cycle = Math.max(0, Math.floor(Number(player.level.ascentionCounta) || 0));
+    var ascent = Math.max(0, Math.floor(Number(player.level.ascentionCount) || 0));
 
     while (player.level.exp >= player.level.nextLevelExp) {
-        if (steps >= maxSteps) {
+        if (steps >= maxSteps || (deadline && Date.now() >= deadline)) {
             hitCap = true;
             break;
         }
@@ -83,29 +197,35 @@ function processPlayerExpUpgrades(options) {
         player.level.exp -= need;
         if (!Number.isFinite(player.level.exp) || player.level.exp < 0) player.level.exp = 0;
         player.level.current++;
-        levelsGained++;
 
-        player.level.nextLevelExp = calculatePlayerNextLevelExp(player.level.current, player.level.ascentionCounta);
-
-        const huaShengMul = (Number(player.level.huaShengMultiplier) || 1);
-        player.level.clickBonus = player.level.current * 1 * player.level.ascentionMultiplier * player.level.ascentionMultipliera * huaShengMul;
-        player.level.gpsBonus = player.level.current * 1 * player.level.ascentionMultiplier * player.level.ascentionMultipliera * huaShengMul;
-
-        const nextAscentionLevel = (player.level.ascentionCount + 1) * 100;
+        var nextAscentionLevel = (ascent + 1) * 100;
         if (player.level.current >= nextAscentionLevel) {
             performPlayerAscension({ keepExp: true, silent: true });
+            ascent = Math.max(0, Math.floor(Number(player.level.ascentionCount) || 0));
             ascensions++;
+            levelsGained++;
+            player.level.nextLevelExp = calculatePlayerNextLevelExpFast(player.level.current, ascent, cycle);
+            continue;
         }
+
+        levelsGained++;
+        player.level.nextLevelExp = calculatePlayerNextLevelExpFast(player.level.current, ascent, cycle);
     }
 
-    // 在线自动飞升静默；离线由 calculateOfflinePlayerLevelInsight 统一汇总日志
-    if (hitCap && typeof logAction === 'function') {
-        logAction('等级结算步数达到上限，剩余经验已保留，可再次领取/上线继续升级', 'info');
+    if (hitCap && player.level.exp >= player.level.nextLevelExp) {
+        if (!silentCap && !silentAscend && typeof logAction === 'function') {
+            logAction(LEVEL_SETTLE_CAP_LOG, 'info');
+        }
+        schedulePlayerExpUpgradeContinuation();
+    } else {
+        syncPlayerLevelBonuses();
     }
 
-    maybeNotifyReincarnationEligibleOnce();
-    updateLevelUI();
-    updateDisplay();
+    if (!deferUi) {
+        maybeNotifyReincarnationEligibleOnce();
+        updateLevelUI();
+        updateDisplay();
+    }
     return { levelsGained: levelsGained, ascensions: ascensions, hitCap: hitCap };
 }
 
@@ -259,32 +379,8 @@ function getReincarnationLevelExpMultiplier(cycleCount) {
 }
 
 function calculatePlayerNextLevelExp(level, cycleCount) {
-    const lv = Math.max(1, Math.floor(Number(level) || 1));
-    const cycle = Math.max(0, Math.floor(Number(cycleCount) || 0));
-    const ascent = Math.max(0, Math.floor(Number(player.level && player.level.ascentionCount) || 0));
-    const baseExp = 5600; // 升级所需经验基准
-    // 经验曲线：轮回越高仍会变难，但比之前缓和
-    const levelCurve = Math.pow(lv, 1.12);
-    const ascentCurve = Math.pow(1 + ascent * 0.2, 1.32);
-    const cycleLinear = 1 + cycle * 0.68;
-    const cycleStage = getReincarnationLevelExpMultiplier(cycle);
-    const cyclePower = Math.pow(1.065, cycle);
-    const lateCycleBoost = cycle >= 20 ? Math.pow(1.18, cycle - 19) : 1;
-    // 轮回30后：每10轮回触发一次更大阶跃（30/40/50...），并随档位递增
-    let post30StepBoost = 1;
-    if (cycle >= 30) {
-        const tierCount = Math.floor((cycle - 30) / 10) + 1; // 30-39=1档，40-49=2档...
-        for (let i = 1; i <= tierCount; i++) {
-            post30StepBoost *= Math.pow(1.45, i);
-        }
-    }
-    // 轮回 20 起：在公式结果上再提高一截（略抬高后期难度）
-    const cycle20PlusFactor = cycle >= 20 ? 1.28 : 1;
-    const globalExpNeedFactor = 1.06; // 全轮回段略抬高所需经验
-    // 轮回 10 前（0～9）：所需经验再打折扣，低轮回阶段更易升级
-    const earlyCycleEase = cycle < 10 ? 0.78 : 1;
-    const out = Math.floor(baseExp * levelCurve * ascentCurve * cycleLinear * cyclePower * lateCycleBoost * post30StepBoost * cycleStage * cycle20PlusFactor * globalExpNeedFactor * earlyCycleEase);
-    return Number.isFinite(out) && out > 0 ? out : baseExp;
+    var ascent = Math.max(0, Math.floor(Number(player.level && player.level.ascentionCount) || 0));
+    return calculatePlayerNextLevelExpFast(level, ascent, cycleCount);
 }
 
 // 飞升次数达到「下一次轮回」要求时，游戏日志只提示一次（同一轮回阶段内不重复）
@@ -313,9 +409,15 @@ function upgradePlayerLevel(amount) {
 // 添加经验
 function addPlayerExp(amount, options) {
     const add = Number(amount) || 0;
-    if (!Number.isFinite(add) || add <= 0) return { levelsGained: 0, ascensions: 0, hitCap: false };
+    options = options || {};
+    if (!Number.isFinite(add) || add <= 0) {
+        if (player.level && player.level.exp >= player.level.nextLevelExp) {
+            return processPlayerExpUpgrades(options);
+        }
+        return { levelsGained: 0, ascensions: 0, hitCap: false };
+    }
     player.level.exp += add;
-    return processPlayerExpUpgrades(options || {});
+    return processPlayerExpUpgrades(options);
 }
 
 /**
@@ -342,8 +444,16 @@ function calculateOfflinePlayerLevelInsight(offlineMinutes) {
     var levelBefore = player.level.current;
     var ascendBefore = Math.floor(Number(player.level.ascentionCount) || 0);
     var progress = { levelsGained: 0, ascensions: 0, hitCap: false };
-    if (totalExp > 0 && typeof addPlayerExp === 'function') {
-        progress = addPlayerExp(totalExp, { silentAscend: true, maxSteps: 100000 }) || progress;
+    if (totalExp > 0) {
+        player.level.exp += totalExp;
+        if (typeof settlePlayerExpFully === 'function') {
+            var settled = settlePlayerExpFully({ maxTotalMs: PLAYER_EXP_SETTLE_OFFLINE_MS });
+            progress.levelsGained = settled.levelsGained || 0;
+            progress.ascensions = settled.ascensions || 0;
+            progress.hitCap = !!settled.hitCap;
+        } else if (typeof addPlayerExp === 'function') {
+            progress = addPlayerExp(0, { silentAscend: true, silentCap: true, deferUi: true, timeBudgetMs: 120 }) || progress;
+        }
     }
     if (totalKills > 0 && typeof grantWorldMapInsightOfflineDrops === 'function') {
         grantWorldMapInsightOfflineDrops(totalKills);

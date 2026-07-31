@@ -150,88 +150,122 @@ function lockMatureFields() {
 
         // 添加一键收获按钮到界面
      function addHarvestAllButton() {
-    const fieldsTab = document.getElementById('landlordFieldsTab');
-    if (fieldsTab && !fieldsTab.querySelector('.harvest-controls')) {
+    const host = document.getElementById('landlordFieldsToolbarHost')
+        || document.getElementById('landlordFieldsTab');
+    if (!host) return;
+
+    var existing = host.querySelector('.harvest-controls');
+    if (existing) {
+        if (!existing.querySelector('#landlordFieldWeatherBar')) {
+            var weatherBar = document.createElement('div');
+            weatherBar.className = 'lf-weather-bar';
+            weatherBar.id = 'landlordFieldWeatherBar';
+            weatherBar.innerHTML = `
+                <div class="lf-weather-label">当前天气</div>
+                <div class="lf-weather-tag-wrap" id="landlordFieldWeatherTag">
+                    <span class="landlord-mutation-tag landlord-mutation-grey">晴朗</span>
+                </div>
+                <div class="lf-weather-timer">
+                    <span class="lf-weather-timer-label">下次刷新</span>
+                    <span class="lf-weather-timer-value" id="landlordFieldWeatherTimer">10:00</span>
+                </div>
+            `;
+            existing.insertBefore(weatherBar, existing.firstChild);
+        }
+        if (typeof updateLandlordFieldWeatherDisplay === 'function') updateLandlordFieldWeatherDisplay();
+        return;
+    }
+
         const controlsDiv = document.createElement('div');
-        controlsDiv.className = 'harvest-controls';
-        controlsDiv.style.marginBottom = '20px';
-        controlsDiv.style.padding = '15px';
-        controlsDiv.style.background = 'linear-gradient(135deg, #f8f9fa, #e9ecef)';
-        controlsDiv.style.borderRadius = '10px';
-        controlsDiv.style.border = '2px solid #8f9779';
-        controlsDiv.style.boxShadow = '0 4px 12px rgba(85, 107, 47, 0.1)';
-        
+        controlsDiv.className = 'harvest-controls lf-toolbar';
         controlsDiv.innerHTML = `
-            <div style="margin-bottom: 15px;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                    <span style="color: #556b2f; font-size: 1.2em;">🔒</span>
-                    <h3 style="margin: 0; color: #2c3e50;">田地锁定管理</h3>
+            <div class="lf-weather-bar" id="landlordFieldWeatherBar">
+                <div class="lf-weather-label">当前天气</div>
+                <div class="lf-weather-tag-wrap" id="landlordFieldWeatherTag">
+                    <span class="landlord-mutation-tag landlord-mutation-grey">晴朗</span>
                 </div>
-                <div style="font-size: 0.9em; color: #5a6f1f; padding-left: 25px;">
-                    锁定的田地不会被一键收获，但仍可单独操作
+                <div class="lf-weather-timer">
+                    <span class="lf-weather-timer-label">下次刷新</span>
+                    <span class="lf-weather-timer-value" id="landlordFieldWeatherTimer">10:00</span>
                 </div>
             </div>
-            
-            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
-                <button class="landlord-action-button harvest-all-button" onclick="harvestAllMatureLandlordPlants()">
-                    <span style="font-size: 1.2em; margin-right: 8px;">🚜</span>
-                    一键收获（跳过锁定）
+            <div class="lf-toolbar-main">
+                <div class="lf-toolbar-brand">
+                    <div class="lf-toolbar-title">金色田野</div>
+                    <div class="lf-toolbar-sub">锁定田地不会被一键收获，仍可单独操作</div>
+                </div>
+                <div class="lf-toolbar-stats" id="landlordFieldQuickStats">
+                    <div class="lf-qstat"><span class="lf-qstat-n" id="lfStatMature">0</span><span class="lf-qstat-l">可收获</span></div>
+                    <div class="lf-qstat"><span class="lf-qstat-n" id="lfStatGrowing">0</span><span class="lf-qstat-l">成长中</span></div>
+                    <div class="lf-qstat"><span class="lf-qstat-n" id="lfStatEmpty">0</span><span class="lf-qstat-l">空闲</span></div>
+                    <div class="lf-qstat"><span class="lf-qstat-n" id="lockedFieldsCount">0</span><span class="lf-qstat-l">已锁定</span></div>
+                </div>
+            </div>
+            <div class="lf-toolbar-actions">
+                <button type="button" class="landlord-action-button harvest-all-button lf-tool-btn lf-tool-btn--harvest" onclick="harvestAllMatureLandlordPlants()">
+                    一键收获
                 </button>
-                
-                <div style="flex: 1; min-width: 250px;">
-                    <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-                        <button class="lock-control-button lock-all-btn" onclick="lockAllFields()" 
-                                title="锁定所有田地，防止被一键收获">
-                            <span style="margin-right: 5px;">🔒</span>
-                            全部锁定
-                        </button>
-                        <button class="lock-control-button unlock-all-btn" onclick="unlockAllFields()"
-                                title="解锁所有田地，允许一键收获">
-                            <span style="margin-right: 5px;">🔓</span>
-                            全部解锁
-                        </button>
-                        <button class="lock-control-button lock-planted-btn" onclick="lockPlantedFields()"
-                                title="只锁定有作物的田地">
-                            <span style="margin-right: 5px;">🌱</span>
-                            锁定有作物
-                        </button>
-                        <button class="lock-control-button lock-mature-btn" onclick="lockMatureFields()"
-                                title="只锁定有成熟作物的田地">
-                            <span style="margin-right: 5px;">🌾</span>
-                            锁定成熟
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="display: flex; align-items: center; justify-content: space-between; 
-                        padding: 10px 15px; background: rgba(85, 107, 47, 0.1); 
-                        border-radius: 8px; border: 1px solid #8f9779;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="width: 12px; height: 12px; background: #556b2f; border-radius: 2px;"></div>
-                    <span style="color: #5a6f1f; font-size: 0.85em;">锁定状态</span>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-size: 0.85em; color: #6c757d;">已锁定</div>
-                    <div style="font-size: 1.4em; font-weight: bold; color: #556b2f;">
-                        <span id="lockedFieldsCount">0</span>
-                        <span style="font-size: 0.7em; color: #8f9779;"> /∞</span>
-                    </div>
-                </div>
+                <button type="button" class="lock-control-button lock-all-btn lf-tool-btn" onclick="lockAllFields()" title="锁定所有田地">全部锁定</button>
+                <button type="button" class="lock-control-button unlock-all-btn lf-tool-btn" onclick="unlockAllFields()" title="解锁所有田地">全部解锁</button>
+                <button type="button" class="lock-control-button lock-planted-btn lf-tool-btn" onclick="lockPlantedFields()" title="只锁定有作物的田地">锁定有作物</button>
+                <button type="button" class="lock-control-button lock-mature-btn lf-tool-btn" onclick="lockMatureFields()" title="只锁定成熟作物">锁定成熟</button>
             </div>
         `;
-        
-        fieldsTab.insertBefore(controlsDiv, fieldsTab.firstChild);
-        
-        // 更新锁定计数显示
+
+        if (host.id === 'landlordFieldsToolbarHost') {
+            host.appendChild(controlsDiv);
+        } else {
+            host.insertBefore(controlsDiv, host.firstChild);
+        }
         updateLockedFieldsCount();
+        if (typeof updateLandlordFieldQuickStats === 'function') updateLandlordFieldQuickStats();
+        if (typeof updateLandlordFieldWeatherDisplay === 'function') updateLandlordFieldWeatherDisplay();
+}
+
+function updateLandlordFieldWeatherDisplay() {
+    if (!player || !player.landlord) return;
+    var weather = player.landlord.weather || '晴朗';
+    var tagHost = document.getElementById('landlordFieldWeatherTag');
+    if (tagHost) {
+        var colorClass = typeof getLandlordMutationColorClass === 'function'
+            ? getLandlordMutationColorClass(weather)
+            : 'landlord-mutation-grey';
+        var safeName = String(weather).replace(/</g, '');
+        tagHost.innerHTML = '<span class="landlord-mutation-tag lf-weather-tag ' + colorClass + '">' + safeName + '</span>';
     }
+    var timerEl = document.getElementById('landlordFieldWeatherTimer');
+    if (timerEl) {
+        var last = Number(player.landlord.lastWeatherChange) || Date.now();
+        var remain = Math.max(0, 10 * 60 * 1000 - (Date.now() - last));
+        var minutes = Math.floor(remain / 60000);
+        var seconds = Math.floor((remain % 60000) / 1000);
+        timerEl.textContent = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+    }
+}
+
+function updateLandlordFieldQuickStats() {
+    if (!player || !player.landlord) return;
+    let mature = 0, growing = 0, empty = 0;
+    const n = player.landlord.unlockedFields || 0;
+    for (let i = 0; i < n; i++) {
+        const p = player.landlord.fields[i];
+        if (!p) empty++;
+        else if (p.isMature) mature++;
+        else growing++;
+    }
+    const set = function (id, v) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = String(v);
+    };
+    set('lfStatMature', mature);
+    set('lfStatGrowing', growing);
+    set('lfStatEmpty', empty);
 }
 
 // 更新锁定田地计数
 function updateLockedFieldsCount() {
     const countElement = document.getElementById('lockedFieldsCount');
-    if (countElement) {
+    if (countElement && player && player.landlord) {
         let lockedCount = 0;
         for (let i = 0; i < player.landlord.unlockedFields; i++) {
             if (player.landlord.lockedFields[i]) {
@@ -247,6 +281,7 @@ const originalRenderLandlordFields = renderLandlordFields;
 renderLandlordFields = function() {
     originalRenderLandlordFields();
     updateLockedFieldsCount();
+    if (typeof updateLandlordFieldQuickStats === 'function') updateLandlordFieldQuickStats();
     addHarvestAllButton();
 };
    
@@ -263,8 +298,11 @@ renderLandlordFields = function() {
     let lotteryEarned = 0;
     
     ensureLandlordBars(player.landlord);
-    const barGain = { silver: 0, gold: 0, diamond: 0, flow: 0 };
-    const barMap = { '银': 'silver', '金': 'gold', '水晶': 'diamond', '流光': 'flow' };
+    const barGain = { silver: 0, gold: 0, diamond: 0, flow: 0, divine: 0, primal: 0, supreme: 0 };
+    const barMap = {
+        '银': 'silver', '金': 'gold', '水晶': 'diamond', '流光': 'flow',
+        '神辉': 'divine', '太初': 'primal', '无上': 'supreme'
+    };
 
     // 从后往前遍历，避免splice导致的索引问题
     for (let i = player.landlord.fruitStorage.length - 1; i >= 0; i--) {
@@ -309,6 +347,9 @@ renderLandlordFields = function() {
         if (barGain.gold) barMsgParts.push('金条×' + barGain.gold);
         if (barGain.diamond) barMsgParts.push('钻石条×' + barGain.diamond);
         if (barGain.flow) barMsgParts.push('流光条×' + barGain.flow);
+        if (barGain.divine) barMsgParts.push('神辉条×' + barGain.divine);
+        if (barGain.primal) barMsgParts.push('太初条×' + barGain.primal);
+        if (barGain.supreme) barMsgParts.push('无上条×' + barGain.supreme);
         if (barMsgParts.length > 0) message += '，' + barMsgParts.join('，');
         if (lotteryEarned > 0) {
             message += `，获得${lotteryEarned}次抽奖机会！`;
@@ -341,18 +382,9 @@ function drawLottery() {
     player.landlord.lottery.drawCount -= lotterySystem.costPerDraw;
     player.landlord.lottery.totalDraws = (player.landlord.lottery.totalDraws || 0) + 1;
     
-    // 抽奖逻辑
-    const randomValue = Math.random() * 100;
-    let cumulativeProbability = 0;
-    let wonPrize = null;
-    
-    for (const prize of lotterySystem.prizePool) {
-        cumulativeProbability += prize.probability;
-        if (randomValue <= cumulativeProbability) {
-            wonPrize = prize;
-            break;
-        }
-    }
+    let wonPrize = (typeof lotterySystem.pickPrize === 'function')
+        ? lotterySystem.pickPrize()
+        : lotterySystem.prizePool[0];
     
     // 确保有奖品
     if (!wonPrize) {
@@ -386,6 +418,15 @@ function drawLottery() {
         if (!player.landlord.lottery.prizesWon[pk]) player.landlord.lottery.prizesWon[pk] = 0;
         player.landlord.lottery.prizesWon[pk]++;
         animPrize = { name: drawResult.prize, weight: wgt, actualProbability: wonPrize.actualProbability, prizeType: 'ranchAnimal' };
+    } else if (wonPrize.prizeType === 'item') {
+        if (!player.landlord.itemStorage) player.landlord.itemStorage = {};
+        const wgt = Math.max(1, Math.floor(Number(wonPrize.weight) || 1));
+        if (!player.landlord.itemStorage[wonPrize.name]) player.landlord.itemStorage[wonPrize.name] = 0;
+        player.landlord.itemStorage[wonPrize.name] += wgt;
+        drawResult.prize = '【道具】' + wonPrize.name + (wgt > 1 ? ('×' + wgt) : '');
+        if (!player.landlord.lottery.prizesWon[wonPrize.name]) player.landlord.lottery.prizesWon[wonPrize.name] = 0;
+        player.landlord.lottery.prizesWon[wonPrize.name] += wgt;
+        animPrize = { name: wonPrize.name, weight: wgt, actualProbability: wonPrize.actualProbability, prizeType: 'item' };
     } else {
         drawResult.prize = wonPrize.name;
         if (!player.landlord.lottery.prizesWon[wonPrize.name]) {
@@ -409,6 +450,9 @@ function drawLottery() {
     renderLotteryInterface();
     if (typeof renderLandlordSeedStorage === 'function') {
         renderLandlordSeedStorage();
+    }
+    if (wonPrize.prizeType === 'item' && typeof renderLandlordItemStorage === 'function') {
+        renderLandlordItemStorage();
     }
     if (wonPrize.prizeType === 'ranchAnimal' && typeof renderLandlordRanch === 'function') {
         renderLandlordRanch();
@@ -444,17 +488,9 @@ function drawTenLottery() {
         player.landlord.lottery.drawCount -= lotterySystem.costPerDraw;
         player.landlord.lottery.totalDraws++;
         
-        const randomValue = Math.random() * 100;
-        let cumulativeProbability = 0;
-        let wonPrize = null;
-        
-        for (const prize of lotterySystem.prizePool) {
-            cumulativeProbability += prize.probability;
-            if (randomValue <= cumulativeProbability) {
-                wonPrize = prize;
-                break;
-            }
-        }
+        let wonPrize = (typeof lotterySystem.pickPrize === 'function')
+            ? lotterySystem.pickPrize()
+            : lotterySystem.prizePool[0];
         
         if (!wonPrize) {
             wonPrize = lotterySystem.prizePool[0];
@@ -477,6 +513,18 @@ function drawTenLottery() {
             if (!player.landlord.lottery.prizesWon[pk]) player.landlord.lottery.prizesWon[pk] = 0;
             player.landlord.lottery.prizesWon[pk]++;
             drawPrizeLabel = parts.join('、');
+        } else if (wonPrize.prizeType === 'item') {
+            if (!player.landlord.itemStorage) player.landlord.itemStorage = {};
+            const wgt = Math.max(1, Math.floor(Number(wonPrize.weight) || 1));
+            if (!player.landlord.itemStorage[wonPrize.name]) player.landlord.itemStorage[wonPrize.name] = 0;
+            player.landlord.itemStorage[wonPrize.name] += wgt;
+            const ik = '【道具】' + wonPrize.name;
+            if (!results[ik]) results[ik] = 0;
+            results[ik] += wgt;
+            totalPrizes += wgt;
+            if (!player.landlord.lottery.prizesWon[wonPrize.name]) player.landlord.lottery.prizesWon[wonPrize.name] = 0;
+            player.landlord.lottery.prizesWon[wonPrize.name] += wgt;
+            drawPrizeLabel = wonPrize.name + (wgt > 1 ? ('×' + wgt) : '');
         } else {
             if (!results[wonPrize.name]) {
                 results[wonPrize.name] = 0;
@@ -494,7 +542,9 @@ function drawTenLottery() {
         }
 
         player.landlord.lottery.drawHistory.unshift({
-            prize: wonPrize.prizeType === 'ranchAnimal' ? ('【牧场】' + drawPrizeLabel) : wonPrize.name,
+            prize: wonPrize.prizeType === 'ranchAnimal'
+                ? ('【牧场】' + drawPrizeLabel)
+                : (wonPrize.prizeType === 'item' ? ('【道具】' + drawPrizeLabel) : wonPrize.name),
             time: new Date().toLocaleString('zh-CN'),
             timestamp: Date.now(),
             isTenDraw: true
@@ -509,6 +559,7 @@ function drawTenLottery() {
     updateLotteryDisplay();
     renderLotteryInterface();
     renderLandlordSeedStorage();
+    if (typeof renderLandlordItemStorage === 'function') renderLandlordItemStorage();
     if (typeof renderLandlordRanch === 'function') renderLandlordRanch();
     showTenLotteryAnimation(results);
     
@@ -527,10 +578,17 @@ function showLotteryAnimation(prize) {
     animationContainer.style.pointerEvents = 'none';
     
     const isRanch = prize.prizeType === 'ranchAnimal';
-    const prizeColor = isRanch ? '#43a047' : (seedProperties[prize.name] ? seedProperties[prize.name].color : '#3498db');
+    const isItem = prize.prizeType === 'item';
+    const prizeColor = isRanch
+        ? '#43a047'
+        : (isItem
+            ? ((typeof itemProperties !== 'undefined' && itemProperties[prize.name]) ? itemProperties[prize.name].color : '#9b59b6')
+            : (seedProperties[prize.name] ? seedProperties[prize.name].color : '#3498db'));
     const midLine = isRanch
         ? (prize.name + '<div style="font-size:0.75em;margin-top:8px;font-weight:normal;opacity:0.95">已进入牧场动物库存，放养时使用</div>')
-        : (prize.name + '种子 ×' + prize.weight);
+        : (isItem
+            ? ('【道具】' + prize.name + (prize.weight > 1 ? (' ×' + prize.weight) : '') + '<div style="font-size:0.75em;margin-top:8px;font-weight:normal;opacity:0.95">已进入道具仓库</div>')
+            : (prize.name + '种子 ×' + prize.weight));
     const probLine = prize.actualProbability != null && prize.actualProbability !== '' ? ('概率: ' + prize.actualProbability + '%') : '';
 
     animationContainer.innerHTML = `
@@ -621,7 +679,7 @@ function renderLotteryInterface() {
                  color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
             <h3 style="margin: 0 0 10px 0; font-size: 1.5em;">🎯 果实抽奖系统</h3>
             <div style="font-size: 0.9em; opacity: 0.9;">
-                出售带有【银、金、水晶、流光】词条的果实可获得抽奖机会；约10%「随机牧场动物」：种类按<strong>稀有度加权</strong>、品质1～8档<strong>独立加权</strong>（高品更难）。
+                出售带有【银/金/水晶/流光/神辉/太初/无上】基础词条的果实可获得抽奖机会；奖池大类：<strong>种子 80%</strong>、<strong>牧场动物 10%</strong>、<strong>稀有道具 10%</strong>。种子按<strong>价格越高越稀有</strong>；道具池内<strong>均等概率</strong>。
             </div>
         </div>
         
@@ -662,24 +720,9 @@ function renderLotteryInterface() {
             </button>
         </div>
         
-        <div class="prize-pool" style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-            <h4 style="margin: 0 0 15px 0; color: #2c3e50;">🎁 奖品池概率</h4>
-            <div class="prize-list">
-                ${lotterySystem.prizePool.map(prize => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; 
-                                padding: 8px 0; border-bottom: 1px solid #eee;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 20px; height: 20px; border-radius: 50%; 
-                                      background: ${prize.prizeType === 'ranchAnimal' ? '#66bb6a' : (seedProperties[prize.name]?.color || '#3498db')};"></div>
-                            <span style="font-weight: bold;">${prize.name}</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="color: #7f8c8d; font-size: 0.9em;">${prize.probability}%</span>
-                            <span style="font-weight: bold; color: #e74c3c;">${prize.actualProbability}%</span>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
+        <div class="prize-pool" style="background: #f8f9fa; padding: 14px 16px; border-radius: 10px; margin-bottom: 16px;">
+            <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 1.05em;">🎁 奖品池概率</h4>
+            ${buildLotteryPrizePoolHtml()}
         </div>
         
         <div class="draw-history" style="background: #ecf0f1; padding: 15px; border-radius: 10px;">
@@ -701,13 +744,92 @@ function renderLotteryInterface() {
         <div style="background: #e8f6f3; padding: 15px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #1abc9c;">
             <h4 style="margin: 0 0 10px 0; color: #16a085;">💡 如何获得抽奖次数</h4>
             <div style="font-size: 0.9em; color: #27ae60;">
-                <div>• 出售带有【银、金、水晶、流光】词条的果实</div>
+                <div>• 出售带有【银/金/水晶/流光/神辉/太初/无上】基础词条的果实</div>
                 <div>• 每个符合条件的果实可获得1次抽奖机会</div>
                 <div>• 在果实仓库查看可获抽奖次数的果实</div>
                 <div>• 抽到「随机牧场动物」：先加权抽<strong>动物种类</strong>（越稀有越低），再独立加权抽<strong>8档品质</strong>，进入牧场库存（键：动物:品质）</div>
             </div>
         </div>
     `;
+}
+
+/** 奖品池紧凑展示：按分类折叠 + 芯片网格 */
+function buildLotteryPrizePoolHtml() {
+    if (typeof lotterySystem === 'undefined' || !lotterySystem.prizePool) return '';
+    if (typeof lotterySystem.initPrizeProbabilities === 'function') {
+        lotterySystem.initPrizeProbabilities();
+    }
+
+    const groups = [
+        { key: 'seed', title: '种子（总 80% · 越贵越稀）', color: '#3498db', open: true },
+        { key: 'ranchAnimal', title: '牧场动物（总 10%）', color: '#27ae60', open: true },
+        { key: 'item', title: '稀有道具（总 10% · 均等）', color: '#8e44ad', open: false }
+    ];
+
+    const buckets = { seed: [], ranchAnimal: [], item: [] };
+    let totalProb = 0;
+    lotterySystem.prizePool.forEach(function (prize) {
+        const p = Number(prize.probability) || 0;
+        totalProb += p;
+        if (prize.prizeType === 'item') buckets.item.push(prize);
+        else if (prize.prizeType === 'ranchAnimal') buckets.ranchAnimal.push(prize);
+        else buckets.seed.push(prize);
+    });
+
+    // 种子按实际概率从高到低
+    buckets.seed.sort(function (a, b) {
+        return (Number(b.actualProbability) || 0) - (Number(a.actualProbability) || 0);
+    });
+    buckets.item.sort(function (a, b) {
+        return (Number(b.actualProbability) || 0) - (Number(a.actualProbability) || 0);
+    });
+
+    function chipColor(prize) {
+        if (prize.prizeType === 'ranchAnimal') return '#66bb6a';
+        if (prize.prizeType === 'item') {
+            return (typeof itemProperties !== 'undefined' && itemProperties[prize.name])
+                ? itemProperties[prize.name].color
+                : '#9b59b6';
+        }
+        return (seedProperties[prize.name] && seedProperties[prize.name].color) || '#3498db';
+    }
+
+    function renderChips(list, accent) {
+        if (!list.length) {
+            return '<div style="font-size:0.82em;color:#95a5a6;padding:6px 2px;">暂无</div>';
+        }
+        return '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + list.map(function (prize) {
+            const pct = prize.actualProbability != null ? prize.actualProbability : '0';
+            const label = prize.prizeType === 'item' ? prize.name : prize.name;
+            return '<div title="权重 ' + prize.probability + ' · 实际 ' + pct + '%" style="' +
+                'display:inline-flex;align-items:center;gap:5px;padding:4px 8px;' +
+                'background:#fff;border:1px solid #e8ecf0;border-radius:999px;font-size:0.78em;line-height:1.2;' +
+                '">' +
+                '<span style="width:8px;height:8px;border-radius:50%;background:' + chipColor(prize) + ';flex-shrink:0;"></span>' +
+                '<span style="color:#2c3e50;font-weight:600;max-width:7.5em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + label + '</span>' +
+                '<span style="color:' + accent + ';font-weight:700;font-variant-numeric:tabular-nums;">' + pct + '%</span>' +
+                '</div>';
+        }).join('') + '</div>';
+    }
+
+    return groups.map(function (g) {
+        const list = buckets[g.key] || [];
+        let groupWeight = 0;
+        list.forEach(function (p) { groupWeight += Number(p.probability) || 0; });
+        const groupPct = totalProb > 0 ? ((groupWeight / totalProb) * 100).toFixed(1) : '0.0';
+        return '<details class="lottery-prize-group" ' + (g.open ? 'open' : '') + ' style="' +
+            'background:#fff;border:1px solid #e6ebf0;border-radius:10px;margin-bottom:8px;overflow:hidden;' +
+            '">' +
+            '<summary style="cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;' +
+            'gap:10px;padding:10px 12px;user-select:none;background:linear-gradient(90deg,' + g.color + '14,transparent);">' +
+            '<span style="font-weight:700;color:#2c3e50;font-size:0.92em;">' + g.title +
+            ' <span style="font-weight:600;color:#7f8c8d;font-size:0.85em;">(' + list.length + ')</span></span>' +
+            '<span style="font-weight:800;color:' + g.color + ';font-size:0.9em;">合计 ' + groupPct + '%</span>' +
+            '</summary>' +
+            '<div style="padding:8px 12px 12px;border-top:1px solid #f0f2f5;max-height:180px;overflow-y:auto;">' +
+            renderChips(list, g.color) +
+            '</div></details>';
+    }).join('');
 }
 
 // 11. 更新抽奖显示

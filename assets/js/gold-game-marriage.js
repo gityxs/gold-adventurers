@@ -615,6 +615,13 @@ function updateTreasureUI() {
     document.getElementById('totalTreasures').textContent = formatNumber(totalTreasures);
     document.getElementById('totalTreasureValue').textContent = formatNumber(totalValue);
     document.getElementById('totalSoldValue').textContent = formatNumber(player.treasures.totalSold || 0);
+    const soldGpsBonus = (Number(player.treasures.totalSold) || 0) / 1000000;
+    const soldGpsEl = document.getElementById('treasureSoldGpsBonus');
+    if (soldGpsEl) {
+        soldGpsEl.textContent = soldGpsBonus >= 100
+            ? formatNumber(Math.floor(soldGpsBonus))
+            : (Math.floor(soldGpsBonus * 100) / 100).toString();
+    }
     
     // 更新各个显示区域
     updateTreasureCollection();
@@ -995,6 +1002,8 @@ const childConfig = {
 var _childOffspringFilter = 'all';
 /** 选人下拉 / 子嗣列表共用的代数筛选（支持单代如 "3"，或区间如 "1-3"） */
 var _lineageSelectGenFilter = 'all';
+/** 选人下拉 / 子嗣列表共用的名字筛选（子串匹配） */
+var _lineageSelectNameFilter = '';
 var _childActiveTab = 'overview';
 
 function initChildData() {
@@ -1231,20 +1240,37 @@ function getLineageSelectGenFilter() {
     return _lineageSelectGenFilter || 'all';
 }
 
-function matchLineageSelectGen(member) {
-    var f = getLineageSelectGenFilter();
-    if (!f || f === 'all') return true;
+function getLineageSelectNameFilter() {
+    return String(_lineageSelectNameFilter || '').trim();
+}
+
+function matchLineageSelectName(member) {
+    var q = getLineageSelectNameFilter();
+    if (!q) return true;
     if (!member) return false;
-    var gen = Number(member.generation) || 1;
-    var s = String(f);
-    if (s.indexOf('-') >= 0) {
-        var parts = s.split('-');
-        var a = Number(parts[0]);
-        var b = Number(parts[1]);
-        if (!isFinite(a) || !isFinite(b)) return true;
-        return gen >= Math.min(a, b) && gen <= Math.max(a, b);
+    // 仅含 generation 的代数探测对象：不套用名字筛选
+    if (member.name === undefined && member.id === undefined && member.generation != null) return true;
+    return String(member.name || '').indexOf(q) >= 0;
+}
+
+function matchLineageSelectGen(member) {
+    if (!member) return false;
+    var f = getLineageSelectGenFilter();
+    if (f && f !== 'all') {
+        var gen = Number(member.generation) || 1;
+        var s = String(f);
+        if (s.indexOf('-') >= 0) {
+            var parts = s.split('-');
+            var a = Number(parts[0]);
+            var b = Number(parts[1]);
+            if (isFinite(a) && isFinite(b)) {
+                if (!(gen >= Math.min(a, b) && gen <= Math.max(a, b))) return false;
+            }
+        } else if (String(gen) !== s) {
+            return false;
+        }
     }
-    return String(gen) === s;
+    return matchLineageSelectName(member);
 }
 
 function lineageGenFilterOptionsHtml() {
@@ -1366,7 +1392,8 @@ function updateLineageGenFilterCount() {
         if (matchLineageSelectGen(members[i])) n++;
     }
     var f = getLineageSelectGenFilter();
-    if (f === 'all') {
+    var nameQ = getLineageSelectNameFilter();
+    if (f === 'all' && !nameQ) {
         node.textContent = '共 ' + members.length + ' 人';
     } else {
         node.textContent = '可选 ' + n + ' / ' + members.length + ' 人';
@@ -1387,6 +1414,23 @@ function syncLineageGenFilterSelects() {
         sel.value = want;
         if (sel.value !== want) sel.value = 'all';
     }
+    var nameInput = document.getElementById('lineageSelectNameFilter');
+    if (nameInput && nameInput.value !== String(_lineageSelectNameFilter || '')) {
+        nameInput.value = String(_lineageSelectNameFilter || '');
+    }
+    updateLineageGenFilterCount();
+}
+
+function refreshLineageSelectFilterViews() {
+    if (typeof updateChildrenList === 'function') updateChildrenList();
+    if (typeof updateLineageActionList === 'function') updateLineageActionList();
+    if (typeof updateFamilyTreeView === 'function') updateFamilyTreeView();
+    if (typeof updateChildWorkSystem === 'function') updateChildWorkSystem();
+    if (typeof updateChildInteractionSystem === 'function') updateChildInteractionSystem();
+    if (typeof refreshActiveChildTabPanels === 'function') {
+        try { refreshActiveChildTabPanels(); } catch (e) { /* ignore */ }
+    }
+    if (typeof applyLineageMemberGenFilterDom === 'function') applyLineageMemberGenFilterDom();
     updateLineageGenFilterCount();
 }
 
@@ -1405,16 +1449,31 @@ function setLineageSelectGenFilter(filter) {
         updateLineageGenFilterCount();
         return;
     }
-    if (typeof updateChildrenList === 'function') updateChildrenList();
-    if (typeof updateLineageActionList === 'function') updateLineageActionList();
-    if (typeof updateFamilyTreeView === 'function') updateFamilyTreeView();
-    if (typeof updateChildWorkSystem === 'function') updateChildWorkSystem();
-    if (typeof updateChildInteractionSystem === 'function') updateChildInteractionSystem();
-    if (typeof refreshActiveChildTabPanels === 'function') {
-        try { refreshActiveChildTabPanels(); } catch (e) { /* ignore */ }
+    refreshLineageSelectFilterViews();
+}
+
+function setLineageSelectNameFilter(name) {
+    var next = name == null ? '' : String(name);
+    var prev = String(_lineageSelectNameFilter || '');
+    if (next === prev) return;
+    _lineageSelectNameFilter = next;
+    var input = document.getElementById('lineageSelectNameFilter');
+    if (input && input.value !== next) input.value = next;
+    refreshLineageSelectFilterViews();
+}
+
+function resetLineageSelectFilters() {
+    var genWas = String(_lineageSelectGenFilter || 'all');
+    var nameWas = String(_lineageSelectNameFilter || '');
+    _lineageSelectNameFilter = '';
+    var input = document.getElementById('lineageSelectNameFilter');
+    if (input) input.value = '';
+    if (genWas !== 'all') {
+        setLineageSelectGenFilter('all');
+        return;
     }
-    if (typeof applyLineageMemberGenFilterDom === 'function') applyLineageMemberGenFilterDom();
-    updateLineageGenFilterCount();
+    if (nameWas) refreshLineageSelectFilterViews();
+    else syncLineageGenFilterSelects();
 }
 
 function setOffspringFilter(filter) {
@@ -1433,6 +1492,22 @@ function getGenerationMult(gen) {
 
 function getGenerationLabel(gen) {
     return childConfig.lineage.generationNames[gen] || ('第' + gen + '代');
+}
+
+function getMarriageTierLabel(tierId) {
+    if (!tierId || tierId === 'common') return '';
+    var tiers = (typeof window !== 'undefined' && window.lineageExtConfig && window.lineageExtConfig.marriageTiers)
+        || (typeof childConfig !== 'undefined' && childConfig.marriageTiers)
+        || [];
+    for (var i = 0; i < tiers.length; i++) {
+        if (tiers[i] && tiers[i].id === tierId) return tiers[i].name || tierId;
+    }
+    var fallback = {
+        gentry: '士绅联姻', merchant: '商贾联姻', scholar: '书香联姻', noble: '名门联姻',
+        marquis: '侯门联姻', royal: '贵胄联姻', duke: '王侯联姻', immortal: '十八代联姻',
+        celestial: '天眷联姻', eternal: '不朽联姻'
+    };
+    return fallback[tierId] || tierId;
 }
 
 function getChildById(id) {
@@ -1885,7 +1960,11 @@ function updateChildrenList() {
     });
 
     if (list.length === 0) {
-        var emptyMsg = (getLineageSelectGenFilter() === 'all') ? '暂无成员' : '该代数筛选下暂无成员';
+        var nameQ = (typeof getLineageSelectNameFilter === 'function') ? getLineageSelectNameFilter() : '';
+        var emptyMsg = '暂无成员';
+        if (nameQ && getLineageSelectGenFilter() !== 'all') emptyMsg = '该名字/代数筛选下暂无成员';
+        else if (nameQ) emptyMsg = '未找到名字含「' + nameQ + '」的成员';
+        else if (getLineageSelectGenFilter() !== 'all') emptyMsg = '该代数筛选下暂无成员';
         container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#C9A0B8;padding:24px;">' + emptyMsg + '</div>';
         return;
     }
@@ -1934,8 +2013,9 @@ function buildFamilyMemberCard(child, index, showTrain) {
         extraActions += '<button class="c-btn c-btn-sm c-btn-gold" style="width:100%;margin-top:6px;" onclick="arrangeMarriage(' + index + ')">安排成婚</button>';
     }
     if (safeChild.isMarried && safeChild.spouse) {
+        var tierLabel = (typeof getMarriageTierLabel === 'function') ? getMarriageTierLabel(safeChild.marriageTier) : '';
         extraActions += '<div class="meta" style="margin-top:4px;">配偶：' + safeChild.spouse.name +
-            (safeChild.marriageTier && safeChild.marriageTier !== 'common' ? '（' + safeChild.marriageTier + '）' : '') + '</div>';
+            (tierLabel ? '（' + tierLabel + '）' : '') + '</div>';
     }
     var talentLabel = '';
     if (safeChild.talentId && typeof window.lineageExtConfig !== 'undefined') {
@@ -2791,8 +2871,10 @@ function updateChildWorkSystem() {
     });
 
     if (adultChildren.length === 0) {
-        var emptyWork = (typeof getLineageSelectGenFilter === 'function' && getLineageSelectGenFilter() !== 'all')
-            ? '该代数筛选下没有可打工的成年成员'
+        var hasGenF = typeof getLineageSelectGenFilter === 'function' && getLineageSelectGenFilter() !== 'all';
+        var hasNameF = typeof getLineageSelectNameFilter === 'function' && !!getLineageSelectNameFilter();
+        var emptyWork = (hasGenF || hasNameF)
+            ? '当前筛选下没有可打工的成年成员'
             : '还没有成年成员可打工';
         container.innerHTML =
             '<div style="text-align:center;color:#C9A0B8;padding:16px;">' + emptyWork + '<br><span style="font-size:12px;">需成长至青年阶段 · 当前：' +
@@ -3561,8 +3643,10 @@ function updateLineageActionList() {
     });
 
     if (eligible.length === 0) {
-        var emptyLineage = (typeof getLineageSelectGenFilter === 'function' && getLineageSelectGenFilter() !== 'all')
-            ? '该代数筛选下暂无成年成员可传宗'
+        var hasGenL = typeof getLineageSelectGenFilter === 'function' && getLineageSelectGenFilter() !== 'all';
+        var hasNameL = typeof getLineageSelectNameFilter === 'function' && !!getLineageSelectNameFilter();
+        var emptyLineage = (hasGenL || hasNameL)
+            ? '当前筛选下暂无成年成员可传宗'
             : '暂无成年子女可传宗<br>先培养子女至青年并安排成婚';
         container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#C9A0B8;padding:20px;">' + emptyLineage + '</div>';
         return;
@@ -3730,16 +3814,25 @@ function updateFamilyTreeView() {
     const members = player.children.children || [];
     const spouseName = (player.marriage && player.marriage.spouseName) || '配偶';
     const genFilter = (typeof getLineageSelectGenFilter === 'function') ? getLineageSelectGenFilter() : 'all';
+    const nameFilter = (typeof getLineageSelectNameFilter === 'function') ? getLineageSelectNameFilter() : '';
 
     let html = '<div class="c-tree-gen"><div class="c-tree-label">第 0 代 · 本家</div><div class="c-tree-row">' +
         '<div class="c-tree-node c-tree-root"><div class="tn-name">你</div><div class="tn-sub">与 ' + spouseName + '</div></div></div></div>';
-    if (genFilter !== 'all') {
-        html += '<div class="c-hint" style="margin:6px 0 10px;">当前按「筛选代数」高亮显示；未命中的代数会收起。</div>';
+    if (genFilter !== 'all' || nameFilter) {
+        html += '<div class="c-hint" style="margin:6px 0 10px;">当前按' +
+            (genFilter !== 'all' ? '「筛选代数」' : '') +
+            (genFilter !== 'all' && nameFilter ? '与' : '') +
+            (nameFilter ? '「名字」' : '') +
+            '显示；未命中的会收起。</div>';
     }
 
     for (var gen = 1; gen <= childConfig.lineage.maxGeneration; gen++) {
         if (typeof matchLineageSelectGen === 'function' && !matchLineageSelectGen({ generation: gen })) continue;
-        var list = members.filter(function(c) { return (c.generation || 1) === gen; });
+        var list = members.filter(function(c) {
+            if ((c.generation || 1) !== gen) return false;
+            return typeof matchLineageSelectGen !== 'function' || matchLineageSelectGen(c);
+        });
+        if (list.length === 0 && nameFilter) continue;
         html += '<div class="c-tree-gen"><div class="c-tree-label">第 ' + gen + ' 代 · ' + getGenerationLabel(gen) +
             '（' + list.length + '）</div><div class="c-tree-row">';
         if (list.length === 0) {

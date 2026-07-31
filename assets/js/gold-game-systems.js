@@ -485,7 +485,10 @@
             if (tab === 'dungeonEquipment') updateDungeonEquipmentDisplay();
             if (tab === 'soulRings') updateSoulRingDisplay();
             if (tab === 'techniques') updateTechniquesDisplay();
-            if (tab === 'playerAttributes') updatePlayerAttributesDisplay();
+            if (tab === 'playerAttributes') {
+                if (typeof updateTechniqueBonuses === 'function') updateTechniqueBonuses();
+                else updatePlayerAttributesDisplay();
+            }
         }
 
         // 道具列表刷新见全局 updateItemDisplay（#itemContainer）
@@ -578,15 +581,18 @@ function updateCollectionDisplay() {
     if (!player.reincarnationStats || typeof player.reincarnationStats !== 'object') {
         player.reincarnationStats = {};
     }
-    const defaults = ['gpsBonus', 'equipmentLevelBonus', 'clickLimitBonus', 'reincarnationCoinBonus'];
+    const defaults = ['gpsBonus', 'equipmentLevelBonus', 'clickLimitBonus', 'reincarnationCoinBonus', 'offlineEquipBonus'];
     defaults.forEach((stat) => {
+        const baseCost = stat === 'offlineEquipBonus' ? 1000 : 1;
         if (!player.reincarnationStats[stat] || typeof player.reincarnationStats[stat] !== 'object') {
-            player.reincarnationStats[stat] = { level: 0, cost: 1 };
+            player.reincarnationStats[stat] = { level: 0, cost: baseCost };
         }
         const statData = player.reincarnationStats[stat];
         statData.level = Math.max(0, Math.floor(Number(statData.level) || 0));
-        const factor = stat === 'equipmentLevelBonus' ? 5 : (stat === 'reincarnationCoinBonus' ? 10 : 1.2);
-        let expectedCost = 1;
+        const factor = stat === 'equipmentLevelBonus' ? 5
+            : (stat === 'reincarnationCoinBonus' || stat === 'offlineEquipBonus') ? 10
+            : 1.2;
+        let expectedCost = baseCost;
         for (let i = 0; i < statData.level; i++) {
             expectedCost = multiplyBigByFinite(expectedCost, factor);
         }
@@ -603,44 +609,72 @@ function updateCollectionDisplay() {
         function updateReincarnationDisplay() {
     syncReincarnationStatsWithLevels();
     const reincarnationContainer = document.getElementById('reincarnationList');
-    const gpsCost = formatSci(bigSciToStorageValue(player.reincarnationStats.gpsBonus.cost));
-    const eqCost = formatSci(bigSciToStorageValue(player.reincarnationStats.equipmentLevelBonus.cost));
-    const clickCost = formatSci(bigSciToStorageValue(player.reincarnationStats.clickLimitBonus.cost));
-    const coinBonusCost = formatSci(bigSciToStorageValue(player.reincarnationStats.reincarnationCoinBonus.cost));
-    const coinBonusLv = player.reincarnationStats.reincarnationCoinBonus.level;
-    reincarnationContainer.innerHTML = `
-        <div class="main-section-head"><h3>转生属性</h3><span class="main-section-sub">消耗转生币永久强化</span></div>
-        <div class="main-stack">
-            <div class="main-list-card">
-                <div>
-                  <div class="card-title">收益加成</div>
-                  <div class="card-desc">每级装备属性 +${player.reincarnationStats.gpsBonus.level * 100}% · Lv.${player.reincarnationStats.gpsBonus.level}</div>
-                </div>
-                <button type="button" class="main-action-btn" onclick="upgradeReincarnationStat('gpsBonus')">升级 · ${gpsCost}</button>
-            </div>
-            <div class="main-list-card">
-                <div>
-                  <div class="card-title">装备等级</div>
-                  <div class="card-desc">全部装备初始 +${player.reincarnationStats.equipmentLevelBonus.level * 200} 级 · Lv.${player.reincarnationStats.equipmentLevelBonus.level}</div>
-                </div>
-                <button type="button" class="main-action-btn" onclick="upgradeReincarnationStat('equipmentLevelBonus')">升级 · ${eqCost}</button>
-            </div>
-            <div class="main-list-card">
-                <div>
-                  <div class="card-title">点击上限</div>
-                  <div class="card-desc">每秒点击上限 +${player.reincarnationStats.clickLimitBonus.level} 次 · Lv.${player.reincarnationStats.clickLimitBonus.level}</div>
-                </div>
-                <button type="button" class="main-action-btn" onclick="upgradeReincarnationStat('clickLimitBonus')">升级 · ${clickCost}</button>
-            </div>
-            <div class="main-list-card">
-                <div>
-                  <div class="card-title">转生收益</div>
-                  <div class="card-desc">转生币总加成 +${coinBonusLv * 10}% · Lv.${coinBonusLv}</div>
-                </div>
-                <button type="button" class="main-action-btn" onclick="upgradeReincarnationStat('reincarnationCoinBonus')">升级 · ${coinBonusCost}</button>
-            </div>
-        </div>
-    `;
+    if (!reincarnationContainer) return;
+    const stats = [
+        {
+            key: 'gpsBonus',
+            name: '收益加成',
+            tier: 'reinc-t1',
+            level: player.reincarnationStats.gpsBonus.level,
+            effect: '装备属性 <b>+' + (player.reincarnationStats.gpsBonus.level * 100) + '%</b>',
+            hint: '每级 +100%',
+            cost: formatSci(bigSciToStorageValue(player.reincarnationStats.gpsBonus.cost))
+        },
+        {
+            key: 'equipmentLevelBonus',
+            name: '装备等级',
+            tier: 'reinc-t2',
+            level: player.reincarnationStats.equipmentLevelBonus.level,
+            effect: '初始等级 <b>+' + (player.reincarnationStats.equipmentLevelBonus.level * 200) + '</b>',
+            hint: '每级 +200 级',
+            cost: formatSci(bigSciToStorageValue(player.reincarnationStats.equipmentLevelBonus.cost))
+        },
+        {
+            key: 'clickLimitBonus',
+            name: '点击上限',
+            tier: 'reinc-t3',
+            level: player.reincarnationStats.clickLimitBonus.level,
+            effect: '每秒上限 <b>+' + player.reincarnationStats.clickLimitBonus.level + '</b> 次',
+            hint: '每级 +1 次',
+            cost: formatSci(bigSciToStorageValue(player.reincarnationStats.clickLimitBonus.cost))
+        },
+        {
+            key: 'reincarnationCoinBonus',
+            name: '转生收益',
+            tier: 'reinc-t4',
+            level: player.reincarnationStats.reincarnationCoinBonus.level,
+            effect: '转生币 <b>+' + (player.reincarnationStats.reincarnationCoinBonus.level * 10) + '%</b>',
+            hint: '每级 +10%',
+            cost: formatSci(bigSciToStorageValue(player.reincarnationStats.reincarnationCoinBonus.cost))
+        },
+        {
+            key: 'offlineEquipBonus',
+            name: '离线收益',
+            tier: 'reinc-t5',
+            level: player.reincarnationStats.offlineEquipBonus.level,
+            effect: '离线预算 <b>+' + (player.reincarnationStats.offlineEquipBonus.level * 200) + '</b> 级/分',
+            hint: '每级 +200 级/分钟',
+            cost: formatSci(bigSciToStorageValue(player.reincarnationStats.offlineEquipBonus.cost))
+        }
+    ];
+    reincarnationContainer.innerHTML =
+        '<div class="main-section-head"><h3>转生属性</h3><span class="main-section-sub">消耗转生币永久强化</span></div>' +
+        '<div class="reinc-grid">' +
+        stats.map(function (s) {
+            return '<div class="reinc-card ' + s.tier + '">' +
+                '<div class="reinc-card-top">' +
+                  '<div class="reinc-name">' + s.name + '</div>' +
+                  '<div class="reinc-lv">Lv.' + s.level + '</div>' +
+                '</div>' +
+                '<div class="reinc-effect">' + s.effect + '</div>' +
+                '<div class="reinc-hint">' + s.hint + '</div>' +
+                '<button type="button" class="reinc-upgrade-btn" onclick="upgradeReincarnationStat(\'' + s.key + '\')">' +
+                  '<span class="reinc-upgrade-label">升级</span>' +
+                  '<span class="reinc-upgrade-cost">' + s.cost + ' 转生币</span>' +
+                '</button>' +
+              '</div>';
+        }).join('') +
+        '</div>';
 }
    const TECH_TYPE_LABELS = {
         health: '生命',
@@ -1101,10 +1135,23 @@ function checkPetAchievements(petKey, level) {
                 statData.level++;
                 if (stat === 'equipmentLevelBonus') {
                     statData.cost = multiplyBigByFinite(statData.cost, 5); // 装备等级加成每次升级消耗增加5倍（大数安全）
-                } else if (stat === 'reincarnationCoinBonus') {
-                    statData.cost = multiplyBigByFinite(statData.cost, 10); // 转生收益每次升级消耗增加10倍（1→10→100→1000）
+                    // 立刻给已有装备 +200 级，并按新等级重算属性（不再等再获得同品质装备）
+                    if (Array.isArray(player.equipment)) {
+                        player.equipment.forEach(function (eq) {
+                            eq.level = (Number(eq.level) || 1) + 200;
+                        });
+                    }
+                    if (typeof recalculateAllEquipmentPower === 'function') {
+                        recalculateAllEquipmentPower();
+                    }
+                } else if (stat === 'reincarnationCoinBonus' || stat === 'offlineEquipBonus') {
+                    statData.cost = multiplyBigByFinite(statData.cost, 10); // 转生收益/离线收益每次升级消耗增加10倍
                 } else {
                     statData.cost = multiplyBigByFinite(statData.cost, 1.2); // 其他属性每次升级消耗增加20%（大数安全）
+                    // 收益加成升级后立刻重算装备 gps/click
+                    if (stat === 'gpsBonus' && typeof recalculateAllEquipmentPower === 'function') {
+                        recalculateAllEquipmentPower();
+                    }
                 }
                 logAction(`升级 ${stat} 成功！`, 'success');
                 updateReincarnationDisplay();
@@ -2486,6 +2533,11 @@ function confirmRename() {
     if (message.includes('自动购买')) {
         return; // 直接返回，不记录这类消息
     }
+    // 等级结算上限提示：同一会话内不重复写入日志
+    if (message.indexOf('等级结算步数达到上限') === 0) {
+        if (window._playerLevelSettleCapHintShown) return;
+        window._playerLevelSettleCapHintShown = true;
+    }
     if (message.includes("获得了轮回神兽")) {
         // 提取神兽名和品质
         const match = message.match(/获得了轮回神兽：(.*?)（(.*?)·(.*?)）/);
@@ -2583,7 +2635,10 @@ function renderActionLogsToDom() {
    cleanupArtifactAdvanceLevels(); 
     saveInvestmentGameData();
     player.tower.lastUpdate = Date.now();
-    syncExplorationDataToPlayer();
+    // 存档前同步舰队属性；未就绪时勿抛错中断整次保存
+    if (typeof syncExplorationDataToPlayer === 'function') {
+        try { syncExplorationDataToPlayer(); } catch (eSyncExp) { console.warn('syncExplorationDataToPlayer', eSyncExp); }
+    }
     if (typeof pruneTimeSecretRealmForSave === 'function') pruneTimeSecretRealmForSave();
     
     if (player.battleLog && player.battleLog.length > 50) player.battleLog = player.battleLog.slice(0, 50);
@@ -2592,13 +2647,8 @@ function renderActionLogsToDom() {
     if (player.exploration && player.exploration.logs && player.exploration.logs.length > 20) {
         player.exploration.logs = player.exploration.logs.slice(0, 20);
     }
-    if (player.liveStream) {
-        delete player.liveStream.danmakuPasswordInterval;
-        delete player.liveStream.wishListInterval;
-        delete player.liveStream.danmakuPasswordTimer;
-        if (player.liveStream.isLive && player.liveStream.viewers && player.liveStream.viewers.length > 100) {
-            player.liveStream.viewers = player.liveStream.viewers.slice(-100);
-        }
+    if (player.liveStream && player.liveStream.isLive && player.liveStream.viewers && player.liveStream.viewers.length > 100) {
+        player.liveStream.viewers = player.liveStream.viewers.slice(-100);
     }
     if (player.trading && player.trading.autoTrade && player.trading.autoTrade.logs && player.trading.autoTrade.logs.length > 10) {
         player.trading.autoTrade.logs = player.trading.autoTrade.logs.slice(0, 10);
@@ -2607,8 +2657,40 @@ function renderActionLogsToDom() {
         player.companionExpedition.history = player.companionExpedition.history.slice(0, 10);
     }
     // 勿对运行中的 player 做 applyGoldGameSaveCompaction：会清空 interval 引用却不停止定时器，导致世界地图自动战斗无法关闭且越叠越快
+    // 序列化前暂存运行时 timer 字段，写入后再恢复，避免存档删引用导致停不掉/叠层
     var chartCache = player.investmentGame && player.investmentGame.chartHistoryCache;
     if (chartCache) player.investmentGame.chartHistoryCache = {};
+    var liveTimerSnap = null;
+    if (player.liveStream) {
+        var lsSave = player.liveStream;
+        liveTimerSnap = {
+            danmakuPasswordInterval: lsSave.danmakuPasswordInterval,
+            wishListInterval: lsSave.wishListInterval,
+            danmakuPasswordTimer: lsSave.danmakuPasswordTimer,
+            viewerInterval: lsSave.viewerInterval,
+            interactionInterval: lsSave.interactionInterval,
+            themeInterval: lsSave.themeInterval,
+            eventInterval: lsSave.eventInterval,
+            voteInterval: lsSave.voteInterval,
+            fortuneInterval: lsSave.fortuneInterval,
+            heatInterval: lsSave.heatInterval,
+            pkInterval: lsSave.pkInterval,
+            voteInterval2: lsSave.voteInterval2,
+            overlayInterval: lsSave.overlayInterval,
+            lotteryEndTimer: lsSave.lotteryEndTimer,
+            guessEndTimer: lsSave.guessEndTimer,
+            connectMcTimer: lsSave.connectMcTimer
+        };
+        Object.keys(liveTimerSnap).forEach(function (k) { delete lsSave[k]; });
+    }
+    var travelIntervalSnap = (player.trading && player.trading.travelInterval != null) ? player.trading.travelInterval : null;
+    if (player.trading && Object.prototype.hasOwnProperty.call(player.trading, 'travelInterval')) {
+        delete player.trading.travelInterval;
+    }
+    var towerAutoSnap = (player.tower && player.tower.autoAttackInterval != null) ? player.tower.autoAttackInterval : null;
+    if (player.tower && Object.prototype.hasOwnProperty.call(player.tower, 'autoAttackInterval')) {
+        delete player.tower.autoAttackInterval;
+    }
     try {
         if (typeof window.writeGoldGameSaveToLocal === 'function') window.writeGoldGameSaveToLocal(player);
         else localStorage.setItem('goldGameSave', JSON.stringify(player));
@@ -2622,6 +2704,13 @@ function renderActionLogsToDom() {
         }
     } finally {
         if (chartCache) player.investmentGame.chartHistoryCache = chartCache;
+        if (liveTimerSnap && player.liveStream) {
+            Object.keys(liveTimerSnap).forEach(function (k) {
+                if (liveTimerSnap[k] != null) player.liveStream[k] = liveTimerSnap[k];
+            });
+        }
+        if (player.trading && travelIntervalSnap != null) player.trading.travelInterval = travelIntervalSnap;
+        if (player.tower && towerAutoSnap != null) player.tower.autoAttackInterval = towerAutoSnap;
         // 与 pruneTimeSecretRealmForSave 配对：恢复局内秒表引用，避免孤儿 interval 叠加速
         if (typeof restoreTsrTimerAfterSave === 'function') restoreTsrTimerAfterSave();
     }
@@ -5178,6 +5267,7 @@ function renderActionLogsToDom() {
     opts = opts || {};
     window._tradingOfflineRunThisSession = false; // 主动加载存档时允许本次离线结算
     window._tradingOfflineCheckedThisSession = false;
+    window._mysteryOfflineRunThisSession = false; // 与跑商一致：主动读档允许再次结算离线奥秘
     if (window._goldGameCloudLoadActive && typeof window.updateGoldGameCloudLoadProgress === 'function') {
         window.updateGoldGameCloudLoadProgress('正在初始化游戏界面…', 88, 'init');
     }

@@ -2615,9 +2615,14 @@ function saveAbyssTowerProgress() {
 }
 
  // 世界BOSS系统数据
+        const WORLD_BOSS_SUMMON_MAX = 10;
+        const WORLD_BOSS_RECOVERY_MS = 60 * 60 * 1000;
+        const WORLD_BOSS_AUTO_ATK_PER_SEC = 20;
+        const WORLD_BOSS_FIGHT_MS = 45 * 60 * 1000;
         const worldBossData = {
             summonCount: 1,
             lastSummonTime: Date.now(),
+            nextRecoveryTime: 0,
             isBossActive: false,
             bossEndTime: 0,
             bossHealth: 0,
@@ -2628,373 +2633,598 @@ function saveAbyssTowerProgress() {
             playerDamage: 0,
             isAutoAttacking: false,
             attackInterval: null,
+            virtualAttackInterval: null,
             virtualPlayers: [],
             rankings: [],
             battleLog: [],
-            lastSummonTime: Date.now(),
-        nextRecoveryTime: 0, // 新增：下次恢复时间
-        summonCountdownTimer: null, // 召唤次数倒计时 setTimeout ID，关闭界面时清除防泄漏
-        pendingVirtualLog: null, // 虚拟玩家日志合并缓存
+            summonCountdownTimer: null,
+            pendingVirtualLog: null,
+            lastUpdate: Date.now(),
+            // 体验感状态（不落盘）
+            comboCount: 0,
+            lastManualAtkAt: 0,
+            lastKnownRank: 0,
+            hpPhase: 0,
+            lastFloatAt: 0
         };
+
         function isWorldBossUIVisible() {
             const ui = document.getElementById('worldBossUI');
             return !!(ui && ui.style.display === 'block');
         }
 
-        // BOSS名字池
         const bossNames = [
-            "灭世魔尊·阎罗",
-            "永恒天帝·太初",
-            "混沌主宰·虚无",
-            "九幽冥王·黄泉",
-            "万界神皇·凌霄",
-            "太古龙帝·烛阴",
-            "星空吞噬者·饕餮",
-            "时间掌控者·岁月",
-            "命运编织者·天机",
-            "元素始祖·创世"
+            "灭世魔尊·阎罗", "永恒天帝·太初", "混沌主宰·虚无", "九幽冥王·黄泉", "万界神皇·凌霄",
+            "太古龙帝·烛阴", "星空吞噬者·饕餮", "时间掌控者·岁月", "命运编织者·天机", "元素始祖·创世"
         ];
-
-        // 世界名字池
         const worldNames = [
-            "玄天大陆",
-            "九幽冥界",
-            "太虚神境",
-            "洪荒古界",
-            "星辰海域",
-            "万界战场",
-            "永恒神域",
-            "混沌虚空",
-            "天元世界",
-            "轮回之境"
+            "玄天大陆", "九幽冥界", "太虚神境", "洪荒古界", "星辰海域",
+            "万界战场", "永恒神域", "混沌虚空", "天元世界", "轮回之境"
         ];
-
-        // 虚拟玩家名字池
         const virtualPlayerNames = [
-            "萧炎", "林动", "牧尘", "叶凡", "石昊",
-            "楚风", "秦羽", "方源", "韩立", "孟浩",
-            "苏铭", "王林", "白小纯", "李七夜", "陈平安",
-            "宁缺", "许七安", "陆鸣", "周元", "江离",
-            "罗峰", "洪易", "纪宁", "滕青山", "唐三",
-            "霍雨浩", "唐舞麟", "蓝轩宇", "古月娜", "唐昊", "茶茶", "闫闫", "萧云凡", "叶玄霄", "林昊辰", "楚星河", "秦无痕", "苏九夜", "陆天行", "沈青岚", "顾长歌", "洛千尘", "云清瑶", "柳如烟", "白芷晴", "慕雨柔", "苏灵儿", "凌寒霜", "楚月璃", "花未央", "冷轻衣", "夜琉璃", "夏知微", "苏晚晴", "林浅夏", "乔曦", "李二狗", "张全蛋", "赵日天", "王富贵"
+            "萧炎", "林动", "牧尘", "叶凡", "石昊", "楚风", "秦羽", "方源", "韩立", "孟浩",
+            "苏铭", "王林", "白小纯", "李七夜", "陈平安", "宁缺", "许七安", "陆鸣", "周元", "江离",
+            "罗峰", "洪易", "纪宁", "滕青山", "唐三", "霍雨浩", "唐舞麟", "蓝轩宇", "古月娜", "唐昊",
+            "茶茶", "闫闫", "萧云凡", "叶玄霄", "林昊辰", "楚星河", "秦无痕", "苏九夜", "陆天行", "沈青岚",
+            "顾长歌", "洛千尘", "云清瑶", "柳如烟", "白芷晴", "慕雨柔", "苏灵儿", "凌寒霜", "楚月璃", "花未央",
+            "冷轻衣", "夜琉璃", "夏知微", "苏晚晴", "林浅夏", "乔曦", "李二狗", "张全蛋", "赵日天", "王富贵"
         ];
 
-        // 初始化世界BOSS系统
-            function initWorldBossSystem() {
-    // 计算离线时间增加的召唤次数
-    const currentTime = Date.now();
-    const timePassed = currentTime - (worldBossData.lastSummonTime || currentTime);
-    const hoursPassed = Math.floor(timePassed / (60 * 60 * 1000));
-    
-    if (hoursPassed > 0) {
-        worldBossData.summonCount = Math.min(worldBossData.summonCount + hoursPassed, 10);
-        worldBossData.lastSummonTime = currentTime;
-        saveWorldBossData();
-    }
-    
-    // 计算下次恢复时间
-    calculateNextRecoveryTime();
-    
-    // 启动倒计时更新
-    updateSummonCountdown();
-    
-    updateBossUI();
-}
+        function formatBossCountdown(ms) {
+            const timeLeft = Math.max(0, Math.floor(ms));
+            const hours = Math.floor(timeLeft / (60 * 60 * 1000));
+            const minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
+            const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
 
-// 计算下次恢复时间
-function calculateNextRecoveryTime() {
-    if (worldBossData.summonCount >= 10) {
-        worldBossData.nextRecoveryTime = 0;
-        return;
-    }
-    
-    // 距离下次恢复的时间 = 1小时 - (当前时间与上次恢复的时间差 % 1小时)
-    const oneHour = 60 * 60 * 1000;
-    const timeSinceLastRecovery = Date.now() - worldBossData.lastSummonTime;
-    const timeToNextRecovery = oneHour - (timeSinceLastRecovery % oneHour);
-    
-    worldBossData.nextRecoveryTime = Date.now() + timeToNextRecovery;
-}
+        function formatBossStars(stars) {
+            const n = Math.max(1, Math.min(10, Number(stars) || 1));
+            if (n <= 5) return '★'.repeat(n);
+            return '★'.repeat(5) + ' · ' + n + '星';
+        }
 
-// 更新召唤次数倒计时显示（仅在世界BOSS界面打开时持续刷新，避免关闭界面后定时器常驻造成资源占用）
-function updateSummonCountdown() {
-    const countdownElement = document.getElementById('summonCountdown');
-    const bossUI = document.getElementById('worldBossUI');
-    if (!countdownElement || !bossUI || bossUI.style.display !== 'block') {
-        return; // 界面关闭时不调度下一次，避免常规定时器泄漏
-    }
-    
-    if (worldBossData.summonCount >= 10) {
-        countdownElement.textContent = "已达上限";
-        worldBossData.summonCountdownTimer = setTimeout(updateSummonCountdown, 1000);
-        return;
-    }
-    
-    const now = Date.now();
-    const timeLeft = Math.max(0, worldBossData.nextRecoveryTime - now);
-    
-    if (timeLeft === 0 && worldBossData.summonCount < 10) {
-        // 强制更新上次召唤时间为当前时间
-        worldBossData.lastSummonTime = now;
-        worldBossData.summonCount++;
-        calculateNextRecoveryTime(); // 重新计算下次恢复时间（1小时后）
-        saveWorldBossData();
-        document.getElementById('bossSummonCount').textContent = worldBossData.summonCount;
-        console.log("恢复次数+1，下次恢复时间：", new Date(worldBossData.nextRecoveryTime).toLocaleTimeString());
-    }
-    
-    // 格式化时间显示
-    const hours = Math.floor(timeLeft / (60 * 60 * 1000));
-    const minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
-    const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
-    countdownElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    
-    worldBossData.summonCountdownTimer = setTimeout(updateSummonCountdown, 1000);
-}
+        function getBossHealthPercent() {
+            const h = parseBigSci(worldBossData.bossHealth);
+            const m = parseBigSci(worldBossData.bossMaxHealth);
+            if (m.m === 0) return 0;
+            if (h.m <= 0) return 0;
+            const expDiff = Number(h.e - m.e);
+            if (expDiff <= -8) return 0;
+            if (expDiff >= 1) return 100;
+            const ratio = (h.m / m.m) * Math.pow(10, expDiff);
+            if (!Number.isFinite(ratio)) return 0;
+            return Math.max(0, Math.min(100, ratio * 100));
+        }
 
+        function getBossStarRewardMult() {
+            const stars = Math.max(1, Math.min(10, Number(worldBossData.bossStars) || 1));
+            return 1 + (stars - 1) * 0.08;
+        }
 
-        // 保存世界BOSS数据
-        function saveWorldBossData() {
-    worldBossData.lastUpdate = Date.now();
-    localStorage.setItem('worldBossSave', JSON.stringify(worldBossData));
-}
+        function getWbArenaEl() {
+            return document.getElementById('wbArena');
+        }
 
-        // 加载世界BOSS数据
-        // 加载世界BOSS数据
-function loadWorldBossData() {
-    const save = JSON.parse(localStorage.getItem('worldBossSave'));
-    if (save) {
-        Object.assign(worldBossData, save);
-        worldBossData.summonCountdownTimer = null; // 定时器 ID 不能跨页面恢复，必须清空
-        // 如果BOSS活动正在进行中，计算离线期间的伤害
-        if (worldBossData.isBossActive) {
-            const currentTime = Date.now();
-            
-            // 检查BOSS是否已超时
-            if (currentTime > worldBossData.bossEndTime) {
-                endBossFight(false);
+        function wbFlashClass(el, className, ms) {
+            if (!el) return;
+            el.classList.remove(className);
+            // force reflow so re-adding retriggers animation
+            void el.offsetWidth;
+            el.classList.add(className);
+            setTimeout(function () {
+                el.classList.remove(className);
+            }, ms || 300);
+        }
+
+        function spawnBossFloatDamage(amount, kind) {
+            if (!isWorldBossUIVisible()) return;
+            const layer = document.getElementById('wbFloatLayer');
+            if (!layer) return;
+            const now = Date.now();
+            // 自动飘字节流，避免每秒堆太多节点
+            if (kind === 'auto' || kind === 'world') {
+                if (now - (worldBossData.lastFloatAt || 0) < 180) return;
+                worldBossData.lastFloatAt = now;
+            }
+            const el = document.createElement('div');
+            el.className = 'wb-float-dmg' + (kind === 'crit' ? ' is-crit' : kind === 'auto' ? ' is-auto' : kind === 'world' ? ' is-world' : '');
+            el.style.setProperty('--wb-drift', (Math.random() * 70 - 35).toFixed(0) + 'px');
+            el.style.left = (42 + Math.random() * 16) + '%';
+            el.style.top = (34 + Math.random() * 18) + '%';
+            const prefix = kind === 'crit' ? '暴击 ' : kind === 'auto' ? '自动 ' : kind === 'world' ? '' : '';
+            el.textContent = prefix + '-' + formatNumber(amount);
+            layer.appendChild(el);
+            setTimeout(function () {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            }, 1000);
+            if (layer.childNodes.length > 14) {
+                layer.removeChild(layer.firstChild);
+            }
+        }
+
+        function wbPulseAttackButton() {
+            const btn = document.getElementById('bossAttackButton');
+            wbFlashClass(btn, 'wb-btn-flash', 220);
+        }
+
+        function wbUpdateCombo(isManual) {
+            const badge = document.getElementById('wbComboBadge');
+            if (!badge) return;
+            if (!isManual || !worldBossData.isBossActive) {
+                worldBossData.comboCount = 0;
+                badge.hidden = true;
+                return;
+            }
+            const now = Date.now();
+            if (now - (worldBossData.lastManualAtkAt || 0) < 1600) {
+                worldBossData.comboCount = (worldBossData.comboCount || 0) + 1;
             } else {
-                // 计算离线时间（秒）
-                const offlineSeconds = Math.floor((currentTime - worldBossData.lastUpdate) / 1000);
-                
-                if (offlineSeconds > 0) {
-                    // 1. 计算虚拟玩家在离线期间造成的总伤害（已有逻辑）
-                    const virtualDamagePerSecond = worldBossData.virtualPlayers.reduce((sum, player) => {
-                        const avgDamage = player.attack * player.multiAttack * 
-                                        (1 + (player.critRate * (player.critDamage - 1)));
-                        return sum + avgDamage;
-                    }, 0);
-                    const totalVirtualDamage = Math.floor(virtualDamagePerSecond * offlineSeconds);
-                    worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, totalVirtualDamage)) ? 0 : bSub(worldBossData.bossHealth, totalVirtualDamage);
-                    const damagePerPlayer = Math.floor(totalVirtualDamage / worldBossData.virtualPlayers.length);
-                    worldBossData.virtualPlayers.forEach(player => {
-                        player.damage += damagePerPlayer;
-                    });
-                    addBossBattleLog(`离线期间虚拟玩家共造成 ${formatSci(totalVirtualDamage)} 点伤害`);
-                    
-                    // 2. 新增：计算真实玩家的离线自动攻击伤害
-                    if (worldBossData.isAutoAttacking) { // 仅当开启自动攻击时计算
-                        // 玩家每秒攻击11次（与startAutoAttack一致）
-                        const attacksPerSecond = 11;
-                        const totalAttacks = offlineSeconds * attacksPerSecond;
-                        
-                        // 计算单次攻击的平均伤害（参考calculatePlayerDamage逻辑）
-                        const playerData = {
-                            attack: player.bossBattleSnapshot?.playerAttack || player.battle.playerAttack,
-    multiAttack: player.bossBattleSnapshot?.playerMultiAttack || player.battle.playerMultiAttack,
-    critRate: player.bossBattleSnapshot?.playerCritRate || player.battle.playerCritRate,
-    critDamage: player.bossBattleSnapshot?.playerCritDamage || player.battle.playerCritDamage
-                        };
-                        // 计算单次攻击的平均伤害（避免循环计算totalAttacks次，优化性能）
-                        const avgFactor = (playerData.multiAttack || 1) * (1 + (playerData.critRate * (playerData.critDamage - 1)));
-                        const singleAttackAvgDamage = multiplyBigByFinite(playerData.attack, avgFactor);
-                        const totalPlayerDamage = multiplyBigByFinite(singleAttackAvgDamage, totalAttacks);
-                        
-                        // 应用玩家离线伤害
-                        worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, totalPlayerDamage)) ? 0 : bSub(worldBossData.bossHealth, totalPlayerDamage);
-                        worldBossData.playerDamage = bigSciToStorageValue(addBigSci(worldBossData.playerDamage || 0, totalPlayerDamage));
-                        addBossBattleLog(`离线期间你通过自动攻击造成 ${formatSci(totalPlayerDamage)} 点伤害`);
-                    }
-                    
-                    // 检查BOSS是否被击败
-                    if (bLteZero(worldBossData.bossHealth)) {
-                        endBossFight(true);
-                        return;
+                worldBossData.comboCount = 1;
+            }
+            worldBossData.lastManualAtkAt = now;
+            badge.hidden = false;
+            badge.textContent = '连击 x' + worldBossData.comboCount;
+            wbFlashClass(badge, 'wb-badge-pop', 250);
+        }
+
+        function wbCheckHpPhases() {
+            if (!worldBossData.isBossActive) return;
+            const pct = getBossHealthPercent();
+            const phaseBadge = document.getElementById('wbPhaseBadge');
+            const arena = getWbArenaEl();
+            let phase = 0;
+            let label = '';
+            if (pct <= 25) {
+                phase = 3;
+                label = '狂暴 · 残血';
+            } else if (pct <= 50) {
+                phase = 2;
+                label = '重创 · 半血';
+            } else if (pct <= 75) {
+                phase = 1;
+                label = '受创 · 75%';
+            }
+            if (phase > (worldBossData.hpPhase || 0)) {
+                worldBossData.hpPhase = phase;
+                if (phaseBadge) {
+                    phaseBadge.hidden = false;
+                    phaseBadge.textContent = label;
+                    wbFlashClass(phaseBadge, 'wb-badge-pop', 400);
+                }
+                if (phase >= 1) addBossBattleLog(worldBossData.bossName + ' 进入「' + label + '」状态！');
+                if (arena && phase >= 3) arena.classList.add('wb-enraged');
+            }
+            const fill = document.getElementById('bossHealthFill');
+            if (fill) {
+                if (pct <= 25) fill.classList.add('is-low');
+                else fill.classList.remove('is-low');
+            }
+            if (arena) {
+                if (pct <= 25) arena.classList.add('wb-enraged');
+                else arena.classList.remove('wb-enraged');
+            }
+        }
+
+        function wbShowResultBanner(isDefeated, rankText, rewardText) {
+            const banner = document.getElementById('wbResultBanner');
+            const title = document.getElementById('wbResultTitle');
+            const sub = document.getElementById('wbResultSub');
+            if (!banner || !title || !sub) return;
+            banner.hidden = false;
+            banner.classList.toggle('is-fail', !isDefeated);
+            title.textContent = isDefeated ? '征讨成功' : '时间耗尽';
+            sub.textContent = (rankText || '') + (rewardText ? (' · ' + rewardText) : '');
+            setTimeout(function () {
+                banner.hidden = true;
+            }, 4200);
+        }
+
+        function wbResetFxState() {
+            worldBossData.comboCount = 0;
+            worldBossData.lastManualAtkAt = 0;
+            worldBossData.lastKnownRank = 0;
+            worldBossData.hpPhase = 0;
+            const badge = document.getElementById('wbComboBadge');
+            if (badge) badge.hidden = true;
+            const phaseBadge = document.getElementById('wbPhaseBadge');
+            if (phaseBadge) {
+                phaseBadge.hidden = true;
+                phaseBadge.textContent = '';
+            }
+            const banner = document.getElementById('wbResultBanner');
+            if (banner) banner.hidden = true;
+            const dps = document.getElementById('wbDpsHint');
+            if (dps) dps.textContent = '';
+            const fill = document.getElementById('bossHealthFill');
+            if (fill) fill.classList.remove('is-low');
+            const arena = getWbArenaEl();
+            if (arena) {
+                arena.classList.remove('wb-active', 'wb-hit', 'wb-summoning', 'wb-critical', 'wb-enraged');
+            }
+            const layer = document.getElementById('wbFloatLayer');
+            if (layer) layer.innerHTML = '';
+        }
+
+        function wbPlayHitFx(options) {
+            options = options || {};
+            if (!isWorldBossUIVisible()) return;
+            const arena = getWbArenaEl();
+            if (arena) {
+                wbFlashClass(arena, 'wb-hit', 280);
+                if (options.crit) wbFlashClass(arena, 'wb-critical', 320);
+            }
+            if (options.amount != null) {
+                spawnBossFloatDamage(options.amount, options.kind || (options.crit ? 'crit' : 'normal'));
+            }
+            wbCheckHpPhases();
+        }
+
+        /** 按当前战力估算 BOSS 血量，使自动战斗大约在目标时长内可击杀 */
+        function estimateWorldBossMaxHealth(stars) {
+            const star = Math.max(1, Math.min(10, Number(stars) || 1));
+            const atk = player.battle.playerAttack;
+            const multi = Math.max(1, Number(player.battle.playerMultiAttack) || 1);
+            const critRate = Math.max(0, Math.min(1, Number(player.battle.playerCritRate) || 0));
+            const critDmg = Math.max(1, Number(player.battle.playerCritDamage) || 1);
+            const hitFactor = multi * (1 + critRate * (critDmg - 1));
+            const playerAutoDpsFactor = hitFactor * WORLD_BOSS_AUTO_ATK_PER_SEC;
+            // 场上挑战者 + 玩家自动合计约 3.5~4.5 倍玩家自动 DPS
+            const worldDpsFactor = playerAutoDpsFactor * (3.5 + Math.random() * 1.0);
+            // 1★ ≈ 10 分钟，10★ ≈ 28 分钟（限时 45 分钟内可打完）
+            const targetSec = 600 + (star - 1) * 120;
+            const variance = 0.88 + Math.random() * 0.24;
+            return bMul(atk, worldDpsFactor * targetSec * variance);
+        }
+
+        /** 按小时批量补挑战券，并保留不足 1 小时的恢复进度 */
+        function applySummonRecovery(now) {
+            now = now || Date.now();
+            if (typeof worldBossData.summonCount !== 'number' || worldBossData.summonCount < 0) {
+                worldBossData.summonCount = 0;
+            }
+            worldBossData.summonCount = Math.min(WORLD_BOSS_SUMMON_MAX, Math.floor(worldBossData.summonCount));
+
+            if (worldBossData.summonCount >= WORLD_BOSS_SUMMON_MAX) {
+                worldBossData.nextRecoveryTime = 0;
+                return false;
+            }
+
+            if (!worldBossData.lastSummonTime || worldBossData.lastSummonTime > now) {
+                worldBossData.lastSummonTime = now;
+            }
+
+            const elapsed = Math.max(0, now - worldBossData.lastSummonTime);
+            const hoursPassed = Math.floor(elapsed / WORLD_BOSS_RECOVERY_MS);
+            let changed = false;
+            if (hoursPassed > 0) {
+                const room = WORLD_BOSS_SUMMON_MAX - worldBossData.summonCount;
+                const gained = Math.min(hoursPassed, room);
+                if (gained > 0) {
+                    worldBossData.summonCount += gained;
+                    worldBossData.lastSummonTime += gained * WORLD_BOSS_RECOVERY_MS;
+                    changed = true;
+                }
+            }
+            calculateNextRecoveryTime(now);
+            return changed;
+        }
+
+        function calculateNextRecoveryTime(now) {
+            now = now || Date.now();
+            if (worldBossData.summonCount >= WORLD_BOSS_SUMMON_MAX) {
+                worldBossData.nextRecoveryTime = 0;
+                return;
+            }
+            if (!worldBossData.lastSummonTime) worldBossData.lastSummonTime = now;
+            const elapsed = Math.max(0, now - worldBossData.lastSummonTime);
+            const rem = elapsed % WORLD_BOSS_RECOVERY_MS;
+            worldBossData.nextRecoveryTime = now + (WORLD_BOSS_RECOVERY_MS - rem);
+        }
+
+        /** 消耗挑战券后：若从满次数下来，必须立刻启动恢复计时 */
+        function afterConsumeSummonTicket() {
+            if (worldBossData.summonCount >= WORLD_BOSS_SUMMON_MAX) {
+                worldBossData.nextRecoveryTime = 0;
+                return;
+            }
+            if (!worldBossData.nextRecoveryTime || worldBossData.nextRecoveryTime <= Date.now()) {
+                worldBossData.lastSummonTime = Date.now();
+            }
+            calculateNextRecoveryTime();
+        }
+
+        function initWorldBossSystem() {
+            applySummonRecovery(Date.now());
+            saveWorldBossData();
+            if (isWorldBossUIVisible()) updateSummonCountdown();
+            updateBossUI();
+        }
+
+        function updateSummonCountdown() {
+            const countdownElement = document.getElementById('summonCountdown');
+            if (!countdownElement || !isWorldBossUIVisible()) return;
+
+            const now = Date.now();
+            const recovered = applySummonRecovery(now);
+            if (recovered) {
+                saveWorldBossData();
+                const countEl = document.getElementById('bossSummonCount');
+                if (countEl) countEl.textContent = worldBossData.summonCount;
+                const summonBtn = document.getElementById('bossSummonButton');
+                if (summonBtn && !worldBossData.isBossActive) {
+                    summonBtn.disabled = worldBossData.summonCount <= 0;
+                    summonBtn.textContent = worldBossData.summonCount <= 0 ? '挑战券不足' : '召唤挑战';
+                }
+            }
+
+            if (worldBossData.summonCount >= WORLD_BOSS_SUMMON_MAX) {
+                countdownElement.textContent = '已达上限';
+            } else {
+                const timeLeft = Math.max(0, (worldBossData.nextRecoveryTime || now) - now);
+                countdownElement.textContent = formatBossCountdown(timeLeft);
+            }
+
+            if (worldBossData.summonCountdownTimer != null) {
+                clearTimeout(worldBossData.summonCountdownTimer);
+            }
+            worldBossData.summonCountdownTimer = setTimeout(updateSummonCountdown, 1000);
+        }
+
+        function saveWorldBossData() {
+            worldBossData.lastUpdate = Date.now();
+            const copy = Object.assign({}, worldBossData);
+            copy.summonCountdownTimer = null;
+            copy.attackInterval = null;
+            copy.virtualAttackInterval = null;
+            copy.pendingVirtualLog = null;
+            localStorage.setItem('worldBossSave', JSON.stringify(copy));
+        }
+
+        function loadWorldBossData() {
+            let save = null;
+            try {
+                save = JSON.parse(localStorage.getItem('worldBossSave'));
+            } catch (e) {
+                save = null;
+            }
+            if (save) {
+                Object.assign(worldBossData, save);
+                worldBossData.summonCountdownTimer = null;
+                worldBossData.attackInterval = null;
+                worldBossData.virtualAttackInterval = null;
+                worldBossData.pendingVirtualLog = null;
+
+                if (worldBossData.isBossActive) {
+                    const currentTime = Date.now();
+                    if (currentTime > worldBossData.bossEndTime) {
+                        endBossFight(false);
+                    } else {
+                        const offlineSeconds = Math.floor((currentTime - (worldBossData.lastUpdate || currentTime)) / 1000);
+                        if (offlineSeconds > 0 && Array.isArray(worldBossData.virtualPlayers)) {
+                            let totalVirtualDamage = bigSciToStorageValue(0);
+                            worldBossData.virtualPlayers.forEach(function (vp) {
+                                const critRate = Math.max(0, Math.min(1, Number(vp.critRate) || 0));
+                                const avgFactor = (vp.multiAttack || 1) * (1 + (critRate * ((Number(vp.critDamage) || 1) - 1)));
+                                const avgDps = multiplyBigByFinite(vp.attack, avgFactor);
+                                const playerOfflineDmg = multiplyBigByFinite(avgDps, offlineSeconds);
+                                vp.damage = bigSciToStorageValue(addBigSci(vp.damage || 0, playerOfflineDmg));
+                                totalVirtualDamage = bigSciToStorageValue(addBigSci(totalVirtualDamage, playerOfflineDmg));
+                            });
+                            worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, totalVirtualDamage))
+                                ? 0
+                                : bSub(worldBossData.bossHealth, totalVirtualDamage);
+                            addBossBattleLog(`离线期间其他挑战者共造成 ${formatSci(totalVirtualDamage)} 点伤害`);
+
+                            if (worldBossData.isAutoAttacking) {
+                                const snap = player.bossBattleSnapshot || {};
+                                const playerData = {
+                                    attack: snap.playerAttack || player.battle.playerAttack,
+                                    multiAttack: snap.playerMultiAttack || player.battle.playerMultiAttack,
+                                    critRate: snap.playerCritRate || player.battle.playerCritRate,
+                                    critDamage: snap.playerCritDamage || player.battle.playerCritDamage
+                                };
+                                const critRate = Math.max(0, Math.min(1, Number(playerData.critRate) || 0));
+                                const avgFactor = (playerData.multiAttack || 1) * (1 + (critRate * ((Number(playerData.critDamage) || 1) - 1)));
+                                const singleAvg = multiplyBigByFinite(playerData.attack, avgFactor);
+                                const totalPlayerDamage = multiplyBigByFinite(singleAvg, offlineSeconds * WORLD_BOSS_AUTO_ATK_PER_SEC);
+                                worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, totalPlayerDamage))
+                                    ? 0
+                                    : bSub(worldBossData.bossHealth, totalPlayerDamage);
+                                worldBossData.playerDamage = bigSciToStorageValue(addBigSci(worldBossData.playerDamage || 0, totalPlayerDamage));
+                                addBossBattleLog(`离线期间你通过自动攻击造成 ${formatSci(totalPlayerDamage)} 点伤害`);
+                            }
+
+                            if (bLteZero(worldBossData.bossHealth)) {
+                                endBossFight(true);
+                            }
+                        }
                     }
                 }
             }
-        }
-    }
-    
-    // 仅在BOSS进行中才恢复虚拟玩家攻击，避免空跑定时器
-    if (worldBossData.isBossActive) startVirtualPlayerAttacks();
-    
-    // 更新最后更新时间
-    worldBossData.lastUpdate = Date.now();
-    initWorldBossSystem();
-}
 
-        // 切换世界BOSS界面
+            if (worldBossData.isBossActive) {
+                startVirtualPlayerAttacks();
+                if (worldBossData.isAutoAttacking) startAutoAttack();
+                setTimeout(checkBossEnd, 1000);
+            }
+
+            worldBossData.lastUpdate = Date.now();
+            initWorldBossSystem();
+        }
+
         function toggleWorldBossUI() {
-           // 检查转生次数是否达到50次
-    if (player.reincarnationCount < 50) {
-        alert("需要达到50转才能开启世界BOSS系统！");
-        return;
-    }
+            if (player.reincarnationCount < 50) {
+                alert('需要达到50转才能开启世界BOSS系统！');
+                return;
+            }
             const ui = document.getElementById('worldBossUI');
             const overlay = document.getElementById('bossOverlay');
-            
+            if (!ui) return;
+
             if (ui.style.display === 'block') {
                 ui.style.display = 'none';
-                overlay.style.display = 'none';
+                if (overlay) overlay.style.display = 'none';
                 if (worldBossData.summonCountdownTimer != null) {
                     clearTimeout(worldBossData.summonCountdownTimer);
                     worldBossData.summonCountdownTimer = null;
                 }
             } else {
+                applySummonRecovery(Date.now());
+                saveWorldBossData();
                 ui.style.display = 'block';
-                overlay.style.display = 'block';
+                if (overlay) overlay.style.display = 'block';
                 updateBossUI();
-                updateSummonCountdown(); // 重新启动倒计时链（界面打开时才刷新）
+                updateSummonCountdown();
             }
         }
 
-        // 更新BOSS界面
         function updateBossUI() {
             if (!isWorldBossUIVisible()) return;
-            document.getElementById('bossSummonCount').textContent = worldBossData.summonCount;
-    if (worldBossData.isBossActive && player.bossBattleSnapshot) {
-        document.getElementById('playerBossAttack').textContent = formatNumber(player.bossBattleSnapshot.playerAttack);
-        document.getElementById('playerBossMultiAttack').textContent = player.bossBattleSnapshot.playerMultiAttack;
-        document.getElementById('playerBossCritRate').textContent = (player.bossBattleSnapshot.playerCritRate * 100).toFixed(1) + '%';
-        document.getElementById('playerBossCritDamage').textContent = ((player.bossBattleSnapshot.playerCritDamage - 1) * 100).toFixed(1) + '%';
-    } else {
-        // 显示实时属性
-        document.getElementById('playerBossAttack').textContent = formatNumber(player.battle.playerAttack);
-        document.getElementById('playerBossMultiAttack').textContent = player.battle.playerMultiAttack;
-        document.getElementById('playerBossCritRate').textContent = (player.battle.playerCritRate * 100).toFixed(1) + '%';
-        document.getElementById('playerBossCritDamage').textContent = ((player.battle.playerCritDamage - 1) * 100).toFixed(1) + '%';
-    }
-            document.getElementById('playerBossDamage').textContent = formatNumber(worldBossData.playerDamage);
-       if (!worldBossData.isBossActive) {
-        document.getElementById('playerBossRank').textContent = "未开始";
-    }
-            // 新增：检查BOSS是否超时（无论是否在战斗中，强制判断时间）
-    if (worldBossData.isBossActive && Date.now() >= worldBossData.bossEndTime) {
-        endBossFight(false); // 强制结束战斗
-        return; // 结束后无需继续更新UI
-    }
-          if (!worldBossData.isBossActive) {
-        document.getElementById('playerBossRank').textContent = "未开始";
-    }
-            // 更新BOSS状态
+
+            const countEl = document.getElementById('bossSummonCount');
+            if (countEl) countEl.textContent = worldBossData.summonCount;
+
+            const snap = player.bossBattleSnapshot;
+            const atk = (worldBossData.isBossActive && snap) ? snap.playerAttack : player.battle.playerAttack;
+            const multi = (worldBossData.isBossActive && snap) ? snap.playerMultiAttack : player.battle.playerMultiAttack;
+            const crit = (worldBossData.isBossActive && snap) ? snap.playerCritRate : player.battle.playerCritRate;
+            const critDmg = (worldBossData.isBossActive && snap) ? snap.playerCritDamage : player.battle.playerCritDamage;
+
+            document.getElementById('playerBossAttack').textContent = formatNumber(atk);
+            document.getElementById('playerBossMultiAttack').textContent = multi;
+            document.getElementById('playerBossCritRate').textContent = ((Number(crit) || 0) * 100).toFixed(1) + '%';
+            document.getElementById('playerBossCritDamage').textContent = (((Number(critDmg) || 1) - 1) * 100).toFixed(1) + '%';
+            document.getElementById('playerBossDamage').textContent = formatNumber(worldBossData.playerDamage || 0);
+
+            if (worldBossData.isBossActive && Date.now() >= worldBossData.bossEndTime) {
+                endBossFight(false);
+                return;
+            }
+
+            const hintEl = document.getElementById('bossStarHint');
+            const arena = getWbArenaEl();
+            const autoBtn = document.getElementById('bossAutoAttackButton');
             if (worldBossData.isBossActive) {
+                if (arena) arena.classList.add('wb-active');
                 document.getElementById('bossName').textContent = worldBossData.bossName;
                 document.getElementById('bossWorld').textContent = worldBossData.bossWorld;
-                document.getElementById('bossStars').textContent = '★'.repeat(worldBossData.bossStars);
-                
-                const healthPercent = (Number(worldBossData.bossHealth) / Number(worldBossData.bossMaxHealth)) * 100;
-                document.getElementById('bossHealthFill').style.width = healthPercent + '%';
-                document.getElementById('bossHealthText').textContent = 
-                    formatNumber(worldBossData.bossHealth) + '/' + formatNumber(worldBossData.bossMaxHealth);
-                
+                document.getElementById('bossStars').textContent = formatBossStars(worldBossData.bossStars);
+                const healthPercent = getBossHealthPercent();
+                document.getElementById('bossHealthFill').style.width = healthPercent.toFixed(2) + '%';
+                document.getElementById('bossHealthText').textContent =
+                    formatNumber(worldBossData.bossHealth) + ' / ' + formatNumber(worldBossData.bossMaxHealth);
+                wbCheckHpPhases();
+
                 const timeLeft = Math.max(0, Math.floor((worldBossData.bossEndTime - Date.now()) / 1000));
                 const minutes = Math.floor(timeLeft / 60);
                 const seconds = timeLeft % 60;
-                document.getElementById('bossTimeLeft').textContent = 
-                    `剩余: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-                
+                document.getElementById('bossTimeLeft').textContent =
+                    `剩余 ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                if (hintEl) {
+                    const mult = getBossStarRewardMult();
+                    hintEl.textContent = `${worldBossData.bossStars}星 · 转生币 x${mult.toFixed(2)}`;
+                }
+
                 document.getElementById('bossSummonButton').disabled = true;
+                document.getElementById('bossSummonButton').textContent = '征讨中';
                 document.getElementById('bossAttackButton').disabled = false;
-                
-                // 更新排行榜
-                updateRankings();
+                updateRankings(true);
             } else {
-                document.getElementById('bossName').textContent = '未召唤BOSS';
-                document.getElementById('bossWorld').textContent = '';
+                if (arena) arena.classList.remove('wb-active', 'wb-enraged');
+                document.getElementById('bossName').textContent = '等待召唤';
+                document.getElementById('bossWorld').textContent = '开启挑战后降临强敌';
                 document.getElementById('bossStars').textContent = '';
                 document.getElementById('bossHealthFill').style.width = '0%';
-                document.getElementById('bossHealthText').textContent = '0/0';
-                document.getElementById('bossTimeLeft').textContent = '剩余: 未开始';
-                
-                document.getElementById('bossSummonButton').disabled = worldBossData.summonCount <= 0;
+                document.getElementById('bossHealthText').textContent = '0 / 0';
+                document.getElementById('bossTimeLeft').textContent = '未开始';
+                document.getElementById('playerBossRank').textContent = '未开始';
+                if (hintEl) hintEl.textContent = '星级越高，血量与奖励越高';
+                const dps = document.getElementById('wbDpsHint');
+                if (dps) dps.textContent = '';
+
+                const noTicket = worldBossData.summonCount <= 0;
+                document.getElementById('bossSummonButton').disabled = noTicket;
+                document.getElementById('bossSummonButton').textContent = noTicket ? '挑战券不足' : '召唤挑战';
                 document.getElementById('bossAttackButton').disabled = true;
-                
-                if (worldBossData.summonCount <= 0) {
-                    document.getElementById('bossSummonButton').textContent = '无次数';
-                } else {
-                    document.getElementById('bossSummonButton').textContent = '召唤';
-                }
             }
-            
-            // 更新自动攻击按钮
-            document.getElementById('bossAutoAttackButton').textContent = 
-                `自动: ${worldBossData.isAutoAttacking ? '开' : '关'}`;
+
+            if (autoBtn) {
+                autoBtn.textContent = `自动: ${worldBossData.isAutoAttacking ? '开' : '关'}`;
+                autoBtn.classList.toggle('is-on', !!worldBossData.isAutoAttacking);
+            }
         }
 
-        // 召唤BOSS
         function summonBoss() {
-           // 检查转生次数是否达到50次
-    if (player.reincarnationCount < 50) {
-        alert("需要达到50转才能召唤世界BOSS！");
-        return;
-    }
-            if (worldBossData.summonCount <= 0) return;
-            
+            if (player.reincarnationCount < 50) {
+                alert('需要达到50转才能召唤世界BOSS！');
+                return;
+            }
+            if (worldBossData.isBossActive) return;
+            applySummonRecovery(Date.now());
+            if (worldBossData.summonCount <= 0) {
+                updateBossUI();
+                return;
+            }
+
             worldBossData.summonCount--;
+            afterConsumeSummonTicket();
+            wbResetFxState();
+
             worldBossData.isBossActive = true;
-            worldBossData.bossEndTime = Date.now() + 60 * 60 * 1000; // 60分钟
+            worldBossData.bossEndTime = Date.now() + WORLD_BOSS_FIGHT_MS;
             worldBossData.playerDamage = 0;
             worldBossData.battleLog = [];
-            
-            // 随机生成BOSS属性
+            worldBossData.rankings = [];
+
             worldBossData.bossName = bossNames[Math.floor(Math.random() * bossNames.length)];
             worldBossData.bossWorld = worldNames[Math.floor(Math.random() * worldNames.length)];
-            worldBossData.bossStars = Math.floor(Math.random() * 30) + 1; // 1-30星
-            
-            // BOSS生命值为玩家攻击力的100000万-1000000万倍
-            const healthMultiplier = 10000000000000000000 + Math.random() * 99000000000000000000000000;
-            worldBossData.bossMaxHealth = bMul(player.battle.playerAttack, healthMultiplier * player.battle.playerCritDamage);
+            // 1~10 星：越高血量与转生币奖励越高
+            worldBossData.bossStars = Math.floor(Math.random() * 10) + 1;
+
+            // 按玩家自动攻击 DPS + 场上挑战者估算血量，目标约 10~28 分钟可击杀
+            worldBossData.bossMaxHealth = estimateWorldBossMaxHealth(worldBossData.bossStars);
             worldBossData.bossHealth = worldBossData.bossMaxHealth;
-           // 保存玩家属性快照
-    player.bossBattleSnapshot = {
-        playerAttack: player.battle.playerAttack,
-        playerMultiAttack: player.battle.playerMultiAttack,
-        playerCritRate: player.battle.playerCritRate,
-        playerCritDamage: player.battle.playerCritDamage
-    };                   
-            // 生成虚拟玩家
+
+            player.bossBattleSnapshot = {
+                playerAttack: player.battle.playerAttack,
+                playerMultiAttack: player.battle.playerMultiAttack,
+                playerCritRate: player.battle.playerCritRate,
+                playerCritDamage: player.battle.playerCritDamage
+            };
+
             generateVirtualPlayers();
-            
-            // 开始虚拟玩家攻击
             startVirtualPlayerAttacks();
-            
-            // 更新UI
+            if (worldBossData.isAutoAttacking) startAutoAttack();
             updateBossUI();
-            
-            // 保存数据
+            const arena = getWbArenaEl();
+            if (arena) {
+                arena.classList.add('wb-active');
+                wbFlashClass(arena, 'wb-summoning', 700);
+            }
+            const phaseBadge = document.getElementById('wbPhaseBadge');
+            if (phaseBadge) {
+                phaseBadge.hidden = false;
+                phaseBadge.textContent = '降临';
+                setTimeout(function () {
+                    if (phaseBadge.textContent === '降临') phaseBadge.hidden = true;
+                }, 1600);
+            }
             saveWorldBossData();
-            
-            // 添加战斗日志
-            addBossBattleLog(`召唤了 ${worldBossData.bossName} [${worldBossData.bossWorld}] (${worldBossData.bossStars}★)`);
-            
-            // 设置BOSS结束检查
+            addBossBattleLog(`召唤了 ${worldBossData.bossName} [${worldBossData.bossWorld}]（${worldBossData.bossStars}星）`);
             setTimeout(checkBossEnd, 1000);
         }
 
-        // 生成虚拟玩家
         function generateVirtualPlayers() {
             worldBossData.virtualPlayers = [];
-            
             for (let i = 0; i < 60; i++) {
-                const name = virtualPlayerNames[i] || `玩家${i+1}`;
-                const attackMultiplier = 0.2 + Math.random() * 30; 
+                const name = virtualPlayerNames[i] || (`挑战者${i + 1}`);
+                // 强度贴近玩家，保证排行有竞争但不碾压
+                const attackMultiplier = 0.2 + Math.random() * 2.3;
                 const attack = bMul(player.battle.playerAttack, attackMultiplier);
-                const multiAttack = Math.max(1, 
-                    Math.floor(player.battle.playerMultiAttack * (0.3 + Math.random() * 1.5))); 
-                const critRate = 0.5 + Math.random() * 1.9; 
-                const critDamage = player.battle.playerCritDamage * (0.3 + Math.random() * 1.5);
-                
+                const multiAttack = Math.max(1, Math.floor(player.battle.playerMultiAttack * (0.3 + Math.random() * 0.95)));
+                const critRate = Math.min(1, 0.12 + Math.random() * 0.7);
+                const critDamage = player.battle.playerCritDamage * (0.45 + Math.random() * 0.85);
                 worldBossData.virtualPlayers.push({
                     name: name,
                     attack: attack,
@@ -3003,103 +3233,59 @@ function loadWorldBossData() {
                     critDamage: critDamage,
                     damage: 0
                 });
-            } 
-      }
-      // 修改离线虚拟玩家伤害计算逻辑（替换原有的平均分配部分）
-function calculateOfflineVirtualDamage() {
-    const now = Date.now();
-    const timePassed = now - worldBossData.lastVirtualAttackTime;
-    const secondsPassed = Math.floor(timePassed / 1000);
-    if (secondsPassed <= 0) return;
-
-    // 为每个虚拟玩家单独计算离线伤害（基于其自身属性）
-    let totalDamage = bigSciToStorageValue(0);
-    worldBossData.virtualPlayers.forEach(player => {
-        // 计算该玩家的每秒平均伤害（考虑连击和爆伤）
-        const avgFactor = (player.multiAttack || 1) * (3 + (player.critRate * (player.critDamage - 1)));
-        const avgDps = multiplyBigByFinite(player.attack, avgFactor);
-        // 计算离线总伤害
-        const playerDamage = multiplyBigByFinite(avgDps, secondsPassed);
-        // 应用伤害
-        worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, playerDamage)) ? 0 : bSub(worldBossData.bossHealth, playerDamage);
-        player.damage = bigSciToStorageValue(addBigSci(player.damage || 0, playerDamage));
-        totalDamage = bigSciToStorageValue(addBigSci(totalDamage, playerDamage));
-    });
-
-    // 更新最后攻击时间
-    worldBossData.lastVirtualAttackTime = now;
-
-    // 记录总离线伤害
-    addBossBattleLog(`离线期间虚拟玩家共造成 ${formatSci(totalDamage)} 点伤害`);
-
-    // 检查BOSS是否被击败
-    if (bLteZero(worldBossData.bossHealth)) {
-        endBossFight(true);
-    }
-            
-            // 更新排行榜
-            updateRankings();
-            
-            // 保存数据
-            saveWorldBossData();
+            }
         }
-// 开始虚拟玩家攻击
+
         function startVirtualPlayerAttacks() {
-            // 清除之前的攻击间隔
             if (worldBossData.virtualAttackInterval) {
                 if (typeof unregisterInterval === 'function') unregisterInterval(worldBossData.virtualAttackInterval);
                 else clearInterval(worldBossData.virtualAttackInterval);
                 worldBossData.virtualAttackInterval = null;
             }
-            
-            // 设置新的攻击间隔 (每秒攻击一次)
-            worldBossData.virtualAttackInterval = registerInterval(() => {
+
+            worldBossData.virtualAttackInterval = registerInterval(function () {
                 if (!worldBossData.isBossActive) {
                     if (typeof unregisterInterval === 'function') unregisterInterval(worldBossData.virtualAttackInterval);
                     else clearInterval(worldBossData.virtualAttackInterval);
                     worldBossData.virtualAttackInterval = null;
                     return;
                 }
-                
-                // 所有虚拟玩家攻击
+
                 let virtualTickTotal = bigSciToStorageValue(0);
                 let virtualLogCount = 0;
-                worldBossData.virtualPlayers.forEach(player => {
-                    const result = calculatePlayerDamage(player);
-                    worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, result.total)) ? 0 : bSub(worldBossData.bossHealth, result.total);
-                    player.damage = bigSciToStorageValue(addBigSci(player.damage || 0, result.total));
+                worldBossData.virtualPlayers.forEach(function (vp) {
+                    const result = calculatePlayerDamage(vp);
+                    worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, result.total))
+                        ? 0
+                        : bSub(worldBossData.bossHealth, result.total);
+                    vp.damage = bigSciToStorageValue(addBigSci(vp.damage || 0, result.total));
                     virtualTickTotal = bigSciToStorageValue(addBigSci(virtualTickTotal, result.total));
-                    
-                    // 每10次攻击记录一次（显示爆伤）
-                    if (Math.random() < 0.1) {
-                        virtualLogCount++;
-                    }
+                    if (Math.random() < 0.08) virtualLogCount++;
                 });
+
                 if (virtualLogCount > 0) {
                     worldBossData.pendingVirtualLog = {
-                        ts: Date.now(),
                         count: virtualLogCount,
-                        total: virtualTickTotal,
+                        total: virtualTickTotal
                     };
                 }
                 if (worldBossData.pendingVirtualLog && isWorldBossUIVisible()) {
                     const p = worldBossData.pendingVirtualLog;
-                    addBossBattleLog(`虚拟玩家本秒共${p.count}次有效攻击，累计造成 ${formatNumber(p.total)} 伤害`);
+                    addBossBattleLog(`其他挑战者本秒 ${p.count} 次有效攻击，共造成 ${formatNumber(p.total)} 伤害`);
+                    spawnBossFloatDamage(p.total, 'world');
                     worldBossData.pendingVirtualLog = null;
                 }
-                
-                // 更新UI
-                updateRankings();
+
+                updateRankings(true);
                 updateBossUI();
-                
-                // 检查BOSS是否被击败
+                wbCheckHpPhases();
+
                 if (bLteZero(worldBossData.bossHealth)) {
                     endBossFight(true);
                 }
             }, 1000);
         }
 
-        // 计算玩家伤害
         function calculatePlayerDamage(playerData) {
             const hits = Math.max(1, Math.floor(Number(playerData.multiAttack) || 1));
             const critRate = Math.max(0, Math.min(1, Number(playerData.critRate) || 0));
@@ -3110,7 +3296,6 @@ function calculateOfflineVirtualDamage() {
             const normalDamageTotal = multiplyBigByFinite(attack, normalCount);
             const critDamageTotal = multiplyBigByFinite(critHitDamage, critCount);
             const totalDamage = bigSciToStorageValue(addBigSci(normalDamageTotal, critDamageTotal));
-
             return {
                 total: totalDamage,
                 critCount: critCount,
@@ -3119,80 +3304,87 @@ function calculateOfflineVirtualDamage() {
             };
         }
 
-        // 攻击BOSS（修改为显示爆伤信息）
         function attackBoss() {
-            if (!worldBossData.isBossActive) return;
-            
-    // 使用保存的属性快照而不是实时属性
-    const result = calculatePlayerDamage({
-        attack: player.bossBattleSnapshot.playerAttack,
-        multiAttack: player.bossBattleSnapshot.playerMultiAttack,
-        critRate: player.bossBattleSnapshot.playerCritRate,
-        critDamage: player.bossBattleSnapshot.playerCritDamage
-    });
-    
-            
-            worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, result.total)) ? 0 : bSub(worldBossData.bossHealth, result.total);
-            worldBossData.playerDamage = bigSciToStorageValue(addBigSci(worldBossData.playerDamage || 0, result.total));
-            
-            // 添加战斗日志（显示爆伤详情）
-            let logMessage = `你造成了 ${formatNumber(result.total)} 点伤害 (${player.battle.playerMultiAttack}连击) - `;
-            logMessage += `普通伤害: ${formatNumber(result.normalDamage)}, `;
-            logMessage += `暴击x${result.critCount}: ${formatNumber(result.critDamage)}`;
-            
-            addBossBattleLog(logMessage);
-            
-            // 更新UI
-            updateRankings();
-            updateBossUI();
+            if (!worldBossData.isBossActive || !player.bossBattleSnapshot) return;
 
-           // 新增：保存攻击后的BOSS数据
-    saveWorldBossData();
-            
-            // 检查BOSS是否被击败
-            if (bLteZero(worldBossData.bossHealth)) {
-                endBossFight(true);
-            }
-        }
-
-        // 切换自动攻击
-        function toggleAutoAttackBoss() {
-            worldBossData.isAutoAttacking = !worldBossData.isAutoAttacking;
-            
-            if (worldBossData.isAutoAttacking) {
-                // 启动自动攻击（即使界面关闭也会继续）
-                startAutoAttack();
-            } else {
-                stopAutoAttack();
-            }
-            
-            updateBossUI();
-        }
-
-        // 新增专用函数处理自动攻击
-function startAutoAttack() {
-    // 先停止现有的自动攻击
-    stopAutoAttack();
-    
-    // 每秒批量结算20次（避免20次循环导致卡顿）
-    worldBossData.attackInterval = registerInterval(() => {
-        if (worldBossData.isBossActive && worldBossData.isAutoAttacking) {
-            // 使用属性快照攻击
             const result = calculatePlayerDamage({
                 attack: player.bossBattleSnapshot.playerAttack,
                 multiAttack: player.bossBattleSnapshot.playerMultiAttack,
                 critRate: player.bossBattleSnapshot.playerCritRate,
                 critDamage: player.bossBattleSnapshot.playerCritDamage
             });
-            const batchTotal = multiplyBigByFinite(result.total, 20);
-            worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, batchTotal)) ? 0 : bSub(worldBossData.bossHealth, batchTotal);
-            worldBossData.playerDamage = bigSciToStorageValue(addBigSci(worldBossData.playerDamage || 0, batchTotal));
+
+            worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, result.total))
+                ? 0
+                : bSub(worldBossData.bossHealth, result.total);
+            worldBossData.playerDamage = bigSciToStorageValue(addBigSci(worldBossData.playerDamage || 0, result.total));
+
+            const multi = player.bossBattleSnapshot.playerMultiAttack;
+            const isCrit = (result.critCount || 0) > 0;
+            addBossBattleLog(
+                `你造成 ${formatNumber(result.total)} 伤害（${multi}连击）· 普通 ${formatNumber(result.normalDamage)} / 暴击x${result.critCount} ${formatNumber(result.critDamage)}`
+            );
+
+            wbUpdateCombo(true);
+            wbPulseAttackButton();
+            wbPlayHitFx({ amount: result.total, crit: isCrit, kind: isCrit ? 'crit' : 'normal' });
+
+            updateRankings(true);
+            updateBossUI();
+            saveWorldBossData();
+
             if (bLteZero(worldBossData.bossHealth)) {
                 endBossFight(true);
             }
         }
-    }, 1000);
-}
+
+        function toggleAutoAttackBoss() {
+            if (!worldBossData.isBossActive && !worldBossData.isAutoAttacking) {
+                // 允许先开自动，召唤后立刻生效；战斗未开始时仅切换状态
+            }
+            worldBossData.isAutoAttacking = !worldBossData.isAutoAttacking;
+            if (worldBossData.isAutoAttacking && worldBossData.isBossActive) {
+                startAutoAttack();
+            } else if (!worldBossData.isAutoAttacking) {
+                stopAutoAttack();
+            }
+            updateBossUI();
+            saveWorldBossData();
+        }
+
+        function startAutoAttack() {
+            stopAutoAttack();
+            worldBossData.attackInterval = registerInterval(function () {
+                if (!worldBossData.isBossActive || !worldBossData.isAutoAttacking || !player.bossBattleSnapshot) return;
+                const result = calculatePlayerDamage({
+                    attack: player.bossBattleSnapshot.playerAttack,
+                    multiAttack: player.bossBattleSnapshot.playerMultiAttack,
+                    critRate: player.bossBattleSnapshot.playerCritRate,
+                    critDamage: player.bossBattleSnapshot.playerCritDamage
+                });
+                const batchTotal = multiplyBigByFinite(result.total, WORLD_BOSS_AUTO_ATK_PER_SEC);
+                worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, batchTotal))
+                    ? 0
+                    : bSub(worldBossData.bossHealth, batchTotal);
+                worldBossData.playerDamage = bigSciToStorageValue(addBigSci(worldBossData.playerDamage || 0, batchTotal));
+                if (isWorldBossUIVisible()) {
+                    const dpsEl = document.getElementById('wbDpsHint');
+                    if (dpsEl) dpsEl.textContent = '自动 DPS ' + formatNumber(batchTotal) + '/秒';
+                    wbPlayHitFx({
+                        amount: batchTotal,
+                        crit: (result.critCount || 0) > 0,
+                        kind: (result.critCount || 0) > 0 ? 'crit' : 'auto'
+                    });
+                    updateRankings(true);
+                    updateBossUI();
+                } else {
+                    updateRankings(false);
+                }
+                if (bLteZero(worldBossData.bossHealth)) {
+                    endBossFight(true);
+                }
+            }, 1000);
+        }
 
         function stopAutoAttack() {
             if (worldBossData.attackInterval) {
@@ -3202,74 +3394,75 @@ function startAutoAttack() {
             }
         }
 
-        // 更新排行榜
-function updateRankings() {
-    if (!isWorldBossUIVisible()) return;
-    // 合并真实玩家和虚拟玩家
-    const allPlayers = [
-        {
-            name: "你",
-            damage: worldBossData.playerDamage
-        },
-        ...worldBossData.virtualPlayers.map(p => ({
-            name: p.name,
-            damage: p.damage
-        }))
-    ];
-    
-    // 按伤害排序
-    allPlayers.sort((a, b) => cmpBigSci(b.damage || 0, a.damage || 0));
-    worldBossData.rankings = allPlayers;
-    
-    // 更新玩家排名
-    const playerRank = allPlayers.findIndex(p => p.name === "你") + 1;
-    const rankEl = document.getElementById('playerBossRank');
-    if (rankEl) rankEl.textContent = playerRank ? 
-        `${playerRank} / ${allPlayers.length}` : "未排名";
-    
-    // 更新UI
-    const rankingsContainer = document.getElementById('bossRankings');
-    if (!rankingsContainer) return;
-    rankingsContainer.innerHTML = '';
-    
-    allPlayers.slice(0, 10).forEach((player, index) => {
-        const div = document.createElement('div');
-        div.className = 'boss-ranking-item';
-        div.innerHTML = `
-            <span>${index + 1}. ${player.name}</span>
-            <span>${formatNumber(player.damage)}</span>
-        `;
-        rankingsContainer.appendChild(div);
-    });
-    
-    if (allPlayers.length === 0) {
-        rankingsContainer.innerHTML = '<div>尚未开始战斗</div>';
-    }
-}
+        /** @param {boolean} [updateDom=true] 关闭界面时仍刷新 rankings 数据，避免发奖错档 */
+        function updateRankings(updateDom) {
+            if (updateDom === undefined) updateDom = isWorldBossUIVisible();
 
-        // 添加战斗日志
+            const allPlayers = [
+                { name: '你', damage: worldBossData.playerDamage || 0, isSelf: true }
+            ].concat((worldBossData.virtualPlayers || []).map(function (p) {
+                return { name: p.name, damage: p.damage || 0, isSelf: false };
+            }));
+
+            allPlayers.sort(function (a, b) {
+                return cmpBigSci(b.damage || 0, a.damage || 0);
+            });
+            worldBossData.rankings = allPlayers;
+
+            if (!updateDom || !isWorldBossUIVisible()) return;
+
+            const playerRank = allPlayers.findIndex(function (p) { return p.isSelf; }) + 1;
+            const rankEl = document.getElementById('playerBossRank');
+            if (rankEl) {
+                const prev = worldBossData.lastKnownRank || 0;
+                rankEl.textContent = playerRank
+                    ? (`第 ${playerRank} 名 / ${allPlayers.length}`)
+                    : '未排名';
+                if (playerRank > 0 && prev > 0 && playerRank < prev) {
+                    wbFlashClass(rankEl, 'wb-rank-up', 600);
+                }
+                if (playerRank > 0) worldBossData.lastKnownRank = playerRank;
+            }
+
+            const rankingsContainer = document.getElementById('bossRankings');
+            if (!rankingsContainer) return;
+            if (!worldBossData.isBossActive && allPlayers.every(function (p) {
+                return cmpBigSci(p.damage || 0, 0) === 0;
+            })) {
+                rankingsContainer.innerHTML = '<div class="wb-empty">尚未开始战斗</div>';
+                return;
+            }
+
+            rankingsContainer.innerHTML = allPlayers.slice(0, 10).map(function (entry, index) {
+                const cls = entry.isSelf ? 'boss-ranking-item is-self' : 'boss-ranking-item';
+                return `<div class="${cls}"><span>${index + 1}. ${entry.name}</span><span>${formatNumber(entry.damage)}</span></div>`;
+            }).join('');
+            const selfRow = rankingsContainer.querySelector('.is-self');
+            if (selfRow && worldBossData.lastKnownRank > 0) {
+                const prev = worldBossData._rankFlashPrev;
+                if (prev && worldBossData.lastKnownRank < prev) {
+                    wbFlashClass(selfRow, 'wb-rank-flash', 550);
+                }
+                worldBossData._rankFlashPrev = worldBossData.lastKnownRank;
+            }
+        }
+
         function addBossBattleLog(message) {
             const timestamp = new Date().toLocaleTimeString();
             const logEntry = `[${timestamp}] ${message}`;
-            
             worldBossData.battleLog.unshift(logEntry);
-            if (worldBossData.battleLog.length > 15) { // 减少日志数量
-                worldBossData.battleLog.pop();
-            }
-            
-            // 仅在界面可见时刷新DOM，避免后台频繁重排
+            if (worldBossData.battleLog.length > 20) worldBossData.battleLog.pop();
+
             if (!isWorldBossUIVisible()) return;
             const logContainer = document.getElementById('bossBattleLog');
             if (!logContainer) return;
-            logContainer.innerHTML = worldBossData.battleLog.map(log => 
-                `<div class="boss-battle-log-entry">${log}</div>`
-            ).join('');
+            logContainer.innerHTML = worldBossData.battleLog.map(function (log) {
+                return `<div class="boss-battle-log-entry">${log}</div>`;
+            }).join('');
         }
 
-        // 检查BOSS是否结束
         function checkBossEnd() {
             if (!worldBossData.isBossActive) return;
-            
             if (Date.now() >= worldBossData.bossEndTime) {
                 endBossFight(false);
             } else {
@@ -3278,134 +3471,124 @@ function updateRankings() {
             }
         }
 
-        // 结束BOSS战斗
         function endBossFight(isDefeated) {
+            if (!worldBossData.isBossActive) return;
             worldBossData.isBossActive = false;
+
             if (worldBossData.virtualAttackInterval) {
                 if (typeof unregisterInterval === 'function') unregisterInterval(worldBossData.virtualAttackInterval);
                 else clearInterval(worldBossData.virtualAttackInterval);
                 worldBossData.virtualAttackInterval = null;
             }
-            // 停止自动攻击（无论是否开启都清除定时器，防止泄漏）
-            if (worldBossData.attackInterval) {
-                if (typeof unregisterInterval === 'function') unregisterInterval(worldBossData.attackInterval);
-                else clearInterval(worldBossData.attackInterval);
-                worldBossData.attackInterval = null;
-            }
-            if (worldBossData.isAutoAttacking) {
-                worldBossData.isAutoAttacking = false;
-            }
-             player.bossBattleSnapshot = null;
-            // 发放奖励
+            stopAutoAttack();
+            worldBossData.isAutoAttacking = false;
+
+            updateRankings(false);
+            const settleRank = worldBossData.rankings.findIndex(function (p) {
+                return p.name === '你' || p.isSelf;
+            }) + 1;
             distributeRewards();
-            
-            // 添加战斗日志
-            if (isDefeated) {
-                addBossBattleLog(`BOSS ${worldBossData.bossName} 已被击败！`);
-            } else {
-                addBossBattleLog(`BOSS ${worldBossData.bossName} 时间结束！`);
+
+            if (isDefeated) addBossBattleLog(`BOSS ${worldBossData.bossName} 已被击败！`);
+            else addBossBattleLog(`BOSS ${worldBossData.bossName} 征讨时间结束！`);
+
+            const rankText = settleRank > 0 ? ('第 ' + settleRank + ' 名') : '参与奖';
+            wbShowResultBanner(
+                isDefeated,
+                rankText,
+                '累计伤害 ' + formatNumber(worldBossData.playerDamage || 0)
+            );
+            wbUpdateCombo(false);
+            const arena = getWbArenaEl();
+            if (arena) {
+                arena.classList.remove('wb-active', 'wb-enraged');
+                if (isDefeated) wbFlashClass(arena, 'wb-summoning', 700);
             }
-            
-            // 保存数据
+
+            player.bossBattleSnapshot = null;
             saveWorldBossData();
-            
-            // 更新UI
             updateBossUI();
-            
-            // 记录开奖结果
             recordBossResult();
         }
 
-        // 分发奖励
         function distributeRewards() {
-            const playerRank = worldBossData.rankings.findIndex(p => p.name === "你") + 1;
-            
-            if (playerRank === 1) {
-        // 第一名
-        player.items.divineGem += 5;
-        player.reincarnationCoin += 30000;
-        addBossBattleLog("你获得了第1名奖励: 5个神级宝石 + 30000转生币");
-        
-        // 解锁成就
-        if (!player.achievements.world_boss_1st) {
-            player.achievements.world_boss_1st = true;
-            player.gpsMultiplier += achievementRewards.world_boss_1st.gpsMultiplier;
-            logAction(`成就达成：${achievementRewards.world_boss_1st.description}，GPS奖励 +${achievementRewards.world_boss_1st.gpsMultiplier * 100}%`, 'success');
-        }
-    } else if (playerRank >= 2 && playerRank <= 10) {
-        // 第2-10名
-        player.items.superiorGem += 5;
-        player.reincarnationCoin += 10000;
-        addBossBattleLog(`你获得了第${playerRank}名奖励: 5个极品宝石 + 10000转生币`);
-        
-        // 解锁成就
-        if (!player.achievements.world_boss_top5) {
-            player.achievements.world_boss_top5 = true;
-            player.gpsMultiplier += achievementRewards.world_boss_top5.gpsMultiplier;
-            logAction(`成就达成：${achievementRewards.world_boss_top5.description}，GPS奖励 +${achievementRewards.world_boss_top5.gpsMultiplier * 100}%`, 'success');
-        }
-    } else if (playerRank >= 11 && playerRank <= 30) {
-        // 第11-30名
-        player.items.advancedGem += 3;
-        player.reincarnationCoin += 5000;
-        addBossBattleLog(`你获得了第${playerRank}名奖励: 3个高级宝石 + 5000转生币`);
-        
-        // 解锁成就
-        if (!player.achievements.world_boss_top10) {
-            player.achievements.world_boss_top10 = true;
-            player.gpsMultiplier += achievementRewards.world_boss_top10.gpsMultiplier;
-            logAction(`成就达成：${achievementRewards.world_boss_top10.description}，GPS奖励 +${achievementRewards.world_boss_top10.gpsMultiplier * 100}%`, 'success');
-        }
-    } else {
-        // 参与奖
-        player.items.primaryGem += 1;
-        player.reincarnationCoin += 100;
-        addBossBattleLog("你获得了参与奖: 1个初级宝石 + 100转生币");
-        
-        // 解锁成就
-        if (!player.achievements.world_boss_participant) {
-            player.achievements.world_boss_participant = true;
-            player.gpsMultiplier += achievementRewards.world_boss_participant.gpsMultiplier;
-            logAction(`成就达成：${achievementRewards.world_boss_participant.description}，GPS奖励 +${achievementRewards.world_boss_participant.gpsMultiplier * 100}%`, 'success');
-        }
-    }
-    
-    // 更新显示
-    updateDisplay();
-    updateAchievementsDisplay();
-}
+            updateRankings(false);
+            const playerRank = worldBossData.rankings.findIndex(function (p) {
+                return p.name === '你' || p.isSelf;
+            }) + 1;
+            const starMult = getBossStarRewardMult();
+            let gemsLabel = '';
+            let coinBase = 100;
 
-        // 记录开奖结果
+            if (playerRank === 1) {
+                player.items.divineGem += 5;
+                coinBase = 30000;
+                gemsLabel = '5个神级宝石';
+                if (!player.achievements.world_boss_1st) {
+                    player.achievements.world_boss_1st = true;
+                    player.gpsMultiplier += achievementRewards.world_boss_1st.gpsMultiplier;
+                    logAction(`成就达成：${achievementRewards.world_boss_1st.description}，GPS奖励 +${achievementRewards.world_boss_1st.gpsMultiplier * 100}%`, 'success');
+                }
+            } else if (playerRank >= 2 && playerRank <= 10) {
+                player.items.superiorGem += 5;
+                coinBase = 10000;
+                gemsLabel = '5个极品宝石';
+                if (!player.achievements.world_boss_top5) {
+                    player.achievements.world_boss_top5 = true;
+                    player.gpsMultiplier += achievementRewards.world_boss_top5.gpsMultiplier;
+                    logAction(`成就达成：${achievementRewards.world_boss_top5.description}，GPS奖励 +${achievementRewards.world_boss_top5.gpsMultiplier * 100}%`, 'success');
+                }
+            } else if (playerRank >= 11 && playerRank <= 30) {
+                player.items.advancedGem += 3;
+                coinBase = 5000;
+                gemsLabel = '3个高级宝石';
+                if (!player.achievements.world_boss_top10) {
+                    player.achievements.world_boss_top10 = true;
+                    player.gpsMultiplier += achievementRewards.world_boss_top10.gpsMultiplier;
+                    logAction(`成就达成：${achievementRewards.world_boss_top10.description}，GPS奖励 +${achievementRewards.world_boss_top10.gpsMultiplier * 100}%`, 'success');
+                }
+            } else {
+                player.items.primaryGem += 1;
+                coinBase = 100;
+                gemsLabel = '1个初级宝石';
+                if (!player.achievements.world_boss_participant) {
+                    player.achievements.world_boss_participant = true;
+                    player.gpsMultiplier += achievementRewards.world_boss_participant.gpsMultiplier;
+                    logAction(`成就达成：${achievementRewards.world_boss_participant.description}，GPS奖励 +${achievementRewards.world_boss_participant.gpsMultiplier * 100}%`, 'success');
+                }
+            }
+
+            const coinGain = Math.floor(coinBase * starMult);
+            player.reincarnationCoin = bigSciToStorageValue(addBigSci(player.reincarnationCoin, coinGain));
+            const rankText = playerRank > 0 ? `第${playerRank}名` : '参与奖';
+            addBossBattleLog(`结算 ${rankText}：${gemsLabel} + ${coinGain}转生币（${worldBossData.bossStars || 1}星 x${starMult.toFixed(2)}）`);
+
+            updateDisplay();
+            updateAchievementsDisplay();
+        }
+
         function recordBossResult() {
-            const top3 = worldBossData.rankings.slice(0, 3).map(p => p.name).join(", ");
-            const result = `世界BOSS ${worldBossData.bossName} 结束，前三名: ${top3}`;
+            const top3 = (worldBossData.rankings || []).slice(0, 3).map(function (p) { return p.name; }).join(', ');
+            const result = `世界BOSS ${worldBossData.bossName} 结束，前三名: ${top3 || '无'}`;
             if (!Array.isArray(player.lotteryResults)) player.lotteryResults = [];
-            
             player.lotteryResults.unshift({
                 time: new Date().toLocaleString(),
                 result: result
             });
-            
-            if (player.lotteryResults.length > 20) {
-                player.lotteryResults.pop();
-            }
-            
-            // 更新彩票结果显示
+            if (player.lotteryResults.length > 20) player.lotteryResults.pop();
             if (typeof updateLotteryResultsDisplay === 'function') updateLotteryResultsDisplay();
         }
 
-       // 格式化数字显示
         function formatNumber(value) {
             return formatSci(value);
         }
 
-        // 在游戏加载时初始化世界BOSS系统
         loadWorldBossData();
         updateOfficialSystemDisplay();
         updatePlayerClassNameDisplay();
-     updateCompanionDisplay();
-       updateItemDisplay();
- updateMysterySystemDisplay();
-updateItemDisplay();
-updateTraditionalLotteryDisplay();
-if (typeof updateTotalBonuses === 'function') updateTotalBonuses();
+        updateCompanionDisplay();
+        updateItemDisplay();
+        updateMysterySystemDisplay();
+        updateItemDisplay();
+        updateTraditionalLotteryDisplay();
+        if (typeof updateTotalBonuses === 'function') updateTotalBonuses();
