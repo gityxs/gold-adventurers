@@ -884,6 +884,8 @@ function checkTsrWorldAchievements() {
 }
 
 function maybeShowTsrGuide() {
+    // 与秘境解锁一致：未满 2000 转不弹出入门教程
+    if ((player?.reincarnationCount || 0) < 2000) return;
     try {
         if (localStorage.getItem('tsr_guide_v1')) return;
     } catch (e) { return; }
@@ -965,7 +967,7 @@ function injectTsrWorldLobbyUI() {
             <div class="tsr-block-title">玩法模式</div>
             <p id="tsrDailyModHint" class="tsr-contract-hint"></p>
             <button type="button" id="tsrBossRushBtn" class="tsr-btn tsr-btn-gold" onclick="startTsrBossRush()">👹 首领冲刺（耗1钥）</button>
-            <button type="button" class="tsr-btn tsr-btn-safe" onclick="maybeShowTsrGuide()">📘 新手指引</button>`;
+            <button type="button" class="tsr-btn tsr-btn-safe" onclick="maybeShowTsrGuide(true)">📘 新手指引</button>`;
         const main = adv.querySelector('.tsr-adventure-main') || adv;
         main.insertBefore(box, main.firstChild);
     }
@@ -1295,7 +1297,7 @@ function initTsrWorldExtensions() {
 
     setTimeout(() => {
         injectTsrWorldLobbyUI();
-        maybeShowTsrGuide();
+        // 入门教程改由进大厅时触发（需满 2000 转），避免未解锁就弹在主界面
         renderTsrSeasonPanel();
         renderTsrFactionPanel();
     }, 0);

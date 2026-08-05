@@ -297,6 +297,8 @@ function finalizeTsrTutorialIsolation(snap, keep) {
 
 /* ========== 增强指引弹层 ========== */
 function showTsrGuideFlow(force) {
+    // 与秘境解锁一致：未满 2000 转不弹出入门教程
+    if ((typeof player === 'undefined' ? 0 : (player?.reincarnationCount || 0)) < 2000) return;
     try {
         if (!force && localStorage.getItem('tsr_guide_v1')) return;
     } catch (e) { /* continue */ }
@@ -407,7 +409,8 @@ function initTsrGuideExtensions() {
     }
 
     if (typeof maybeShowTsrGuide === 'function' && !maybeShowTsrGuide.__tsrGuidePatched) {
-        maybeShowTsrGuide = function () { showTsrGuideFlow(true); };
+        // force=true 仅用于大厅「新手指引」手动重看；自动弹出走 false，避免每次进页强刷
+        maybeShowTsrGuide = function (force) { showTsrGuideFlow(!!force); };
         maybeShowTsrGuide.__tsrGuidePatched = true;
     }
 
@@ -501,19 +504,29 @@ function initTsrGuideExtensions() {
         updateTsrLobbyDashboard.__tsrGuidePatched = true;
     }
 
+    // 进秘境大厅时再弹入门教程（需满 2000 转，且未看过）
+    if (typeof showTsrLobbyView === 'function' && !showTsrLobbyView.__tsrGuidePatched) {
+        const _orig = showTsrLobbyView;
+        showTsrLobbyView = function () {
+            _orig();
+            if ((player?.reincarnationCount || 0) < 2000) return;
+            if (player?.timeSecretRealm?.tutorialCompleted) return;
+            try {
+                if (!localStorage.getItem('tsr_guide_v1')) showTsrGuideFlow(false);
+            } catch (e) {
+                showTsrGuideFlow(false);
+            }
+        };
+        showTsrLobbyView.__tsrGuidePatched = true;
+    }
+
     setTimeout(() => {
         try {
             if (typeof ensureTimeSecretRealmData === 'function') ensureTimeSecretRealmData();
             ensureTsrGuideData();
             injectTsrGuideLobbyUI();
             refreshTsrGuideBuildPanels();
-            if (!player?.timeSecretRealm?.tutorialCompleted) {
-                try {
-                    if (!localStorage.getItem('tsr_guide_v1')) showTsrGuideFlow(false);
-                } catch (e) {
-                    showTsrGuideFlow(false);
-                }
-            }
+            // 不再在页面加载时强弹；满 2000 转打开秘境大厅时再显示
         } catch (e) {
             console.warn('initTsrGuideExtensions deferred', e);
         }

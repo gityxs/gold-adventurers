@@ -3985,23 +3985,29 @@ const reincarnationEquipmentConfig = {
         'eternal': { name: '荒古', min: 100, max: 100, color: '#FFD700', weight: 0.001 }
     },
     
-    // 装备等级配置 (T1-T15)；T11+ 需轮回30转且满足化圣次数；掉落权重低于 T10
+    // 装备等级配置 (T1-T20)；T11+ 需轮回30转且满足化圣次数；T16+ 属性跨度加大，掉落权重与 T15 相同
     tiers: {
-        1: { name: 'T1', minReincarnation: 1, multiplier: 1, weight: 70 },
-        2: { name: 'T2', minReincarnation: 3, multiplier: 3, weight: 23.1117 },
-        3: { name: 'T3', minReincarnation: 5, multiplier: 12, weight: 5 },
-        4: { name: 'T4', minReincarnation: 8, multiplier: 42, weight: 1 },
-        5: { name: 'T5', minReincarnation: 10, multiplier: 150, weight: 0.5 },
-        6: { name: 'T6', minReincarnation: 12, multiplier: 525, weight: 0.2 },
-        7: { name: 'T7', minReincarnation: 15, multiplier: 1840, weight: 0.1 },
-        8: { name: 'T8', minReincarnation: 20, multiplier: 6433, weight: 0.05 },
-        9: { name: 'T9', minReincarnation: 25, multiplier: 22520, weight: 0.02 },
-        10: { name: 'T10', minReincarnation: 30, multiplier: 78880, weight: 0.01 },
-        11: { name: 'T11', minReincarnation: 30, minHuaSheng: 2, multiplier: 276080, weight: 0.005 },
-        12: { name: 'T12', minReincarnation: 30, minHuaSheng: 3, multiplier: 966280, weight: 0.002 },
-        13: { name: 'T13', minReincarnation: 30, minHuaSheng: 4, multiplier: 3381980, weight: 0.001 },
-        14: { name: 'T14', minReincarnation: 30, minHuaSheng: 5, multiplier: 11836930, weight: 0.0002 },
-        15: { name: 'T15', minReincarnation: 30, minHuaSheng: 6, multiplier: 41429255, weight: 0.0001 }
+        1: { name: 'T1', minReincarnation: 1, multiplier: 1, weight: 47.25 },
+        2: { name: 'T2', minReincarnation: 3, multiplier: 3, weight: 20 },
+        3: { name: 'T3', minReincarnation: 5, multiplier: 12, weight: 10 },
+        4: { name: 'T4', minReincarnation: 8, multiplier: 42, weight: 5 },
+        5: { name: 'T5', minReincarnation: 10, multiplier: 150, weight: 5 },
+        6: { name: 'T6', minReincarnation: 12, multiplier: 525, weight: 5 },
+        7: { name: 'T7', minReincarnation: 15, multiplier: 1840, weight: 2 },
+        8: { name: 'T8', minReincarnation: 20, multiplier: 6433, weight: 2 },
+        9: { name: 'T9', minReincarnation: 25, multiplier: 22520, weight: 1 },
+        10: { name: 'T10', minReincarnation: 30, multiplier: 78880, weight: 1 },
+        11: { name: 'T11', minReincarnation: 30, minHuaSheng: 2, multiplier: 276080, weight: 0.5 },
+        12: { name: 'T12', minReincarnation: 30, minHuaSheng: 3, multiplier: 966280, weight: 0.5 },
+        13: { name: 'T13', minReincarnation: 30, minHuaSheng: 4, multiplier: 3381980, weight: 0.5 },
+        14: { name: 'T14', minReincarnation: 30, minHuaSheng: 5, multiplier: 11836930, weight: 0.1 },
+        15: { name: 'T15', minReincarnation: 30, minHuaSheng: 6, multiplier: 41429255, weight: 0.1 },
+        // T16+：相对前一档约 ×5.5（高于 T11–T15 的约 ×3.5）
+        16: { name: 'T16', minReincarnation: 30, minHuaSheng: 7, multiplier: 227860903, weight: 0.01 },
+        17: { name: 'T17', minReincarnation: 30, minHuaSheng: 8, multiplier: 1253234967, weight: 0.01 },
+        18: { name: 'T18', minReincarnation: 30, minHuaSheng: 9, multiplier: 6892792318, weight: 0.01 },
+        19: { name: 'T19', minReincarnation: 30, minHuaSheng: 10, multiplier: 37910357749, weight: 0.01 },
+        20: { name: 'T20', minReincarnation: 30, minHuaSheng: 11, multiplier: 208506967620, weight: 0.01 }
     },
     
     // 属性类型
@@ -4094,7 +4100,248 @@ const reincarnationEquipmentConfig = {
         '三清铃', '四御印', '五老冠', '六司簿', '七元灯', '八极图', '九曜珠', '十都符', '百解锁', '千劫链',
         '万法轮', '亿兆镜', '兆亿尺', '京垓秤', '秭穰斗', '沟涧仪', '正载表', '极恒钟', '阿僧数', '那由算',
         '不可思议', '无量大数', '无边海', '无数星', '无知界', '无想天', '无念地', '无相空', '无我境', '无心法'
-    ]
+    ],
+
+    // 器灵：高品质低概率；bonus 1.00=+100% … 5.00=+500%，乘算到本装备全部词条
+    spiritDropChanceByRarity: {
+        common: 0.01,
+        uncommon: 0.04,
+        rare: 0.10,
+        epic: 0.18,
+        legendary: 0.28,
+        mythic: 0.38,
+        supreme: 0.48,
+        ancient: 0.58,
+        primordial: 0.68,
+        eternal: 0.80
+    },
+    spirits: {
+        qingfeng:   { name: '青锋器灵', bonus: 1.00, weight: 8.0, desc: '锋芒初露，灵息轻扬' },
+        liuguang:   { name: '流光器灵', bonus: 1.08, weight: 7.5, desc: '流光溢彩，映照器魂' },
+        hanshuang:  { name: '寒霜器灵', bonus: 1.16, weight: 7.2, desc: '霜凝刃心，冷彻九霄' },
+        liedian:    { name: '烈焰器灵', bonus: 1.24, weight: 6.8, desc: '焰心不灭，焚尽虚妄' },
+        xuanbing:   { name: '玄冰器灵', bonus: 1.32, weight: 6.5, desc: '玄冰镇魂，凝神固本' },
+        jinglei:    { name: '惊雷器灵', bonus: 1.40, weight: 6.2, desc: '雷击九天，器鸣破空' },
+        yunyin:     { name: '云隐器灵', bonus: 1.48, weight: 5.9, desc: '云踪隐现，灵机难测' },
+        xingchen:   { name: '星尘器灵', bonus: 1.56, weight: 5.6, desc: '星尘入器，微光不息' },
+        yuehua:     { name: '月华器灵', bonus: 1.64, weight: 5.3, desc: '月华灌注，清辉长明' },
+        riyao:      { name: '日曜器灵', bonus: 1.72, weight: 5.0, desc: '日曜临照，锐不可当' },
+        canglan:    { name: '苍澜器灵', bonus: 1.80, weight: 4.8, desc: '苍澜翻涌，灵势浩瀚' },
+        chixiao:    { name: '赤霄器灵', bonus: 1.88, weight: 4.5, desc: '赤霄裂空，血煞凝锋' },
+        biluo_ql:   { name: '碧落器灵', bonus: 1.96, weight: 4.2, desc: '碧落澄明，涤尽尘垢' },
+        huangquan_ql:{ name: '黄泉器灵', bonus: 2.04, weight: 4.0, desc: '黄泉渡影，阴阳两分' },
+        ziwei_ql:   { name: '紫微器灵', bonus: 2.12, weight: 3.8, desc: '紫微帝星，镇器安魂' },
+        beidou_ql:  { name: '北斗器灵', bonus: 2.20, weight: 3.6, desc: '北斗司命，斩因果线' },
+        nandou_ql:  { name: '南斗器灵', bonus: 2.28, weight: 3.4, desc: '南斗注生，续命延灵' },
+        donghuang_ql:{ name: '东皇器灵', bonus: 2.36, weight: 3.2, desc: '东皇执钟，震荡洪荒' },
+        xiwan_ql:   { name: '西王器灵', bonus: 2.44, weight: 3.0, desc: '西王瑶光，仙泽润器' },
+        zhulong_ql: { name: '烛龙器灵', bonus: 2.52, weight: 2.8, desc: '烛龙睁目，昼夜自明' },
+        yinglong_ql:{ name: '应龙器灵', bonus: 2.60, weight: 2.6, desc: '应龙布雨，器势开疆' },
+        xuanwu_ql:  { name: '玄武器灵', bonus: 2.68, weight: 2.5, desc: '玄武负甲，镇守器核' },
+        qinglong_ql:{ name: '青龙器灵', bonus: 2.76, weight: 2.4, desc: '青龙震爪，东方称雄' },
+        baihu_ql:   { name: '白虎器灵', bonus: 2.84, weight: 2.3, desc: '白虎裂金，杀伐果断' },
+        zhuque_ql:  { name: '朱雀器灵', bonus: 2.92, weight: 2.2, desc: '朱雀焚天，涅槃重生' },
+        qilin_ql:   { name: '麒麟器灵', bonus: 3.00, weight: 2.1, desc: '麒麟现世，祥瑞加身' },
+        fenghuang_ql:{ name: '凤凰器灵', bonus: 3.10, weight: 2.0, desc: '凤凰展翅，万火朝宗' },
+        kunpeng:    { name: '鲲鹏器灵', bonus: 3.20, weight: 1.9, desc: '鲲鹏一击，扶摇九万里' },
+        taotie_ql:  { name: '饕餮器灵', bonus: 3.30, weight: 1.8, desc: '饕餮吞天，欲壑难填' },
+        qiongqi_ql: { name: '穷奇器灵', bonus: 3.40, weight: 1.7, desc: '穷奇裂风，邪煞纵横' },
+        taowu_ql:   { name: '梼杌器灵', bonus: 3.50, weight: 1.6, desc: '梼杌悍勇，刚烈难驯' },
+        hundun_ql:  { name: '混沌器灵', bonus: 3.60, weight: 1.5, desc: '混沌未分，器灵自成' },
+        baize_ql:   { name: '白泽器灵', bonus: 3.70, weight: 1.4, desc: '白泽知万，通晓器理' },
+        bifang_ql:  { name: '毕方器灵', bonus: 3.80, weight: 1.3, desc: '毕方衔火，灾祥自判' },
+        xingtian_ql:{ name: '刑天器灵', bonus: 3.90, weight: 1.2, desc: '刑天舞戚，战意不休' },
+        kuafu_ql:   { name: '夸父器灵', bonus: 4.00, weight: 1.1, desc: '夸父逐日，志贯苍穹' },
+        gonggong_ql:{ name: '共工器灵', bonus: 4.10, weight: 1.0, desc: '共工触山，怒浪滔天' },
+        zhurong_ql: { name: '祝融器灵', bonus: 4.20, weight: 0.95, desc: '祝融司火，炼器成神' },
+        houyi_ql:   { name: '后羿器灵', bonus: 4.30, weight: 0.9, desc: '后羿射日，箭破苍穹' },
+        pantian_ql: { name: '盘天器灵', bonus: 4.40, weight: 0.85, desc: '盘古开天，斧劈混沌' },
+        nuwa_ql:    { name: '娲皇器灵', bonus: 4.50, weight: 0.8, desc: '女娲补天，造化万物' },
+        fuxi_ql:    { name: '羲皇器灵', bonus: 4.58, weight: 0.75, desc: '伏羲演卦，洞彻器机' },
+        shennong_ql:{ name: '神农器灵', bonus: 4.66, weight: 0.7, desc: '神农百草，济世渡劫' },
+        xuanyuan_ql:{ name: '轩辕器灵', bonus: 4.74, weight: 0.65, desc: '轩辕剑鸣，一统山河' },
+        tiandao_ql: { name: '天道器灵', bonus: 4.82, weight: 0.55, desc: '天道昭昭，器随天意' },
+        dadao_ql:   { name: '大道器灵', bonus: 4.88, weight: 0.45, desc: '大道无形，孕养器魂' },
+        hongmeng_ql:{ name: '鸿蒙器灵', bonus: 4.92, weight: 0.35, desc: '鸿蒙未分，灵冠诸天' },
+        taichu_ql:  { name: '太初器灵', bonus: 4.96, weight: 0.25, desc: '太初一念，器灵至极' },
+        wushang_ql: { name: '无上器灵', bonus: 4.98, weight: 0.15, desc: '无上至尊，冠绝器道' },
+        chuangshi_ql:{ name: '创世器灵', bonus: 5.00, weight: 0.08, desc: '创世余辉，重塑轮回' }
+    },
+
+    // 魂环：高品质低概率；年份品质越高越稀有；bonus 0.10=+10% … 10.00=+1000%，乘算到本装备全部词条
+    soulRingDropChanceByRarity: {
+        common: 0.008,
+        uncommon: 0.03,
+        rare: 0.08,
+        epic: 0.15,
+        legendary: 0.24,
+        mythic: 0.34,
+        supreme: 0.44,
+        ancient: 0.54,
+        primordial: 0.64,
+        eternal: 0.75
+    },
+    soulRingYears: {
+        y1:    { name: '一年',   minBonus: 0.10, maxBonus: 0.50, weight: 42, fx: 0 },
+        y10:   { name: '十年',   minBonus: 0.50, maxBonus: 1.20, weight: 25, fx: 1 },
+        y100:  { name: '百年',   minBonus: 1.20, maxBonus: 2.50, weight: 15, fx: 2 },
+        y1k:   { name: '千年',   minBonus: 2.50, maxBonus: 4.00, weight: 9,  fx: 3 },
+        y10k:  { name: '万年',   minBonus: 4.00, maxBonus: 6.00, weight: 5,  fx: 4 },
+        y100k: { name: '百万年', minBonus: 6.00, maxBonus: 7.50, weight: 2.5,fx: 5 },
+        y1m:   { name: '千万年', minBonus: 7.50, maxBonus: 9.00, weight: 1.2,fx: 6 },
+        y100m: { name: '亿年',   minBonus: 9.00, maxBonus: 10.00,weight: 0.3,fx: 7 }
+    },
+    soulRings: {
+        hr_001: { name: '白虎啸月', year: 'y1' },
+        hr_002: { name: '青龙吞日', year: 'y1' },
+        hr_003: { name: '朱雀焚天', year: 'y1' },
+        hr_004: { name: '玄武镇岳', year: 'y1' },
+        hr_005: { name: '麒麟踏云', year: 'y1' },
+        hr_006: { name: '凤凰涅槃', year: 'y1' },
+        hr_007: { name: '鲲鹏展翅', year: 'y1' },
+        hr_008: { name: '应龙布雨', year: 'y1' },
+        hr_009: { name: '烛龙睁目', year: 'y1' },
+        hr_010: { name: '白泽知万', year: 'y1' },
+        hr_011: { name: '毕方衔火', year: 'y1' },
+        hr_012: { name: '穷奇裂风', year: 'y1' },
+        hr_013: { name: '饕餮吞天', year: 'y1' },
+        hr_014: { name: '梼杌悍骨', year: 'y1' },
+        hr_015: { name: '混沌无相', year: 'y1' },
+        hr_016: { name: '刑天战意', year: 'y1' },
+        hr_017: { name: '夸父逐日', year: 'y1' },
+        hr_018: { name: '共工怒潮', year: 'y1' },
+        hr_019: { name: '祝融真火', year: 'y1' },
+        hr_020: { name: '后羿落日', year: 'y1' },
+        hr_021: { name: '精卫填海', year: 'y10' },
+        hr_022: { name: '女娲补天', year: 'y10' },
+        hr_023: { name: '伏羲演卦', year: 'y10' },
+        hr_024: { name: '神农百草', year: 'y10' },
+        hr_025: { name: '轩辕剑意', year: 'y10' },
+        hr_026: { name: '盘古开天', year: 'y10' },
+        hr_027: { name: '东皇钟鸣', year: 'y10' },
+        hr_028: { name: '西王瑶光', year: 'y10' },
+        hr_029: { name: '紫微帝星', year: 'y10' },
+        hr_030: { name: '北斗斩劫', year: 'y10' },
+        hr_031: { name: '南斗续命', year: 'y10' },
+        hr_032: { name: '太微星辉', year: 'y10' },
+        hr_033: { name: '天市秤衡', year: 'y10' },
+        hr_034: { name: '金乌烈阳', year: 'y10' },
+        hr_035: { name: '玉兔寒辉', year: 'y10' },
+        hr_036: { name: '九尾幻狐', year: 'y10' },
+        hr_037: { name: '天狗吞月', year: 'y10' },
+        hr_038: { name: '重明啼晓', year: 'y10' },
+        hr_039: { name: '陆吾守山', year: 'y100' },
+        hr_040: { name: '开明镇关', year: 'y100' },
+        hr_041: { name: '当康丰年', year: 'y100' },
+        hr_042: { name: '乘黄御风', year: 'y100' },
+        hr_043: { name: '驳兽裂金', year: 'y100' },
+        hr_044: { name: '狰牙破军', year: 'y100' },
+        hr_045: { name: '狡影潜踪', year: 'y100' },
+        hr_046: { name: '朱厌血战', year: 'y100' },
+        hr_047: { name: '雍和祥瑞', year: 'y100' },
+        hr_048: { name: '蜚廉疾风', year: 'y100' },
+        hr_049: { name: '天吴狂浪', year: 'y100' },
+        hr_050: { name: '化蛇缠杀', year: 'y100' },
+        hr_051: { name: '屏蓬双首', year: 'y100' },
+        hr_052: { name: '贰负镇狱', year: 'y100' },
+        hr_053: { name: '诸怀裂石', year: 'y100' },
+        hr_054: { name: '狍鸮贪噬', year: 'y100' },
+        hr_055: { name: '颙鸟夜啼', year: 'y1k' },
+        hr_056: { name: '鬼车九首', year: 'y1k' },
+        hr_057: { name: '山椒毒雾', year: 'y1k' },
+        hr_058: { name: '橐蜚隐踪', year: 'y1k' },
+        hr_059: { name: '龙鱼化羽', year: 'y1k' },
+        hr_060: { name: '冉遗深潜', year: 'y1k' },
+        hr_061: { name: '九婴吞火', year: 'y1k' },
+        hr_062: { name: '相柳九首', year: 'y1k' },
+        hr_063: { name: '夔鼓惊雷', year: 'y1k' },
+        hr_064: { name: '蜚鸟灾祥', year: 'y1k' },
+        hr_065: { name: '狰狞煞气', year: 'y1k' },
+        hr_066: { name: '玄冥寒潮', year: 'y1k' },
+        hr_067: { name: '苍穹裂隙', year: 'y1k' },
+        hr_068: { name: '太虚流光', year: 'y1k' },
+        hr_069: { name: '鸿蒙紫气', year: 'y10k' },
+        hr_070: { name: '大道无形', year: 'y10k' },
+        hr_071: { name: '天道轮转', year: 'y10k' },
+        hr_072: { name: '轮回之眼', year: 'y10k' },
+        hr_073: { name: '因果金线', year: 'y10k' },
+        hr_074: { name: '命运丝线', year: 'y10k' },
+        hr_075: { name: '时空裂痕', year: 'y10k' },
+        hr_076: { name: '虚空虫洞', year: 'y10k' },
+        hr_077: { name: '星海潮汐', year: 'y10k' },
+        hr_078: { name: '月华凝魂', year: 'y10k' },
+        hr_079: { name: '日曜金芒', year: 'y10k' },
+        hr_080: { name: '星尘微光', year: 'y10k' },
+        hr_081: { name: '霜华凝刃', year: 'y100k' },
+        hr_082: { name: '烈焰魂心', year: 'y100k' },
+        hr_083: { name: '惊雷破空', year: 'y100k' },
+        hr_084: { name: '碧落澄心', year: 'y100k' },
+        hr_085: { name: '黄泉渡魂', year: 'y100k' },
+        hr_086: { name: '赤霄血煞', year: 'y100k' },
+        hr_087: { name: '苍澜怒涛', year: 'y100k' },
+        hr_088: { name: '云隐无形', year: 'y100k' },
+        hr_089: { name: '无上至尊', year: 'y100k' },
+        hr_090: { name: '创世余晖', year: 'y100k' },
+        hr_091: { name: '太初一念', year: 'y1m' },
+        hr_092: { name: '永恒之环', year: 'y1m' },
+        hr_093: { name: '不朽魂印', year: 'y1m' },
+        hr_094: { name: '灭世魔环', year: 'y1m' },
+        hr_095: { name: '弑神血环', year: 'y1m' },
+        hr_096: { name: '破天神环', year: 'y1m' },
+        hr_097: { name: '镇狱鬼环', year: 'y100m' },
+        hr_098: { name: '通天灵环', year: 'y100m' },
+        hr_099: { name: '归墟深渊', year: 'y100m' },
+        hr_100: { name: '混沌源环', year: 'y100m' }
+    },
+
+    // 光环：高品质低概率；30种唯一名（15伤害倍率 + 15触发上限），绑定对应轮回技能
+    // dmgMult bonus 0.10~3.00 = +10%~+300% 技能伤害倍率；triggerCap bonus 0.05~0.15 = 触发率上限+5%~+15%
+    auraDropChanceByRarity: {
+        common: 0.005,
+        uncommon: 0.02,
+        rare: 0.06,
+        epic: 0.12,
+        legendary: 0.18,
+        mythic: 0.24,
+        supreme: 0.30,
+        ancient: 0.36,
+        primordial: 0.42,
+        eternal: 0.50
+    },
+    auras: {
+        // —— 伤害光环（×1 技能伤害倍率 +10%~+300%）——
+        aura_s1_dmg:  { name: '血海杀意光环', skillId: 's1',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s2_dmg:  { name: '斩劫锋芒光环', skillId: 's2',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s3_dmg:  { name: '万劫裂空光环', skillId: 's3',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s4_dmg:  { name: '仙体破军光环', skillId: 's4',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s5_dmg:  { name: '破虚魔威光环', skillId: 's5',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s6_dmg:  { name: '九幽灭世光环', skillId: 's6',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s7_dmg:  { name: '太初血煞光环', skillId: 's7',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s8_dmg:  { name: '诛仙破界光环', skillId: 's8',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s9_dmg:  { name: '混沌爆灭光环', skillId: 's9',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s10_dmg: { name: '永生道威光环', skillId: 's10', type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s11_dmg: { name: '弑神灭道光环', skillId: 's11', type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s12_dmg: { name: '天崩地裂光环', skillId: 's12', type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s13_dmg: { name: '鸿蒙不灭光环', skillId: 's13', type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s14_dmg: { name: '开天辟地光环', skillId: 's14', type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        aura_s15_dmg: { name: '归墟终焉光环', skillId: 's15', type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
+        // —— 触发上限光环（触发率上限 +5%~+15%）——
+        aura_s1_rate:  { name: '血海感应光环', skillId: 's1',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s2_rate:  { name: '斩劫破机光环', skillId: 's2',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s3_rate:  { name: '万劫催发光环', skillId: 's3',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s4_rate:  { name: '仙体灵犀光环', skillId: 's4',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s5_rate:  { name: '破虚通玄光环', skillId: 's5',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s6_rate:  { name: '九幽冥感光环', skillId: 's6',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s7_rate:  { name: '太初天启光环', skillId: 's7',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s8_rate:  { name: '诛仙神机光环', skillId: 's8',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s9_rate:  { name: '混沌契机光环', skillId: 's9',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s10_rate: { name: '永生感应光环', skillId: 's10', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s11_rate: { name: '弑神洞见光环', skillId: 's11', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s12_rate: { name: '天崩天机光环', skillId: 's12', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s13_rate: { name: '鸿蒙悟机光环', skillId: 's13', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s14_rate: { name: '开天玄机光环', skillId: 's14', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
+        aura_s15_rate: { name: '归墟天启光环', skillId: 's15', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 }
+    }
 };
 
 var REINCARNATION_EQUIP_RARITY_ORDER = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'supreme', 'ancient', 'primordial', 'eternal'];
@@ -4350,7 +4597,7 @@ function generateEquipmentNameWithRarity(rarity, tier) {
     };
     
     const complexity = rarityComplexity[rarity] || 1;
-    const tierBonus = Math.min(tier, 15); // T等级加成（含 T11-T15）
+    const tierBonus = Math.min(tier, 20); // T等级加成（含 T11-T20）
     
     // 高品质高等级装备生成更复杂的名字
     const totalComplexity = complexity + Math.floor(tierBonus / 3);
@@ -4526,7 +4773,7 @@ function generateReincarnationEquipment(dimensionLevel) {
         createdAt: Date.now()
     };
     
-    return equipment;
+    return finalizeReincarnationEquipment(equipment);
 }
 
 // 生成固定T1轮回装备（用于轮回试炼副本等）
@@ -4554,7 +4801,7 @@ function generateT1ReincarnationEquipment() {
         setBonus = setNames[Math.floor(Math.random() * setNames.length)];
     }
     const equipmentName = generateEquipmentNameWithRarity(rarity, tier);
-    return {
+    return finalizeReincarnationEquipment({
         id: 'req_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
         name: equipmentName,
         slot: slot,
@@ -4566,7 +4813,7 @@ function generateT1ReincarnationEquipment() {
         dropTime: new Date().toLocaleString('zh-CN'),
         isLocked: false,
         createdAt: Date.now()
-    };
+    });
 }
 
 // 生成固定T2轮回装备（用于轮回仙岛副本等）
@@ -4594,7 +4841,7 @@ function generateT3ReincarnationEquipment() {
         setBonus = setNames[Math.floor(Math.random() * setNames.length)];
     }
     const equipmentName = generateEquipmentNameWithRarity(rarity, tier);
-    return {
+    return finalizeReincarnationEquipment({
         id: 'req_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
         name: equipmentName,
         slot: slot,
@@ -4606,7 +4853,7 @@ function generateT3ReincarnationEquipment() {
         dropTime: new Date().toLocaleString('zh-CN'),
         isLocked: false,
         createdAt: Date.now()
-    };
+    });
 }
 
 function generateT4ReincarnationEquipment() {
@@ -4633,7 +4880,7 @@ function generateT4ReincarnationEquipment() {
         setBonus = setNames[Math.floor(Math.random() * setNames.length)];
     }
     const equipmentName = generateEquipmentNameWithRarity(rarity, tier);
-    return {
+    return finalizeReincarnationEquipment({
         id: 'req_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
         name: equipmentName,
         slot: slot,
@@ -4645,13 +4892,18 @@ function generateT4ReincarnationEquipment() {
         dropTime: new Date().toLocaleString('zh-CN'),
         isLocked: false,
         createdAt: Date.now()
-    };
+    });
 }
 
 function generateT5ReincarnationEquipment() {
+    return generateFixedTierReincarnationEquipment(5);
+}
+
+/** 固定 T 档轮回装备（副本专用） */
+function generateFixedTierReincarnationEquipment(tier) {
     const config = reincarnationEquipmentConfig;
     const slot = config.slots[Math.floor(Math.random() * config.slots.length)];
-    const tier = 5;
+    const t = Math.max(1, Number(tier) || 1);
     const rarityWeights = Object.values(config.rarities).map(r => r.weight);
     const rarityIndex = weightedRandom(rarityWeights) - 1;
     const rarity = Object.keys(config.rarities)[rarityIndex];
@@ -4671,12 +4923,12 @@ function generateT5ReincarnationEquipment() {
         const setNames = Object.keys(config.sets);
         setBonus = setNames[Math.floor(Math.random() * setNames.length)];
     }
-    const equipmentName = generateEquipmentNameWithRarity(rarity, tier);
-    return {
+    const equipmentName = generateEquipmentNameWithRarity(rarity, t);
+    return finalizeReincarnationEquipment({
         id: 'req_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
         name: equipmentName,
         slot: slot,
-        tier: tier,
+        tier: t,
         rarity: rarity,
         stats: stats,
         setBonus: setBonus,
@@ -4684,8 +4936,24 @@ function generateT5ReincarnationEquipment() {
         dropTime: new Date().toLocaleString('zh-CN'),
         isLocked: false,
         createdAt: Date.now()
-    };
+    });
 }
+
+function generateT6ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(6); }
+function generateT7ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(7); }
+function generateT8ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(8); }
+function generateT9ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(9); }
+function generateT10ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(10); }
+function generateT11ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(11); }
+function generateT12ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(12); }
+function generateT13ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(13); }
+function generateT14ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(14); }
+function generateT15ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(15); }
+function generateT16ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(16); }
+function generateT17ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(17); }
+function generateT18ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(18); }
+function generateT19ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(19); }
+function generateT20ReincarnationEquipment() { return generateFixedTierReincarnationEquipment(20); }
 
 function generateT2ReincarnationEquipment() {
     const config = reincarnationEquipmentConfig;
@@ -4711,7 +4979,7 @@ function generateT2ReincarnationEquipment() {
         setBonus = setNames[Math.floor(Math.random() * setNames.length)];
     }
     const equipmentName = generateEquipmentNameWithRarity(rarity, tier);
-    return {
+    return finalizeReincarnationEquipment({
         id: 'req_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
         name: equipmentName,
         slot: slot,
@@ -4723,7 +4991,7 @@ function generateT2ReincarnationEquipment() {
         dropTime: new Date().toLocaleString('zh-CN'),
         isLocked: false,
         createdAt: Date.now()
-    };
+    });
 }
 
 // 计算装备总加成
@@ -4738,9 +5006,424 @@ function calculateEquipmentTotalBonus(equipment) {
     return totalBonus;
 }
 
+function getReincarnationEquipTierMultiplier(equipment) {
+    if (!equipment) return 1;
+    var tierCfg = reincarnationEquipmentConfig.tiers[equipment.tier];
+    return (tierCfg && tierCfg.multiplier != null) ? Number(tierCfg.multiplier) : 1;
+}
+
+/** 词条展示：直接显示穿戴实际加成（词条×T档），避免手动换算 */
+function formatReincarnationEquipStatsHtml(equipment) {
+    if (!equipment || !equipment.stats) return '';
+    var config = reincarnationEquipmentConfig;
+    var mult = getReincarnationEquipTierMultiplier(equipment);
+    var lines = Object.entries(equipment.stats).map(function (entry) {
+        var stat = entry[0];
+        var value = entry[1];
+        var effective = value * mult;
+        var name = config.statNames[stat] || stat;
+        return '<div class="req-stat-line">' +
+            '<span class="req-stat-name">' + name + '</span>: ' +
+            '<span class="req-stat-eff">+' + formatStatValue(effective, stat) + '</span>' +
+            '</div>';
+    }).join('');
+    return '<div class="equipment-stats">' + lines + '</div>';
+}
+
+/** 单件装备各属性的实际加成（词条×T档） */
+function getReincarnationEquipEffectiveStats(equipment) {
+    var out = { health: 0, attack: 0, critRate: 0, critDamage: 0 };
+    if (!equipment || !equipment.stats) return out;
+    var mult = getReincarnationEquipTierMultiplier(equipment);
+    Object.keys(out).forEach(function (stat) {
+        out[stat] = (Number(equipment.stats[stat]) || 0) * mult;
+    });
+    return out;
+}
+
+/**
+ * 仓库卡片：与同部位已装备对比实际加成差值
+ * @param {object} equipment 仓库中的装备
+ * @returns {string} HTML
+ */
+function formatReincarnationEquipCompareHtml(equipment) {
+    if (!equipment || !equipment.slot) return '';
+    if (!player.reincarnationEquipment || !player.reincarnationEquipment.equipped) return '';
+    var config = reincarnationEquipmentConfig;
+    var equipped = player.reincarnationEquipment.equipped[equipment.slot];
+    var newStats = getReincarnationEquipEffectiveStats(equipment);
+    var oldStats = getReincarnationEquipEffectiveStats(equipped);
+    var slotName = (config.slotNames && config.slotNames[equipment.slot]) || equipment.slot;
+    var statKeys = ['health', 'attack', 'critRate', 'critDamage'];
+    var hasAnyDiff = false;
+    var lines = statKeys.map(function (stat) {
+        var diff = (newStats[stat] || 0) - (oldStats[stat] || 0);
+        if (Math.abs(diff) > 1e-12) hasAnyDiff = true;
+        var cls = 'req-cmp-eq';
+        var sign = '';
+        var arrow = '·';
+        if (diff > 1e-12) {
+            cls = 'req-cmp-up';
+            sign = '+';
+            arrow = '↑';
+        } else if (diff < -1e-12) {
+            cls = 'req-cmp-down';
+            sign = '';
+            arrow = '↓';
+        }
+        return '<div class="req-cmp-line">' +
+            '<span class="req-cmp-name">' + (config.statNames[stat] || stat) + '</span>' +
+            '<span class="req-cmp-delta ' + cls + '">' + arrow + ' ' + sign + formatStatValue(diff, stat) + '</span>' +
+            '</div>';
+    }).join('');
+
+    var header;
+    if (!equipped) {
+        header = '对比 · ' + slotName + '（空槽，相对 0）';
+    } else {
+        var eqName = String(equipped.name || '已装备').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        header = '对比 · vs 已装备「' + eqName + '」';
+        if (!hasAnyDiff) {
+            header += '（持平）';
+        }
+    }
+
+    return '<div class="req-equip-compare">' +
+        '<div class="req-cmp-title">' + header + '</div>' +
+        lines +
+        '</div>';
+}
+
 // 获取装备显示颜色
 function getEquipmentColor(equipment) {
     return reincarnationEquipmentConfig.rarities[equipment.rarity].color;
+}
+
+/** 品质→装备名七彩档位（越高越炫） */
+function getReincarnationEquipNameFxClass(rarity) {
+    var map = {
+        common: 'req-name-fx-0',
+        uncommon: 'req-name-fx-1',
+        rare: 'req-name-fx-2',
+        epic: 'req-name-fx-3',
+        legendary: 'req-name-fx-4',
+        mythic: 'req-name-fx-5',
+        supreme: 'req-name-fx-6',
+        ancient: 'req-name-fx-7',
+        primordial: 'req-name-fx-8',
+        eternal: 'req-name-fx-9'
+    };
+    return map[rarity] || 'req-name-fx-0';
+}
+
+/** 卡片边缘品质特效 class */
+function getReincarnationEquipCardFxClass(equipmentOrRarity) {
+    var rarity = equipmentOrRarity;
+    if (equipmentOrRarity && typeof equipmentOrRarity === 'object') {
+        rarity = equipmentOrRarity.rarity;
+    }
+    var key = rarity && reincarnationEquipmentConfig.rarities[rarity] ? rarity : 'common';
+    return 'req-card-fx-' + key;
+}
+
+function formatReincarnationEquipNameHtml(equipment) {
+    if (!equipment) return '';
+    var cls = getReincarnationEquipNameFxClass(equipment.rarity);
+    var safeName = String(equipment.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return '<span class="req-equip-name ' + cls + '">' + safeName + '</span>';
+}
+
+/** 按品质概率抽取器灵；无则返回 null */
+function rollReincarnationSpirit(rarity) {
+    var config = reincarnationEquipmentConfig;
+    if (!config || !config.spirits) return null;
+    var chanceMap = config.spiritDropChanceByRarity || {};
+    var chance = chanceMap[rarity];
+    if (chance == null || chance <= 0) return null;
+    if (Math.random() >= chance) return null;
+    var lines = config.spirits;
+    var keys = Object.keys(lines);
+    if (!keys.length) return null;
+    var total = 0;
+    for (var i = 0; i < keys.length; i++) {
+        total += Number(lines[keys[i]].weight) || 1;
+    }
+    var roll = Math.random() * total;
+    var key = keys[0];
+    for (var j = 0; j < keys.length; j++) {
+        roll -= Number(lines[keys[j]].weight) || 1;
+        if (roll <= 0) { key = keys[j]; break; }
+    }
+    var cfg = lines[key];
+    if (!cfg) return null;
+    return {
+        key: key,
+        name: cfg.name,
+        bonus: Number(cfg.bonus) || 1,
+        desc: cfg.desc || ''
+    };
+}
+
+function getReincarnationSpiritBonus(equipment) {
+    if (!equipment || !equipment.spirit) return 0;
+    if (typeof equipment.spirit === 'object' && equipment.spirit.bonus != null) {
+        return Number(equipment.spirit.bonus) || 0;
+    }
+    var cfg = reincarnationEquipmentConfig.spirits && reincarnationEquipmentConfig.spirits[equipment.spirit];
+    return cfg ? (Number(cfg.bonus) || 0) : 0;
+}
+
+/** 将器灵/魂环乘算写入本装备词条（生成时调用一次）；光环单独挂字段，不乘进 stats */
+function finalizeReincarnationEquipment(equipment) {
+    if (!equipment) return equipment;
+    var mult = 1;
+    var spirit = rollReincarnationSpirit(equipment.rarity);
+    if (spirit) {
+        equipment.spirit = spirit;
+        mult *= 1 + (Number(spirit.bonus) || 0);
+    }
+    var soulRing = rollReincarnationSoulRing(equipment.rarity);
+    if (soulRing) {
+        equipment.soulRing = soulRing;
+        mult *= 1 + (Number(soulRing.bonus) || 0);
+    }
+    var aura = rollReincarnationAura(equipment.rarity);
+    if (aura) {
+        equipment.aura = aura;
+    }
+    if (mult !== 1 && equipment.stats) {
+        Object.keys(equipment.stats).forEach(function (stat) {
+            equipment.stats[stat] = equipment.stats[stat] * mult;
+        });
+    }
+    return equipment;
+}
+
+function getAuraSkillDisplayName(skillId) {
+    if (typeof SAMSARA_SKILL_DEFS !== 'undefined' && Array.isArray(SAMSARA_SKILL_DEFS)) {
+        for (var i = 0; i < SAMSARA_SKILL_DEFS.length; i++) {
+            if (SAMSARA_SKILL_DEFS[i].id === skillId) return SAMSARA_SKILL_DEFS[i].name;
+        }
+    }
+    return skillId || '未知技能';
+}
+
+/** 按品质概率抽取光环；无则返回 null。bonus 在配置区间内随机 */
+function rollReincarnationAura(rarity) {
+    var config = reincarnationEquipmentConfig;
+    if (!config || !config.auras) return null;
+    var chanceMap = config.auraDropChanceByRarity || {};
+    var chance = chanceMap[rarity];
+    if (chance == null || chance <= 0) return null;
+    if (Math.random() >= chance) return null;
+
+    var lines = config.auras;
+    var keys = Object.keys(lines);
+    if (!keys.length) return null;
+    var total = 0;
+    for (var i = 0; i < keys.length; i++) {
+        total += Number(lines[keys[i]].weight) || 1;
+    }
+    var roll = Math.random() * total;
+    var key = keys[0];
+    for (var j = 0; j < keys.length; j++) {
+        roll -= Number(lines[keys[j]].weight) || 1;
+        if (roll <= 0) { key = keys[j]; break; }
+    }
+    var cfg = lines[key];
+    if (!cfg) return null;
+
+    var minB = Number(cfg.minBonus);
+    var maxB = Number(cfg.maxBonus);
+    if (!(minB >= 0)) minB = 0;
+    if (!(maxB > minB)) maxB = minB;
+    var bonus = minB + Math.random() * (maxB - minB);
+    if (cfg.type === 'triggerCap') {
+        bonus = Math.round(bonus * 10000) / 10000;
+    } else {
+        bonus = Math.round(bonus * 100) / 100;
+    }
+
+    return {
+        key: key,
+        name: cfg.name,
+        skillId: cfg.skillId,
+        skillName: getAuraSkillDisplayName(cfg.skillId),
+        type: cfg.type,
+        bonus: bonus
+    };
+}
+
+function getReincarnationAuraBonus(equipment) {
+    if (!equipment || !equipment.aura) return 0;
+    if (typeof equipment.aura === 'object' && equipment.aura.bonus != null) {
+        return Number(equipment.aura.bonus) || 0;
+    }
+    return 0;
+}
+
+/** 汇总已穿戴装备上的光环加成：dmg[skillId] / triggerCap[skillId] */
+function getEquippedSamsaraAuraBonuses() {
+    var result = { dmg: {}, triggerCap: {} };
+    if (!player || !player.reincarnationEquipment || !player.reincarnationEquipment.equipped) return result;
+    var slots = player.reincarnationEquipment.equipped;
+    Object.keys(slots).forEach(function (slot) {
+        var eq = slots[slot];
+        if (!eq || !eq.aura || typeof eq.aura !== 'object') return;
+        var a = eq.aura;
+        var skillId = a.skillId;
+        var bonus = Number(a.bonus) || 0;
+        if (!skillId || !(bonus > 0)) return;
+        if (a.type === 'dmgMult') {
+            result.dmg[skillId] = (result.dmg[skillId] || 0) + bonus;
+        } else if (a.type === 'triggerCap') {
+            result.triggerCap[skillId] = (result.triggerCap[skillId] || 0) + bonus;
+        }
+    });
+    return result;
+}
+
+function formatReincarnationAuraTag(equipment) {
+    if (!equipment || !equipment.aura) return '';
+    var a = equipment.aura;
+    var name = (typeof a === 'object' ? a.name : '') || '未知光环';
+    var bonus = getReincarnationAuraBonus(equipment);
+    var skillName = (typeof a === 'object' && a.skillName) ? a.skillName : getAuraSkillDisplayName(a.skillId);
+    var effectText = '';
+    if (a.type === 'dmgMult') {
+        effectText = skillName + '伤害+' + (bonus * 100).toFixed(0) + '%';
+    } else if (a.type === 'triggerCap') {
+        effectText = skillName + '触发上限+' + (bonus * 100).toFixed(2) + '%';
+    } else {
+        effectText = '+' + (bonus * 100).toFixed(0) + '%';
+    }
+    var safeName = String(name).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    var safeEffect = String(effectText).replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return '<div class="req-aura-tag" title="' + safeEffect + '">' +
+        '<span class="req-aura-name req-spirit-rainbow">✧ 光环·' + safeName + '</span>' +
+        '<span class="req-aura-bonus">' + safeEffect + '</span>' +
+        '</div>';
+}
+
+function getReincarnationAuraLogSuffix(equipment) {
+    if (!equipment || !equipment.aura) return '';
+    var a = equipment.aura;
+    var bonus = getReincarnationAuraBonus(equipment);
+    var skillName = a.skillName || getAuraSkillDisplayName(a.skillId);
+    if (a.type === 'dmgMult') {
+        return ' · 光环·' + (a.name || '') + '(' + skillName + '伤害+' + (bonus * 100).toFixed(0) + '%)';
+    }
+    if (a.type === 'triggerCap') {
+        return ' · 光环·' + (a.name || '') + '(' + skillName + '触发上限+' + (bonus * 100).toFixed(2) + '%)';
+    }
+    return ' · 光环·' + (a.name || '');
+}
+
+function formatReincarnationSpiritTag(equipment) {
+    if (!equipment || !equipment.spirit) return '';
+    var s = equipment.spirit;
+    var name = (typeof s === 'object' ? s.name : '') || '未知器灵';
+    var bonus = getReincarnationSpiritBonus(equipment);
+    var desc = (typeof s === 'object' && s.desc) ? s.desc : '';
+    var safeName = String(name).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return '<div class="req-spirit-tag" title="' + String(desc).replace(/"/g, '&quot;') + '">' +
+        '<span class="req-spirit-name req-spirit-rainbow">✦ 器灵·' + safeName + '</span>' +
+        '<span class="req-spirit-bonus">词条+' + (bonus * 100).toFixed(0) + '%</span>' +
+        '</div>';
+}
+
+function getReincarnationSpiritLogSuffix(equipment) {
+    if (!equipment || !equipment.spirit) return '';
+    var bonus = getReincarnationSpiritBonus(equipment);
+    return ' · 器灵·' + (equipment.spirit.name || '') + '(+' + (bonus * 100).toFixed(0) + '%)';
+}
+
+/** 抽取魂环年份档（越高越稀有） */
+function rollReincarnationSoulRingYearKey() {
+    var years = reincarnationEquipmentConfig.soulRingYears;
+    if (!years) return null;
+    var keys = Object.keys(years);
+    var total = 0;
+    for (var i = 0; i < keys.length; i++) {
+        total += Number(years[keys[i]].weight) || 1;
+    }
+    var roll = Math.random() * total;
+    for (var j = 0; j < keys.length; j++) {
+        roll -= Number(years[keys[j]].weight) || 1;
+        if (roll <= 0) return keys[j];
+    }
+    return keys[keys.length - 1];
+}
+
+/** 按品质概率抽取魂环；无则返回 null */
+function rollReincarnationSoulRing(rarity) {
+    var config = reincarnationEquipmentConfig;
+    if (!config || !config.soulRings || !config.soulRingYears) return null;
+    var chanceMap = config.soulRingDropChanceByRarity || {};
+    var chance = chanceMap[rarity];
+    if (chance == null || chance <= 0) return null;
+    if (Math.random() >= chance) return null;
+
+    var yearKey = rollReincarnationSoulRingYearKey();
+    var yearCfg = config.soulRingYears[yearKey];
+    if (!yearCfg) return null;
+
+    var pool = [];
+    Object.keys(config.soulRings).forEach(function (k) {
+        if (config.soulRings[k].year === yearKey) pool.push(k);
+    });
+    if (!pool.length) {
+        pool = Object.keys(config.soulRings);
+    }
+    var key = pool[Math.floor(Math.random() * pool.length)];
+    var ringCfg = config.soulRings[key];
+    if (!ringCfg) return null;
+
+    var minB = Number(yearCfg.minBonus);
+    var maxB = Number(yearCfg.maxBonus);
+    if (!(minB >= 0)) minB = 0.1;
+    if (!(maxB > minB)) maxB = minB + 0.1;
+    var bonus = minB + Math.random() * (maxB - minB);
+    bonus = Math.round(bonus * 100) / 100;
+
+    return {
+        key: key,
+        name: ringCfg.name,
+        year: yearKey,
+        yearName: yearCfg.name,
+        bonus: bonus,
+        fx: yearCfg.fx != null ? yearCfg.fx : 0
+    };
+}
+
+function getReincarnationSoulRingBonus(equipment) {
+    if (!equipment || !equipment.soulRing) return 0;
+    if (typeof equipment.soulRing === 'object' && equipment.soulRing.bonus != null) {
+        return Number(equipment.soulRing.bonus) || 0;
+    }
+    return 0;
+}
+
+function formatReincarnationSoulRingTag(equipment) {
+    if (!equipment || !equipment.soulRing) return '';
+    var s = equipment.soulRing;
+    var name = (typeof s === 'object' ? s.name : '') || '未知魂环';
+    var yearName = (typeof s === 'object' ? s.yearName : '') || '';
+    var bonus = getReincarnationSoulRingBonus(equipment);
+    var fx = (typeof s === 'object' && s.fx != null) ? s.fx : 0;
+    var safeName = String(name).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    var safeYear = String(yearName).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return '<div class="req-soulring-tag">' +
+        '<span class="req-soulring-name req-hr-fx-' + fx + '">◎ ' + safeYear + '魂环·' + safeName + '</span>' +
+        '<span class="req-soulring-bonus">词条+' + (bonus * 100).toFixed(0) + '%</span>' +
+        '</div>';
+}
+
+function getReincarnationSoulRingLogSuffix(equipment) {
+    if (!equipment || !equipment.soulRing) return '';
+    var s = equipment.soulRing;
+    var bonus = getReincarnationSoulRingBonus(equipment);
+    return ' · ' + (s.yearName || '') + '魂环·' + (s.name || '') + '(+' + (bonus * 100).toFixed(0) + '%)';
 }
 
 // 格式化属性值显示
@@ -4798,20 +5481,19 @@ function updateEquippedEquipmentDisplay() {
         const slotName = config.slotNames[slot];
         
         html += `
-            <div class="equipment-slot" data-slot="${slot}">
+            <div class="equipment-slot ${equipment ? getReincarnationEquipCardFxClass(equipment.rarity) : ''}" data-slot="${slot}">
                 <div class="slot-name">${slotName}</div>
                 <div class="equipment-display" onclick="unequipItem('${slot}')">
                     ${equipment ? `
-                        <div style="color: ${getEquipmentColor(equipment)}; font-weight: bold;">
-                            ${equipment.name}
+                        <div style="font-weight: bold;">
+                            ${formatReincarnationEquipNameHtml(equipment)}
                         </div>
                         <div>T${equipment.tier} ${config.rarities[equipment.rarity].name}</div>
                         <div>签名: ${equipment.owner}</div>
-                        <div class="equipment-stats">
-                            ${Object.entries(equipment.stats).map(([stat, value]) => `
-                                <div>${config.statNames[stat]}: +${formatStatValue(value, stat)}</div>
-                            `).join('')}
-                        </div>
+                        ${formatReincarnationSpiritTag(equipment)}
+                        ${formatReincarnationSoulRingTag(equipment)}
+                        ${formatReincarnationAuraTag(equipment)}
+                        ${formatReincarnationEquipStatsHtml(equipment)}
                         ${equipment.setBonus ? `<div style="color: #FFD700;">${config.sets[equipment.setBonus].name}</div>` : ''}
                     ` : '<div style="color: #666;">空</div>'}
                 </div>
@@ -4897,7 +5579,7 @@ function updateEquipmentInventoryDisplay() {
         const isDiscardable = isItemDiscardable(equipment);
         
         html += `
-            <div class="equipment-item ${isLocked ? 'locked' : ''} ${isSelected ? 'selected' : ''}" 
+            <div class="equipment-item ${isLocked ? 'locked' : ''} ${isSelected ? 'selected' : ''} ${getReincarnationEquipCardFxClass(equipment)}" 
                  data-id="${equipment.id}"
                  onclick="${player.reincarnationEquipment.batchDiscardMode ? `toggleSelectItem('${equipment.id}')` : ''}">
                 
@@ -4910,7 +5592,7 @@ function updateEquipmentInventoryDisplay() {
                 ` : ''}
                 
                 <div class="equipment-header">
-                    <span style="color: ${getEquipmentColor(equipment)}; font-weight: bold;">${equipment.name}</span>
+                    <span style="font-weight: bold;">${formatReincarnationEquipNameHtml(equipment)}</span>
                     <div class="equipment-actions">
                         ${!player.reincarnationEquipment.batchDiscardMode ? `
                             <button onclick="event.stopPropagation(); equipItem('${equipment.id}')" 
@@ -4933,19 +5615,16 @@ function updateEquipmentInventoryDisplay() {
                     <div>归属: ${equipment.owner}</div>
                     <div style="color: #aaa; font-size: 0.85em;">掉落: ${equipment.dropTime}</div>
                 </div>
-                <div class="equipment-stats">
-                    ${Object.entries(equipment.stats).map(([stat, value]) => `
-                        <div>${config.statNames[stat]}: +${formatStatValue(value, stat)}</div>
-                    `).join('')}
-                </div>
+                ${formatReincarnationSpiritTag(equipment)}
+                ${formatReincarnationSoulRingTag(equipment)}
+                ${formatReincarnationAuraTag(equipment)}
+                ${formatReincarnationEquipStatsHtml(equipment)}
+                ${formatReincarnationEquipCompareHtml(equipment)}
                 ${equipment.setBonus ? `
                     <div class="set-bonus" style="color: #FFD700;">
                         套装: ${config.sets[equipment.setBonus].name}
                     </div>
                 ` : ''}
-                <div class="equipment-total">
-                    总加成: +${(calculateEquipmentTotalBonus(equipment) * 100).toFixed(1)}%
-                </div>
                 ${!isDiscardable && player.reincarnationEquipment.batchDiscardMode ? `
                     <div style="color: #ff6b6b; font-size: 0.8em; margin-top: 5px;">已锁定</div>
                 ` : ''}
@@ -4959,34 +5638,60 @@ function updateEquipmentInventoryDisplay() {
 // 更新套装加成显示
 function updateSetBonusesDisplay() {
     const container = document.getElementById('setBonusesContainer');
+    if (!container) return;
     const config = reincarnationEquipmentConfig;
-    
-    // 计算当前激活的套装
-    const equippedSets = {};
-    Object.values(player.reincarnationEquipment.equipped).forEach(equipment => {
-        if (equipment && equipment.setBonus) {
-            equippedSets[equipment.setBonus] = (equippedSets[equipment.setBonus] || 0) + 1;
-        }
-    });
+    const equippedSets = collectEquippedReincarnationSets();
+    const ascMult = getReincarnationSetAscensionMult();
     
     let html = '<div class="set-bonuses">';
     
-    Object.entries(equippedSets).forEach(([setName, count]) => {
-        const setConfig = config.sets[setName];
-        html += `<div class="set-info">`;
-        html += `<h4>${setConfig.name} (${count}/6)</h4>`;
+    Object.entries(equippedSets).forEach(function (entry) {
+        var setName = entry[0];
+        var info = entry[1];
+        var count = info.count;
+        var setConfig = config.sets[setName];
+        if (!setConfig) return;
+        var avgTier = info.tierSum / Math.max(1, count);
+        var tierMult = getReincarnationSetTierMult(avgTier);
+        var scale = ascMult * tierMult;
         
-        Object.entries(setConfig.bonuses).forEach(([pieceCount, bonuses]) => {
-            const isActive = count >= parseInt(pieceCount);
-            html += `<div class="set-bonus ${isActive ? 'active' : 'inactive'}">`;
-            html += `<span>${pieceCount}件: </span>`;
-            html += Object.entries(bonuses).map(([stat, value]) => 
-                `${config.statNames[stat]} +${(value * 100).toFixed(1)}%`
-            ).join(', ');
-            html += `</div>`;
+        html += '<div class="set-info">';
+        html += '<h4>' + setConfig.name + ' (' + count + '/6)</h4>';
+        html += '<div style="font-size:12px;color:#888;margin-bottom:4px;">平均T' +
+            avgTier.toFixed(1) + ' · T档倍率×' + tierMult.toFixed(1) +
+            ' · 含轮回与件数额外加成</div>';
+        
+        Object.entries(setConfig.bonuses).forEach(function (bEntry) {
+            var pieceCount = parseInt(bEntry[0], 10);
+            var bonuses = bEntry[1];
+            var isActive = count >= pieceCount;
+            html += '<div class="set-bonus ' + (isActive ? 'active' : 'inactive') + '">';
+            html += '<span>' + pieceCount + '件: </span>';
+            html += Object.entries(bonuses).map(function (sEntry) {
+                var stat = sEntry[0];
+                var value = sEntry[1];
+                var shown = isActive ? value * scale : value;
+                return config.statNames[stat] + ' +' + (shown * 100).toFixed(1) + '%';
+            }).join(', ');
+            html += '</div>';
         });
         
-        html += `</div>`;
+        Object.entries(REINCARNATION_SET_EXTRA_LAYER).forEach(function (eEntry) {
+            var pieceCount = parseInt(eEntry[0], 10);
+            var extra = eEntry[1];
+            var isActive = count >= pieceCount;
+            html += '<div class="set-bonus ' + (isActive ? 'active' : 'inactive') + '">';
+            html += '<span>' + pieceCount + '件额外: </span>';
+            html += Object.entries(extra).map(function (sEntry) {
+                var stat = sEntry[0];
+                var value = sEntry[1];
+                var shown = isActive ? value * scale : value;
+                return config.statNames[stat] + ' +' + (shown * 100).toFixed(1) + '%';
+            }).join(', ');
+            html += '</div>';
+        });
+        
+        html += '</div>';
     });
     
     if (Object.keys(equippedSets).length === 0) {
@@ -5216,9 +5921,12 @@ function validateImportCode() {
         
         document.getElementById('importTimeInfo').innerHTML = `
             <div style="margin: 10px 0; padding: 10px; background: #444; border-radius: 5px;">
-                <div>装备名称: ${data.name}</div>
+                <div>装备名称: ${formatReincarnationEquipNameHtml(data)}</div>
                 <div>品质: ${reincarnationEquipmentConfig.rarities[data.rarity].name}</div>
                 <div>等级: T${data.tier}</div>
+                ${formatReincarnationSpiritTag(data)}
+                ${formatReincarnationSoulRingTag(data)}
+                ${formatReincarnationAuraTag(data)}
                 <div>导出时间: ${new Date(data.exportTime).toLocaleString('zh-CN')}</div>
                 <div>过期时间: ${new Date(data.expireTime).toLocaleString('zh-CN')}</div>
                 <div style="color: ${isExpired ? '#f44336' : '#4CAF50'}; font-weight: bold;">
@@ -5250,13 +5958,16 @@ function encryptEquipmentData(equipment) {
         rarity: equipment.rarity,
         stats: equipment.stats,
         setBonus: equipment.setBonus,
+        spirit: equipment.spirit || null,
+        soulRing: equipment.soulRing || null,
+        aura: equipment.aura || null,
         owner: equipment.owner,
         dropTime: equipment.dropTime,
         createdAt: equipment.createdAt,
         // 添加时间限制信息
         exportTime: Date.now(), // 导出时间
         expireTime: Date.now() + 10 * 60 * 1000, // 10分钟过期时间
-        version: '1.0' // 数据版本
+        version: '1.3' // 数据版本（含器灵/魂环/光环）
     };
     
     const jsonString = JSON.stringify(data);
@@ -5341,6 +6052,9 @@ function importEquipment() {
         rarity: equipmentData.rarity,
         stats: equipmentData.stats,
         setBonus: equipmentData.setBonus,
+        spirit: equipmentData.spirit || null,
+        soulRing: equipmentData.soulRing || null,
+        aura: equipmentData.aura || null,
         owner: equipmentData.owner || '导入的装备',
         dropTime: equipmentData.dropTime || new Date().toLocaleString('zh-CN'),
         isLocked: false,
@@ -5423,6 +6137,46 @@ function calculateTotalEquipmentStats() {
     return totalStats;
 }
 
+// 2/4/6 件套后期额外加成（再乘轮回倍率与 T 档倍率）— 再加强
+var REINCARNATION_SET_EXTRA_LAYER = {
+    2: { health: 40, attack: 40 },
+    4: { health: 120, attack: 120, critRate: 1.2, critDamage: 60 },
+    6: { health: 400, attack: 400, critRate: 3.5, critDamage: 200 }
+};
+
+function getReincarnationSetAscensionMult() {
+    // 每轮回转 ×300
+    return 1 + ((Number(player.level && player.level.ascentionCounta) || 0) * 300);
+}
+
+/** 按该套装穿戴件平均 T：T5 及以下 ×1；每高 1 档再 ×120（T6×121，T8×361，T10×601） */
+function getReincarnationSetTierMult(avgTier) {
+    var t = Number(avgTier) || 1;
+    return 1 + Math.max(0, t - 5) * 120;
+}
+
+function collectEquippedReincarnationSets() {
+    var equippedSets = {}; // setName -> { count, tierSum }
+    if (!player.reincarnationEquipment || !player.reincarnationEquipment.equipped) return equippedSets;
+    Object.values(player.reincarnationEquipment.equipped).forEach(function (equipment) {
+        if (!equipment || !equipment.setBonus) return;
+        var key = equipment.setBonus;
+        if (!equippedSets[key]) equippedSets[key] = { count: 0, tierSum: 0 };
+        equippedSets[key].count += 1;
+        equippedSets[key].tierSum += Math.max(1, Number(equipment.tier) || 1);
+    });
+    return equippedSets;
+}
+
+function addScaledSetBonusStats(target, bonuses, scale) {
+    Object.entries(bonuses).forEach(function (entry) {
+        var stat = entry[0];
+        var value = entry[1];
+        if (target[stat] == null) target[stat] = 0;
+        target[stat] += value * scale;
+    });
+}
+
 // 计算套装加成
 function calculateSetBonuses() {
     const setBonuses = {
@@ -5433,27 +6187,32 @@ function calculateSetBonuses() {
     };
     
     const config = reincarnationEquipmentConfig;
-    const equippedSets = {};
+    const equippedSets = collectEquippedReincarnationSets();
+    const ascMult = getReincarnationSetAscensionMult();
     
-    // 统计各套装件数
-    Object.values(player.reincarnationEquipment.equipped).forEach(equipment => {
-        if (equipment && equipment.setBonus) {
-            equippedSets[equipment.setBonus] = (equippedSets[equipment.setBonus] || 0) + 1;
-        }
-    });
-    
-    // 应用套装效果
-    Object.entries(equippedSets).forEach(([setName, count]) => {
-        const setConfig = config.sets[setName];
+    Object.entries(equippedSets).forEach(function (entry) {
+        var setName = entry[0];
+        var info = entry[1];
+        var setConfig = config.sets[setName];
         if (!setConfig) return;
+        var count = info.count;
+        var avgTier = info.tierSum / Math.max(1, count);
+        var tierMult = getReincarnationSetTierMult(avgTier);
+        var scale = ascMult * tierMult;
         
-        Object.entries(setConfig.bonuses).forEach(([pieceCount, bonuses]) => {
-            if (count >= parseInt(pieceCount)) {
-                Object.entries(bonuses).forEach(([stat, value]) => {
-                    // 每轮回1转增加10倍效果
-                    const multiplier = 1 + (player.level.ascentionCounta * 10);
-                    setBonuses[stat] += value * multiplier;
-                });
+        Object.entries(setConfig.bonuses).forEach(function (bEntry) {
+            var pieceCount = parseInt(bEntry[0], 10);
+            var bonuses = bEntry[1];
+            if (count >= pieceCount) {
+                addScaledSetBonusStats(setBonuses, bonuses, scale);
+            }
+        });
+        
+        Object.entries(REINCARNATION_SET_EXTRA_LAYER).forEach(function (eEntry) {
+            var pieceCount = parseInt(eEntry[0], 10);
+            var extra = eEntry[1];
+            if (count >= pieceCount) {
+                addScaledSetBonusStats(setBonuses, extra, scale);
             }
         });
     });
@@ -5470,7 +6229,16 @@ function dropReincarnationEquipment() {
         player.reincarnationEquipment.inventory.push(newEquipment);
         runReincarnationEquipAutoDiscard(true);
         trimReincarnationEquipInventoryOverCap();
-        logAction(`获得轮回装备: ${newEquipment.name} (${reincarnationEquipmentConfig.rarities[newEquipment.rarity].name}) - ${newEquipment.dropTime}`, 'success');
+        const spiritHint = typeof getReincarnationSpiritLogSuffix === 'function'
+            ? getReincarnationSpiritLogSuffix(newEquipment)
+            : '';
+        const soulHint = typeof getReincarnationSoulRingLogSuffix === 'function'
+            ? getReincarnationSoulRingLogSuffix(newEquipment)
+            : '';
+        const auraHint = typeof getReincarnationAuraLogSuffix === 'function'
+            ? getReincarnationAuraLogSuffix(newEquipment)
+            : '';
+        logAction(`获得轮回装备: ${newEquipment.name} (${reincarnationEquipmentConfig.rarities[newEquipment.rarity].name})${spiritHint}${soulHint}${auraHint} - ${newEquipment.dropTime}`, 'success');
         safePanelUpdate(updateReincarnationEquipmentUI);
     }
 }
@@ -5693,7 +6461,13 @@ const beastConfig = {
         'S12': { requiredAscention: 30, minHuaSheng: 3, multiplierRange: [20253.50, 177147.00] },
         'S13': { requiredAscention: 30, minHuaSheng: 4, multiplierRange: [60759.50, 531441.00] },
         'S14': { requiredAscention: 30, minHuaSheng: 5, multiplierRange: [182277.50, 1594323.00] },
-        'S15': { requiredAscention: 30, minHuaSheng: 6, multiplierRange: [546831.50, 4782969.00] }
+        'S15': { requiredAscention: 30, minHuaSheng: 6, multiplierRange: [546831.50, 4782969.00] },
+        // S16+：属性区间约 ×5 递增（高于 S11–S15 的约 ×3）；掉落权重与 S15 相同
+        'S16': { requiredAscention: 30, minHuaSheng: 7, multiplierRange: [2734157.50, 23914845.00] },
+        'S17': { requiredAscention: 30, minHuaSheng: 8, multiplierRange: [13670787.50, 119574225.00] },
+        'S18': { requiredAscention: 30, minHuaSheng: 9, multiplierRange: [68353937.50, 597871125.00] },
+        'S19': { requiredAscention: 30, minHuaSheng: 10, multiplierRange: [341769687.50, 2989355625.00] },
+        'S20': { requiredAscention: 30, minHuaSheng: 11, multiplierRange: [1708848437.50, 14946778125.00] }
     },
 
     // 品质配置：名称、颜色、掉落权重
@@ -5763,8 +6537,115 @@ const beastConfig = {
         }
     },
 
-    // 可获得的属性词条类型
-    affixTypes: ['生命加成', '攻击加成', '爆伤加成'],
+    // 可获得的属性词条类型（花名仍映射到 生命/攻击/爆伤）
+    affixTypes: [
+        '生命加成', '攻击加成', '爆伤加成',
+        '吞天裂地', '刑天战意', '驳蹄踏破', '应龙掣电', '穷奇狂噬',
+        '朱厌血怒', '天狗蚀日', '化蛇缠杀', '狰牙穿云', '猎杀穷奇',
+        '山海不灭', '烛阴不息', '精卫填海', '开明镇岳', '玄武负甲',
+        '陆吾守天', '贰负磐石', '当康丰年', '冉遗固本', '白泽知吉',
+        '毕方焚空', '重明破暗', '九尾夺魄', '鬼车夜啼', '凤凰涅槃',
+        '白虎裂金', '蜚毒蚀骨', '狍鸮嗜血', '鵸鷊惊霆', '文鳐疾闪'
+    ],
+    // 词条→底层属性（未列出的按名称启发式/默认生命）
+    affixTypeMap: {
+        '生命加成': 'health', '攻击加成': 'attack', '爆伤加成': 'critDamage',
+        '吞天裂地': 'attack', '刑天战意': 'attack', '驳蹄踏破': 'attack', '应龙掣电': 'attack', '穷奇狂噬': 'attack',
+        '朱厌血怒': 'attack', '天狗蚀日': 'attack', '化蛇缠杀': 'attack', '狰牙穿云': 'attack', '猎杀穷奇': 'attack',
+        '山海不灭': 'health', '烛阴不息': 'health', '精卫填海': 'health', '开明镇岳': 'health', '玄武负甲': 'health',
+        '陆吾守天': 'health', '贰负磐石': 'health', '当康丰年': 'health', '冉遗固本': 'health', '白泽知吉': 'health',
+        '毕方焚空': 'critDamage', '重明破暗': 'critDamage', '九尾夺魄': 'critDamage', '鬼车夜啼': 'critDamage', '凤凰涅槃': 'critDamage',
+        '白虎裂金': 'critDamage', '蜚毒蚀骨': 'critDamage', '狍鸮嗜血': 'critDamage', '鵸鷊惊霆': 'critDamage', '文鳐疾闪': 'critDamage'
+    },
+    affixStatLabels: { health: '生命', attack: '攻击', critDamage: '爆伤' },
+
+    // 上古血脉：额外品质层（约30种，加成约+10%~+300%，乘算到词条）
+    // bonus 为加成比例：0.10=+10%，3.00=+300%；实际倍率=1+bonus
+    bloodlineDropChanceByRarity: {
+        '小宠物': 0.03,
+        '野兽': 0.08,
+        '凶兽': 0.15,
+        '灵兽': 0.30,
+        '圣兽': 0.50,
+        '神兽': 0.70,
+        '炁兽': 0.90
+    },
+    ancientBloodlines: {
+        juanliu:   { name: '涓流血脉', bonus: 0.10, weight: 18, color: '#9CCC65', desc: '细水长流，初启血脉' },
+        qingshi:   { name: '青石血脉', bonus: 0.20, weight: 16, color: '#7CB342', desc: '石心未开，根基初稳' },
+        biye:      { name: '碧野血脉', bonus: 0.30, weight: 14, color: '#66BB6A', desc: '野性初醒，血气渐浓' },
+        canglang:  { name: '苍狼血脉', bonus: 0.40, weight: 12, color: '#42A5F5', desc: '狼嚎裂夜，猎意初成' },
+        chiya:     { name: '赤崖血脉', bonus: 0.50, weight: 11, color: '#EF5350', desc: '赤岩铸骨，烈意中藏' },
+        xuanquan:  { name: '玄泉血脉', bonus: 0.60, weight: 10, color: '#5C6BC0', desc: '玄泉洗髓，灵窍微开' },
+        tonggu:    { name: '铜骨血脉', bonus: 0.70, weight: 9, color: '#FFA726', desc: '铜筋铁骨，势不可摧' },
+        yinlin:    { name: '银鳞血脉', bonus: 0.80, weight: 8, color: '#B0BEC5', desc: '银鳞映月，锋芒初露' },
+        jinmai:    { name: '金脉血脉', bonus: 0.90, weight: 7.5, color: '#FFD54F', desc: '金脉贯体，威压渐起' },
+        ziyuan:    { name: '紫渊血脉', bonus: 1.00, weight: 7, color: '#AB47BC', desc: '紫渊沉睡，一触即发' },
+        youming:   { name: '幽冥血脉', bonus: 1.10, weight: 6, color: '#7E57C2', desc: '冥火潜行，夺命无声' },
+        lieyan:    { name: '烈焰血脉', bonus: 1.20, weight: 5.5, color: '#FF7043', desc: '焰心不灭，焚尽虚妄' },
+        hanbing:   { name: '寒冰血脉', bonus: 1.30, weight: 5, color: '#4FC3F7', desc: '玄冰封魄，锋寒彻骨' },
+        leiting:   { name: '雷霆血脉', bonus: 1.40, weight: 4.5, color: '#FFEE58', desc: '雷霆入体，一击破军' },
+        fengxiao:  { name: '风啸血脉', bonus: 1.50, weight: 4, color: '#80CBC4', desc: '风啸万里，势如破竹' },
+        shanben:   { name: '山贲血脉', bonus: 1.60, weight: 3.5, color: '#8D6E63', desc: '山贲镇岳，力拔千钧' },
+        haiyuan:   { name: '海渊血脉', bonus: 1.70, weight: 3, color: '#26A69A', desc: '渊海无尽，吞噬八荒' },
+        xingchen:  { name: '星辰血脉', bonus: 1.80, weight: 2.6, color: '#7986CB', desc: '星辉入魂，照彻长夜' },
+        rijin:     { name: '日烬血脉', bonus: 1.90, weight: 2.2, color: '#FF8A65', desc: '金乌余烬，焚天煮海' },
+        yuepo:     { name: '月魄血脉', bonus: 2.00, weight: 1.9, color: '#CE93D8', desc: '月魄凝华，夺天地秀' },
+        longxi:    { name: '龙息血脉', bonus: 2.20, weight: 1.5, color: '#42A5F5', desc: '真龙吐息，百兽俯首' },
+        fengsui:   { name: '凤髓血脉', bonus: 2.40, weight: 1.2, color: '#EC407A', desc: '凤凰之髓，浴火重生' },
+        qilin_xue: { name: '麒麟血脉', bonus: 2.50, weight: 1.0, color: '#FFCA28', desc: '麒麟踏瑞，圣威浩荡' },
+        taigu:     { name: '太古血脉', bonus: 2.60, weight: 0.8, color: '#FFA000', desc: '太古遗种，镇压纪元' },
+        hundun_xue:{ name: '混沌血脉', bonus: 2.70, weight: 0.6, color: '#5E35B1', desc: '混沌未分，万象归一' },
+        honghuang: { name: '洪荒血脉', bonus: 2.80, weight: 0.45, color: '#D84315', desc: '洪荒余威，开天辟地' },
+        pantian:   { name: '盘天血脉', bonus: 2.90, weight: 0.3, color: '#6A1B9A', desc: '盘古遗脉，劈开混沌' },
+        chuangshi: { name: '创世血脉', bonus: 2.95, weight: 0.2, color: '#C2185B', desc: '创世余光，重塑山海' },
+        hongmeng_xue:{ name: '鸿蒙血脉', bonus: 3.00, weight: 0.12, color: '#FF1744', desc: '鸿蒙始气，大道显化' },
+        wushang:   { name: '无上血脉', bonus: 3.00, weight: 0.08, color: '#FFD700', desc: '无上至尊，冠绝山海' }
+    },
+
+    // 神格：高品质低概率额外层（约30种，加成约+100%~+500%，乘算到词条）
+    // bonus：1.00=+100%，5.00=+500%；实际倍率=1+bonus
+    divinityDropChanceByRarity: {
+        '小宠物': 0,
+        '野兽': 0,
+        '凶兽': 0.04,
+        '灵兽': 0.10,
+        '圣兽': 0.20,
+        '神兽': 0.35,
+        '炁兽': 0.50
+    },
+    divinities: {
+        fanxing:   { name: '凡星神格', bonus: 1.00, weight: 16, color: '#90A4AE', desc: '凡星初凝，神意微露' },
+        liuyun:    { name: '流云神格', bonus: 1.15, weight: 14, color: '#81D4FA', desc: '云气流转，神息轻扬' },
+        chixia:    { name: '赤霞神格', bonus: 1.30, weight: 12, color: '#FF8A65', desc: '赤霞贯空，神威初显' },
+        biluo:     { name: '碧落神格', bonus: 1.45, weight: 11, color: '#4DB6AC', desc: '碧落澄明，涤尽尘垢' },
+        huangquan: { name: '黄泉神格', bonus: 1.60, weight: 10, color: '#8D6E63', desc: '黄泉渡魂，阴阳两开' },
+        ziwei:     { name: '紫微神格', bonus: 1.75, weight: 9, color: '#BA68C8', desc: '紫微临位，帝星镇世' },
+        beidou:    { name: '北斗神格', bonus: 1.90, weight: 8, color: '#7986CB', desc: '北斗司命，斩断因果' },
+        nandou:    { name: '南斗神格', bonus: 2.05, weight: 7, color: '#F48FB1', desc: '南斗注生，延命续魂' },
+        donghuang: { name: '东皇神格', bonus: 2.20, weight: 6, color: '#FFD54F', desc: '东皇执钟，震荡洪荒' },
+        xiwan:     { name: '西王神格', bonus: 2.35, weight: 5.5, color: '#CE93D8', desc: '西王瑶池，仙泽长存' },
+        zhulong_g: { name: '烛龙神格', bonus: 2.50, weight: 5, color: '#EF5350', desc: '烛龙睁目，昼夜自明' },
+        yinglong_g:{ name: '应龙神格', bonus: 2.65, weight: 4.5, color: '#29B6F6', desc: '应龙布雨，开疆辟土' },
+        xuanwu_g:  { name: '玄武神格', bonus: 2.80, weight: 4, color: '#455A64', desc: '玄武负甲，镇守北冥' },
+        qinglong_g:{ name: '青龙神格', bonus: 2.95, weight: 3.5, color: '#26A69A', desc: '青龙震爪，东方称王' },
+        baihu_g:   { name: '白虎神格', bonus: 3.10, weight: 3, color: '#ECEFF1', desc: '白虎裂金，杀伐果断' },
+        zhuque_g:  { name: '朱雀神格', bonus: 3.25, weight: 2.6, color: '#FF7043', desc: '朱雀焚天，涅槃重生' },
+        qilin_g:   { name: '麒麟神格', bonus: 3.40, weight: 2.2, color: '#FFCA28', desc: '麒麟现世，祥瑞加身' },
+        fenghuang_g:{ name: '凤凰神格', bonus: 3.55, weight: 1.9, color: '#EC407A', desc: '凤凰展翅，万火朝宗' },
+        taixu_g:   { name: '太虚神格', bonus: 3.70, weight: 1.6, color: '#7E57C2', desc: '太虚无相，包罗万象' },
+        hundun_g:  { name: '混沌神格', bonus: 3.85, weight: 1.3, color: '#5E35B1', desc: '混沌初开，神格自成' },
+        honghuang_g:{ name: '洪荒神格', bonus: 4.00, weight: 1.1, color: '#D84315', desc: '洪荒意志，镇压纪元' },
+        pantian_g: { name: '盘天神格', bonus: 4.15, weight: 0.9, color: '#6A1B9A', desc: '盘古开天，神威盖世' },
+        nuwa_g:    { name: '娲皇神格', bonus: 4.30, weight: 0.75, color: '#C2185B', desc: '女娲补天，造化众生' },
+        fuxi_g:    { name: '羲皇神格', bonus: 4.45, weight: 0.6, color: '#1565C0', desc: '伏羲演卦，洞彻天机' },
+        shennong_g:{ name: '神农神格', bonus: 4.55, weight: 0.5, color: '#2E7D32', desc: '神农百草，济世渡劫' },
+        xuanyuan_g:{ name: '轩辕神格', bonus: 4.65, weight: 0.4, color: '#F9A825', desc: '轩辕剑鸣，一统山河' },
+        tiandao_g: { name: '天道神格', bonus: 4.75, weight: 0.3, color: '#FF6F00', desc: '天道昭昭，赏罚分明' },
+        dadao_g:   { name: '大道神格', bonus: 4.85, weight: 0.22, color: '#FF1744', desc: '大道无形，孕养万物' },
+        hongmeng_g:{ name: '鸿蒙神格', bonus: 4.95, weight: 0.15, color: '#D500F9', desc: '鸿蒙未分，神格至尊' },
+        wushang_g: { name: '无上神格', bonus: 5.00, weight: 0.08, color: '#FFD700', desc: '无上至高，冠绝诸天' }
+    },
 
     // 词条数概率分布
     affixCountProbs: {
@@ -5778,27 +6659,403 @@ const beastConfig = {
 
     // S级别掉落概率
     sLevelDropProbs: {
-        'S1': 70,
-        'S2': 23.1117,
-        'S3': 5,
-        'S4': 1,
-        'S5': 0.5,
-        'S6': 0.2,
-        'S7': 0.1,
-        'S8': 0.05,
-        'S9': 0.02,
-        'S10': 0.01,
-        'S11': 0.005,
-        'S12': 0.002,
-        'S13': 0.001,
-        'S14': 0.0002,
-        'S15': 0.0001
+        'S1': 47.25,
+        'S2': 20,
+        'S3': 10,
+        'S4': 5,
+        'S5': 5,
+        'S6': 5,
+        'S7': 2,
+        'S8': 2,
+        'S9': 1,
+        'S10': 1,
+        'S11': 0.5,
+        'S12': 0.5,
+        'S13': 0.5,
+        'S14': 0.1,
+        'S15': 0.1,
+        'S16': 0.01,
+        'S17': 0.01,
+        'S18': 0.01,
+        'S19': 0.01,
+        'S20': 0.01
+    },
+
+    // 山海经兽共鸣：装备同名共鸣神兽 2/4/6 只激活（加成：攻击/生命/爆伤）
+    // 数值语义与轮回装备套装一致（再乘以轮回倍率与平均S档倍率）
+    resonanceStatNames: {
+        health: '生命加成',
+        attack: '攻击加成',
+        critDamage: '爆伤加成'
+    },
+    // 品质→共鸣掉落概率
+    resonanceDropChanceByRarity: {
+        '小宠物': 0.02,
+        '野兽': 0.06,
+        '凶兽': 0.15,
+        '灵兽': 0.35,
+        '圣兽': 0.55,
+        '神兽': 0.75,
+        '炁兽': 0.90
+    },
+    resonances: {
+        kui: { name: '夔共鸣', bonuses: { 2: { attack: 1.55 }, 4: { attack: 2.35, critDamage: 1.45 }, 6: { attack: 4.8, critDamage: 2.6 } } },
+        zhulong: { name: '烛龙共鸣', bonuses: { 2: { health: 1.65 }, 4: { health: 2.55, attack: 1.35 }, 6: { health: 5.2, attack: 2.4 } } },
+        yinglong: { name: '应龙共鸣', bonuses: { 2: { attack: 1.40, health: 1.20 }, 4: { attack: 2.20, health: 1.80 }, 6: { attack: 3.8, health: 3.2, critDamage: 1.8 } } },
+        baize: { name: '白泽共鸣', bonuses: { 2: { health: 1.35, critDamage: 1.25 }, 4: { health: 2.10, critDamage: 2.00 }, 6: { health: 3.5, critDamage: 4.2 } } },
+        bifang: { name: '毕方共鸣', bonuses: { 2: { critDamage: 1.70 }, 4: { critDamage: 2.80, attack: 1.40 }, 6: { critDamage: 5.5, attack: 2.8 } } },
+        jingwei: { name: '精卫共鸣', bonuses: { 2: { health: 1.80 }, 4: { health: 2.90 }, 6: { health: 5.8, attack: 1.6 } } },
+        xingtian: { name: '刑天共鸣', bonuses: { 2: { attack: 1.85 }, 4: { attack: 2.95, health: 1.30 }, 6: { attack: 6.0, health: 2.2 } } },
+        xiangliu: { name: '相柳共鸣', bonuses: { 2: { attack: 1.30, critDamage: 1.40 }, 4: { attack: 2.10, critDamage: 2.30 }, 6: { attack: 3.6, critDamage: 4.5 } } },
+        taotie: { name: '饕餮共鸣', bonuses: { 2: { health: 1.50, attack: 1.40 }, 4: { health: 2.40, attack: 2.30 }, 6: { health: 4.0, attack: 4.0 } } },
+        qiongqi: { name: '穷奇共鸣', bonuses: { 2: { critDamage: 1.90 }, 4: { critDamage: 3.10, attack: 1.50 }, 6: { critDamage: 6.2, attack: 2.5 } } },
+        taowu: { name: '梼杌共鸣', bonuses: { 2: { attack: 1.60, health: 1.15 }, 4: { attack: 2.50, health: 1.90 }, 6: { attack: 4.5, health: 3.0, critDamage: 1.5 } } },
+        hundun: { name: '混沌共鸣', bonuses: { 2: { health: 1.25, attack: 1.25, critDamage: 1.15 }, 4: { health: 2.00, attack: 2.00, critDamage: 1.80 }, 6: { health: 3.3, attack: 3.3, critDamage: 3.3 } } },
+        feilian: { name: '蜚廉共鸣', bonuses: { 2: { attack: 1.45 }, 4: { attack: 2.25, critDamage: 1.55 }, 6: { attack: 4.2, critDamage: 3.0 } } },
+        tianwu: { name: '天吴共鸣', bonuses: { 2: { attack: 1.35, health: 1.35 }, 4: { attack: 2.15, health: 2.15 }, 6: { attack: 3.7, health: 3.7, critDamage: 2.0 } } },
+        luwu: { name: '陆吾共鸣', bonuses: { 2: { health: 1.70 }, 4: { health: 2.70, attack: 1.45 }, 6: { health: 5.0, attack: 2.8 } } },
+        kaiming: { name: '开明兽共鸣', bonuses: { 2: { health: 1.55, attack: 1.20 }, 4: { health: 2.45, attack: 1.90 }, 6: { health: 4.3, attack: 3.2, critDamage: 1.7 } } },
+        dangkang: { name: '当康共鸣', bonuses: { 2: { health: 1.40, critDamage: 1.30 }, 4: { health: 2.20, critDamage: 2.10 }, 6: { health: 3.8, critDamage: 3.8, attack: 1.8 } } },
+        chenghuang: { name: '乘黄共鸣', bonuses: { 2: { attack: 1.50, critDamage: 1.20 }, 4: { attack: 2.40, critDamage: 1.90 }, 6: { attack: 4.0, critDamage: 3.5 } } },
+        bo: { name: '驳共鸣', bonuses: { 2: { attack: 1.75 }, 4: { attack: 2.75, critDamage: 1.35 }, 6: { attack: 5.5, critDamage: 2.4 } } },
+        zheng: { name: '狰共鸣', bonuses: { 2: { critDamage: 1.55, attack: 1.25 }, 4: { critDamage: 2.55, attack: 2.00 }, 6: { critDamage: 4.8, attack: 3.4 } } },
+        jiao: { name: '狡共鸣', bonuses: { 2: { health: 1.20, attack: 1.50 }, 4: { health: 1.90, attack: 2.40 }, 6: { health: 3.0, attack: 4.5, critDamage: 1.6 } } },
+        zhuyan: { name: '朱厌共鸣', bonuses: { 2: { attack: 1.65, critDamage: 1.35 }, 4: { attack: 2.60, critDamage: 2.20 }, 6: { attack: 4.6, critDamage: 4.0 } } },
+        yonghe: { name: '雍和共鸣', bonuses: { 2: { health: 1.45, attack: 1.30 }, 4: { health: 2.30, attack: 2.05 }, 6: { health: 3.9, attack: 3.5, critDamage: 1.9 } } },
+        fei: { name: '蜚共鸣', bonuses: { 2: { critDamage: 1.80 }, 4: { critDamage: 2.90, health: 1.40 }, 6: { critDamage: 5.8, health: 2.6 } } },
+        zhuhuai: { name: '诸怀共鸣', bonuses: { 2: { attack: 1.40, health: 1.45 }, 4: { attack: 2.20, health: 2.30 }, 6: { attack: 3.8, health: 4.0 } } },
+        paoxiao: { name: '狍鸮共鸣', bonuses: { 2: { critDamage: 1.60, health: 1.20 }, 4: { critDamage: 2.60, health: 1.95 }, 6: { critDamage: 5.0, health: 3.2 } } },
+        yong: { name: '颙共鸣', bonuses: { 2: { health: 1.55, critDamage: 1.15 }, 4: { health: 2.50, critDamage: 1.85 }, 6: { health: 4.4, critDamage: 3.4, attack: 1.5 } } },
+        huashe: { name: '化蛇共鸣', bonuses: { 2: { attack: 1.30, critDamage: 1.50 }, 4: { attack: 2.05, critDamage: 2.45 }, 6: { attack: 3.5, critDamage: 4.8 } } },
+        pingpeng: { name: '屏蓬共鸣', bonuses: { 2: { health: 1.30, attack: 1.30, critDamage: 1.20 }, 4: { health: 2.05, attack: 2.05, critDamage: 1.90 }, 6: { health: 3.4, attack: 3.4, critDamage: 3.4 } } },
+        erfu: { name: '贰负共鸣', bonuses: { 2: { health: 1.90 }, 4: { health: 3.00, critDamage: 1.30 }, 6: { health: 6.0, critDamage: 2.2 } } },
+        chongming: { name: '重明鸟共鸣', bonuses: { 2: { attack: 1.25, critDamage: 1.55 }, 4: { attack: 2.00, critDamage: 2.50 }, 6: { attack: 3.4, critDamage: 5.0 } } },
+        jiufeng: { name: '九尾狐共鸣', bonuses: { 2: { critDamage: 1.75, health: 1.15 }, 4: { critDamage: 2.85, health: 1.85 }, 6: { critDamage: 5.6, health: 3.0, attack: 1.8 } } },
+        tiangou: { name: '天狗共鸣', bonuses: { 2: { attack: 1.70 }, 4: { attack: 2.70, health: 1.50 }, 6: { attack: 5.2, health: 2.5, critDamage: 2.0 } } },
+        huan: { name: '讙共鸣', bonuses: { 2: { health: 1.35, attack: 1.55 }, 4: { health: 2.15, attack: 2.45 }, 6: { health: 3.6, attack: 4.4 } } },
+        qiyi: { name: '鵸鷊共鸣', bonuses: { 2: { critDamage: 1.45, attack: 1.35 }, 4: { critDamage: 2.35, attack: 2.15 }, 6: { critDamage: 4.4, attack: 3.7 } } },
+        jueru: { name: '玃如共鸣', bonuses: { 2: { health: 1.60, attack: 1.25 }, 4: { health: 2.55, attack: 2.00 }, 6: { health: 4.5, attack: 3.3, critDamage: 1.6 } } },
+        taoqi: { name: '蜪蛇共鸣', bonuses: { 2: { attack: 1.20, health: 1.20, critDamage: 1.40 }, 4: { attack: 1.90, health: 1.90, critDamage: 2.25 }, 6: { attack: 3.2, health: 3.2, critDamage: 4.2 } } },
+        qilinshan: { name: '麒麟共鸣', bonuses: { 2: { attack: 1.80, health: 1.40 }, 4: { attack: 2.85, health: 2.20 }, 6: { attack: 5.0, health: 3.8, critDamage: 2.2 } } },
+        fenghuang: { name: '凤凰共鸣', bonuses: { 2: { critDamage: 1.65, health: 1.30 }, 4: { critDamage: 2.65, health: 2.10 }, 6: { critDamage: 5.2, health: 3.5, attack: 2.0 } } },
+        xuanwu_sh: { name: '玄武山海共鸣', bonuses: { 2: { health: 2.00 }, 4: { health: 3.20 }, 6: { health: 6.5, attack: 1.8 } } },
+        qinglong_sh: { name: '青龙山海共鸣', bonuses: { 2: { attack: 2.00 }, 4: { attack: 3.20 }, 6: { attack: 6.5, critDamage: 1.8 } } },
+        baihu_sh: { name: '白虎山海共鸣', bonuses: { 2: { critDamage: 2.00 }, 4: { critDamage: 3.20, attack: 1.40 }, 6: { critDamage: 6.5, attack: 2.5 } } },
+        zhuque_sh: { name: '朱雀山海共鸣', bonuses: { 2: { attack: 1.45, health: 1.45 }, 4: { attack: 2.30, health: 2.30 }, 6: { attack: 4.0, health: 4.0, critDamage: 2.5 } } },
+        guiche: { name: '鬼车共鸣', bonuses: { 2: { critDamage: 1.85, attack: 1.15 }, 4: { critDamage: 3.00, attack: 1.85 }, 6: { critDamage: 6.0, attack: 3.0 } } },
+        shanjiao: { name: '山椒共鸣', bonuses: { 2: { health: 1.25, attack: 1.60 }, 4: { health: 2.00, attack: 2.55 }, 6: { health: 3.3, attack: 4.8, critDamage: 1.7 } } },
+        toudiao: { name: '橐蜚共鸣', bonuses: { 2: { attack: 1.55, critDamage: 1.30 }, 4: { attack: 2.45, critDamage: 2.10 }, 6: { attack: 4.3, critDamage: 3.8 } } },
+        longyu: { name: '龙鱼共鸣', bonuses: { 2: { health: 1.50, critDamage: 1.35 }, 4: { health: 2.40, critDamage: 2.15 }, 6: { health: 4.1, critDamage: 3.9, attack: 1.9 } } },
+        ranyi: { name: '冉遗鱼共鸣', bonuses: { 2: { health: 1.70, attack: 1.15 }, 4: { health: 2.70, attack: 1.85 }, 6: { health: 4.8, attack: 3.0, critDamage: 1.8 } } },
+        wenyaoyu: { name: '文鳐鱼共鸣', bonuses: { 2: { attack: 1.35, critDamage: 1.45 }, 4: { attack: 2.15, critDamage: 2.35 }, 6: { attack: 3.7, critDamage: 4.3 } } },
+        qiongqi_lie: { name: '猎穷奇共鸣', bonuses: { 2: { attack: 1.90 }, 4: { attack: 3.00, critDamage: 1.60 }, 6: { attack: 5.8, critDamage: 3.2 } } },
+        // —— 增补：更多山海经兽共鸣 ——
+        gu: { name: '蛊雕共鸣', bonuses: { 2: { attack: 1.50, critDamage: 1.40 }, 4: { attack: 2.40, critDamage: 2.30 }, 6: { attack: 4.1, critDamage: 4.2, health: 1.5 } } },
+        aoyin: { name: '敖音共鸣', bonuses: { 2: { health: 1.45, attack: 1.35 }, 4: { health: 2.30, attack: 2.20 }, 6: { health: 3.9, attack: 3.8, critDamage: 1.7 } } },
+        qizhong: { name: '蠃鱼共鸣', bonuses: { 2: { health: 1.55, critDamage: 1.25 }, 4: { health: 2.45, critDamage: 2.05 }, 6: { health: 4.2, critDamage: 3.6, attack: 1.6 } } },
+        shantu: { name: '䑏疏共鸣', bonuses: { 2: { attack: 1.60 }, 4: { attack: 2.55, health: 1.40 }, 6: { attack: 4.7, health: 2.4, critDamage: 1.9 } } },
+        tiaoyong: { name: '䖺鱅共鸣', bonuses: { 2: { health: 1.65 }, 4: { health: 2.60, critDamage: 1.35 }, 6: { health: 4.9, critDamage: 2.5, attack: 1.7 } } },
+        heyu: { name: '何罗鱼共鸣', bonuses: { 2: { attack: 1.25, health: 1.40, critDamage: 1.20 }, 4: { attack: 2.00, health: 2.20, critDamage: 1.90 }, 6: { attack: 3.4, health: 3.6, critDamage: 3.4 } } },
+        xiu: { name: '鸓共鸣', bonuses: { 2: { critDamage: 1.70 }, 4: { critDamage: 2.75, attack: 1.35 }, 6: { critDamage: 5.4, attack: 2.6 } } },
+        shuhu: { name: '孰湖共鸣', bonuses: { 2: { health: 1.50, attack: 1.30 }, 4: { health: 2.40, attack: 2.10 }, 6: { health: 4.1, attack: 3.5, critDamage: 1.8 } } },
+        ju: { name: '举父共鸣', bonuses: { 2: { attack: 1.70, health: 1.20 }, 4: { attack: 2.70, health: 1.95 }, 6: { attack: 5.0, health: 3.1, critDamage: 1.6 } } },
+        congcong: { name: '从从共鸣', bonuses: { 2: { attack: 1.40, critDamage: 1.35 }, 4: { attack: 2.25, critDamage: 2.20 }, 6: { attack: 3.9, critDamage: 4.0 } } },
+        qiongshu: { name: '穷奇兽骨共鸣', bonuses: { 2: { critDamage: 1.95 }, 4: { critDamage: 3.15, health: 1.25 }, 6: { critDamage: 6.3, health: 2.3, attack: 1.8 } } },
+        shanhao: { name: '山膏共鸣', bonuses: { 2: { health: 1.75 }, 4: { health: 2.80, attack: 1.35 }, 6: { health: 5.3, attack: 2.5 } } },
+        tianshen: { name: '天神兽共鸣', bonuses: { 2: { attack: 1.55, health: 1.55 }, 4: { attack: 2.45, health: 2.45 }, 6: { attack: 4.2, health: 4.2, critDamage: 2.4 } } },
+        yingzhao: { name: '英招共鸣', bonuses: { 2: { attack: 1.45, critDamage: 1.45 }, 4: { attack: 2.30, critDamage: 2.35 }, 6: { attack: 4.0, critDamage: 4.3, health: 1.6 } } },
+        qifu: { name: '祈父共鸣', bonuses: { 2: { health: 1.60, critDamage: 1.20 }, 4: { health: 2.55, critDamage: 1.95 }, 6: { health: 4.5, critDamage: 3.5, attack: 1.7 } } },
+        changyou: { name: '长右共鸣', bonuses: { 2: { attack: 1.35, health: 1.50 }, 4: { attack: 2.15, health: 2.40 }, 6: { attack: 3.7, health: 4.1, critDamage: 1.8 } } },
+        zhujian: { name: '诸犍共鸣', bonuses: { 2: { attack: 1.80 }, 4: { attack: 2.85, critDamage: 1.40 }, 6: { attack: 5.4, critDamage: 2.7 } } },
+        aosi: { name: '傲狮共鸣', bonuses: { 2: { attack: 1.65, health: 1.25 }, 4: { attack: 2.60, health: 2.00 }, 6: { attack: 4.7, health: 3.2, critDamage: 2.0 } } },
+        xuanfeng: { name: '玄蜂共鸣', bonuses: { 2: { critDamage: 1.55, attack: 1.30 }, 4: { critDamage: 2.50, attack: 2.10 }, 6: { critDamage: 4.7, attack: 3.6 } } },
+        shizi: { name: '狮兕共鸣', bonuses: { 2: { health: 1.40, attack: 1.55 }, 4: { health: 2.25, attack: 2.45 }, 6: { health: 3.8, attack: 4.3, critDamage: 1.7 } } },
+        fuzhu: { name: '夫诸共鸣', bonuses: { 2: { health: 1.85 }, 4: { health: 2.95, critDamage: 1.40 }, 6: { health: 5.7, critDamage: 2.6, attack: 1.5 } } },
+        menghuai: { name: '孟槐共鸣', bonuses: { 2: { health: 1.55, attack: 1.25 }, 4: { health: 2.45, attack: 2.00 }, 6: { health: 4.3, attack: 3.3, critDamage: 1.9 } } },
+        tianma: { name: '天马共鸣', bonuses: { 2: { attack: 1.50, critDamage: 1.50 }, 4: { attack: 2.40, critDamage: 2.40 }, 6: { attack: 4.2, critDamage: 4.2, health: 2.0 } } },
+        feiyi: { name: '肥遗共鸣', bonuses: { 2: { critDamage: 1.75, health: 1.20 }, 4: { critDamage: 2.80, health: 1.90 }, 6: { critDamage: 5.5, health: 3.1, attack: 1.6 } } },
+        bashe: { name: '巴蛇共鸣', bonuses: { 2: { attack: 1.55, health: 1.40 }, 4: { attack: 2.45, health: 2.25 }, 6: { attack: 4.3, health: 3.8, critDamage: 2.2 } } },
+        goumang: { name: '句芒共鸣', bonuses: { 2: { health: 1.70, attack: 1.20 }, 4: { health: 2.70, attack: 1.95 }, 6: { health: 4.9, attack: 3.2, critDamage: 1.8 } } },
+        rushou: { name: '蓐收共鸣', bonuses: { 2: { attack: 1.75, critDamage: 1.25 }, 4: { attack: 2.75, critDamage: 2.05 }, 6: { attack: 5.1, critDamage: 3.6 } } },
+        zhurong: { name: '祝融兽共鸣', bonuses: { 2: { critDamage: 1.85, attack: 1.30 }, 4: { critDamage: 2.95, attack: 2.10 }, 6: { critDamage: 5.9, attack: 3.5, health: 1.5 } } },
+        gonggong: { name: '共工兽共鸣', bonuses: { 2: { health: 1.80, attack: 1.30 }, 4: { health: 2.85, attack: 2.10 }, 6: { health: 5.4, attack: 3.5, critDamage: 1.9 } } },
+        xuanming: { name: '玄冥兽共鸣', bonuses: { 2: { health: 1.95 }, 4: { health: 3.10, critDamage: 1.25 }, 6: { health: 6.2, critDamage: 2.4 } } },
+        gouchen: { name: '勾陈兽共鸣', bonuses: { 2: { attack: 1.40, health: 1.40, critDamage: 1.30 }, 4: { attack: 2.20, health: 2.20, critDamage: 2.10 }, 6: { attack: 3.7, health: 3.7, critDamage: 3.7 } } },
+        jiuwei_yu: { name: '九尾鱼共鸣', bonuses: { 2: { critDamage: 1.50, health: 1.35 }, 4: { critDamage: 2.45, health: 2.15 }, 6: { critDamage: 4.6, health: 3.6, attack: 1.8 } } },
+        shuangtou_she: { name: '两头蛇共鸣', bonuses: { 2: { attack: 1.30, critDamage: 1.55 }, 4: { attack: 2.10, critDamage: 2.50 }, 6: { attack: 3.6, critDamage: 4.7 } } },
+        sanzu_wu: { name: '三足乌共鸣', bonuses: { 2: { attack: 1.60, critDamage: 1.40 }, 4: { attack: 2.55, critDamage: 2.25 }, 6: { attack: 4.5, critDamage: 4.0, health: 1.6 } } },
+        yutu: { name: '玉兔兽共鸣', bonuses: { 2: { health: 1.50, critDamage: 1.40 }, 4: { health: 2.40, critDamage: 2.25 }, 6: { health: 4.1, critDamage: 4.0, attack: 1.7 } } },
+        jinwu: { name: '金乌共鸣', bonuses: { 2: { attack: 1.85, critDamage: 1.35 }, 4: { attack: 2.90, critDamage: 2.20 }, 6: { attack: 5.5, critDamage: 3.9 } } },
+        changxi: { name: '常羲兽共鸣', bonuses: { 2: { health: 1.65, critDamage: 1.30 }, 4: { health: 2.60, critDamage: 2.10 }, 6: { health: 4.6, critDamage: 3.7, attack: 1.8 } } },
+        xihe: { name: '羲和兽共鸣', bonuses: { 2: { attack: 1.55, health: 1.45 }, 4: { attack: 2.45, health: 2.30 }, 6: { attack: 4.3, health: 3.9, critDamage: 2.3 } } },
+        diguang: { name: '帝江共鸣', bonuses: { 2: { health: 1.35, attack: 1.35, critDamage: 1.35 }, 4: { health: 2.15, attack: 2.15, critDamage: 2.15 }, 6: { health: 3.6, attack: 3.6, critDamage: 3.6 } } },
+        hun_dun_gu: { name: '浑敦共鸣', bonuses: { 2: { health: 1.40, attack: 1.40 }, 4: { health: 2.25, attack: 2.25, critDamage: 1.50 }, 6: { health: 3.8, attack: 3.8, critDamage: 3.0 } } },
+        taowu_lie: { name: '厉梼杌共鸣', bonuses: { 2: { attack: 1.95 }, 4: { attack: 3.05, health: 1.40 }, 6: { attack: 5.9, health: 2.6, critDamage: 2.1 } } },
+        taotie_shi: { name: '噬饕餮共鸣', bonuses: { 2: { health: 1.60, attack: 1.60 }, 4: { health: 2.55, attack: 2.55 }, 6: { health: 4.5, attack: 4.5, critDamage: 2.0 } } },
+        qiongqi_feng: { name: '风穷奇共鸣', bonuses: { 2: { critDamage: 1.80, attack: 1.40 }, 4: { critDamage: 2.90, attack: 2.25 }, 6: { critDamage: 5.7, attack: 3.8 } } },
+        xuanwu_gui: { name: '玄龟共鸣', bonuses: { 2: { health: 2.10 }, 4: { health: 3.30 }, 6: { health: 6.8, attack: 1.5, critDamage: 1.2 } } },
+        qingqiu: { name: '青丘狐共鸣', bonuses: { 2: { critDamage: 1.70, health: 1.25 }, 4: { critDamage: 2.75, health: 2.00 }, 6: { critDamage: 5.3, health: 3.3, attack: 2.0 } } },
+        tumu: { name: '土蝼共鸣', bonuses: { 2: { health: 1.70, attack: 1.15 }, 4: { health: 2.70, attack: 1.85 }, 6: { health: 4.9, attack: 3.0, critDamage: 1.6 } } },
+        huanhuai: { name: '讙怀共鸣', bonuses: { 2: { attack: 1.45, health: 1.45 }, 4: { attack: 2.30, health: 2.30 }, 6: { attack: 4.0, health: 4.0, critDamage: 2.1 } } },
+        ziyu: { name: '兹鱼共鸣', bonuses: { 2: { health: 1.45, critDamage: 1.45 }, 4: { health: 2.30, critDamage: 2.30 }, 6: { health: 3.9, critDamage: 4.1, attack: 1.7 } } },
+        shanjiao_gu: { name: '山膏虎共鸣', bonuses: { 2: { attack: 1.55, health: 1.35 }, 4: { attack: 2.45, health: 2.15 }, 6: { attack: 4.3, health: 3.6, critDamage: 1.8 } } },
+        feiyi_niao: { name: '蜚鸟共鸣', bonuses: { 2: { critDamage: 1.65, attack: 1.20 }, 4: { critDamage: 2.65, attack: 1.95 }, 6: { critDamage: 5.1, attack: 3.3 } } },
+        youchao: { name: '有巢兽共鸣', bonuses: { 2: { health: 1.80 }, 4: { health: 2.85, attack: 1.40 }, 6: { health: 5.5, attack: 2.6, critDamage: 1.5 } } },
+        suiren: { name: '燧人兽共鸣', bonuses: { 2: { attack: 1.50, critDamage: 1.50 }, 4: { attack: 2.40, critDamage: 2.45 }, 6: { attack: 4.2, critDamage: 4.5, health: 1.6 } } },
+        fuxi_shou: { name: '伏羲兽共鸣', bonuses: { 2: { health: 1.50, attack: 1.50, critDamage: 1.20 }, 4: { health: 2.35, attack: 2.35, critDamage: 1.95 }, 6: { health: 4.0, attack: 4.0, critDamage: 3.5 } } },
+        nuwa_shou: { name: '女娲兽共鸣', bonuses: { 2: { health: 1.90, critDamage: 1.20 }, 4: { health: 3.00, critDamage: 1.95 }, 6: { health: 5.8, critDamage: 3.4, attack: 2.0 } } },
+        pangu_shou: { name: '盘古兽共鸣', bonuses: { 2: { attack: 1.70, health: 1.70 }, 4: { attack: 2.70, health: 2.70 }, 6: { attack: 4.8, health: 4.8, critDamage: 2.8 } } },
+        kunpeng: { name: '鲲鹏共鸣', bonuses: { 2: { attack: 1.60, health: 1.50 }, 4: { attack: 2.55, health: 2.40 }, 6: { attack: 4.5, health: 4.1, critDamage: 2.5 } } },
+        taixu: { name: '太虚兽共鸣', bonuses: { 2: { health: 1.30, attack: 1.30, critDamage: 1.50 }, 4: { health: 2.10, attack: 2.10, critDamage: 2.40 }, 6: { health: 3.5, attack: 3.5, critDamage: 4.5 } } },
+        hongmeng: { name: '鸿蒙兽共鸣', bonuses: { 2: { health: 1.55, attack: 1.55, critDamage: 1.25 }, 4: { health: 2.45, attack: 2.45, critDamage: 2.00 }, 6: { health: 4.2, attack: 4.2, critDamage: 3.6 } } },
+        wuji: { name: '无极兽共鸣', bonuses: { 2: { critDamage: 1.90 }, 4: { critDamage: 3.05, attack: 1.55 }, 6: { critDamage: 6.1, attack: 2.9, health: 1.8 } } },
+        zhenwu: { name: '真武兽共鸣', bonuses: { 2: { health: 1.85, attack: 1.25 }, 4: { health: 2.90, attack: 2.05 }, 6: { health: 5.5, attack: 3.4, critDamage: 2.0 } } }
     }
 };
 
 // 轮回神兽穿戴：S11+ 需满足 minHuaSheng（与轮回装备 T11+ 规则一致）
-const BEAST_S_LEVEL_ORDER = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'S11', 'S12', 'S13', 'S14', 'S15'];
+const BEAST_S_LEVEL_ORDER = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'S11', 'S12', 'S13', 'S14', 'S15', 'S16', 'S17', 'S18', 'S19', 'S20'];
 var BEAST_RARITY_ORDER = ['小宠物', '野兽', '凶兽', '灵兽', '圣兽', '神兽', '炁兽'];
+
+/** 按品质概率抽取山海共鸣（无共鸣返回 null） */
+function rollBeastResonance(rarity) {
+    if (!beastConfig || !beastConfig.resonances) return null;
+    var chanceMap = beastConfig.resonanceDropChanceByRarity || {};
+    var chance = chanceMap[rarity];
+    if (chance == null) chance = 0.05;
+    if (Math.random() >= chance) return null;
+    var keys = Object.keys(beastConfig.resonances);
+    if (!keys.length) return null;
+    return keys[Math.floor(Math.random() * keys.length)];
+}
+
+/** 抽取上古血脉（额外品质）；无则返回 null。返回 { key, name, bonus, color, desc } */
+function rollAncientBloodline(rarity) {
+    if (!beastConfig || !beastConfig.ancientBloodlines) return null;
+    var chanceMap = beastConfig.bloodlineDropChanceByRarity || {};
+    var chance = chanceMap[rarity];
+    if (chance == null) chance = 0.05;
+    if (Math.random() >= chance) return null;
+    var lines = beastConfig.ancientBloodlines;
+    var weights = {};
+    Object.keys(lines).forEach(function (k) {
+        weights[k] = lines[k].weight != null ? lines[k].weight : 1;
+    });
+    var key = (typeof weightedRandomSelection === 'function')
+        ? weightedRandomSelection(weights)
+        : Object.keys(lines)[Math.floor(Math.random() * Object.keys(lines).length)];
+    if (!key || !lines[key]) return null;
+    var cfg = lines[key];
+    return {
+        key: key,
+        name: cfg.name,
+        bonus: Number(cfg.bonus) || 0,
+        color: cfg.color || '#FFD700',
+        desc: cfg.desc || ''
+    };
+}
+
+function getAncientBloodlineConfig(key) {
+    if (!key || !beastConfig || !beastConfig.ancientBloodlines) return null;
+    return beastConfig.ancientBloodlines[key] || null;
+}
+
+function getAncientBloodlineName(key) {
+    var cfg = getAncientBloodlineConfig(key);
+    return cfg ? cfg.name : '';
+}
+
+/** 血脉加成比例（0.1=+10%）；兼容旧数据对象或 key */
+function getAncientBloodlineBonus(beast) {
+    if (!beast || !beast.bloodline) return 0;
+    if (typeof beast.bloodline === 'object' && beast.bloodline.bonus != null) {
+        return Number(beast.bloodline.bonus) || 0;
+    }
+    var cfg = getAncientBloodlineConfig(beast.bloodline);
+    return cfg ? (Number(cfg.bonus) || 0) : 0;
+}
+
+function getAncientBloodlineMult(beast) {
+    return 1 + getAncientBloodlineBonus(beast);
+}
+
+/** 彩色字种类（10种）：按种子稳定取色，避免刷新乱跳 */
+var BEAST_FX_COLOR_COUNT = 10;
+function getBeastFxColorClass(seed) {
+    var s = String(seed == null ? '' : seed);
+    var h = 0;
+    for (var i = 0; i < s.length; i++) {
+        h = ((h << 5) - h) + s.charCodeAt(i);
+        h |= 0;
+    }
+    return 'beast-fx-c' + (Math.abs(h) % BEAST_FX_COLOR_COUNT);
+}
+
+function formatBeastFxText(text, seed) {
+    return '<span class="' + getBeastFxColorClass(seed || text) + '">' + text + '</span>';
+}
+
+function formatAncientBloodlineTag(beast) {
+    if (!beast || !beast.bloodline) return '';
+    var name = '';
+    var bonus = 0;
+    var key = '';
+    if (typeof beast.bloodline === 'object') {
+        key = beast.bloodline.key || beast.bloodline.name || '';
+        name = beast.bloodline.name || getAncientBloodlineName(beast.bloodline.key);
+        bonus = Number(beast.bloodline.bonus) || 0;
+    } else {
+        var cfg = getAncientBloodlineConfig(beast.bloodline);
+        if (!cfg) return '';
+        key = beast.bloodline;
+        name = cfg.name;
+        bonus = Number(cfg.bonus) || 0;
+    }
+    if (!name) return '';
+    return '<span class="beast-fx-tag ' + getBeastFxColorClass('bl:' + key + ':' + name) + '">🩸 ' + name + ' +' + (bonus * 100).toFixed(0) + '%</span>';
+}
+
+/** 抽取神格（高品质低概率）；无则返回 null */
+function rollBeastDivinity(rarity) {
+    if (!beastConfig || !beastConfig.divinities) return null;
+    var chanceMap = beastConfig.divinityDropChanceByRarity || {};
+    var chance = chanceMap[rarity];
+    if (chance == null || chance <= 0) return null;
+    if (Math.random() >= chance) return null;
+    var lines = beastConfig.divinities;
+    var weights = {};
+    Object.keys(lines).forEach(function (k) {
+        weights[k] = lines[k].weight != null ? lines[k].weight : 1;
+    });
+    var key = (typeof weightedRandomSelection === 'function')
+        ? weightedRandomSelection(weights)
+        : Object.keys(lines)[Math.floor(Math.random() * Object.keys(lines).length)];
+    if (!key || !lines[key]) return null;
+    var cfg = lines[key];
+    return {
+        key: key,
+        name: cfg.name,
+        bonus: Number(cfg.bonus) || 0,
+        color: cfg.color || '#FFD700',
+        desc: cfg.desc || ''
+    };
+}
+
+function getBeastDivinityConfig(key) {
+    if (!key || !beastConfig || !beastConfig.divinities) return null;
+    return beastConfig.divinities[key] || null;
+}
+
+function getBeastDivinityName(key) {
+    var cfg = getBeastDivinityConfig(key);
+    return cfg ? cfg.name : '';
+}
+
+function getBeastDivinityBonus(beast) {
+    if (!beast || !beast.divinity) return 0;
+    if (typeof beast.divinity === 'object' && beast.divinity.bonus != null) {
+        return Number(beast.divinity.bonus) || 0;
+    }
+    var cfg = getBeastDivinityConfig(beast.divinity);
+    return cfg ? (Number(cfg.bonus) || 0) : 0;
+}
+
+function formatBeastDivinityTag(beast) {
+    if (!beast || !beast.divinity) return '';
+    var name = '';
+    var bonus = 0;
+    var key = '';
+    if (typeof beast.divinity === 'object') {
+        key = beast.divinity.key || beast.divinity.name || '';
+        name = beast.divinity.name || getBeastDivinityName(beast.divinity.key);
+        bonus = Number(beast.divinity.bonus) || 0;
+    } else {
+        var cfg = getBeastDivinityConfig(beast.divinity);
+        if (!cfg) return '';
+        key = beast.divinity;
+        name = cfg.name;
+        bonus = Number(cfg.bonus) || 0;
+    }
+    if (!name) return '';
+    return '<span class="beast-fx-tag ' + getBeastFxColorClass('dv:' + key + ':' + name) + '">✦ ' + name + ' +' + (bonus * 100).toFixed(0) + '%</span>';
+}
+
+function formatBeastResonanceTag(resonanceKey) {
+    if (!resonanceKey || typeof getBeastResonanceConfig !== 'function' || !getBeastResonanceConfig(resonanceKey)) return '';
+    var name = getBeastResonanceName(resonanceKey) || String(resonanceKey);
+    return '<span class="beast-fx-tag ' + getBeastFxColorClass('rs:' + resonanceKey) + '">☯ ' + name + '</span>';
+}
+
+function getBeastResonanceConfig(key) {
+    if (!key || !beastConfig || !beastConfig.resonances) return null;
+    return beastConfig.resonances[key] || null;
+}
+
+function getBeastResonanceName(key) {
+    var cfg = getBeastResonanceConfig(key);
+    return cfg ? cfg.name : '';
+}
+
+function parseBeastSLevelNumber(sLevel) {
+    if (!sLevel) return 1;
+    var n = parseInt(String(sLevel).replace(/^S/i, ''), 10);
+    return isNaN(n) ? 1 : Math.max(1, n);
+}
+
+/** 与轮回装备套装相同：每轮回转 ×300 */
+function getBeastResonanceAscensionMult() {
+    return 1 + ((Number(player.level && player.level.ascentionCounta) || 0) * 300);
+}
+
+/** 平均 S：S5 及以下 ×1；每高 1 档再 ×120 */
+function getBeastResonanceSLevelMult(avgS) {
+    var s = Number(avgS) || 1;
+    return 1 + Math.max(0, s - 5) * 120;
+}
+
+function collectEquippedBeastResonances() {
+    var map = {}; // key -> { count, sSum }
+    if (!player.beasts || !Array.isArray(player.beasts.equipped)) return map;
+    player.beasts.equipped.forEach(function (beastId) {
+        var beast = player.beasts.inventory && player.beasts.inventory.find(function (b) { return b.id === beastId; });
+        if (!beast || !beast.resonance) return;
+        if (typeof playerCanEquipBeast === 'function' && !playerCanEquipBeast(beast)) return;
+        var key = beast.resonance;
+        if (!map[key]) map[key] = { count: 0, sSum: 0 };
+        map[key].count += 1;
+        map[key].sSum += parseBeastSLevelNumber(beast.sLevel);
+    });
+    return map;
+}
+
+function addScaledBeastResonanceStats(target, bonuses, scale) {
+    Object.keys(bonuses).forEach(function (stat) {
+        if (target[stat] == null) target[stat] = 0;
+        target[stat] += bonuses[stat] * scale;
+    });
+}
+
+/** 已装备神兽山海共鸣加成（不含词条与共享等级） */
+function calculateBeastResonanceBonuses() {
+    var totals = { health: 0, attack: 0, critDamage: 0 };
+    if (!beastConfig || !beastConfig.resonances) return totals;
+    var equipped = collectEquippedBeastResonances();
+    var ascMult = getBeastResonanceAscensionMult();
+    Object.keys(equipped).forEach(function (key) {
+        var info = equipped[key];
+        var setCfg = beastConfig.resonances[key];
+        if (!setCfg || !setCfg.bonuses) return;
+        var avgS = info.sSum / Math.max(1, info.count);
+        var scale = ascMult * getBeastResonanceSLevelMult(avgS);
+        Object.keys(setCfg.bonuses).forEach(function (pieceKey) {
+            var need = parseInt(pieceKey, 10);
+            if (info.count >= need) {
+                addScaledBeastResonanceStats(totals, setCfg.bonuses[pieceKey], scale);
+            }
+        });
+    });
+    return totals;
+}
 function getBeastRarityOrderSafe() {
     return (typeof BEAST_RARITY_ORDER !== 'undefined' && BEAST_RARITY_ORDER && BEAST_RARITY_ORDER.length)
         ? BEAST_RARITY_ORDER
@@ -5807,7 +7064,7 @@ function getBeastRarityOrderSafe() {
 function getBeastSLevelOrderSafe() {
     return (typeof BEAST_S_LEVEL_ORDER !== 'undefined' && BEAST_S_LEVEL_ORDER && BEAST_S_LEVEL_ORDER.length)
         ? BEAST_S_LEVEL_ORDER
-        : ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'S11', 'S12', 'S13', 'S14', 'S15'];
+        : ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'S11', 'S12', 'S13', 'S14', 'S15', 'S16', 'S17', 'S18', 'S19', 'S20'];
 }
 if (window.__pendingBeastInventorySync && typeof syncBeastInventoryCaps === 'function') {
     try { syncBeastInventoryCaps(); } catch (e) { console.warn('syncBeastInventoryCaps deferred', e); }
@@ -6110,6 +7367,185 @@ var SUPREME_SLOT_UI_ORDER = [
 
 var SUPREME_BAG_MAX = 150;
 
+/**
+ * 武魂共鸣套装（30种）：掉落时低概率附带，品质越高越易出。
+ * 穿戴同名武魂 3/6/9/12 件激活套装加成（生命/攻击/爆伤，再乘平均S与品质倍率）。
+ */
+var SUPREME_WUHUN_STAT_NAMES = { health: '生命加成', attack: '攻击加成', critDamage: '爆伤加成' };
+var SUPREME_WUHUN_DROP_CHANCE_BY_TIER = { 0: 0.02, 1: 0.05, 2: 0.10, 3: 0.18, 4: 0.32, 5: 0.48, 6: 0.65 };
+var SUPREME_WUHUN_RESONANCES = {
+    lanyin: { name: '蓝银皇魂', bonuses: { 3: { health: 1.80 }, 6: { health: 3.20, attack: 1.40 }, 9: { health: 5.50, attack: 2.40 }, 12: { health: 8.80, attack: 3.60, critDamage: 2.20 } } },
+    haotian: { name: '昊天锤魂', bonuses: { 3: { attack: 1.90 }, 6: { attack: 3.40, critDamage: 1.50 }, 9: { attack: 5.80, critDamage: 2.60 }, 12: { attack: 9.20, critDamage: 4.00, health: 2.00 } } },
+    rougu: { name: '柔骨兔魂', bonuses: { 3: { critDamage: 1.85 }, 6: { critDamage: 3.30, attack: 1.35 }, 9: { critDamage: 5.60, attack: 2.30 }, 12: { critDamage: 9.00, attack: 3.50, health: 1.80 } } },
+    xiehuo: { name: '邪火凰魂', bonuses: { 3: { attack: 1.45, critDamage: 1.45 }, 6: { attack: 2.50, critDamage: 2.50 }, 9: { attack: 4.20, critDamage: 4.20 }, 12: { attack: 6.80, critDamage: 6.80, health: 2.40 } } },
+    qisha: { name: '七杀剑魂', bonuses: { 3: { attack: 2.05 }, 6: { attack: 3.60, health: 1.25 }, 9: { attack: 6.10, health: 2.10 }, 12: { attack: 9.80, health: 3.40, critDamage: 2.80 } } },
+    jiubao: { name: '九宝琉璃', bonuses: { 3: { health: 1.35, attack: 1.35, critDamage: 1.20 }, 6: { health: 2.30, attack: 2.30, critDamage: 2.00 }, 9: { health: 3.80, attack: 3.80, critDamage: 3.40 }, 12: { health: 6.00, attack: 6.00, critDamage: 5.60 } } },
+    baihu: { name: '白虎王魂', bonuses: { 3: { health: 1.50, critDamage: 1.40 }, 6: { health: 2.60, critDamage: 2.40 }, 9: { health: 4.40, critDamage: 4.10 }, 12: { health: 7.00, critDamage: 6.60, attack: 2.50 } } },
+    youming: { name: '幽冥白虎', bonuses: { 3: { critDamage: 2.00 }, 6: { critDamage: 3.55, health: 1.30 }, 9: { critDamage: 6.00, health: 2.20 }, 12: { critDamage: 9.60, health: 3.50, attack: 2.20 } } },
+    tianshi: { name: '六翼天使', bonuses: { 3: { health: 2.10 }, 6: { health: 3.70, attack: 1.45 }, 9: { health: 6.20, attack: 2.50 }, 12: { health: 9.90, attack: 4.00, critDamage: 2.00 } } },
+    luocha: { name: '罗刹魔魂', bonuses: { 3: { attack: 1.40, critDamage: 1.70 }, 6: { attack: 2.40, critDamage: 2.95 }, 9: { attack: 4.00, critDamage: 5.00 }, 12: { attack: 6.40, critDamage: 8.00, health: 2.20 } } },
+    gulong: { name: '骨龙魂', bonuses: { 3: { health: 1.95 }, 6: { health: 3.45, critDamage: 1.40 }, 9: { health: 5.90, critDamage: 2.40 }, 12: { health: 9.40, critDamage: 3.80, attack: 2.60 } } },
+    shemao: { name: '蛇矛魂', bonuses: { 3: { attack: 1.75, health: 1.20 }, 6: { attack: 3.05, health: 2.00 }, 9: { attack: 5.20, health: 3.40 }, 12: { attack: 8.30, health: 5.40, critDamage: 2.40 } } },
+    anjin: { name: '暗金恐爪', bonuses: { 3: { critDamage: 1.70, attack: 1.30 }, 6: { critDamage: 2.95, attack: 2.20 }, 9: { critDamage: 5.00, attack: 3.70 }, 12: { critDamage: 8.00, attack: 5.90, health: 2.00 } } },
+    luxifa: { name: '路西法翼', bonuses: { 3: { attack: 1.55, critDamage: 1.55 }, 6: { attack: 2.70, critDamage: 2.70 }, 9: { attack: 4.50, critDamage: 4.50 }, 12: { attack: 7.20, critDamage: 7.20, health: 2.80 } } },
+    xiuluo: { name: '修罗神念', bonuses: { 3: { attack: 1.60, health: 1.30, critDamage: 1.30 }, 6: { attack: 2.70, health: 2.20, critDamage: 2.20 }, 9: { attack: 4.50, health: 3.70, critDamage: 3.70 }, 12: { attack: 7.20, health: 5.90, critDamage: 5.90 } } },
+    haishen: { name: '海神戟魂', bonuses: { 3: { attack: 1.85, health: 1.35 }, 6: { attack: 3.25, health: 2.30 }, 9: { attack: 5.50, health: 3.90 }, 12: { attack: 8.80, health: 6.20, critDamage: 2.60 } } },
+    siwang: { name: '死亡蛛皇', bonuses: { 3: { critDamage: 1.75, health: 1.35 }, 6: { critDamage: 3.05, health: 2.30 }, 9: { critDamage: 5.20, health: 3.90 }, 12: { critDamage: 8.30, health: 6.20, attack: 2.40 } } },
+    taitan: { name: '泰坦巨猿', bonuses: { 3: { health: 1.70, attack: 1.50 }, 6: { health: 2.95, attack: 2.55 }, 9: { health: 5.00, attack: 4.30 }, 12: { health: 8.00, attack: 6.90, critDamage: 2.20 } } },
+    fenghuang: { name: '凤凰神焰', bonuses: { 3: { critDamage: 1.90, attack: 1.40 }, 6: { critDamage: 3.35, attack: 2.40 }, 9: { critDamage: 5.70, attack: 4.00 }, 12: { critDamage: 9.10, attack: 6.40, health: 2.50 } } },
+    longni: { name: '龙神逆鳞', bonuses: { 3: { health: 1.60, critDamage: 1.50 }, 6: { health: 2.75, critDamage: 2.55 }, 9: { health: 4.60, critDamage: 4.30 }, 12: { health: 7.40, critDamage: 6.90, attack: 3.00 } } },
+    jiandou: { name: '剑斗罗魂', bonuses: { 3: { attack: 1.80 }, 6: { attack: 3.15, critDamage: 1.55 }, 9: { attack: 5.35, critDamage: 2.65 }, 12: { attack: 8.50, critDamage: 4.20, health: 2.30 } } },
+    shishen: { name: '食神魂', bonuses: { 3: { health: 2.00 }, 6: { health: 3.50, attack: 1.30 }, 9: { health: 5.95, attack: 2.20 }, 12: { health: 9.50, attack: 3.50, critDamage: 1.90 } } },
+    jifeng: { name: '疾风敏魂', bonuses: { 3: { attack: 1.50, critDamage: 1.60 }, 6: { attack: 2.55, critDamage: 2.75 }, 9: { attack: 4.30, critDamage: 4.65 }, 12: { attack: 6.90, critDamage: 7.40, health: 1.90 } } },
+    liekong: { name: '裂空强攻', bonuses: { 3: { attack: 2.15 }, 6: { attack: 3.75, health: 1.20 }, 9: { attack: 6.35, health: 2.00 }, 12: { attack: 10.10, health: 3.20, critDamage: 3.00 } } },
+    mizhang: { name: '迷障控魂', bonuses: { 3: { health: 1.55, critDamage: 1.35 }, 6: { health: 2.65, critDamage: 2.30 }, 9: { health: 4.50, critDamage: 3.90 }, 12: { health: 7.20, critDamage: 6.20, attack: 2.80 } } },
+    minghun: { name: '命魂辅助', bonuses: { 3: { health: 1.65, attack: 1.25 }, 6: { health: 2.85, attack: 2.10 }, 9: { health: 4.80, attack: 3.50 }, 12: { health: 7.70, attack: 5.60, critDamage: 2.50 } } },
+    tianzhu: { name: '器武天铸', bonuses: { 3: { health: 1.40, attack: 1.40 }, 6: { health: 2.40, attack: 2.40, critDamage: 1.50 }, 9: { health: 4.00, attack: 4.00, critDamage: 2.60 }, 12: { health: 6.40, attack: 6.40, critDamage: 4.20 } } },
+    benti: { name: '本体觉醒', bonuses: { 3: { health: 1.45, attack: 1.45, critDamage: 1.45 }, 6: { health: 2.45, attack: 2.45, critDamage: 2.45 }, 9: { health: 4.10, attack: 4.10, critDamage: 4.10 }, 12: { health: 6.60, attack: 6.60, critDamage: 6.60 } } },
+    zhenshen: { name: '武魂真身', bonuses: { 3: { health: 1.70, attack: 1.70, critDamage: 1.50 }, 6: { health: 2.90, attack: 2.90, critDamage: 2.55 }, 9: { health: 4.90, attack: 4.90, critDamage: 4.30 }, 12: { health: 7.80, attack: 7.80, critDamage: 6.90 } } },
+    shuangsheng: { name: '双生武魂', bonuses: { 3: { attack: 1.65, critDamage: 1.65 }, 6: { attack: 2.80, critDamage: 2.80, health: 1.50 }, 9: { attack: 4.70, critDamage: 4.70, health: 2.60 }, 12: { attack: 7.50, critDamage: 7.50, health: 4.20 } } }
+};
+
+function parseSupremeSLevelNumber(sLevel) {
+    var m = String(sLevel == null ? 'S1' : sLevel).match(/(\d+)/);
+    return m ? Math.max(1, parseInt(m[1], 10) || 1) : 1;
+}
+
+function getSupremeWuhunConfig(key) {
+    if (!key || !SUPREME_WUHUN_RESONANCES) return null;
+    return SUPREME_WUHUN_RESONANCES[key] || null;
+}
+
+function getSupremeWuhunName(key, fallbackName) {
+    var cfg = getSupremeWuhunConfig(key);
+    if (cfg && cfg.name) return cfg.name;
+    return fallbackName || key || '';
+}
+
+/** 平均 S：S5 及以下 ×1；每高 1 档再 ×120（对齐山海共鸣量级） */
+function getSupremeWuhunSLevelMult(avgS) {
+    var s = Number(avgS) || 1;
+    return 1 + Math.max(0, s - 5) * 120;
+}
+
+/** 平均品质：每档再 ×80 */
+function getSupremeWuhunQualityMult(avgQ) {
+    var q = Number(avgQ) || 0;
+    return 1 + Math.max(0, q) * 80;
+}
+
+function collectEquippedSupremeWuhun() {
+    var map = {};
+    var eq = window._supremeArtifactsCache && window._supremeArtifactsCache.equipped;
+    if (!eq || typeof eq !== 'object') return map;
+    Object.keys(eq).forEach(function(slotId) {
+        var art = eq[slotId];
+        if (!art || !art.wuhunResonance) return;
+        var key = String(art.wuhunResonance);
+        if (!map[key]) map[key] = { count: 0, sSum: 0, qSum: 0, name: art.wuhunResonanceName || '' };
+        map[key].count += 1;
+        map[key].sSum += parseSupremeSLevelNumber(art.sLevel);
+        map[key].qSum += (art.qualityTier | 0);
+        if (!map[key].name && art.wuhunResonanceName) map[key].name = art.wuhunResonanceName;
+    });
+    return map;
+}
+
+function addScaledSupremeWuhunStats(target, bonuses, scale) {
+    if (!bonuses || !target) return;
+    Object.keys(bonuses).forEach(function(stat) {
+        if (target[stat] == null) target[stat] = 0;
+        target[stat] += (Number(bonuses[stat]) || 0) * scale;
+    });
+}
+
+/** 已装备武魂共鸣套装加成（不含词条） */
+function calculateSupremeWuhunResonanceBonuses() {
+    var totals = { health: 0, attack: 0, critDamage: 0 };
+    if (!SUPREME_WUHUN_RESONANCES) return totals;
+    var equipped = collectEquippedSupremeWuhun();
+    Object.keys(equipped).forEach(function(key) {
+        var info = equipped[key];
+        var setCfg = SUPREME_WUHUN_RESONANCES[key];
+        if (!setCfg || !setCfg.bonuses) return;
+        var avgS = info.sSum / Math.max(1, info.count);
+        var avgQ = info.qSum / Math.max(1, info.count);
+        var scale = getSupremeWuhunSLevelMult(avgS) * getSupremeWuhunQualityMult(avgQ);
+        Object.keys(setCfg.bonuses).forEach(function(pieceKey) {
+            var need = parseInt(pieceKey, 10);
+            if (info.count >= need) addScaledSupremeWuhunStats(totals, setCfg.bonuses[pieceKey], scale);
+        });
+    });
+    return totals;
+}
+
+function formatSupremeWuhunBonusLine(bonuses, scale, active) {
+    var names = SUPREME_WUHUN_STAT_NAMES || {};
+    var s = active ? (Number(scale) || 1) : 1;
+    return Object.keys(bonuses || {}).map(function(stat) {
+        var raw = Number(bonuses[stat]) || 0;
+        var shown = active ? raw * s : raw;
+        return (names[stat] || stat) + ' +' + (shown * 100).toFixed(1) + '%';
+    }).join('，');
+}
+
+function supremeWuhunBadgeHtml(art) {
+    var key = art && art.wuhunResonance;
+    if (!key) return '';
+    var name = getSupremeWuhunName(key, art.wuhunResonanceName);
+    return '<div style="margin-top:6px;display:inline-block;padding:3px 9px;border-radius:8px;border:1px solid rgba(255,193,7,0.55);background:rgba(255,160,0,0.16);font-size:11px;font-weight:700;color:#ffe082;letter-spacing:0.04em;">武魂·' +
+        supremeEscapeHtml(String(name)) + '</div>';
+}
+
+/** 武魂共鸣面板：仅展示已穿戴且带武魂的套装进度 */
+function renderSupremeWuhunResonanceHtml() {
+    var equipped = collectEquippedSupremeWuhun();
+    var keys = Object.keys(equipped);
+    var body;
+    if (!keys.length) {
+        body = '<div style="font-size:12px;color:#90a4ae;padding:6px 0;">未激活武魂共鸣（掉落低概率附带；品质越高越易出）</div>';
+    } else {
+        body = keys.map(function(key) {
+            var info = equipped[key];
+            var setCfg = getSupremeWuhunConfig(key);
+            var setName = (setCfg && setCfg.name) || info.name || key;
+            if (!setCfg || !setCfg.bonuses) {
+                return '<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);color:#b0bec5;font-size:12px;">' +
+                    supremeEscapeHtml(String(setName)) + ' (' + info.count + '/12) · 未知套装配置</div>';
+            }
+            var avgS = info.sSum / Math.max(1, info.count);
+            var avgQ = info.qSum / Math.max(1, info.count);
+            var scale = getSupremeWuhunSLevelMult(avgS) * getSupremeWuhunQualityMult(avgQ);
+            var lines = Object.keys(setCfg.bonuses).map(function(pieceKey) {
+                var need = parseInt(pieceKey, 10);
+                var on = info.count >= need;
+                return '<div style="font-size:12px;padding:4px 0;' + (on ? 'color:#ffe082;' : 'color:#78909c;opacity:0.85;') + '">' +
+                    '<span style="font-weight:700;min-width:40px;display:inline-block;">' + need + '件</span> ' +
+                    formatSupremeWuhunBonusLine(setCfg.bonuses[pieceKey], scale, on) +
+                    ' <span style="float:right;font-size:11px;">' + (on ? '已激活' : '未激活') + '</span></div>';
+            }).join('');
+            return '<div style="margin-top:8px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,193,7,0.28);background:rgba(0,0,0,0.28);">' +
+                '<div style="font-size:13px;font-weight:800;color:#ffecb3;">' + supremeEscapeHtml(String(setName)) +
+                ' <span style="font-weight:600;color:#ffe082;">(' + info.count + '/12)</span></div>' +
+                '<div style="font-size:11px;color:#ce93d8;margin:4px 0 6px;">平均S' + avgS.toFixed(1) +
+                ' · S档×' + getSupremeWuhunSLevelMult(avgS).toFixed(1) +
+                ' · 品质×' + getSupremeWuhunQualityMult(avgQ).toFixed(1) + '</div>' +
+                lines + '</div>';
+        }).join('');
+    }
+    return '<div style="margin:14px 0 4px;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,193,7,0.35);background:linear-gradient(135deg,rgba(255,183,77,0.12),rgba(74,20,140,0.18));">' +
+        '<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin-bottom:6px;">' +
+        '<span style="font-size:14px;font-weight:800;letter-spacing:0.08em;color:#ffe082;">武魂共鸣</span>' +
+        '<span style="font-size:11px;color:#ce93d8;">30种套装 · 同名武魂 3/6/9/12 件激活 · 品质越高越易掉落</span>' +
+        '</div>' + body + '</div>';
+}
+
+function updateSupremeWuhunResonanceDisplay() {
+    var el = document.getElementById('supremeWuhunResonancePanel');
+    if (!el) return;
+    el.innerHTML = renderSupremeWuhunResonanceHtml();
+}
+
 function supremeHtmlAttr(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 }
@@ -6254,11 +7690,13 @@ function refreshSupremeArtifactUI() {
     var qF = document.getElementById('supremeArtifactFilterQuality');
     var sF = document.getElementById('supremeArtifactFilterSlot');
     var sLvF = document.getElementById('supremeArtifactFilterSLevel');
+    var whF = document.getElementById('supremeArtifactFilterWuhun');
     var cache = window._supremeArtifactsCache || { equipped: {}, bag: [] };
     var equipped = cache.equipped || {};
     var bagAll = cache.bag || [];
     if (maxEl) maxEl.textContent = String(SUPREME_BAG_MAX);
     if (cntEl) cntEl.textContent = String(bagAll.length);
+    if (typeof updateSupremeWuhunResonanceDisplay === 'function') updateSupremeWuhunResonanceDisplay();
     var qVal = null;
     if (qF && qF.value !== '') {
         var qn = parseInt(qF.value, 10);
@@ -6266,6 +7704,7 @@ function refreshSupremeArtifactUI() {
     }
     var sVal = (sF && sF.value) ? String(sF.value) : null;
     var sLevelFilter = (sLvF && sLvF.value) ? String(sLvF.value).trim().toUpperCase() : '';
+    var whVal = (whF && whF.value) ? String(whF.value) : '';
     var bagShow = bagAll.filter(function(b) {
         if (qVal != null && (b.qualityTier | 0) !== qVal) return false;
         if (sVal && String(b.slotId || '') !== sVal) return false;
@@ -6273,6 +7712,8 @@ function refreshSupremeArtifactUI() {
             var sl = String(b.sLevel == null ? '' : b.sLevel).trim().toUpperCase();
             if (sl !== sLevelFilter) return false;
         }
+        if (whVal === 'has' && !b.wuhunResonance) return false;
+        if (whVal === 'none' && b.wuhunResonance) return false;
         return true;
     });
     if (hintEl) hintEl.textContent = (bagShow.length !== bagAll.length) ? '（筛选 ' + bagShow.length + ' 件）' : '';
@@ -6295,6 +7736,7 @@ function refreshSupremeArtifactUI() {
                     '<div style="font-size:10px;color:#b39ddb;letter-spacing:0.5px;">' + def.short + ' · 已穿戴' + (lockedEq ? ' · <span style="color:#ffab91;">已锁定</span>' : '') + '</div>' +
                     '<div style="font-weight:800;color:#fff8e1;font-size:12px;line-height:1.35;">' + titleLine + '</div>' +
                     '<div style="font-size:11px;color:#d1c4e9;opacity:0.95;">' + subLine + '</div>' +
+                    (typeof supremeWuhunBadgeHtml === 'function' ? supremeWuhunBadgeHtml(art) : '') +
                     supremeAffixPillsHtml(art.affixes) +
                     supremeDropMetaHtml(art) +
                     '<div style="margin-top:auto;padding-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">' +
@@ -6314,7 +7756,7 @@ function refreshSupremeArtifactUI() {
         if (bagAll.length === 0) {
             bagEl.innerHTML = '<div style="grid-column:1/-1;color:#888;padding:20px;text-align:center;">背包为空</div>';
         } else if (bagShow.length === 0) {
-            bagEl.innerHTML = '<div style="grid-column:1/-1;color:#888;padding:20px;text-align:center;">当前筛选无结果，请调整品质、部位或 S 档</div>';
+            bagEl.innerHTML = '<div style="grid-column:1/-1;color:#888;padding:20px;text-align:center;">当前筛选无结果，请调整品质、部位、S 档或武魂</div>';
         } else {
             var bh = '';
             for (var j = 0; j < bagShow.length; j++) {
@@ -6336,6 +7778,7 @@ function refreshSupremeArtifactUI() {
                     '<div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:4px;">' + cbHtml + '</div>' +
                     '<div style="font-weight:800;color:#ffe082;font-size:14px;line-height:1.35;">' + bagTitle + '</div>' +
                     '<div style="font-size:11px;color:#b39ddb;margin-top:4px;opacity:0.95;">' + bagSub + '</div>' +
+                    (typeof supremeWuhunBadgeHtml === 'function' ? supremeWuhunBadgeHtml(b) : '') +
                     supremeAffixPillsHtml(b.affixes) +
                     supremeBagCompareVsEquippedHtml(b, equipped) +
                     supremeDropMetaHtml(b) +

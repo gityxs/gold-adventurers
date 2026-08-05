@@ -727,13 +727,13 @@ function renderLotteryInterface() {
         
         <div class="draw-history" style="background: #ecf0f1; padding: 15px; border-radius: 10px;">
             <h4 style="margin: 0 0 10px 0; color: #2c3e50;">📜 最近抽奖记录</h4>
-            <div style="max-height: 150px; overflow-y: auto;">
+            <div style="max-height: 360px; overflow-y: auto;">
                 ${player.landlord.lottery.drawHistory && player.landlord.lottery.drawHistory.length > 0 ? 
-                    player.landlord.lottery.drawHistory.slice(0, 5).map(record => `
+                    player.landlord.lottery.drawHistory.slice(0, 20).map(record => `
                         <div style="display: flex; justify-content: space-between; align-items: center; 
-                                    padding: 5px 0; font-size: 0.9em; border-bottom: 1px solid #ddd;">
-                            <span style="font-weight: bold;">${record.prize}</span>
-                            <span style="color: #7f8c8d; font-size: 0.8em;">${record.time}</span>
+                                    padding: 5px 0; font-size: 0.9em; border-bottom: 1px solid #ddd; gap: 8px;">
+                            <span style="font-weight: bold; word-break: break-all;">${record.prize}${record.isTenDraw ? ' <span style="color:#9b59b6;font-weight:600;font-size:0.85em;">[十连]</span>' : ''}</span>
+                            <span style="color: #7f8c8d; font-size: 0.8em; flex-shrink: 0;">${record.time}</span>
                         </div>
                     `).join('') : 
                     '<div style="text-align: center; color: #7f8c8d; padding: 20px;">暂无抽奖记录</div>'

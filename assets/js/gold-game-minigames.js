@@ -1973,6 +1973,7 @@ function grantWorldMapInsightOfflineDrops(killCount) {
                 safeWorldMapRewardCall(dropMount, '坐骑');
                 safeWorldMapRewardCall(dropWing, '翅膀');
                 safeWorldMapRewardCall(tryDropLawPowerMaterial, '法则材料');
+                safeWorldMapRewardCall(tryDropSamsaraSkillMaterial, '轮回技能材料');
                 if (Math.random() < 0.01) safeWorldMapRewardCall(dropItemsByDimension, '次元掉落');
                 safeWorldMapRewardCall(dropReincarnationEquipment, '轮回装备');
                 safeWorldMapRewardCall(tryDropBeastAfterBattle, '轮回神兽');
@@ -1983,6 +1984,7 @@ function grantWorldMapInsightOfflineDrops(killCount) {
                 if (typeof dropMount === 'function') dropMount();
                 if (typeof dropWing === 'function') dropWing();
                 if (typeof tryDropLawPowerMaterial === 'function') tryDropLawPowerMaterial();
+                if (typeof tryDropSamsaraSkillMaterial === 'function') tryDropSamsaraSkillMaterial();
                 if (Math.random() < 0.01 && typeof dropItemsByDimension === 'function') dropItemsByDimension();
                 if (typeof dropReincarnationEquipment === 'function') dropReincarnationEquipment();
                 if (typeof tryDropBeastAfterBattle === 'function') tryDropBeastAfterBattle();
@@ -2096,6 +2098,11 @@ function worldMapAttackMonster() {
     
     // 记录战斗日志
     addBattleLog(`你对${monster.name}造成了${formatSci(damage)}点${isCrit ? '暴击 ' : ''}伤害`);
+
+    // 轮回技能：各自独立触发；技能伤害 = 技能倍率 × 本下普攻（含爆伤），可叠加
+    if (typeof applySamsaraSkillWorldMapHits === 'function') {
+        applySamsaraSkillWorldMapHits(monster, damage, { silent: false });
+    }
     
     // 检查怪物是否死亡
     if (bLteZero(monster.health)) {
@@ -2217,6 +2224,7 @@ function handleMonsterDefeated() {
                safeWorldMapRewardCall(dropMount, '坐骑');
                 safeWorldMapRewardCall(dropWing, '翅膀');
                safeWorldMapRewardCall(tryDropLawPowerMaterial, '法则材料');
+               safeWorldMapRewardCall(tryDropSamsaraSkillMaterial, '轮回技能材料');
                 if (Math.random() < 0.01) { // 1%掉落率
             safeWorldMapRewardCall(dropItemsByDimension, '次元掉落');          
             }
@@ -2420,6 +2428,11 @@ function backgroundWorldMapAttackMonster() {
     
     // 应用伤害
     monster.health = bSub(monster.health, damage);
+
+    // 轮回技能：后台同样结算（静默）；基于本下普攻含爆伤
+    if (typeof applySamsaraSkillWorldMapHits === 'function') {
+        applySamsaraSkillWorldMapHits(monster, damage, { silent: true });
+    }
     
     // 检查怪物是否死亡
     if (bLteZero(monster.health)) {
@@ -2498,6 +2511,7 @@ function backgroundHandleMonsterDefeated() {
         safeWorldMapRewardCall(dropMount, '坐骑');
         safeWorldMapRewardCall(dropWing, '翅膀');
         safeWorldMapRewardCall(tryDropLawPowerMaterial, '法则材料');
+        safeWorldMapRewardCall(tryDropSamsaraSkillMaterial, '轮回技能材料');
         
         if (Math.random() < 0.01) {
             safeWorldMapRewardCall(dropItemsByDimension, '次元掉落');

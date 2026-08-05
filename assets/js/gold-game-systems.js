@@ -966,6 +966,21 @@ roseq: itemCounts.roseq || 0,
   fuben1: itemCounts.fuben1 || 0,
   shenshou1: itemCounts.shenshou1 || 0,
  lawPowerMaterial: itemCounts.lawPowerMaterial || 0,
+ lunhuiSkill1: itemCounts.lunhuiSkill1 || 0,
+ lunhuiSkill2: itemCounts.lunhuiSkill2 || 0,
+ lunhuiSkill3: itemCounts.lunhuiSkill3 || 0,
+ lunhuiSkill4: itemCounts.lunhuiSkill4 || 0,
+ lunhuiSkill5: itemCounts.lunhuiSkill5 || 0,
+ lunhuiSkill6: itemCounts.lunhuiSkill6 || 0,
+ lunhuiSkill7: itemCounts.lunhuiSkill7 || 0,
+ lunhuiSkill8: itemCounts.lunhuiSkill8 || 0,
+ lunhuiSkill9: itemCounts.lunhuiSkill9 || 0,
+ lunhuiSkill10: itemCounts.lunhuiSkill10 || 0,
+ lunhuiSkill11: itemCounts.lunhuiSkill11 || 0,
+ lunhuiSkill12: itemCounts.lunhuiSkill12 || 0,
+ lunhuiSkill13: itemCounts.lunhuiSkill13 || 0,
+ lunhuiSkill14: itemCounts.lunhuiSkill14 || 0,
+ lunhuiSkill15: itemCounts.lunhuiSkill15 || 0,
  fuwen1: itemCounts.fuwen1 || 0,
   fuben2: itemCounts.fuben2 || 0,
   danyao1: itemCounts.danyao1 || 0,
@@ -3433,6 +3448,99 @@ function renderActionLogsToDom() {
                     throw new Error(res.message || '注册失败');
                 });
             };
+            window.goldGameChangePassword = function(username, oldPassword, newPassword) {
+                return apiRequest('POST', '/api/change-password', {
+                    username: username,
+                    oldPassword: oldPassword,
+                    newPassword: newPassword
+                }, false).then(function(res) {
+                    if (res && res.ok) return res;
+                    throw new Error((res && res.message) || '修改密码失败');
+                });
+            };
+            window.showGoldGameChangePasswordMode = function(on) {
+                var changeOn = !!on;
+                var title = document.getElementById('goldGameLoginDialogTitle');
+                var pwdLabel = document.getElementById('goldGameLoginPasswordLabel');
+                var panel = document.getElementById('goldGameChangePasswordPanel');
+                var hint = document.getElementById('goldGameLoginHint');
+                var loginBtn = document.getElementById('goldGameLoginSubmitBtn');
+                var changeBtn = document.getElementById('goldGameChangePasswordBtn');
+                var submitBtn = document.getElementById('goldGameChangePasswordSubmitBtn');
+                var backBtn = document.getElementById('goldGameChangePasswordBackBtn');
+                var msg = document.getElementById('goldGameLoginMessage');
+                if (title) title.textContent = changeOn ? '修改密码' : '账号登录';
+                if (pwdLabel) pwdLabel.textContent = changeOn ? '旧密码' : '密码';
+                if (panel) panel.style.display = changeOn ? 'block' : 'none';
+                if (hint) {
+                    hint.textContent = changeOn
+                        ? '请输入用户名、旧密码和新密码。修改成功后请用新密码登录。'
+                        : '公开注册已关闭，联系群主注册。';
+                }
+                if (loginBtn) loginBtn.style.display = changeOn ? 'none' : '';
+                if (changeBtn) changeBtn.style.display = changeOn ? 'none' : '';
+                if (submitBtn) submitBtn.style.display = changeOn ? '' : 'none';
+                if (backBtn) backBtn.style.display = changeOn ? '' : 'none';
+                if (msg) {
+                    msg.textContent = '';
+                    msg.style.color = '#c00';
+                }
+                if (!changeOn) {
+                    var np = document.getElementById('goldGameNewPassword');
+                    var npc = document.getElementById('goldGameNewPasswordConfirm');
+                    if (np) np.value = '';
+                    if (npc) npc.value = '';
+                }
+            };
+            window.goldGameChangePasswordFromDialog = function() {
+                var uEl = document.getElementById('goldGameLoginUsername');
+                var pEl = document.getElementById('goldGameLoginPassword');
+                var nEl = document.getElementById('goldGameNewPassword');
+                var cEl = document.getElementById('goldGameNewPasswordConfirm');
+                var baseEl = document.getElementById('goldGameApiBaseInput');
+                var msg = document.getElementById('goldGameLoginMessage');
+                var u = uEl ? String(uEl.value || '').trim() : '';
+                var oldP = pEl ? String(pEl.value || '').trim() : '';
+                var newP = nEl ? String(nEl.value || '').trim() : '';
+                var confirmP = cEl ? String(cEl.value || '').trim() : '';
+                var base = baseEl ? String(baseEl.value || '').trim() : '';
+                if (base) window.GOLD_GAME_API_BASE = base;
+                if (!msg) return;
+                if (!u || !oldP || !newP) {
+                    msg.style.color = '#c00';
+                    msg.textContent = '请填写用户名、旧密码和新密码';
+                    return;
+                }
+                if (newP !== confirmP) {
+                    msg.style.color = '#c00';
+                    msg.textContent = '两次输入的新密码不一致';
+                    return;
+                }
+                if (oldP === newP) {
+                    msg.style.color = '#c00';
+                    msg.textContent = '新密码不能与旧密码相同';
+                    return;
+                }
+                msg.style.color = 'green';
+                msg.textContent = '正在修改密码…';
+                goldGameChangePassword(u, oldP, newP).then(function(res) {
+                    msg.style.color = 'green';
+                    msg.textContent = (res && res.message) || '密码已修改，请使用新密码登录';
+                    if (pEl) pEl.value = '';
+                    if (nEl) nEl.value = '';
+                    if (cEl) cEl.value = '';
+                    setTimeout(function() {
+                        if (typeof showGoldGameChangePasswordMode === 'function') showGoldGameChangePasswordMode(false);
+                        if (msg) {
+                            msg.style.color = 'green';
+                            msg.textContent = '密码已修改，请使用新密码登录';
+                        }
+                    }, 600);
+                }).catch(function(e) {
+                    msg.style.color = '#c00';
+                    msg.textContent = (e && e.message) ? e.message : '修改密码失败';
+                });
+            };
             window.goldGameLogout = function(optReload) {
                 if (window._goldGameLogoutInProgress) return;
                 window._goldGameLogoutInProgress = true;
@@ -3917,6 +4025,7 @@ function renderActionLogsToDom() {
                 var o = document.getElementById('goldGameLoginOverlay');
                 var input = document.getElementById('goldGameApiBaseInput');
                 if (input && window.GOLD_GAME_API_BASE) input.value = window.GOLD_GAME_API_BASE;
+                if (typeof showGoldGameChangePasswordMode === 'function') showGoldGameChangePasswordMode(false);
                 if (typeof window.syncGoldGameAccountAuthButtons === 'function') window.syncGoldGameAccountAuthButtons();
                 if (d) d.style.display = 'block';
                 if (o) o.style.display = 'block';
@@ -3924,6 +4033,7 @@ function renderActionLogsToDom() {
             window.closeGoldGameLoginDialog = function() {
                 var d = document.getElementById('goldGameLoginDialog');
                 var o = document.getElementById('goldGameLoginOverlay');
+                if (typeof showGoldGameChangePasswordMode === 'function') showGoldGameChangePasswordMode(false);
                 if (d) d.style.display = 'none';
                 if (o) o.style.display = 'none';
                 if (getToken()) {
@@ -5239,15 +5349,18 @@ function renderActionLogsToDom() {
             window.getNetworkArtifactPetHpPct = function() { return (window._networkArtifactBonuses && window._networkArtifactBonuses.petHpPct) || 0; };
             window.getNetworkArtifactPetCritRatePct = function() { return (window._networkArtifactBonuses && window._networkArtifactBonuses.petCritRatePct) || 0; };
             window.getNetworkArtifactPetCritDmgPct = function() { return (window._networkArtifactBonuses && window._networkArtifactBonuses.petCritDmgPct) || 0; };
-            /** 已登录时禁用「登录/注册」、弹窗内「登录」「注册」及用户名/密码框，仅允许「登出」 */
+            /** 已登录时禁用「登录」及弹窗内用户名/密码相关控件，仅允许「登出」 */
             window.syncGoldGameAccountAuthButtons = function() {
                 var logged = !!getToken();
                 var ids = [
                     'goldGameLoginRegisterBtn',
                     'goldGameLoginSubmitBtn',
-                    'goldGameRegisterSubmitBtn',
+                    'goldGameChangePasswordBtn',
+                    'goldGameChangePasswordSubmitBtn',
                     'goldGameLoginUsername',
-                    'goldGameLoginPassword'
+                    'goldGameLoginPassword',
+                    'goldGameNewPassword',
+                    'goldGameNewPasswordConfirm'
                 ];
                 for (var i = 0; i < ids.length; i++) {
                     var el = document.getElementById(ids[i]);

@@ -459,6 +459,19 @@
                     : '<span class="lf-chip lf-chip--grow">成长 ' + timeLeft + ' 分</span>';
                 const lockChip = isLocked ? '<span class="lf-chip lf-chip--lock">已锁定</span>' : '';
                 const weightChip = '<span class="lf-chip lf-chip--weight">' + plant.weight.toFixed(2) + ' kg</span>';
+                let multChip = '';
+                if (typeof calculateLandlordMultiplier === 'function') {
+                    const multNum = Number(calculateLandlordMultiplier(plant)) || 1;
+                    let multLabel;
+                    if (typeof formatNumber === 'function' && multNum >= 1000) {
+                        multLabel = formatNumber(multNum) + '倍';
+                    } else if (Math.abs(multNum - Math.round(multNum)) < 1e-9) {
+                        multLabel = Math.round(multNum) + '倍';
+                    } else {
+                        multLabel = multNum.toFixed(1) + '倍';
+                    }
+                    multChip = '<span class="lf-chip lf-chip--mult" title="词条总倍率">' + multLabel + '</span>';
+                }
                 const tagsHtml = buildLandlordFieldTagsHtml(plant, i);
                 const progressHtml = plant.isMature
                     ? '<div class="lf-progress lf-progress--ready" title="已成熟"><div class="lf-progress-fill" style="width:100%"></div><span class="lf-progress-label">成熟可收</span></div>'
@@ -472,7 +485,7 @@
                     headHtml +
                     '<div class="lf-hero">' +
                         '<div class="lf-crop plant-name">' + getLandlordGeneVariantLabelHtml(plant.type) + '</div>' +
-                        '<div class="lf-status-row">' + statusChip + weightChip + lockChip + '</div>' +
+                        '<div class="lf-status-row">' + statusChip + weightChip + multChip + lockChip + '</div>' +
                     '</div>' +
                     '<div class="lf-panel">' +
                         progressHtml +

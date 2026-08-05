@@ -57,6 +57,43 @@ if (typeof startGoldGameMainBuildWatch === 'function') startGoldGameMainBuildWat
 
 /** 已登录但读档未成功时，自动尝试从云端恢复（防本地档误读/账号 ID 丢失后变新号） */
 (function tryRecoverGoldGameCloudSaveOnBoot() {
+    // 设置里「重置游戏」后跳过本次云恢复，避免刚清空又被云档拉回
+    var forceFresh = false;
+    try {
+        forceFresh = sessionStorage.getItem('goldGameForceFreshStart') === '1' || !!window._goldGameForceFreshStart;
+        if (sessionStorage.getItem('goldGameForceFreshStart') === '1') {
+            sessionStorage.removeItem('goldGameForceFreshStart');
+        }
+        window._goldGameForceFreshStart = false;
+    } catch (eFresh) {}
+    if (forceFresh) {
+        window._goldGameSaveLoadBlocked = false;
+        if (!window._goldGameSaveLoadedOk) window._goldGameSaveLoadedOk = true;
+        var freshAid = (typeof window.goldGameResolveAccountId === 'function')
+            ? String(window.goldGameResolveAccountId() || '').trim()
+            : '';
+        try {
+            if (typeof window.markGoldGameLocalSaveReady === 'function' && freshAid) {
+                window.markGoldGameLocalSaveReady(freshAid);
+            }
+            if (typeof window.markGoldGameCloudHydrated === 'function') {
+                window.markGoldGameCloudHydrated(freshAid);
+            }
+        } catch (eMark) {}
+        // 尽快把空白新档落到本地，并在已登录时上传覆盖云档
+        setTimeout(function () {
+            try {
+                if (typeof saveGame === 'function') saveGame({ silent: true });
+            } catch (eSave) {}
+            try {
+                if (typeof window.getGoldGameAuthToken === 'function' && window.getGoldGameAuthToken() &&
+                    typeof window.goldGameUploadSave === 'function') {
+                    window.goldGameUploadSave({ silentInvalid: true }).catch(function () {});
+                }
+            } catch (eUp) {}
+        }, 800);
+        return;
+    }
     if (typeof window.getGoldGameAuthToken !== 'function' || !window.getGoldGameAuthToken()) return;
     if (typeof hasApi !== 'function' || !hasApi()) return;
     if (window._goldGameSaveLoadedOk) return;
@@ -2618,6 +2655,8 @@ function saveAbyssTowerProgress() {
         const WORLD_BOSS_SUMMON_MAX = 10;
         const WORLD_BOSS_RECOVERY_MS = 60 * 60 * 1000;
         const WORLD_BOSS_AUTO_ATK_PER_SEC = 20;
+        // 挑战者每秒攻击次数（接近玩家自动，保证排行有竞争）
+        const WORLD_BOSS_VP_ATK_PER_SEC = 16;
         const WORLD_BOSS_FIGHT_MS = 45 * 60 * 1000;
         const worldBossData = {
             summonCount: 1,
@@ -2869,8 +2908,8 @@ function saveAbyssTowerProgress() {
             const critDmg = Math.max(1, Number(player.battle.playerCritDamage) || 1);
             const hitFactor = multi * (1 + critRate * (critDmg - 1));
             const playerAutoDpsFactor = hitFactor * WORLD_BOSS_AUTO_ATK_PER_SEC;
-            // 场上挑战者 + 玩家自动合计约 3.5~4.5 倍玩家自动 DPS
-            const worldDpsFactor = playerAutoDpsFactor * (3.5 + Math.random() * 1.0);
+            // 挑战者已加强：场上合计约 30~40 倍玩家自动 DPS
+            const worldDpsFactor = playerAutoDpsFactor * (30 + Math.random() * 10);
             // 1★ ≈ 10 分钟，10★ ≈ 28 分钟（限时 45 分钟内可打完）
             const targetSec = 600 + (star - 1) * 120;
             const variance = 0.88 + Math.random() * 0.24;
@@ -3007,7 +3046,7 @@ function saveAbyssTowerProgress() {
                                 const critRate = Math.max(0, Math.min(1, Number(vp.critRate) || 0));
                                 const avgFactor = (vp.multiAttack || 1) * (1 + (critRate * ((Number(vp.critDamage) || 1) - 1)));
                                 const avgDps = multiplyBigByFinite(vp.attack, avgFactor);
-                                const playerOfflineDmg = multiplyBigByFinite(avgDps, offlineSeconds);
+                                const playerOfflineDmg = multiplyBigByFinite(avgDps, offlineSeconds * WORLD_BOSS_VP_ATK_PER_SEC);
                                 vp.damage = bigSciToStorageValue(addBigSci(vp.damage || 0, playerOfflineDmg));
                                 totalVirtualDamage = bigSciToStorageValue(addBigSci(totalVirtualDamage, playerOfflineDmg));
                             });
@@ -3217,14 +3256,37 @@ function saveAbyssTowerProgress() {
 
         function generateVirtualPlayers() {
             worldBossData.virtualPlayers = [];
+            const playerCrit = Math.max(0, Math.min(1, Number(player.battle.playerCritRate) || 0));
             for (let i = 0; i < 60; i++) {
                 const name = virtualPlayerNames[i] || (`挑战者${i + 1}`);
-                // 强度贴近玩家，保证排行有竞争但不碾压
-                const attackMultiplier = 0.2 + Math.random() * 2.3;
-                const attack = bMul(player.battle.playerAttack, attackMultiplier);
-                const multiAttack = Math.max(1, Math.floor(player.battle.playerMultiAttack * (0.3 + Math.random() * 0.95)));
-                const critRate = Math.min(1, 0.12 + Math.random() * 0.7);
-                const critDamage = player.battle.playerCritDamage * (0.45 + Math.random() * 0.85);
+                // 分层强度：顶尖争第一、强者占前排、其余填充名次
+                const roll = Math.random();
+                let attackMul;
+                let multiMul;
+                let critDmgMul;
+                let critRate;
+                if (roll < 0.12) {
+                    // ~7 人顶尖：接近或略超玩家，与玩家抢前几名
+                    attackMul = 0.95 + Math.random() * 0.55;
+                    multiMul = 0.9 + Math.random() * 0.35;
+                    critDmgMul = 0.95 + Math.random() * 0.35;
+                    critRate = Math.min(1, Math.max(playerCrit * 0.9, 0.35 + Math.random() * 0.45));
+                } else if (roll < 0.4) {
+                    // ~17 人强者：竞争 2~15 名
+                    attackMul = 0.7 + Math.random() * 0.55;
+                    multiMul = 0.75 + Math.random() * 0.35;
+                    critDmgMul = 0.8 + Math.random() * 0.35;
+                    critRate = Math.min(1, 0.25 + Math.random() * 0.5);
+                } else {
+                    // 其余普通
+                    attackMul = 0.45 + Math.random() * 0.5;
+                    multiMul = 0.55 + Math.random() * 0.4;
+                    critDmgMul = 0.65 + Math.random() * 0.35;
+                    critRate = Math.min(1, 0.18 + Math.random() * 0.45);
+                }
+                const attack = bMul(player.battle.playerAttack, attackMul);
+                const multiAttack = Math.max(1, Math.floor(player.battle.playerMultiAttack * multiMul));
+                const critDamage = player.battle.playerCritDamage * critDmgMul;
                 worldBossData.virtualPlayers.push({
                     name: name,
                     attack: attack,
@@ -3255,11 +3317,12 @@ function saveAbyssTowerProgress() {
                 let virtualLogCount = 0;
                 worldBossData.virtualPlayers.forEach(function (vp) {
                     const result = calculatePlayerDamage(vp);
-                    worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, result.total))
+                    const batchTotal = multiplyBigByFinite(result.total, WORLD_BOSS_VP_ATK_PER_SEC);
+                    worldBossData.bossHealth = bLteZero(bSub(worldBossData.bossHealth, batchTotal))
                         ? 0
-                        : bSub(worldBossData.bossHealth, result.total);
-                    vp.damage = bigSciToStorageValue(addBigSci(vp.damage || 0, result.total));
-                    virtualTickTotal = bigSciToStorageValue(addBigSci(virtualTickTotal, result.total));
+                        : bSub(worldBossData.bossHealth, batchTotal);
+                    vp.damage = bigSciToStorageValue(addBigSci(vp.damage || 0, batchTotal));
+                    virtualTickTotal = bigSciToStorageValue(addBigSci(virtualTickTotal, batchTotal));
                     if (Math.random() < 0.08) virtualLogCount++;
                 });
 

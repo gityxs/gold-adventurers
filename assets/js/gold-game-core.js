@@ -1,4 +1,4 @@
-        const GAME_VERSION = "2.0.44";
+        const GAME_VERSION = "2.0.47";
         const GAME_INVENTORY_MAX = 100;
         var WING_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
         var MOUNT_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
@@ -493,6 +493,126 @@ lunhuiGuiXu: {
     playerCritRate: 0,
     playerCritDamage: 0
 },
+lunhuiZiXiao: {
+    bossLevel: 1,
+    bossHealth: 1e210,
+    bossAttack: 1e50,
+    bossMaxHealth: 1e210,
+    bossResurrections: 0,
+    isBattling: false,
+    playerHealth: 0,
+    playerAttack: 0,
+    playerCritRate: 0,
+    playerCritDamage: 0
+},
+lunhuiJiMie: {
+    bossLevel: 1,
+    bossHealth: 1e240,
+    bossAttack: 1e60,
+    bossMaxHealth: 1e240,
+    bossResurrections: 0,
+    isBattling: false,
+    playerHealth: 0,
+    playerAttack: 0,
+    playerCritRate: 0,
+    playerCritDamage: 0
+},
+lunhuiHunDun: {
+    bossLevel: 1,
+    bossHealth: 1e270,
+    bossAttack: 1e70,
+    bossMaxHealth: 1e270,
+    bossResurrections: 0,
+    isBattling: false,
+    playerHealth: 0,
+    playerAttack: 0,
+    playerCritRate: 0,
+    playerCritDamage: 0
+},
+lunhuiShenYun: {
+    bossLevel: 1,
+    bossHealth: 1e300,
+    bossAttack: 1e80,
+    bossMaxHealth: 1e300,
+    bossResurrections: 0,
+    isBattling: false,
+    playerHealth: 0,
+    playerAttack: 0,
+    playerCritRate: 0,
+    playerCritDamage: 0
+},
+lunhuiZhongYan: {
+    bossLevel: 1,
+    bossHealth: 1e330,
+    bossAttack: 1e90,
+    bossMaxHealth: 1e330,
+    bossResurrections: 0,
+    isBattling: false,
+    playerHealth: 0,
+    playerAttack: 0,
+    playerCritRate: 0,
+    playerCritDamage: 0
+},
+lunhuiHuaSheng1: {
+    bossLevel: 1,
+    bossHealth: 1e360,
+    bossAttack: 1e100,
+    bossMaxHealth: 1e360,
+    bossResurrections: 0,
+    isBattling: false,
+    playerHealth: 0,
+    playerAttack: 0,
+    playerCritRate: 0,
+    playerCritDamage: 0
+},
+lunhuiHuaSheng2: {
+    bossLevel: 1,
+    bossHealth: 1e390,
+    bossAttack: 1e110,
+    bossMaxHealth: 1e390,
+    bossResurrections: 0,
+    isBattling: false,
+    playerHealth: 0,
+    playerAttack: 0,
+    playerCritRate: 0,
+    playerCritDamage: 0
+},
+lunhuiHuaSheng3: {
+    bossLevel: 1,
+    bossHealth: 1e420,
+    bossAttack: 1e120,
+    bossMaxHealth: 1e420,
+    bossResurrections: 0,
+    isBattling: false,
+    playerHealth: 0,
+    playerAttack: 0,
+    playerCritRate: 0,
+    playerCritDamage: 0
+},
+lunhuiHuaSheng4: {
+    bossLevel: 1,
+    bossHealth: 1e450,
+    bossAttack: 1e130,
+    bossMaxHealth: 1e450,
+    bossResurrections: 0,
+    isBattling: false,
+    playerHealth: 0,
+    playerAttack: 0,
+    playerCritRate: 0,
+    playerCritDamage: 0
+},
+lunhuiHuaSheng5: {
+    bossLevel: 1,
+    bossHealth: 1e480,
+    bossAttack: 1e140,
+    bossMaxHealth: 1e480,
+    bossResurrections: 0,
+    isBattling: false,
+    playerHealth: 0,
+    playerAttack: 0,
+    playerCritRate: 0,
+    playerCritDamage: 0
+},
 holyBeastIsland: {
     bossLevel: 1,
     bossHealth: 1e100,
@@ -602,6 +722,9 @@ lawPower: {
     worldExp: 0,
     cultivationExp: 0,
     mysteryExp: 0
+},
+samsaraSkills: {
+    levels: {}
 },
 cultivation: {
             stage: 0, // 当前阶段索引
@@ -776,6 +899,9 @@ gems: {
    fuben1: 0,
  shenshou1: 0,
  lawPowerMaterial: 0,
+   lunhuiSkill1: 0, lunhuiSkill2: 0, lunhuiSkill3: 0, lunhuiSkill4: 0, lunhuiSkill5: 0,
+   lunhuiSkill6: 0, lunhuiSkill7: 0, lunhuiSkill8: 0, lunhuiSkill9: 0, lunhuiSkill10: 0,
+   lunhuiSkill11: 0, lunhuiSkill12: 0, lunhuiSkill13: 0, lunhuiSkill14: 0, lunhuiSkill15: 0,
    fuwen1: 0,
   fuben2: 0,
  danyao1: 0, 
@@ -2136,6 +2262,21 @@ zuoqi1: { name: '远古圣兽精魄', effect: 0, description: '用于强化坐�
 fuben1: { name: '副本令牌', effect: 0, description: '用于挑战副本' },
 shenshou1: { name: '神兽蛋', effect: 0, description: '用于强化轮回神兽' },
 lawPowerMaterial: { name: '法则之力材料', effect: 0, description: '用于升级法则之力词条' },
+lunhuiSkill1: { name: '初转轮回晶', effect: 0, description: '次元1掉落，用于升级对应轮回技能' },
+lunhuiSkill2: { name: '淬魂轮回晶', effect: 0, description: '次元2掉落，用于升级对应轮回技能' },
+lunhuiSkill3: { name: '破境轮回晶', effect: 0, description: '次元3掉落，用于升级对应轮回技能' },
+lunhuiSkill4: { name: '灭劫轮回晶', effect: 0, description: '次元4掉落，用于升级对应轮回技能' },
+lunhuiSkill5: { name: '通幽轮回晶', effect: 0, description: '次元5掉落，用于升级对应轮回技能' },
+lunhuiSkill6: { name: '镇魔轮回晶', effect: 0, description: '次元6掉落，用于升级对应轮回技能' },
+lunhuiSkill7: { name: '裂空轮回晶', effect: 0, description: '次元7掉落，用于升级对应轮回技能' },
+lunhuiSkill8: { name: '焚天轮回晶', effect: 0, description: '次元8掉落，用于升级对应轮回技能' },
+lunhuiSkill9: { name: '葬神轮回晶', effect: 0, description: '次元9掉落，用于升级对应轮回技能' },
+lunhuiSkill10: { name: '无相轮回晶', effect: 0, description: '次元10掉落，用于升级对应轮回技能' },
+lunhuiSkill11: { name: '太初轮回晶', effect: 0, description: '次元11掉落，用于升级对应轮回技能' },
+lunhuiSkill12: { name: '混沌轮回晶', effect: 0, description: '次元12掉落，用于升级对应轮回技能' },
+lunhuiSkill13: { name: '鸿蒙轮回晶', effect: 0, description: '次元13掉落，用于升级对应轮回技能' },
+lunhuiSkill14: { name: '归墟轮回晶', effect: 0, description: '次元14掉落，用于升级对应轮回技能' },
+lunhuiSkill15: { name: '永恒轮回晶', effect: 0, description: '次元15掉落，用于升级对应轮回技能' },
 fuwen1: { name: '秘法符文', effect: 0, description: '用于强化符文' },
 fuben2: { name: '秘境钥匙', effect: 0, description: '用于开启秘境' },
 danyao1: { name: '蕴灵筑基丹', effect: 0, description: '用于提升微量修仙经验' },
@@ -3275,6 +3416,52 @@ function cancelActivationCode() {
     document.getElementById("activationCodeOverlay").style.display = "none";
 }
 
+function showActivationRewardDialog(rewardMsg, type) {
+    var msgEl = document.getElementById("activationRewardMessage");
+    var dialog = document.getElementById("activationRewardDialog");
+    var overlay = document.getElementById("activationRewardOverlay");
+    var iconEl = document.getElementById("activationRewardIcon");
+    var titleEl = document.getElementById("activationRewardTitle");
+    var okBtn = document.getElementById("activationRewardOkBtn");
+    if (!msgEl || !dialog || !overlay) return;
+
+    var isUsed = type === "used";
+    if (iconEl) iconEl.textContent = isUsed ? "⚠️" : "🎁";
+    if (titleEl) {
+        titleEl.textContent = isUsed ? "激活码已使用" : "兑换成功";
+        titleEl.style.color = isUsed ? "#c62828" : "#c79100";
+    }
+    msgEl.textContent = rewardMsg || (isUsed ? "该激活码已使用过" : "奖励已发放");
+    msgEl.style.background = isUsed ? "#ffebee" : "#fff8e7";
+    msgEl.style.borderColor = isUsed ? "#ef9a9a" : "#f0d78c";
+    dialog.style.borderColor = isUsed ? "#e53935" : "#d4a017";
+    dialog.style.boxShadow = isUsed
+        ? "0 12px 32px rgba(229,57,53,0.25)"
+        : "0 12px 32px rgba(212,160,23,0.28)";
+    if (okBtn) {
+        okBtn.style.background = isUsed
+            ? "linear-gradient(180deg, #ef5350, #c62828)"
+            : "linear-gradient(180deg, #f5c542, #d4a017)";
+        okBtn.style.boxShadow = isUsed
+            ? "0 3px 10px rgba(198,40,40,0.35)"
+            : "0 3px 10px rgba(212,160,23,0.35)";
+    }
+    overlay.style.display = "block";
+    dialog.style.display = "block";
+}
+
+function closeActivationRewardDialog() {
+    var dialog = document.getElementById("activationRewardDialog");
+    var overlay = document.getElementById("activationRewardOverlay");
+    if (dialog) dialog.style.display = "none";
+    if (overlay) overlay.style.display = "none";
+    var input = document.getElementById("activationCodeInput");
+    if (input && document.getElementById("activationCodeDialog") &&
+        document.getElementById("activationCodeDialog").style.display !== "none") {
+        input.focus();
+    }
+}
+
 function confirmActivationCode() {
       if (player.battle.maxStage < 2) {
         alert("需要打怪模式达到第3层才能开启激活码兑换！");
@@ -3290,7 +3477,9 @@ function confirmActivationCode() {
     
     if (usedCodes.includes(code)) {
         logAction("该激活码已使用过", "error");
-        cancelActivationCode();
+        showActivationRewardDialog("该激活码已使用过，无法再次兑换", "used");
+        var usedInput = document.getElementById("activationCodeInput");
+        if (usedInput) usedInput.value = "";
         return;
     }
     
@@ -3601,12 +3790,12 @@ case "LINGQI1":
         player.usedActivationCodes = usedCodes;
         
         logAction(`激活码兑换成功：${rewardMsg}`, "success");
-        updateDisplay(); // 更新界面显示
-        cancelActivationCode();
-         saveGame();
-      setTimeout(() => {
-                location.reload(true);
-            }, 1000);
+        updateDisplay();
+        saveGame();
+        // 清空输入框并保持弹窗，便于连续兑换，不再整页刷新
+        var input = document.getElementById("activationCodeInput");
+        if (input) input.value = "";
+        showActivationRewardDialog(rewardMsg);
     }
 }
 // 添加VIP等级计算函数
@@ -3688,6 +3877,7 @@ function useAllVipPower() {
         
         updateVipDisplay();
         updateDisplay();
+        if (typeof updateAutoBuySpeedText === 'function') updateAutoBuySpeedText();
         logAction(`使用了${useCount}个VIP能力值`, "info");
     } else {
         logAction("VIP能力值不足！", "error");
@@ -4225,6 +4415,39 @@ function setTechniqueMaxCost() {
                 if (!player.items || typeof player.items !== 'object') player.items = {};
                 player.items.lawPowerMaterial = Math.max(0, Math.floor(Number(save.items.lawPowerMaterial)));
             }
+            if (typeof ensureSamsaraSkillData === 'function') ensureSamsaraSkillData();
+            else {
+                if (!player.samsaraSkills || typeof player.samsaraSkills !== 'object') player.samsaraSkills = { levels: {} };
+                if (!player.samsaraSkills.levels || typeof player.samsaraSkills.levels !== 'object') player.samsaraSkills.levels = {};
+                if (!player.items || typeof player.items !== 'object') player.items = {};
+                for (var _ssi = 1; _ssi <= 15; _ssi++) {
+                    var _ssk = 'lunhuiSkill' + _ssi;
+                    if (!Number.isFinite(Number(player.items[_ssk]))) player.items[_ssk] = 0;
+                }
+            }
+            if (save.samsaraSkills && typeof save.samsaraSkills === 'object') {
+                if (!player.samsaraSkills) player.samsaraSkills = { levels: {} };
+                if (!player.samsaraSkills.levels) player.samsaraSkills.levels = {};
+                var _ssLevels = save.samsaraSkills.levels || save.samsaraSkills;
+                if (_ssLevels && typeof _ssLevels === 'object') {
+                    for (var _ssid in _ssLevels) {
+                        if (!Object.prototype.hasOwnProperty.call(_ssLevels, _ssid)) continue;
+                        var _sslv = _ssLevels[_ssid];
+                        if (_sslv != null && Number.isFinite(Number(_sslv))) {
+                            player.samsaraSkills.levels[_ssid] = Math.max(0, Math.min(10000, Math.floor(Number(_sslv))));
+                        }
+                    }
+                }
+            }
+            if (save.items && typeof save.items === 'object') {
+                if (!player.items || typeof player.items !== 'object') player.items = {};
+                for (var _smi = 1; _smi <= 15; _smi++) {
+                    var _smk = 'lunhuiSkill' + _smi;
+                    if (save.items[_smk] != null && Number.isFinite(Number(save.items[_smk]))) {
+                        player.items[_smk] = Math.max(0, Math.floor(Number(save.items[_smk])));
+                    }
+                }
+            }
 
              // 确保加载通天塔数据
           if (!player.fishing) {
@@ -4311,10 +4534,12 @@ function setTechniqueMaxCost() {
          // 在初始化自动购买按钮状态的地方添加
 const speedBoostBtn = document.getElementById('autoBuySpeedBoost');
 if (speedBoostBtn) {
-    speedBoostBtn.textContent = `在线自动购买100倍数量：${player.autoBuySpeedBoost ? '开启' : '关闭'}`;
+    var loadMult = getAutoBuyChestMultiplier();
+    speedBoostBtn.textContent = `在线自动购买${loadMult}倍数量：${player.autoBuySpeedBoost ? '开启' : '关闭'}`;
     var autoBuyLabel = document.getElementById('autoBuySpeedLabel');
     if (autoBuyLabel) autoBuyLabel.textContent = player.autoBuySpeedBoost ? '开' : '关';
 }
+if (typeof updateAutoBuySpeedText === 'function') updateAutoBuySpeedText();
       const onlineBoostBtn = document.getElementById('toggleOnlineBoost');
     if (onlineBoostBtn) {
         onlineBoostBtn.textContent = `在线金币加速100倍: ${player.onlineBoostEnabled ? '开启' : '关闭'}`;
@@ -4639,6 +4864,7 @@ function handleVipPowerGain() {
         const oldLevel = player.vip.level;
         player.vip.level = newLevel;
         logAction(`VIP等级提升至${newLevel}级！全属性装备提升${vipConfig[newLevel - 1].bonus * 100}%`, 'success');
+        if (typeof updateAutoBuySpeedText === 'function') updateAutoBuySpeedText();
     }
     
     updateVipDisplay();
@@ -4683,7 +4909,7 @@ function handleVipPowerGain() {
         },
         equipment: oldSave.equipment || [],
         items: Object.assign({
-            primaryGem: 0, advancedGem: 0, superiorGem: 0, divineGem: 0, vipPower: 0, refineStone: 0, rose: 0, companionKey: 0, rebornDan: 0, baitCount: 0, rootDetector: 0, bloodlineDetector: 0, advanceStone: 0, primaryGemq: 0, zongmen: 0, roseq: 0, yuzhou1: 0, yuzhou2: 0, yuzhou3: 0, yuzhou4: 0, banlv1: 0, banlv2: 0, banlv3: 0, banlv4: 0, banlv5: 0, banlv6: 0, banlv7: 0, banlv8: 0, banlv9: 0, zhiye1: 0, chiban1: 0, zuoqi1: 0, fuben1: 0, shenshou1: 0, lawPowerMaterial: 0, fuwen1: 0, fuben2: 0, danyao1: 0, danyao2: 0, danyao3: 0, danyao4: 0, danyao5: 0, fubeng1: 0, cultivationpill: 0, seed_herb1: 0, seed_herb2: 0, seed_herb3: 0, seed_herb4: 0, seed_herb5: 0
+            primaryGem: 0, advancedGem: 0, superiorGem: 0, divineGem: 0, vipPower: 0, refineStone: 0, rose: 0, companionKey: 0, rebornDan: 0, baitCount: 0, rootDetector: 0, bloodlineDetector: 0, advanceStone: 0, primaryGemq: 0, zongmen: 0, roseq: 0, yuzhou1: 0, yuzhou2: 0, yuzhou3: 0, yuzhou4: 0, banlv1: 0, banlv2: 0, banlv3: 0, banlv4: 0, banlv5: 0, banlv6: 0, banlv7: 0, banlv8: 0, banlv9: 0, zhiye1: 0, chiban1: 0, zuoqi1: 0, fuben1: 0, shenshou1: 0, lawPowerMaterial: 0, lunhuiSkill1: 0, lunhuiSkill2: 0, lunhuiSkill3: 0, lunhuiSkill4: 0, lunhuiSkill5: 0, lunhuiSkill6: 0, lunhuiSkill7: 0, lunhuiSkill8: 0, lunhuiSkill9: 0, lunhuiSkill10: 0, lunhuiSkill11: 0, lunhuiSkill12: 0, lunhuiSkill13: 0, lunhuiSkill14: 0, lunhuiSkill15: 0, fuwen1: 0, fuben2: 0, danyao1: 0, danyao2: 0, danyao3: 0, danyao4: 0, danyao5: 0, fubeng1: 0, cultivationpill: 0, seed_herb1: 0, seed_herb2: 0, seed_herb3: 0, seed_herb4: 0, seed_herb5: 0
         }, (oldSave.items && typeof oldSave.items === 'object') ? oldSave.items : {}),
         collections: oldSave.collections || {
             lightSpeedHand: 0,
@@ -4791,6 +5017,18 @@ function handleVipPowerGain() {
         lawPower: Object.assign({
             attack: 0, health: 0, critDamage: 0, critRate: 0, worldExp: 0, cultivationExp: 0, mysteryExp: 0
         }, (oldSave.lawPower && typeof oldSave.lawPower === 'object') ? oldSave.lawPower : {}),
+        samsaraSkills: (function () {
+            var levels = {};
+            var src = (oldSave.samsaraSkills && oldSave.samsaraSkills.levels) ? oldSave.samsaraSkills.levels
+                : ((oldSave.samsaraSkills && typeof oldSave.samsaraSkills === 'object') ? oldSave.samsaraSkills : {});
+            if (src && typeof src === 'object') {
+                for (var k in src) {
+                    if (!Object.prototype.hasOwnProperty.call(src, k)) continue;
+                    if (Number.isFinite(Number(src[k]))) levels[k] = Math.max(0, Math.min(10000, Math.floor(Number(src[k]))));
+                }
+            }
+            return { levels: levels };
+        })(),
         mystery: Object.assign({
             stage: 1, level: 1, exp: 0, bonus: 1,
             lastUpdateTime: (oldSave && oldSave.lastUpdate != null) ? oldSave.lastUpdate : Date.now()
@@ -5358,9 +5596,23 @@ function onCollectionAdded(collectionType) {
             }
         }
 
+        // 在线百倍购买：基础100 + 修仙境界每级+3 + VIP等级每级+10
+        function getAutoBuyChestMultiplier() {
+            if (typeof player === 'undefined') return 100;
+            var stage = (player.cultivation && Number(player.cultivation.stage)) || 0;
+            var vipLv = (player.vip && Number(player.vip.level)) || 0;
+            return 100 + stage * 3 + vipLv * 10;
+        }
+        function updateAutoBuySpeedText() {
+            var el = document.getElementById('autoBuySpeedText');
+            if (!el) return;
+            el.textContent = '在线' + getAutoBuyChestMultiplier() + '倍购买';
+        }
+
         // 自动购买逻辑
        function checkAutoBuy() {
     const speedMultiplier = player.autoBuySpeedBoost ? 1615 : 1;
+    const chestMultiplier = getAutoBuyChestMultiplier();
     player.autoBuy.forEach((enabled, index) => {
         if (enabled) {
             const type = index + 1;
@@ -5386,8 +5638,8 @@ function onCollectionAdded(collectionType) {
             ][index];
             
             if (cmpCurrency(costConfig.currency, costConfig.amount) >= 0) {
-                // 计算最大可购买数量（最多1000个）
-                const maxBuy = Math.min(speedMultiplier, (100+player.cultivation.stage * 3));
+                // 计算最大可购买数量（受修仙境界加成）
+                const maxBuy = Math.min(speedMultiplier, chestMultiplier);
                 const affordable = divFloorCurrencyByRate(costConfig.currency, costConfig.amount);
                 const actualBuy = Math.min(maxBuy, affordable);
                 
@@ -5470,18 +5722,21 @@ if (player.autoBuyMaterialChest && cmpCurrency('diamond', player.materialChestCo
 }
      function toggleAutoBuySpeedBoost() {
     player.autoBuySpeedBoost = !player.autoBuySpeedBoost;
+    var mult = getAutoBuyChestMultiplier();
     const btn = document.getElementById('autoBuySpeedBoost');
-     if (btn) btn.textContent = `在线自动购买100倍数量：${player.autoBuySpeedBoost ? '开启' : '关闭'}`;
+     if (btn) btn.textContent = `在线自动购买${mult}倍数量：${player.autoBuySpeedBoost ? '开启' : '关闭'}`;
     var olbl = document.getElementById('autoBuySpeedLabel');
      if (olbl) olbl.textContent = player.autoBuySpeedBoost ? '开' : '关';
-    logAction(`${player.autoBuySpeedBoost ? '开启' : '关闭'}在线自动购买100倍数量`, 'info');
+    updateAutoBuySpeedText();
+    logAction(`${player.autoBuySpeedBoost ? '开启' : '关闭'}在线自动购买${mult}倍数量`, 'info');
 }
 
-     // 根据存档同步侧栏「在线百倍购买/在线百倍加速/自动转生」显示，避免下线再上线显示为关
+     // 根据存档同步侧栏「百倍购买/在线百倍加速/自动转生」显示，避免下线再上线显示为关
      function syncOnlineOptionLabels() {
          if (typeof player === 'undefined') return;
          var lbl = document.getElementById('autoBuySpeedLabel');
          if (lbl) lbl.textContent = player.autoBuySpeedBoost ? '开' : '关';
+         updateAutoBuySpeedText();
          var olbl = document.getElementById('onlineBoostLabel');
          if (olbl) olbl.textContent = player.onlineBoostEnabled ? '开' : '关';
          var reincLbl = document.getElementById('autoReincarnationStatus');

@@ -11,10 +11,7 @@ function toggleLunhuiPenglai() {
     if (ui.style.display === 'block') {
         ui.style.display = 'none';
         overlay.style.display = 'none';
-        if (player.lunhuiPenglai.autoBattleInterval) {
-            clearInterval(player.lunhuiPenglai.autoBattleInterval);
-            player.lunhuiPenglai.autoBattleInterval = null;
-        }
+        stopLunhuiCopyAutoAttack(player.lunhuiPenglai, 'lunhuiPenglaiAutoAttackStatus');
     } else {
         ui.style.display = 'block';
         overlay.style.display = 'block';
@@ -23,12 +20,16 @@ function toggleLunhuiPenglai() {
 }
 
 function updateLunhuiPenglaiUI() {
+    if (typeof ensureLunhuiBattleChrome === 'function') {
+        ensureLunhuiBattleChrome('lunhuiPenglai', { bossName: '太古玄冥', glyph: '岛' });
+    }
     document.getElementById('lunhuiPenglaiTokenCount').textContent = player.items.fuben1 || 0;
     var playerStats = calculatePlayerBattleStats();
-    document.getElementById('lunhuiPenglaiPlayerHealth').textContent = formatSci(playerStats.health);
-    document.getElementById('lunhuiPenglaiPlayerAttack').textContent = formatSci(playerStats.attack);
-    document.getElementById('lunhuiPenglaiPlayerCritRate').textContent = (playerStats.critRate * 100).toFixed(2) + '%';
-    document.getElementById('lunhuiPenglaiPlayerCritDamage').textContent = (playerStats.critDamage * 100).toFixed(2) + '%';
+    var battling = !!(player.lunhuiPenglai && player.lunhuiPenglai.isBattling);
+    document.getElementById('lunhuiPenglaiPlayerHealth').textContent = formatSci(battling ? player.lunhuiPenglai.playerHealth : playerStats.health);
+    document.getElementById('lunhuiPenglaiPlayerAttack').textContent = formatSci(battling ? player.lunhuiPenglai.playerAttack : playerStats.attack);
+    document.getElementById('lunhuiPenglaiPlayerCritRate').textContent = ((battling ? player.lunhuiPenglai.playerCritRate : playerStats.critRate) * 100).toFixed(2) + '%';
+    document.getElementById('lunhuiPenglaiPlayerCritDamage').textContent = ((battling ? player.lunhuiPenglai.playerCritDamage : playerStats.critDamage) * 100).toFixed(2) + '%';
     document.getElementById('lunhuiPenglaiBossLevel').textContent = player.lunhuiPenglai.bossLevel;
     document.getElementById('lunhuiPenglaiBossHealth').textContent = formatSci(player.lunhuiPenglai.bossHealth);
     document.getElementById('lunhuiPenglaiBossMaxHealth').textContent = formatSci(player.lunhuiPenglai.bossMaxHealth);
@@ -36,32 +37,38 @@ function updateLunhuiPenglaiUI() {
     document.getElementById('lunhuiPenglaiBossResurrections').textContent = player.lunhuiPenglai.bossResurrections;
     var startBtn = document.getElementById('startLunhuiPenglaiBattleBtn');
     var attackBtn = document.getElementById('attackLunhuiPenglaiBossBtn');
+    var autoBtn = document.getElementById('autoAttackLunhuiPenglaiBossBtn');
     var fleeBtn = document.getElementById('fleeLunhuiPenglaiBossBtn');
-    if (player.lunhuiPenglai.isBattling) {
+    if (battling) {
         startBtn.style.display = 'none';
         attackBtn.style.display = 'inline-block';
+        if (autoBtn) autoBtn.style.display = 'inline-block';
         fleeBtn.style.display = 'inline-block';
     } else {
         startBtn.style.display = 'inline-block';
         attackBtn.style.display = 'none';
+        if (autoBtn) autoBtn.style.display = 'none';
         fleeBtn.style.display = 'none';
     }
+    setLunhuiCopyAutoAttackStatus('lunhuiPenglaiAutoAttackStatus', !!player.lunhuiPenglai.isAutoAttacking);
+    if (typeof syncLunhuiDungeonTokenCostDisplay === 'function') {
+        syncLunhuiDungeonTokenCostDisplay('startLunhuiPenglaiBattleBtn', 'lunhuiPenglaiTokenCount', 'lunhuiPenglaiTokenCostHint', 3, 0);
+    }
+    if (typeof lunhuiBattleSync === 'function') lunhuiBattleSync('lunhuiPenglai', player.lunhuiPenglai, playerStats);
 }
 
 function startLunhuiPenglaiBattle() {
-    if (!player.items.fuben1 || player.items.fuben1 < 1) {
-        logAction('副本令牌不足！', 'error');
-        return;
-    }
-    player.items.fuben1--;
+    if (!tryConsumeLunhuiDungeonToken(3, 0)) return;
     player.lunhuiPenglai.bossLevel = 1;
     player.lunhuiPenglai.bossMaxHealth = 1e123;
     player.lunhuiPenglai.bossHealth = 1e123;
     player.lunhuiPenglai.bossAttack = 1e23;
     player.lunhuiPenglai.bossResurrections = 0;
     player.lunhuiPenglai.isBattling = true;
+    stopLunhuiCopyAutoAttack(player.lunhuiPenglai, 'lunhuiPenglaiAutoAttackStatus');
     var playerStats = calculatePlayerBattleStats();
     player.lunhuiPenglai.playerHealth = playerStats.health;
+    player.lunhuiPenglai.playerMaxHealth = playerStats.health;
     player.lunhuiPenglai.playerAttack = playerStats.attack;
     player.lunhuiPenglai.playerCritRate = playerStats.critRate;
     player.lunhuiPenglai.playerCritDamage = playerStats.critDamage;
@@ -71,7 +78,17 @@ function startLunhuiPenglaiBattle() {
     addLunhuiPenglaiBattleLog('BOSS生命: ' + formatSci(player.lunhuiPenglai.bossHealth));
     addLunhuiPenglaiBattleLog('BOSS攻击: ' + formatSci(player.lunhuiPenglai.bossAttack));
     updateLunhuiPenglaiUI();
+    if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx('lunhuiPenglai', { kind: 'start', text: '仙岛开启' });
     logAction('开始挑战轮回仙岛副本太古玄冥！', 'success');
+}
+
+function toggleLunhuiPenglaiAutoAttack() {
+    toggleLunhuiCopyAutoAttack(
+        player.lunhuiPenglai,
+        attackLunhuiPenglaiBoss,
+        function () { return !!(player.lunhuiPenglai && player.lunhuiPenglai.isBattling); },
+        'lunhuiPenglaiAutoAttackStatus'
+    );
 }
 
 function attackLunhuiPenglaiBoss() {
@@ -85,6 +102,7 @@ function attackLunhuiPenglaiBoss() {
     player.lunhuiPenglai.bossHealth = bSub(player.lunhuiPenglai.bossHealth, damage);
     addLunhuiPenglaiBattleLog('你对太古玄冥造成了' + formatSci(damage) + '点' + (isCrit ? '暴击 ' : '') + '伤害');
     addLunhuiPenglaiBattleLog('BOSS剩余生命: ' + formatSci(player.lunhuiPenglai.bossHealth) + '/' + formatSci(player.lunhuiPenglai.bossMaxHealth));
+    if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx('lunhuiPenglai', { side: 'boss', damage: damage, isCrit: isCrit });
     if (bLteZero(player.lunhuiPenglai.bossHealth)) {
         handleLunhuiPenglaiBossDefeated();
     } else {
@@ -98,6 +116,7 @@ function lunhuiPenglaiBossCounterAttack() {
     player.lunhuiPenglai.playerHealth = bSub(player.lunhuiPenglai.playerHealth, bossAttack);
     addLunhuiPenglaiBattleLog('太古玄冥对你造成了' + formatSci(bossAttack) + '点伤害');
     addLunhuiPenglaiBattleLog('你剩余生命: ' + formatSci(player.lunhuiPenglai.playerHealth));
+    if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx('lunhuiPenglai', { side: 'player', damage: bossAttack });
     if (bLteZero(player.lunhuiPenglai.playerHealth)) {
         handleLunhuiPenglaiPlayerDefeated();
     }
@@ -111,6 +130,7 @@ function handleLunhuiPenglaiBossDefeated() {
         player.lunhuiPenglai.bossAttack = bMul(player.lunhuiPenglai.bossAttack, 3);
         addLunhuiPenglaiBattleLog('太古玄冥复活了！(第' + player.lunhuiPenglai.bossResurrections + '次复活)');
         addLunhuiPenglaiBattleLog('BOSS属性提升3倍！');
+        if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx('lunhuiPenglai', { kind: 'revive', text: '妖躯重生' });
         lunhuiPenglaiBossCounterAttack();
     } else {
         addLunhuiPenglaiBattleLog('太古玄冥被彻底击败！');
@@ -122,6 +142,7 @@ function handleLunhuiPenglaiBossDefeated() {
         player.lunhuiPenglai.bossResurrections = 0;
         addLunhuiPenglaiBattleLog('太古玄冥晋升至 Lv.' + player.lunhuiPenglai.bossLevel);
         addLunhuiPenglaiBattleLog('BOSS属性提升' + formatSci(levelMultiplier) + '倍！');
+        if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx('lunhuiPenglai', { kind: 'levelup', text: '境界晋升 Lv.' + player.lunhuiPenglai.bossLevel });
         lunhuiPenglaiBossCounterAttack();
     }
 }
@@ -129,6 +150,8 @@ function handleLunhuiPenglaiBossDefeated() {
 function handleLunhuiPenglaiPlayerDefeated() {
     addLunhuiPenglaiBattleLog('=== 你被太古玄冥击败了！ ===');
     player.lunhuiPenglai.isBattling = false;
+    stopLunhuiCopyAutoAttack(player.lunhuiPenglai, 'lunhuiPenglaiAutoAttackStatus');
+    if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx('lunhuiPenglai', { kind: 'lose', text: '道心受损' });
     if (player.lunhuiPenglai.bossLevel >= 2) {
         showLunhuiPenglaiRewards();
     } else {
@@ -140,6 +163,8 @@ function handleLunhuiPenglaiPlayerDefeated() {
 function fleeLunhuiPenglaiBattle() {
     addLunhuiPenglaiBattleLog('=== 你选择逃离战斗 ===');
     player.lunhuiPenglai.isBattling = false;
+    stopLunhuiCopyAutoAttack(player.lunhuiPenglai, 'lunhuiPenglaiAutoAttackStatus');
+    if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx('lunhuiPenglai', { kind: 'flee', text: '抽身而退' });
     if (player.lunhuiPenglai.bossLevel >= 2) {
         showLunhuiPenglaiRewards();
     } else {
@@ -174,7 +199,8 @@ function calculateLunhuiPenglaiRewards(multiplier) {
     var texts = [];
     var mult = Math.max(1, multiplier);
     var r = Math.random();
-    if (r < 0.20) {
+    // 50% T2+S2；其余四类均分剩余 50%（各 12.5%）
+    if (r < 0.50) {
         if (!player.reincarnationEquipment) {
             player.reincarnationEquipment = { inventory: [], equipped: { helmet: null, chest: null, pants: null, shoes: null, necklace: null, weapon: null }, lockedItems: [], batchDiscardMode: false, selectedItems: [] };
         }
@@ -183,8 +209,11 @@ function calculateLunhuiPenglaiRewards(multiplier) {
         for (var i = 0; i < mult; i++) {
             var eq = generateT2ReincarnationEquipment();
             if (eq && tryPushReincarnationEquipment(eq)) {
-                texts.push('获得T2轮回装备: ' + eq.name + ' (' + reincarnationEquipmentConfig.rarities[eq.rarity].name + ')');
-                logAction('获得T2轮回装备: ' + eq.name, 'success');
+                var spiritHint = (typeof getReincarnationSpiritLogSuffix === 'function') ? getReincarnationSpiritLogSuffix(eq) : '';
+                var soulHint = (typeof getReincarnationSoulRingLogSuffix === 'function') ? getReincarnationSoulRingLogSuffix(eq) : '';
+                var auraHint = (typeof getReincarnationAuraLogSuffix === 'function') ? getReincarnationAuraLogSuffix(eq) : '';
+                texts.push('获得T2轮回装备: ' + eq.name + ' (' + reincarnationEquipmentConfig.rarities[eq.rarity].name + ')' + spiritHint + soulHint + auraHint);
+                logAction('获得T2轮回装备: ' + eq.name + spiritHint + soulHint + auraHint, 'success');
             }
             var beast = generateS2Beast();
             if (beast && tryPushBeastToInventory(beast)) {
@@ -193,19 +222,19 @@ function calculateLunhuiPenglaiRewards(multiplier) {
             }
         }
         if (typeof updateBeastUI === 'function') updateBeastUI();
-    } else if (r < 0.40) {
+    } else if (r < 0.625) {
         var baseEgg = Math.floor(Math.random() * (lunhuiPenglaiEggRange.max - lunhuiPenglaiEggRange.min + 1)) + lunhuiPenglaiEggRange.min;
         var eggAmount = baseEgg * mult;
         player.items.shenshou1 = (player.items.shenshou1 || 0) + eggAmount;
         texts.push('神兽蛋 x' + eggAmount);
         logAction('获得神兽蛋 x' + eggAmount, 'success');
-    } else if (r < 0.60) {
+    } else if (r < 0.75) {
         var baseFuwen = Math.floor(Math.random() * (lunhuiPenglaiOtherRange.max - lunhuiPenglaiOtherRange.min + 1)) + lunhuiPenglaiOtherRange.min;
         var fuwenAmount = baseFuwen * mult;
         player.items.fuwen1 = (player.items.fuwen1 || 0) + fuwenAmount;
         texts.push('秘法符文 x' + fuwenAmount);
         logAction('获得秘法符文 x' + fuwenAmount, 'success');
-    } else if (r < 0.80) {
+    } else if (r < 0.875) {
         var baseWing = Math.floor(Math.random() * (lunhuiPenglaiOtherRange.max - lunhuiPenglaiOtherRange.min + 1)) + lunhuiPenglaiOtherRange.min;
         var wingAmount = baseWing * mult;
         player.items.chiban1 = (player.items.chiban1 || 0) + wingAmount;
@@ -239,12 +268,13 @@ function addLunhuiPenglaiBattleLog(message) {
     if (message.indexOf('击败') !== -1 || message.indexOf('奖励') !== -1) logEntry.style.color = '#00ff00';
     else if (message.indexOf('伤害') !== -1) logEntry.style.color = '#ffa500';
     else if (message.indexOf('复活') !== -1) logEntry.style.color = '#ff0000';
+    if (typeof styleLunhuiBattleLogEntry === 'function') styleLunhuiBattleLogEntry(logEntry, message);
     logContainer.appendChild(logEntry);
     while (logContainer.children.length > COPY_BATTLE_LOG_DOM_MAX) logContainer.removeChild(logContainer.firstChild);
     logContainer.scrollTop = logContainer.scrollHeight;
 }
 
-// ========== 轮回高阶三副本（战斗与升级规则同轮回仙岛；掉落结构同仙岛，装备/神兽档位见配置） ==========
+// ========== 轮回高阶副本（战斗与升级规则同轮回仙岛；掉落结构同仙岛，装备/神兽档位见配置） ==========
 var LUNHUI_ELITE_DUNGEONS = [
     {
         key: 'lunhuiXingYuan',
@@ -290,6 +320,162 @@ var LUNHUI_ELITE_DUNGEONS = [
         genBeast: function() { return generateS5Beast(); },
         tLabel: 'T5',
         sLabel: 'S5'
+    },
+    {
+        key: 'lunhuiZiXiao',
+        dom: 'lunhuiElite4',
+        name: '紫霄雷狱殿',
+        boss: '紫霄雷帝',
+        minAscention: 12,
+        hpBase: '1e210',
+        atkStart: '1e50',
+        atkLevelMulBase: '1e50',
+        levelExpStep: 28,
+        genEq: function() { return generateT6ReincarnationEquipment(); },
+        genBeast: function() { return generateS6Beast(); },
+        tLabel: 'T6',
+        sLabel: 'S6'
+    },
+    {
+        key: 'lunhuiJiMie',
+        dom: 'lunhuiElite5',
+        name: '太初寂灭原',
+        boss: '寂灭天尊',
+        minAscention: 15,
+        hpBase: '1e240',
+        atkStart: '1e60',
+        atkLevelMulBase: '1e60',
+        levelExpStep: 28,
+        genEq: function() { return generateT7ReincarnationEquipment(); },
+        genBeast: function() { return generateS7Beast(); },
+        tLabel: 'T7',
+        sLabel: 'S7'
+    },
+    {
+        key: 'lunhuiHunDun',
+        dom: 'lunhuiElite6',
+        name: '无极混沌海',
+        boss: '混沌主宰',
+        minAscention: 20,
+        hpBase: '1e270',
+        atkStart: '1e70',
+        atkLevelMulBase: '1e70',
+        levelExpStep: 28,
+        genEq: function() { return generateT8ReincarnationEquipment(); },
+        genBeast: function() { return generateS8Beast(); },
+        tLabel: 'T8',
+        sLabel: 'S8'
+    },
+    {
+        key: 'lunhuiShenYun',
+        dom: 'lunhuiElite7',
+        name: '永恒神陨谷',
+        boss: '神陨武帝',
+        minAscention: 25,
+        hpBase: '1e300',
+        atkStart: '1e80',
+        atkLevelMulBase: '1e80',
+        levelExpStep: 28,
+        genEq: function() { return generateT9ReincarnationEquipment(); },
+        genBeast: function() { return generateS9Beast(); },
+        tLabel: 'T9',
+        sLabel: 'S9'
+    },
+    {
+        key: 'lunhuiZhongYan',
+        dom: 'lunhuiElite8',
+        name: '终焉轮回渊',
+        boss: '轮回终皇',
+        minAscention: 30,
+        hpBase: '1e330',
+        atkStart: '1e90',
+        atkLevelMulBase: '1e90',
+        levelExpStep: 28,
+        genEq: function() { return generateT10ReincarnationEquipment(); },
+        genBeast: function() { return generateS10Beast(); },
+        tLabel: 'T10',
+        sLabel: 'S10'
+    },
+    // T11–T15：相对 T10 再抬一档；开启需轮回30转 + 化圣次数
+    {
+        key: 'lunhuiHuaSheng1',
+        dom: 'lunhuiElite9',
+        name: '化圣劫火台',
+        boss: '劫火圣君',
+        minAscention: 30,
+        minHuaSheng: 2,
+        hpBase: '1e360',
+        atkStart: '1e100',
+        atkLevelMulBase: '1e100',
+        levelExpStep: 30,
+        genEq: function() { return generateT11ReincarnationEquipment(); },
+        genBeast: function() { return generateS11Beast(); },
+        tLabel: 'T11',
+        sLabel: 'S11'
+    },
+    {
+        key: 'lunhuiHuaSheng2',
+        dom: 'lunhuiElite10',
+        name: '化圣玄霜域',
+        boss: '玄霜圣主',
+        minAscention: 30,
+        minHuaSheng: 3,
+        hpBase: '1e390',
+        atkStart: '1e110',
+        atkLevelMulBase: '1e110',
+        levelExpStep: 30,
+        genEq: function() { return generateT12ReincarnationEquipment(); },
+        genBeast: function() { return generateS12Beast(); },
+        tLabel: 'T12',
+        sLabel: 'S12'
+    },
+    {
+        key: 'lunhuiHuaSheng3',
+        dom: 'lunhuiElite11',
+        name: '化圣紫霄宫',
+        boss: '紫霄圣帝',
+        minAscention: 30,
+        minHuaSheng: 4,
+        hpBase: '1e420',
+        atkStart: '1e120',
+        atkLevelMulBase: '1e120',
+        levelExpStep: 30,
+        genEq: function() { return generateT13ReincarnationEquipment(); },
+        genBeast: function() { return generateS13Beast(); },
+        tLabel: 'T13',
+        sLabel: 'S13'
+    },
+    {
+        key: 'lunhuiHuaSheng4',
+        dom: 'lunhuiElite12',
+        name: '化圣归墟渊',
+        boss: '归墟圣皇',
+        minAscention: 30,
+        minHuaSheng: 5,
+        hpBase: '1e450',
+        atkStart: '1e130',
+        atkLevelMulBase: '1e130',
+        levelExpStep: 30,
+        genEq: function() { return generateT14ReincarnationEquipment(); },
+        genBeast: function() { return generateS14Beast(); },
+        tLabel: 'T14',
+        sLabel: 'S14'
+    },
+    {
+        key: 'lunhuiHuaSheng5',
+        dom: 'lunhuiElite13',
+        name: '化圣轮回殿',
+        boss: '轮回圣尊',
+        minAscention: 30,
+        minHuaSheng: 6,
+        hpBase: '1e480',
+        atkStart: '1e140',
+        atkLevelMulBase: '1e140',
+        levelExpStep: 30,
+        genEq: function() { return generateT15ReincarnationEquipment(); },
+        genBeast: function() { return generateS15Beast(); },
+        tLabel: 'T15',
+        sLabel: 'S15'
     }
 ];
 
@@ -311,17 +497,21 @@ function toggleLunhuiEliteDungeon(idx) {
         alert('需要达到轮回' + c.minAscention + '转才能开启「' + c.name + '」！');
         return;
     }
+    var needHua = Number(c.minHuaSheng) || 0;
+    if (needHua > 0) {
+        var haveHua = Number(player.level && player.level.huaShengCount) || 0;
+        if (haveHua < needHua) {
+            alert('需要化圣≥' + needHua + '次才能开启「' + c.name + '」！当前化圣' + haveHua + '次。');
+            return;
+        }
+    }
     var overlay = document.getElementById(c.dom + 'Overlay');
     var ui = document.getElementById(c.dom + 'UI');
     if (!overlay || !ui) return;
     if (ui.style.display === 'block') {
         ui.style.display = 'none';
         overlay.style.display = 'none';
-        var st = player[c.key];
-        if (st && st.autoBattleInterval) {
-            clearInterval(st.autoBattleInterval);
-            st.autoBattleInterval = null;
-        }
+        stopLunhuiCopyAutoAttack(player[c.key], c.dom + 'AutoAttackStatus');
     } else {
         ui.style.display = 'block';
         overlay.style.display = 'block';
@@ -338,12 +528,16 @@ function updateLunhuiEliteDungeonUI(idx) {
     if (!c || !player[c.key]) return;
     var st = player[c.key];
     var d = c.dom;
+    if (typeof ensureLunhuiBattleChrome === 'function') {
+        ensureLunhuiBattleChrome(d, { bossName: c.boss });
+    }
     document.getElementById(lunhuiEliteDomId(d, 'TokenCount')).textContent = player.items.fuben1 || 0;
     var playerStats = calculatePlayerBattleStats();
-    document.getElementById(lunhuiEliteDomId(d, 'PlayerHealth')).textContent = formatSci(playerStats.health);
-    document.getElementById(lunhuiEliteDomId(d, 'PlayerAttack')).textContent = formatSci(playerStats.attack);
-    document.getElementById(lunhuiEliteDomId(d, 'PlayerCritRate')).textContent = (playerStats.critRate * 100).toFixed(2) + '%';
-    document.getElementById(lunhuiEliteDomId(d, 'PlayerCritDamage')).textContent = (playerStats.critDamage * 100).toFixed(2) + '%';
+    var battling = !!st.isBattling;
+    document.getElementById(lunhuiEliteDomId(d, 'PlayerHealth')).textContent = formatSci(battling ? st.playerHealth : playerStats.health);
+    document.getElementById(lunhuiEliteDomId(d, 'PlayerAttack')).textContent = formatSci(battling ? st.playerAttack : playerStats.attack);
+    document.getElementById(lunhuiEliteDomId(d, 'PlayerCritRate')).textContent = ((battling ? st.playerCritRate : playerStats.critRate) * 100).toFixed(2) + '%';
+    document.getElementById(lunhuiEliteDomId(d, 'PlayerCritDamage')).textContent = ((battling ? st.playerCritDamage : playerStats.critDamage) * 100).toFixed(2) + '%';
     document.getElementById(lunhuiEliteDomId(d, 'BossLevel')).textContent = st.bossLevel;
     document.getElementById(lunhuiEliteDomId(d, 'BossHealth')).textContent = formatSci(st.bossHealth);
     document.getElementById(lunhuiEliteDomId(d, 'BossMaxHealth')).textContent = formatSci(st.bossMaxHealth);
@@ -351,26 +545,36 @@ function updateLunhuiEliteDungeonUI(idx) {
     document.getElementById(lunhuiEliteDomId(d, 'BossResurrections')).textContent = st.bossResurrections;
     var startBtn = document.getElementById('start' + c.dom.replace('lunhui', 'Lunhui') + 'BattleBtn');
     var attackBtn = document.getElementById('attack' + c.dom.replace('lunhui', 'Lunhui') + 'BossBtn');
+    var autoBtn = document.getElementById('autoAttack' + c.dom.replace('lunhui', 'Lunhui') + 'BossBtn');
     var fleeBtn = document.getElementById('flee' + c.dom.replace('lunhui', 'Lunhui') + 'BossBtn');
-    if (st.isBattling) {
+    if (battling) {
         if (startBtn) startBtn.style.display = 'none';
         if (attackBtn) attackBtn.style.display = 'inline-block';
+        if (autoBtn) autoBtn.style.display = 'inline-block';
         if (fleeBtn) fleeBtn.style.display = 'inline-block';
     } else {
         if (startBtn) startBtn.style.display = 'inline-block';
         if (attackBtn) attackBtn.style.display = 'none';
+        if (autoBtn) autoBtn.style.display = 'none';
         if (fleeBtn) fleeBtn.style.display = 'none';
     }
+    setLunhuiCopyAutoAttackStatus(c.dom + 'AutoAttackStatus', !!st.isAutoAttacking);
+    if (typeof syncLunhuiDungeonTokenCostDisplay === 'function') {
+        syncLunhuiDungeonTokenCostDisplay(
+            'start' + c.dom.replace('lunhui', 'Lunhui') + 'BattleBtn',
+            c.dom + 'TokenCount',
+            c.dom + 'TokenCostHint',
+            c.minAscention || 0,
+            c.minHuaSheng || 0
+        );
+    }
+    if (typeof lunhuiBattleSync === 'function') lunhuiBattleSync(d, st, playerStats);
 }
 
 function startLunhuiEliteDungeonBattle(idx) {
     var c = ensureLunhuiEliteDungeon(idx);
     if (!c) return;
-    if (!player.items.fuben1 || player.items.fuben1 < 1) {
-        logAction('副本令牌不足！', 'error');
-        return;
-    }
-    player.items.fuben1--;
+    if (!tryConsumeLunhuiDungeonToken(c.minAscention || 0, c.minHuaSheng || 0)) return;
     var st = player[c.key];
     st.bossLevel = 1;
     st.bossMaxHealth = bigSciToStorageValue(c.hpBase);
@@ -378,8 +582,10 @@ function startLunhuiEliteDungeonBattle(idx) {
     st.bossAttack = bigSciToStorageValue(c.atkStart);
     st.bossResurrections = 0;
     st.isBattling = true;
+    stopLunhuiCopyAutoAttack(st, c.dom + 'AutoAttackStatus');
     var playerStats = calculatePlayerBattleStats();
     st.playerHealth = playerStats.health;
+    st.playerMaxHealth = playerStats.health;
     st.playerAttack = playerStats.attack;
     st.playerCritRate = playerStats.critRate;
     st.playerCritDamage = playerStats.critDamage;
@@ -390,7 +596,19 @@ function startLunhuiEliteDungeonBattle(idx) {
     addLunhuiEliteDungeonBattleLog(idx, 'BOSS生命: ' + formatSci(st.bossHealth));
     addLunhuiEliteDungeonBattleLog(idx, 'BOSS攻击: ' + formatSci(st.bossAttack));
     updateLunhuiEliteDungeonUI(idx);
+    if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx(c.dom, { kind: 'start', text: '法阵开启' });
     logAction('开始挑战「' + c.name + '」' + c.boss + '！', 'success');
+}
+
+function toggleLunhuiEliteDungeonAutoAttack(idx) {
+    var c = LUNHUI_ELITE_DUNGEONS[idx];
+    if (!c || !player[c.key]) return;
+    toggleLunhuiCopyAutoAttack(
+        player[c.key],
+        function () { attackLunhuiEliteDungeonBoss(idx); },
+        function () { return !!(player[c.key] && player[c.key].isBattling); },
+        c.dom + 'AutoAttackStatus'
+    );
 }
 
 function attackLunhuiEliteDungeonBoss(idx) {
@@ -406,6 +624,7 @@ function attackLunhuiEliteDungeonBoss(idx) {
     st.bossHealth = bSub(st.bossHealth, damage);
     addLunhuiEliteDungeonBattleLog(idx, '你对' + c.boss + '造成了' + formatSci(damage) + '点' + (isCrit ? '暴击 ' : '') + '伤害');
     addLunhuiEliteDungeonBattleLog(idx, 'BOSS剩余生命: ' + formatSci(st.bossHealth) + '/' + formatSci(st.bossMaxHealth));
+    if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx(c.dom, { side: 'boss', damage: damage, isCrit: isCrit });
     if (bLteZero(st.bossHealth)) {
         handleLunhuiEliteDungeonBossDefeated(idx);
     } else {
@@ -422,6 +641,7 @@ function lunhuiEliteDungeonBossCounterAttack(idx) {
     st.playerHealth = bSub(st.playerHealth, bossAttack);
     addLunhuiEliteDungeonBattleLog(idx, c.boss + '对你造成了' + formatSci(bossAttack) + '点伤害');
     addLunhuiEliteDungeonBattleLog(idx, '你剩余生命: ' + formatSci(st.playerHealth));
+    if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx(c.dom, { side: 'player', damage: bossAttack });
     if (bLteZero(st.playerHealth)) {
         handleLunhuiEliteDungeonPlayerDefeated(idx);
     }
@@ -438,6 +658,7 @@ function handleLunhuiEliteDungeonBossDefeated(idx) {
         st.bossAttack = bMul(st.bossAttack, 3);
         addLunhuiEliteDungeonBattleLog(idx, c.boss + '复活了！(第' + st.bossResurrections + '次复活)');
         addLunhuiEliteDungeonBattleLog(idx, 'BOSS属性提升3倍！');
+        if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx(c.dom, { kind: 'revive', text: '妖躯重生' });
         lunhuiEliteDungeonBossCounterAttack(idx);
     } else {
         addLunhuiEliteDungeonBattleLog(idx, c.boss + '被彻底击败！');
@@ -449,6 +670,7 @@ function handleLunhuiEliteDungeonBossDefeated(idx) {
         st.bossResurrections = 0;
         addLunhuiEliteDungeonBattleLog(idx, c.boss + '晋升至 Lv.' + st.bossLevel);
         addLunhuiEliteDungeonBattleLog(idx, 'BOSS属性提升' + formatSci(levelMultiplier) + '倍！');
+        if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx(c.dom, { kind: 'levelup', text: '境界晋升 Lv.' + st.bossLevel });
         lunhuiEliteDungeonBossCounterAttack(idx);
     }
 }
@@ -459,6 +681,8 @@ function handleLunhuiEliteDungeonPlayerDefeated(idx) {
     var st = player[c.key];
     addLunhuiEliteDungeonBattleLog(idx, '=== 你被' + c.boss + '击败了！ ===');
     st.isBattling = false;
+    stopLunhuiCopyAutoAttack(st, c.dom + 'AutoAttackStatus');
+    if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx(c.dom, { kind: 'lose', text: '道心受损' });
     if (st.bossLevel >= 2) {
         showLunhuiEliteDungeonRewards(idx);
     } else {
@@ -473,6 +697,8 @@ function fleeLunhuiEliteDungeonBattle(idx) {
     var st = player[c.key];
     addLunhuiEliteDungeonBattleLog(idx, '=== 你选择逃离战斗 ===');
     st.isBattling = false;
+    stopLunhuiCopyAutoAttack(st, c.dom + 'AutoAttackStatus');
+    if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx(c.dom, { kind: 'flee', text: '抽身而退' });
     if (st.bossLevel >= 2) {
         showLunhuiEliteDungeonRewards(idx);
     } else {
@@ -509,7 +735,8 @@ function calculateLunhuiEliteDungeonRewards(idx, multiplier) {
     if (!c) return { texts: texts };
     var mult = Math.max(1, multiplier);
     var r = Math.random();
-    if (r < 0.20) {
+    // 50% T+S；其余四类均分剩余 50%（各 12.5%）
+    if (r < 0.50) {
         if (!player.reincarnationEquipment) {
             player.reincarnationEquipment = { inventory: [], equipped: { helmet: null, chest: null, pants: null, shoes: null, necklace: null, weapon: null }, lockedItems: [], batchDiscardMode: false, selectedItems: [] };
         }
@@ -518,8 +745,11 @@ function calculateLunhuiEliteDungeonRewards(idx, multiplier) {
         for (var i = 0; i < mult; i++) {
             var eq = c.genEq();
             if (eq && tryPushReincarnationEquipment(eq)) {
-                texts.push('获得' + c.tLabel + '轮回装备: ' + eq.name + ' (' + reincarnationEquipmentConfig.rarities[eq.rarity].name + ')');
-                logAction('获得' + c.tLabel + '轮回装备: ' + eq.name, 'success');
+                var spiritHint = (typeof getReincarnationSpiritLogSuffix === 'function') ? getReincarnationSpiritLogSuffix(eq) : '';
+                var soulHint = (typeof getReincarnationSoulRingLogSuffix === 'function') ? getReincarnationSoulRingLogSuffix(eq) : '';
+                var auraHint = (typeof getReincarnationAuraLogSuffix === 'function') ? getReincarnationAuraLogSuffix(eq) : '';
+                texts.push('获得' + c.tLabel + '轮回装备: ' + eq.name + ' (' + reincarnationEquipmentConfig.rarities[eq.rarity].name + ')' + spiritHint + soulHint + auraHint);
+                logAction('获得' + c.tLabel + '轮回装备: ' + eq.name + spiritHint + soulHint + auraHint, 'success');
             }
             var beast = c.genBeast();
             if (beast && tryPushBeastToInventory(beast)) {
@@ -528,19 +758,19 @@ function calculateLunhuiEliteDungeonRewards(idx, multiplier) {
             }
         }
         if (typeof updateBeastUI === 'function') updateBeastUI();
-    } else if (r < 0.40) {
+    } else if (r < 0.625) {
         var baseEgg = Math.floor(Math.random() * (lunhuiPenglaiEggRange.max - lunhuiPenglaiEggRange.min + 1)) + lunhuiPenglaiEggRange.min;
         var eggAmount = baseEgg * mult;
         player.items.shenshou1 = (player.items.shenshou1 || 0) + eggAmount;
         texts.push('神兽蛋 x' + eggAmount);
         logAction('获得神兽蛋 x' + eggAmount, 'success');
-    } else if (r < 0.60) {
+    } else if (r < 0.75) {
         var baseFuwen = Math.floor(Math.random() * (lunhuiPenglaiOtherRange.max - lunhuiPenglaiOtherRange.min + 1)) + lunhuiPenglaiOtherRange.min;
         var fuwenAmount = baseFuwen * mult;
         player.items.fuwen1 = (player.items.fuwen1 || 0) + fuwenAmount;
         texts.push('秘法符文 x' + fuwenAmount);
         logAction('获得秘法符文 x' + fuwenAmount, 'success');
-    } else if (r < 0.80) {
+    } else if (r < 0.875) {
         var baseWing = Math.floor(Math.random() * (lunhuiPenglaiOtherRange.max - lunhuiPenglaiOtherRange.min + 1)) + lunhuiPenglaiOtherRange.min;
         var wingAmount = baseWing * mult;
         player.items.chiban1 = (player.items.chiban1 || 0) + wingAmount;
@@ -578,6 +808,7 @@ function addLunhuiEliteDungeonBattleLog(idx, message) {
     if (message.indexOf('击败') !== -1 || message.indexOf('奖励') !== -1) logEntry.style.color = '#00ff00';
     else if (message.indexOf('伤害') !== -1) logEntry.style.color = '#ffa500';
     else if (message.indexOf('复活') !== -1) logEntry.style.color = '#ff0000';
+    if (typeof styleLunhuiBattleLogEntry === 'function') styleLunhuiBattleLogEntry(logEntry, message);
     logContainer.appendChild(logEntry);
     while (logContainer.children.length > COPY_BATTLE_LOG_DOM_MAX) logContainer.removeChild(logContainer.firstChild);
     logContainer.scrollTop = logContainer.scrollHeight;

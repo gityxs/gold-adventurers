@@ -119,639 +119,53 @@ function formatTime(milliseconds) {
            }
         });
    }
-        function resetGame() {
-            showCustomConfirm('确定要重置游戏吗？所有进度将丢失！', (confirmed) => {
-                if (confirmed) {
-                    localStorage.removeItem('goldGameSave');
-                    player = {
-                        gold: 0,
-                        diamond: 0,
-                        titanium: 0,
-                        starstone: 0,
-                        cosmicstone: 0,
-                        superstone: 0,
-                        otherworldstone: 0, 
-                        xingjiestone: 0, 
-                        hundunstone: 0,  
-                        lingtone: 0,
-                        huangtone: 0,
-                        mingtone: 0,
-                        xutong: 0,
-                        shitone: 0,
-                        weitone: 0,
-                        yongtone: 0,
-                        wujitone: 0,
-                        daotone: 0,
-                        reincarnationCoin: 0,
-                        reincarnationCount: 0,
-                        equipment: [],
-                        vip: {
-        level: 1,
-        power: 0, // 累计VIP能力值数量
-    },
-                        items: {
-                            primaryGem: 0,
-                            advancedGem: 0,
-                            superiorGem: 0,
-                            divineGem: 0,
-                            vipPower: 0,
-                            refineStone: 0 // 新增洗炼石
-                           
-                        },
-                        collections: {
-                            lightSpeedHand: 0,
-                            empHand: 0,
-                            godlyHand: 0,
-                            quickHand: 0,
-                            shadowHand: 0,
-                            quantumHand: 0,
-                            lightningHand: 0,
-                            divineHand: 0
-                        },
-                        pets: {
-                             thunderKirin: { level: 0, cost: 1, multiplier: 0.10 },
-                             chaosTaotie: { level: 0, cost: 1, multiplier: 0.30 },
-                             netherQiongqi: { level: 0, cost: 1, multiplier: 0.90 },
-                             abyssKun: { level: 0, cost: 1, multiplier: 2.70 },
-                             primordialZhuLong: { level: 0, cost: 1, multiplier: 8.10 },
-                            wanJunSuanNi: { level: 0, cost: 1, multiplier: 24.30 },
-                            yanYuBiAn: { level: 0, cost: 1, multiplier: 72.30 },
-                            yuyu1: { level: 0, cost: 1, multiplier: 218.70 },
-                              yuyu2: { level: 0, cost: 1, multiplier: 656.10 },
-                            yuyu3: { level: 0, cost: 1, multiplier: 1968.30 },
-                              yuyu4: { level: 0, cost: 1, multiplier: 5904.90 },
-                            yuyu5: { level: 0, cost: 1, multiplier: 17714.70 },
-                            yuyu6: { level: 0, cost: 1, multiplier: 53144.10 },
-                              yuyu7: { level: 0, cost: 1, multiplier: 159432.30 },
-                            yuyu8: { level: 0, cost: 1, multiplier: 478296.90 },
-                            yuyu9: { level: 0, cost: 1, multiplier: 1434890.70 },
-                            yuyu10: { level: 0, cost: 1, multiplier: 4304672.10 },
-                            yuyu11: { level: 0, cost: 1, multiplier: 12914016.30 }
-                        },
-                        dungeonEquipment: [], // 新增副本装备
-                        soulRings: [], // 新增魂环系统
-                        techniques: {},
-                        attributes: {
-                         totalPoints: 0,
-                        remainingPoints: 0,
-                        health: 0,
-                        attack: 0,
-                        critRate: 0,
-                         critDamage: 0,
-                       multiAttack: 0,
-                         block: 0,
-                         healthBonus: 0,
-                         attackBonus: 0,
-                         critRateBonus: 0,
-                         critDamageBonus: 0,
-                         multiAttackBonus: 0
-                        },
-                        lastUpdate: Date.now(),
-                        achievements: {
-        first_equipment: false,
-        first_rare: false,
-        first_epic: false,
-        first_legendary: false,
-        first_ancient: false,
-        first_divine: false,
-        first_arcane: false,
-        first_celestial: false,
-        first_infernal: false,
-        first_astral: false,
-        first_primeval: false,
-        first_transcendental: false,
-        first_quantum: false,
-        first_ultimate: false,
-        first_chaos: false,
-        first_eternal: false,
-        first_void: false,
-        first_genesis: false,
-        first_divineRealm: false,
-        first_apocalypse: false,
-        first_yeyu1: false,
-        first_yeyu2: false,
-        first_yeyu3: false,
-        first_yeyu4: false,
-        first_yeyu5: false,
-        first_yeyu6: false,
-        first_yeyu7: false,
-        first_yeyu8: false,
-        first_yeyu9: false,
-        first_yeyu10: false,
-        first_yeyu11: false,
-        first_yeyu12: false,
-        first_yeyu13: false,
-        first_yeyu14: false,
-        first_yeyu15: false,
-        first_yeyu16: false,
-        first_yeyu17: false,
-        first_yeyu18: false,
-        first_yeyu19: false,
-        first_yeyu20: false,
-        first_yeyu21: false,
-        first_yeyu22: false,
-        first_yeyu23: false,
-        first_yeyu24: false,
-        first_yeyu25: false,
-        first_yeyu26: false,
-        first_yeyu27: false,
-        first_yeyu28: false,
-        first_yeyu29: false,
-        first_yeyu30: false,
-        first_yeyu31: false,
-        first_yeyu32: false,
-        first_yeyu33: false,
-        // 宝箱成就
-        common_chest_100: false,
-        common_chest_10000: false,
-        common_chest_1000000: false,
-        common_chest_10000000: false,
-        common_chest_100000000: false,
-        advanced_chest_100: false,
-        advanced_chest_10000: false,
-        advanced_chest_1000000: false,
-        advanced_chest_10000000: false,
-        advanced_chest_100000000: false,
-        rare_chest_100: false,
-        rare_chest_10000: false,
-        rare_chest_1000000: false,
-        rare_chest_10000000: false,
-        rare_chest_100000000: false,
-        epic_chest_100: false,
-        epic_chest_10000: false,
-        epic_chest_1000000: false,
-        epic_chest_10000000: false,
-        epic_chest_100000000: false,
-        legendary_chest_100: false,
-        legendary_chest_10000: false,
-        legendary_chest_1000000: false,
-        legendary_chest_10000000: false,
-        legendary_chest_100000000: false,
-        chaos_chest_100: false,
-        chaos_chest_10000: false,
-        chaos_chest_1000000: false,
-        chaos_chest_10000000: false,
-        chaos_chest_100000000: false,
-        apocalypse_chest_100: false,
-        apocalypse_chest_10000: false,
-        apocalypse_chest_1000000: false,
-        apocalypse_chest_10000000: false,
-        apocalypse_chest_100000000: false,
-        yeyu1_chest_100: false,
-        yeyu1_chest_10000: false,
-        yeyu1_chest_1000000: false,
-        yeyu1_chest_10000000: false,
-        yeyu1_chest_100000000: false,
-        yeyu2_chest_100: false,
-        yeyu2_chest_10000: false,
-        yeyu2_chest_1000000: false,
-        yeyu2_chest_10000000: false,
-        yeyu2_chest_100000000: false,
-        yeyu3_chest_100: false,
-        yeyu3_chest_10000: false,
-        yeyu3_chest_1000000: false,
-        yeyu3_chest_10000000: false,
-        yeyu3_chest_100000000: false,
-        yeyu4_chest_100: false,
-        yeyu4_chest_10000: false,
-        yeyu4_chest_1000000: false,
-        yeyu4_chest_10000000: false,
-        yeyu4_chest_100000000: false,
-        yeyu5_chest_100: false,
-        yeyu5_chest_10000: false,
-        yeyu5_chest_1000000: false,
-        yeyu5_chest_10000000: false,
-        yeyu5_chest_100000000: false,
-        yeyu6_chest_100: false,
-        yeyu6_chest_10000: false,
-        yeyu6_chest_1000000: false,
-        yeyu6_chest_10000000: false,
-        yeyu6_chest_100000000: false,
-        yeyu7_chest_100: false,
-        yeyu7_chest_10000: false,
-        yeyu7_chest_1000000: false,
-        yeyu7_chest_10000000: false,
-        yeyu7_chest_100000000: false,
-        yeyu8_chest_100: false,
-        yeyu8_chest_10000: false,
-        yeyu8_chest_1000000: false,
-        yeyu8_chest_10000000: false,
-        yeyu8_chest_100000000: false,
-        yeyu9_chest_100: false,
-        yeyu9_chest_10000: false,
-        yeyu9_chest_1000000: false,
-        yeyu9_chest_10000000: false,
-        yeyu9_chest_100000000: false,
-        yeyu10_chest_100: false,
-        yeyu10_chest_10000: false,
-        yeyu10_chest_1000000: false,
-        yeyu10_chest_10000000: false,
-        yeyu10_chest_100000000: false,
-        yeyu11_chest_100: false,
-        yeyu11_chest_10000: false,
-        yeyu11_chest_1000000: false,
-        yeyu11_chest_10000000: false,
-        yeyu11_chest_100000000: false,
-        "max_stage_10": false,
-    "max_stage_30": false,
-    "max_stage_60": false,
-    "max_stage_90": false,
-    "max_stage_120": false,
-    "max_stage_200": false,
-    "max_stage_300": false,
-    "max_stage_400": false,
-    "max_stage_500": false,
-    "max_stage_600": false,
-    "max_stage_700": false,
-    "max_stage_800": false,
-    "max_stage_900": false,
-    "max_stage_1000": false,
+function resetGame() {
+    var msg = '确定要重置游戏吗？所有本地进度将丢失！\n（若已登录，也会清空本账号本地存档并跳过本次云存档恢复）';
+    function doReset() {
+        try {
+            // 阻止主循环/自动保存在刷新前把旧档写回
+            window._goldGameSaveLoadedOk = false;
+            window._goldGameSaveLoadBlocked = true;
+            window._goldGameForceFreshStart = true;
+            try { sessionStorage.setItem('goldGameForceFreshStart', '1'); } catch (e0) {}
 
-    // 新增宠物成就状态
-    "thunderKirin_10": false,
-    "thunderKirin_50": false,
-    "thunderKirin_100": false,
-    "chaosTaotie_10": false,
-    "chaosTaotie_50": false,
-    "chaosTaotie_100": false,
-    "netherQiongqi_10": false,
-    "netherQiongqi_50": false,
-    "netherQiongqi_100": false,
-    "abyssKun_10": false,
-    "abyssKun_50": false,
-    "abyssKun_100": false,
-    "primordialZhuLong_10": false,
-    "primordialZhuLong_50": false,
-    "primordialZhuLong_100": false,
-    "wanJunSuanNi_10": false,
-    "wanJunSuanNi_50": false,
-    "wanJunSuanNi_100": false,
-    "yanYuBiAn_10": false,
-    "yanYuBiAn_50": false,
-    "yanYuBiAn_100": false,
-    "yuyu1_10": false,
-    "yuyu1_50": false,
-    "yuyu1_100": false,
-    "yuyu2_10": false,
-    "yuyu2_50": false,
-    "yuyu2_100": false,
-    "yuyu3_10": false,
-    "yuyu3_50": false,
-    "yuyu3_100": false,
-    "yuyu4_10": false,
-    "yuyu4_50": false,
-    "yuyu4_100": false,
-    "yuyu5_10": false,
-    "yuyu5_50": false,
-    "yuyu5_100": false,
-    "yuyu6_10": false,
-    "yuyu6_50": false,
-    "yuyu6_100": false,
-    "yuyu7_10": false,
-    "yuyu7_50": false,
-    "yuyu7_100": false,
-    "yuyu8_10": false,
-    "yuyu8_50": false,
-    "yuyu8_100": false,
-    "yuyu9_10": false,
-    "yuyu9_50": false,
-    "yuyu9_100": false,
-    "yuyu10_10": false,
-    "yuyu10_50": false,
-    "yuyu10_100": false,
-    "yuyu11_10": false,
-    "yuyu11_50": false,
-    "yuyu11_100": false,
-    // 新增魂环成就状态
-    "year1_10": false,
-    "year10_10": false,
-    "year100_10": false,
-    "year1000_10": false,
-    "year10000_10": false,
-    "year100000_10": false,
-    "year1000000_10": false,
-    "year10000000_10": false,
-    "year100000000_10": false,
-    "year1_100": false,
-    "year10_100": false,
-    "year100_100": false,
-    "year1000_100": false,
-    "year10000_100": false,
-    "year100000_100": false,
-    "year1000000_100": false,
-    "year10000000_100": false,
-    "year100000000_100": false,
-    "year1_1000": false,
-    "year10_1000": false,
-    "year100_1000": false,
-    "year1000_1000": false,
-    "year10000_1000": false,
-    "year100000_1000": false,
-    "year1000000_1000": false,
-    "year10000000_1000": false,
-    "year100000000_1000": false,
-    "year1_10000": false,
-    "year10_10000": false,
-    "year100_10000": false,
-    "year1000_10000": false,
-    "year10000_10000": false,
-    "year100000_10000": false,
-    "year1000000_10000": false,
-    "year10000000_10000": false,
-    "year100000000_10000": false,
-    "year2_10": false,
-    "year2_100": false,
-    "year2_1000": false,
-    "year2_10000": false,
-    "year3_10": false,
-    "year3_100": false,
-    "year3_1000": false,
-    "year3_10000": false,
-    "year4_10": false,
-    "year4_100": false,
-    "year4_1000": false,
-    "year4_10000": false,
-    "year5_10": false,
-    "year5_100": false,
-    "year5_1000": false,
-    "year5_10000": false,
-    "year6_10": false,
-    "year6_100": false,
-    "year6_1000": false,
-    "year6_10000": false,
-    "year7_10": false,
-    "year7_100": false,
-    "year7_1000": false,
-    "year7_10000": false,
-    "year8_10": false,
-    "year8_100": false,
-    "year8_1000": false,
-    "year8_10000": false,
-    "year9_10": false,
-    "year9_100": false,
-    "year9_1000": false,
-    "year9_10000": false,
-    "year11_10": false,
-    "year11_100": false,
-    "year11_1000": false,
-    "year11_10000": false,
-    "year12_10": false,
-    "year12_100": false,
-    "year12_1000": false,
-    "year12_10000": false,
-    "year13_10": false,
-    "year13_100": false,
-    "year13_1000": false,
-    "year13_10000": false,
-    "year14_10": false,
-    "year14_100": false,
-    "year14_1000": false,
-    "year14_10000": false,
-    "year15_10": false,
-    "year15_100": false,
-    "year15_1000": false,
-    "year15_10000": false,
-    "year16_10": false,
-    "year16_100": false,
-    "year16_1000": false,
-    "year16_10000": false,
-    "year17_10": false,
-    "year17_100": false,
-    "year17_1000": false,
-    "year17_10000": false,
-    "year18_10": false,
-    "year18_100": false,
-    "year18_1000": false,
-    "year18_10000": false,
-    "year19_10": false,
-    "year19_100": false,
-    "year19_1000": false,
-    "year19_10000": false,
-    "year20_10": false,
-    "year20_100": false,
-    "year20_1000": false,
-    "year20_10000": false,
-    "year21_10": false,
-    "year21_100": false,
-    "year21_1000": false,
-    "year21_10000": false,
-    "year22_10": false,
-    "year22_100": false,
-    "year22_1000": false,
-    "year22_10000": false,
-    "year23_10": false,
-    "year23_100": false,
-    "year23_1000": false,
-    "year23_10000": false,
-    "year24_10": false,
-    "year24_100": false,
-    "year24_1000": false,
-    "year24_10000": false,
-    "year25_10": false,
-    "year25_100": false,
-    "year25_1000": false,
-    "year25_10000": false,
-    "year26_10": false,
-    "year26_100": false,
-    "year26_1000": false,
-    "year26_10000": false,
-    "year27_10": false,
-    "year27_100": false,
-    "year27_1000": false,
-    "year27_10000": false,
-    "year28_10": false,
-    "year28_100": false,
-    "year28_1000": false,
-    "year28_10000": false,
-    "year29_10": false,
-    "year29_100": false,
-    "year29_1000": false,
-    "year29_10000": false,
-    "year30_10": false,
-    "year30_100": false,
-    "year30_1000": false,
-    "year30_10000": false,
-    "year31_10": false,
-    "year31_100": false,
-    "year31_1000": false,
-    "year31_10000": false,
-    "year32_10": false,
-    "year32_100": false,
-    "year32_1000": false,
-    "year32_10000": false,
-    "year33_10": false,
-    "year33_100": false,
-    "year33_1000": false,
-    "year33_10000": false,
-    "year34_10": false,
-    "year34_100": false,
-    "year34_1000": false,
-    "year34_10000": false,
-    "year35_10": false,
-    "year35_100": false,
-    "year35_1000": false,
-    "year35_10000": false,
-    "year36_10": false,
-    "year36_100": false,
-    "year36_1000": false,
-    "year36_10000": false,
-    "year37_10": false,
-    "year37_100": false,
-    "year37_1000": false,
-    "year37_10000": false,
-    "year38_10": false,
-    "year38_100": false,
-    "year38_1000": false,
-    "year38_10000": false,
-    "year39_10": false,
-    "year39_100": false,
-    "year39_1000": false,
-    "year39_10000": false,
-    "year40_10": false,
-    "year40_100": false,
-    "year40_1000": false,
-    "year40_10000": false,
-    "year41_10": false,
-    "year41_100": false,
-    "year41_1000": false,
-    "year41_10000": false,
-    "year42_10": false,
-    "year42_100": false,
-    "year42_1000": false,
-    "year42_10000": false,
-    "year43_10": false,
-    "year43_100": false,
-    "year43_1000": false,
-    "year43_10000": false,
-    "year44_10": false,
-    "year44_100": false,
-    "year44_1000": false,
-    "year44_10000": false,
-    "year45_10": false,
-    "year45_100": false,
-    "year45_1000": false,
-    "year45_10000": false,
-    "year46_10": false,
-    "year46_100": false,
-    "year46_1000": false,
-    "year46_10000": false,
-    "year47_10": false,
-    "year47_100": false,
-    "year47_1000": false,
-    "year47_10000": false,
-    "year48_10": false,
-    "year48_100": false,
-    "year48_1000": false,
-    "year48_10000": false,
-    "year49_10": false,
-    "year49_100": false,
-    "year49_1000": false,
-    "year49_10000": false,
-    "year50_10": false,
-    "year50_100": false,
-    "year50_1000": false,
-    "year50_10000": false,
-    "year51_10": false,
-    "year51_100": false,
-    "year51_1000": false,
-    "year51_10000": false,
-    "year52_10": false,
-    "year52_100": false,
-    "year52_1000": false,
-    "year52_10000": false,
-    "year53_10": false,
-    "year53_100": false,
-    "year53_1000": false,
-    "year53_10000": false,
-    "year54_10": false,
-    "year54_100": false,
-    "year54_1000": false,
-    "year54_10000": false,
-    "year55_10": false,
-    "year55_100": false,
-    "year55_1000": false,
-    "year55_10000": false,
-    "year56_10": false,
-    "year56_100": false,
-    "year56_1000": false,
-    "year56_10000": false,
-    "year57_10": false,
-    "year57_100": false,
-    "year57_1000": false,
-    "year57_10000": false,
-    "world_boss_1st": false,
-    "world_boss_top5": false,
-    "world_boss_top10": false,
-    "world_boss_participant": false,
-    
-        // 转生成就
-        reincarnation_10: false,
-        reincarnation_100: false,
-        reincarnation_1000: false,
-        reincarnation_10000: false
-                        },
-                        actionLogs: [], // 新增：统一存储所有操作日志
-                        goldLogs: [], // 保留原有金币日志（如果仍需单独使用）
-                        autoBuy: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false], // 对应 7 种宝箱的自动购买状态
-                        autoBuyMaterialChest: false, // 新增：自动购买材料宝箱的状态
-                      autoBuyTechniqueChest: false,
-                     autoBuyTechniqueMaxCost: 0.1,
-                        gpsMultiplier: 1,
-                        clickMultiplier: 1,
-                        autoConvert: false,
-                        autoConvertDebug: false,
-                        autoConvertCurrency: {
-                            gold: false,
-                            diamond: false,
-                            titanium: false,
-                            starstone: false,
-                            cosmicstone: false,
-                            superstone: false,
-                            otherworldstone: false,
-                            xingjiestone: false,
-                            hundunstone: false,
-                            lingtone: false,
-                            huangtone: false,
-                            mingtone: false,
-                            xutong: false,
-                            shitone: false,
-                            weitone: false,
-                            yongtone: false,
-                            wujitone: false
-                        }, // 新增：自动兑换货币状态
-                        clickTimestamps: [],
-                        chestCounts: { common: 0, advanced: 0, rare: 0, epic: 0, legendary: 0 },
-                        reincarnationStats: {
-                            gpsBonus: { level: 0, cost: 1 },
-                            equipmentLevelBonus: { level: 0, cost: 1 },
-                            clickLimitBonus: { level: 0, cost: 1 },
-                            reincarnationCoinBonus: { level: 0, cost: 1 },
-                            offlineEquipBonus: { level: 0, cost: 1000 }
-                        },
-                        materialChestCost: 1,
-                        stockData: { // 新增股票数据
-                            stocks: [
-                                { name: '青龙至尊股', basePrice: 1, currentPrice: 1, lastPrice: 1, shares: 0, avgCost: 0 },
-                                { name: '白虎至尊股', basePrice: 10, currentPrice: 10, lastPrice: 10, shares: 0, avgCost: 0 },
-                                { name: '朱雀至尊股', basePrice: 100, currentPrice: 100, lastPrice: 100, shares: 0, avgCost: 0 },
-                                { name: '玄武至尊股', basePrice: 1000, currentPrice: 1000, lastPrice: 1000, shares: 0, avgCost: 0 },
-                                { name: '瑞兽白泽股', basePrice: 10000, currentPrice: 10000, lastPrice: 10000, shares: 0, avgCost: 0 }
-                            ],
-                            lastStockUpdate: Date.now()
-                        },
-                        lotteryResults: [], // 新增：彩票开奖结果
-                        traditionalLotteryNumbers: [], // 新增：传统数字彩票号码
-                        lastLotteryDraw: Date.now(), // 新增：上次开奖时间
-                        bank: { // 新增银行系统
-                            deposit: 0, // 存款金额
-                            lastInterestUpdate: Date.now() // 上次利息计算时间
-                        }
-                    };
-                    updateDisplay();
-                    logAction('游戏已重置', 'success');
+            // 清旧版 key
+            try { localStorage.removeItem('goldGameSave'); } catch (e1) {}
+            try { localStorage.removeItem('goldGameLastUnload'); } catch (e2) {}
+
+            // 清当前账号 scoped 存档
+            var aid = '';
+            try {
+                if (typeof window.goldGameResolveAccountId === 'function') {
+                    aid = String(window.goldGameResolveAccountId() || '').trim();
                 }
-            });
+            } catch (e3) {}
+            if (!aid) {
+                try { aid = String(localStorage.getItem('goldGameAccountId') || '').trim(); } catch (e4) {}
+            }
+            if (aid) {
+                try { localStorage.removeItem('goldGameSave_' + aid); } catch (e5) {}
+            }
+            if (typeof window.goldGameSaveStorageKey === 'function') {
+                try { localStorage.removeItem(window.goldGameSaveStorageKey(aid || undefined)); } catch (e6) {}
+            }
+        } catch (e) {
+            console.error('resetGame clear failed', e);
         }
+        location.reload();
+    }
+    if (typeof goldGameConfirm === 'function') {
+        goldGameConfirm(msg, doReset);
+        return;
+    }
+    if (typeof showCustomConfirm === 'function') {
+        showCustomConfirm(msg, function (confirmed) {
+            if (confirmed) doReset();
+        });
+        return;
+    }
+    if (window.confirm(msg)) doReset();
+}
 
         function showCustomConfirm(message, callback) {
             const dialog = document.getElementById('customDialog');
@@ -1577,16 +991,48 @@ function formatTime(milliseconds) {
         overlay.style.display = 'none';
     }
 }
+var lunhuiRealmPage = 1;
+var LUNHUI_REALM_PAGE_MAX = 3;
+function setLunhuiRealmPage(page) {
+    var p = Number(page) || 1;
+    if (p < 1) p = 1;
+    if (p > LUNHUI_REALM_PAGE_MAX) p = LUNHUI_REALM_PAGE_MAX;
+    lunhuiRealmPage = p;
+    for (var i = 1; i <= LUNHUI_REALM_PAGE_MAX; i++) {
+        var pageEl = document.getElementById('lunhuiRealmPage' + i);
+        if (!pageEl) continue;
+        if (i === 1) pageEl.style.display = p === 1 ? '' : 'none';
+        else pageEl.style.display = p === i ? 'grid' : 'none';
+    }
+    var label = document.getElementById('lunhuiRealmPageLabel');
+    if (label) label.textContent = p + ' / ' + LUNHUI_REALM_PAGE_MAX;
+    var prevBtn = document.getElementById('lunhuiRealmPrevBtn');
+    var nextBtn = document.getElementById('lunhuiRealmNextBtn');
+    if (prevBtn) {
+        prevBtn.disabled = p <= 1;
+        prevBtn.setAttribute('onclick', 'setLunhuiRealmPage(' + (p - 1) + ')');
+    }
+    if (nextBtn) {
+        nextBtn.disabled = p >= LUNHUI_REALM_PAGE_MAX;
+        nextBtn.setAttribute('onclick', 'setLunhuiRealmPage(' + (p + 1) + ')');
+    }
+}
 function refreshLunhuiRealmPanel() {
     var a = Number(player.level && player.level.ascentionCounta) || 0;
+    var hua = Number(player.level && player.level.huaShengCount) || 0;
     var el = document.getElementById('lunhuiRealmAscention');
     if (el) el.textContent = String(a);
     var cards = document.querySelectorAll('#autoBuyShopa .lunhui-realm-card[data-req]');
     for (var i = 0; i < cards.length; i++) {
         var req = Number(cards[i].getAttribute('data-req')) || 0;
-        var locked = a < req;
+        var reqHua = Number(cards[i].getAttribute('data-req-hua')) || 0;
+        var locked = a < req || (reqHua > 0 && hua < reqHua);
         cards[i].classList.toggle('is-locked', locked);
         cards[i].setAttribute('aria-disabled', locked ? 'true' : 'false');
+    }
+    setLunhuiRealmPage(lunhuiRealmPage || 1);
+    if (typeof refreshAllLunhuiDungeonTokenCostLabels === 'function') {
+        refreshAllLunhuiDungeonTokenCostLabels();
     }
 }
 function toggleAutoBuyShopa() {
@@ -1597,7 +1043,10 @@ function toggleAutoBuyShopa() {
     const shop = document.getElementById('autoBuyShopa');
     var opening = shop.style.display === 'none';
     shop.style.display = opening ? 'block' : 'none';
-    if (opening) refreshLunhuiRealmPanel();
+    if (opening) {
+        lunhuiRealmPage = 1;
+        refreshLunhuiRealmPanel();
+    }
 }
 function toggleAutoBuyShopb() {
       if (player.cultivation.stage < 2) {

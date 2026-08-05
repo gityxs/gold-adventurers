@@ -1048,16 +1048,22 @@ function generateRandomBeast() {
     
     // 3. 随机确定词条数量（根据概率）
     const affixCount = weightedRandomSelection(beastConfig.affixCountProbs);
+
+    // 3.5 上古血脉 / 神格（额外品质）
+    const bloodline = (typeof rollAncientBloodline === 'function') ? rollAncientBloodline(rarity) : null;
+    const divinity = (typeof rollBeastDivinity === 'function') ? rollBeastDivinity(rarity) : null;
+    const bloodlineMult = bloodline ? (1 + (Number(bloodline.bonus) || 0)) : 1;
+    const divinityMult = divinity ? (1 + (Number(divinity.bonus) || 0)) : 1;
     
     // 4. 生成词条（可以重复）
     const affixes = [];
     for (let i = 0; i < affixCount; i++) {
         const affixType = beastConfig.affixTypes[Math.floor(Math.random() * beastConfig.affixTypes.length)];
-        // 计算该词条的加成数值（基于S级别范围和品质倍率）
+        // 计算该词条的加成数值（基于S级别范围、品质、上古血脉、神格）
         const sConfig = beastConfig.sLevels[sLevel];
         const baseMultiplier = Math.random() * (sConfig.multiplierRange[1] - sConfig.multiplierRange[0]) + sConfig.multiplierRange[0];
         const rarityMultiplier = beastConfig.rarities[rarity].effectMultiplier;
-        const finalMultiplier = baseMultiplier * rarityMultiplier;
+        const finalMultiplier = baseMultiplier * rarityMultiplier * bloodlineMult * divinityMult;
         
         affixes.push({
             type: affixType,
@@ -1068,6 +1074,7 @@ function generateRandomBeast() {
     // 5. 生成神兽名字和背景故事
    const name = generateBeastName(rarity);
     const lore = generateBeastLore(rarity, name);
+    const resonance = (typeof rollBeastResonance === 'function') ? rollBeastResonance(rarity) : null;
     // 6. 创建神兽对象
     const beast = {
         id: 'beast_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
@@ -1077,6 +1084,9 @@ function generateRandomBeast() {
         chineseName: beastConfig.rarities[rarity].chineseName, // 添加中文名
         description: beastConfig.rarities[rarity].description, // 添加品质描述
         affixes: affixes,
+        resonance: resonance,
+        bloodline: bloodline,
+        divinity: divinity,
         requiredAscention: beastConfig.sLevels[sLevel].requiredAscention,
         lore: lore,
         owner: player.name, // 掉落者的玩家名字
@@ -1097,16 +1107,21 @@ function generateBeastWithSLevel(sLevel) {
     });
     const rarity = weightedRandomSelection(rarityWeights);
     const affixCount = weightedRandomSelection(beastConfig.affixCountProbs);
+    const bloodline = (typeof rollAncientBloodline === 'function') ? rollAncientBloodline(rarity) : null;
+    const divinity = (typeof rollBeastDivinity === 'function') ? rollBeastDivinity(rarity) : null;
+    const bloodlineMult = bloodline ? (1 + (Number(bloodline.bonus) || 0)) : 1;
+    const divinityMult = divinity ? (1 + (Number(divinity.bonus) || 0)) : 1;
     const affixes = [];
     for (let i = 0; i < affixCount; i++) {
         const affixType = beastConfig.affixTypes[Math.floor(Math.random() * beastConfig.affixTypes.length)];
         const sConfig = beastConfig.sLevels[sLevel];
         const baseMultiplier = Math.random() * (sConfig.multiplierRange[1] - sConfig.multiplierRange[0]) + sConfig.multiplierRange[0];
         const rarityMultiplier = beastConfig.rarities[rarity].effectMultiplier;
-        affixes.push({ type: affixType, value: baseMultiplier * rarityMultiplier });
+        affixes.push({ type: affixType, value: baseMultiplier * rarityMultiplier * bloodlineMult * divinityMult });
     }
     const name = generateBeastName(rarity);
     const lore = generateBeastLore(rarity, name);
+    const resonance = (typeof rollBeastResonance === 'function') ? rollBeastResonance(rarity) : null;
     return {
         id: 'beast_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
         name: name,
@@ -1115,6 +1130,9 @@ function generateBeastWithSLevel(sLevel) {
         chineseName: beastConfig.rarities[rarity].chineseName,
         description: beastConfig.rarities[rarity].description,
         affixes: affixes,
+        resonance: resonance,
+        bloodline: bloodline,
+        divinity: divinity,
         requiredAscention: beastConfig.sLevels[sLevel].requiredAscention,
         lore: lore,
         owner: player.name,
@@ -1143,6 +1161,66 @@ function generateS4Beast() {
 
 function generateS5Beast() {
     return generateBeastWithSLevel('S5');
+}
+
+function generateS6Beast() {
+    return generateBeastWithSLevel('S6');
+}
+
+function generateS7Beast() {
+    return generateBeastWithSLevel('S7');
+}
+
+function generateS8Beast() {
+    return generateBeastWithSLevel('S8');
+}
+
+function generateS9Beast() {
+    return generateBeastWithSLevel('S9');
+}
+
+function generateS10Beast() {
+    return generateBeastWithSLevel('S10');
+}
+
+function generateS11Beast() {
+    return generateBeastWithSLevel('S11');
+}
+
+function generateS12Beast() {
+    return generateBeastWithSLevel('S12');
+}
+
+function generateS13Beast() {
+    return generateBeastWithSLevel('S13');
+}
+
+function generateS14Beast() {
+    return generateBeastWithSLevel('S14');
+}
+
+function generateS15Beast() {
+    return generateBeastWithSLevel('S15');
+}
+
+function generateS16Beast() {
+    return generateBeastWithSLevel('S16');
+}
+
+function generateS17Beast() {
+    return generateBeastWithSLevel('S17');
+}
+
+function generateS18Beast() {
+    return generateBeastWithSLevel('S18');
+}
+
+function generateS19Beast() {
+    return generateBeastWithSLevel('S19');
+}
+
+function generateS20Beast() {
+    return generateBeastWithSLevel('S20');
 }
 
 // 生成神兽名字
@@ -1270,34 +1348,25 @@ function updateBeastUI() {
     const shareBonusPercent = (shareLevel * 100).toFixed(1);
     
     document.getElementById('totalBeastBonus').innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
-            <div style="text-align: center;">
-                <div style="color: #aaa; font-size: 0.8em;">生命加成</div>
-                <div style="color: #4CAF50; font-size: 1.1em;">+${(totalBonus.health * 100).toFixed(1)}%</div>
-            </div>
-            <div style="text-align: center;">
-                <div style="color: #aaa; font-size: 0.8em;">攻击加成</div>
-                <div style="color: #4CAF50; font-size: 1.1em;">+${(totalBonus.attack * 100).toFixed(1)}%</div>
-            </div>
-            <div style="text-align: center;">
-                <div style="color: #aaa; font-size: 0.8em;">爆伤加成</div>
-                <div style="color: #4CAF50; font-size: 1.1em;">+${(totalBonus.critDamage * 100).toFixed(1)}%</div>
-            </div>
-         <div style="text-align: center;">
-                <div style="color: #aaa; font-size: 0.8em;">共享等级</div>
-                <div style="color: #FFD700; font-size: 1.1em;">Lv.${shareLevel}</div>
-                <div style="color: #4CAF50; font-size: 0.8em;">+${shareBonusPercent}%</div>
-            </div>
-          <div style="text-align: center;">
-                <div style="color: #aaa; font-size: 0.8em;">已装备</div>
-                <div style="color: #8A2BE2; font-size: 1.1em;">${player.beasts.equipped.length}/${getMaxBeastSlots()}</div>
-            </div>
-            
-        </div>
+        <div class="beast-sys-stat-cell"><span class="lab">生命加成</span><span class="val">+${(totalBonus.health * 100).toFixed(1)}%</span></div>
+        <div class="beast-sys-stat-cell"><span class="lab">攻击加成</span><span class="val">+${(totalBonus.attack * 100).toFixed(1)}%</span></div>
+        <div class="beast-sys-stat-cell"><span class="lab">爆伤加成</span><span class="val">+${(totalBonus.critDamage * 100).toFixed(1)}%</span></div>
+        <div class="beast-sys-stat-cell"><span class="lab">共享等级</span><span class="val" style="color:#f0d78c">Lv.${shareLevel}</span><span class="sub">+${shareBonusPercent}%</span></div>
+        <div class="beast-sys-stat-cell"><span class="lab">已装备</span><span class="val" style="color:#e6d5b0">${player.beasts.equipped.length}/${getMaxBeastSlots()}</span></div>
     `;
     
     // 更新已装备神兽显示
     updateEquippedBeastsDisplay();
+
+    // 更新山海共鸣展示
+    if (typeof updateBeastResonanceDisplay === 'function') {
+        updateBeastResonanceDisplay();
+    }
+
+    // 主界面共享升级
+    if (typeof updateShareUpgradeUI === 'function') {
+        try { updateShareUpgradeUI(); } catch (e) {}
+    }
     
     // 更新神兽仓库显示
     updateBeastInventory();
@@ -1314,6 +1383,8 @@ function updateBeastInventory() {
     const sLevelFilter = document.getElementById('beastSLevelFilter').value;
     const rarityFilter = document.getElementById('beastRarityFilter').value;
     const equipFilter = document.getElementById('beastEquipFilter').value;
+    const specialFilterEl = document.getElementById('beastSpecialFilter');
+    const specialFilter = specialFilterEl ? specialFilterEl.value : 'all';
     
     // 筛选神兽
     let filteredBeasts = [...player.beasts.inventory];
@@ -1348,6 +1419,28 @@ function updateBeastInventory() {
             }
         });
     }
+
+    // 特殊筛选（共鸣 / 血脉 / 神格）
+    if (specialFilter !== 'all') {
+        filteredBeasts = filteredBeasts.filter(beast => {
+            switch (specialFilter) {
+                case 'hasResonance':
+                    return !!beast.resonance;
+                case 'noResonance':
+                    return !beast.resonance;
+                case 'hasBloodline':
+                    return !!beast.bloodline;
+                case 'noBloodline':
+                    return !beast.bloodline;
+                case 'hasDivinity':
+                    return !!beast.divinity;
+                case 'noDivinity':
+                    return !beast.divinity;
+                default:
+                    return true;
+            }
+        });
+    }
     
     // 可选：按装备状态排序（已装备的排前面）
     filteredBeasts.sort((a, b) => {
@@ -1365,7 +1458,7 @@ function updateBeastInventory() {
                 <div style="font-size: 3em; margin-bottom: 10px; opacity: 0.3;">🔍</div>
                 <div style="font-size: 1.1em; margin-bottom: 5px;">未找到符合条件的神兽</div>
                 <div style="font-size: 0.9em; color: #666;">
-                    当前筛选条件：${getFilterDescription(sLevelFilter, rarityFilter, equipFilter)}
+                    当前筛选条件：${getFilterDescription(sLevelFilter, rarityFilter, equipFilter, specialFilter)}
                 </div>
                 <button onclick="resetAllFilters()" style="margin-top: 15px; background: #8A2BE2; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
                     重置所有筛选
@@ -1408,7 +1501,7 @@ function updateBeastInventory() {
         container.appendChild(beastElement);
     });
 }
-function getFilterDescription(sLevelFilter, rarityFilter, equipFilter) {
+function getFilterDescription(sLevelFilter, rarityFilter, equipFilter, specialFilter) {
     const descriptions = [];
     
     if (sLevelFilter !== 'all') descriptions.push(`S${sLevelFilter.slice(1)}`);
@@ -1422,6 +1515,17 @@ function getFilterDescription(sLevelFilter, rarityFilter, equipFilter) {
         };
         descriptions.push(equipNames[equipFilter] || equipFilter);
     }
+    if (specialFilter && specialFilter !== 'all') {
+        const specialNames = {
+            'hasResonance': '有山海共鸣',
+            'noResonance': '无共鸣',
+            'hasBloodline': '有上古血脉',
+            'noBloodline': '无血脉',
+            'hasDivinity': '有神格',
+            'noDivinity': '无神格'
+        };
+        descriptions.push(specialNames[specialFilter] || specialFilter);
+    }
     
     return descriptions.length > 0 ? descriptions.join(' · ') : '无筛选条件';
 }
@@ -1431,6 +1535,8 @@ function resetAllFilters() {
     document.getElementById('beastSLevelFilter').value = 'all';
     document.getElementById('beastRarityFilter').value = 'all';
     document.getElementById('beastEquipFilter').value = 'all';
+    const specialFilterEl = document.getElementById('beastSpecialFilter');
+    if (specialFilterEl) specialFilterEl.value = 'all';
     filterBeasts();
     logAction("已重置所有筛选条件", "info");
 }
@@ -1453,91 +1559,64 @@ function quickFilterEquippable() {
 // 创建神兽卡片
 function createBeastCard(beast) {
     const div = document.createElement('div');
-    div.className = 'beast-card';
-    div.setAttribute('data-rarity', beast.rarity); // 添加品质属性用于CSS样式
+    const rarityKeyMap = {
+        '小宠物': 'pet', '野兽': 'beast', '凶兽': 'fierce', '灵兽': 'spirit',
+        '圣兽': 'saint', '神兽': 'divine', '炁兽': 'qi'
+    };
+    div.className = 'beast-card' + (beast.isLocked ? ' is-locked' : '');
+    div.setAttribute('data-rarity', beast.rarity);
+    div.setAttribute('data-rk', rarityKeyMap[beast.rarity] || 'pet');
     
-    // 检查是否可装备
     const isEquipped = player.beasts.equipped.includes(beast.id);
     const canEquip = playerCanEquipBeast(beast);
+    const rarityColor = beastConfig.rarities[beast.rarity].color;
+    const rarityTag = beastConfig.rarities[beast.rarity].chineseName || beast.rarity;
     
-    // 装备状态显示
-    const equipStatus = isEquipped ? 
-        '<span style="color: #4CAF50;">✓ 已装备</span>' :
-        (canEquip ? 
-            '<span style="color: #2196F3;">可装备</span>' : 
-            `<span style="color: #FF9800;">需${getBeastEquipRequirementLabelBySLevel(beast.sLevel)}</span>`);
-    
-    // 品质标签
-    const rarityTag = `${beastConfig.rarities[beast.rarity].chineseName || beast.rarity}`;
-    
-    div.style.cssText = `
-        border-radius: 8px;
-        padding: 12px;
-        border-left: 4px solid ${beastConfig.rarities[beast.rarity].color};
-        cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
-        position: relative;
-        overflow: hidden;
-        ${beast.isLocked ? 'border: 2px solid gold; box-shadow: 0 0 10px gold;' : ''}
-    `;
-    div.onmouseenter = () => {
-        div.style.transform = 'translateY(-4px)';
-        div.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
-    };
-    div.onmouseleave = () => {
-        div.style.transform = 'translateY(0)';
-        div.style.boxShadow = 'none';
-    };
-    
-    div.onclick = (e) => {
-    // 如果点击的不是按钮，可以选择是否触发快速预览
-    if (!e.target.closest('button')) {
-        // 可以添加快速预览功能，或者留空
-        // 例如：highlightBeast(beast.id);
+    const equipStatus = isEquipped
+        ? '<span class="t-ok">✓ 已装备</span>'
+        : (canEquip
+            ? '<span style="color:#64b5f6">可装备</span>'
+            : `<span class="t-amber">需${getBeastEquipRequirementLabelBySLevel(beast.sLevel)}</span>`);
+
+    const tags = [];
+    if (beast.resonance && typeof formatBeastResonanceTag === 'function') {
+        const rsTag = formatBeastResonanceTag(beast.resonance);
+        if (rsTag) tags.push(`<span class="beast-card-tag">${rsTag}</span>`);
     }
-};
-    
+    if (beast.bloodline && typeof formatAncientBloodlineTag === 'function') {
+        tags.push(`<span class="beast-card-tag">${formatAncientBloodlineTag(beast)}</span>`);
+    }
+    if (beast.divinity && typeof formatBeastDivinityTag === 'function') {
+        tags.push(`<span class="beast-card-tag">${formatBeastDivinityTag(beast)}</span>`);
+    }
+
     div.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <div style="color: ${beastConfig.rarities[beast.rarity].color}; font-weight: bold; font-size: 1.1em;">
-            ${beast.name} ${isEquipped ? '⚡' : ''}
+    <div class="beast-card-inner" style="border-top: 2px solid ${rarityColor};">
+        <div class="beast-card-top">
+            <div class="beast-card-name" style="color:${rarityColor}">${beast.name}${isEquipped ? ' ⚡' : ''}${beast.isLocked ? ' 🔒' : ''}</div>
+            <div class="beast-card-s">${beast.sLevel}</div>
         </div>
-        <div style="font-size: 0.9em; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 10px;">
-            ${beast.sLevel}
+        <div class="beast-card-meta">${rarityTag} · ${beast.description || ''}</div>
+        ${tags.length ? `<div class="beast-card-tags">${tags.join('')}</div>` : ''}
+        <div class="beast-card-status">${equipStatus}</div>
+        <div class="beast-card-affixes">
+            ${(beast.affixes || []).map(affix => `
+                <div class="beast-card-affix">
+                    <span><span class="an ${typeof getBeastFxColorClass === 'function' ? getBeastFxColorClass('af:' + affix.type) : ''}">${affix.type}</span><span class="as">(${getBeastAffixStatLabel(affix.type)})</span></span>
+                    <span class="av">+${(affix.value * 100).toFixed(1)}%</span>
+                </div>`).join('')}
         </div>
-    </div>
-    <div style="font-size: 0.85em; color: #aaa; margin-bottom: 5px;">
-        ${rarityTag} · ${beast.description || ''}
-    </div>
-    <div style="font-size: 0.8em; color: #4CAF50; margin-bottom: 8px;">
-        ${equipStatus}
-    </div>
-    <div style="margin-top: 8px; font-size: 0.85em;">
-        ${beast.affixes.map(affix => 
-            `<div style="margin-bottom: 3px;">
-                <span style="color: #FFD700;">${affix.type}:</span> 
-                <span style="color: #4CAF50;">+${(affix.value * 100).toFixed(1)}%</span>
-            </div>`
-        ).join('')}
-    </div>
-    <div style="font-size: 0.75em; color: #888; margin-top: 8px; border-top: 1px solid #444; padding-top: 8px;">
-        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            来自: ${beast.owner || '未知'}
+        <div class="beast-card-foot">
+            <div>来自：${beast.owner || '未知'}</div>
+            <div>${beast.dropTime || '未知时间'}</div>
         </div>
-        <div>${beast.dropTime || '未知时间'}</div>
-    </div>
-    <div style="margin-top: 10px; display: flex; gap: 5px;">
-        <button onclick="toggleEquipBeast('${beast.id}', true)" 
-                style="${isEquipped ? 'background: #f44336;' : 'background: #4CAF50;'} 
-                       color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; flex: 1;">
-            ${isEquipped ? '卸下' : '装备'}
-        </button>
-        <button onclick="openBeastActionModal('${beast.id}')" 
-                style="background: #2196F3; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; flex: 1;">
-            详细
-        </button>
-    </div>
-`;
+        <div class="beast-card-btns">
+            <button type="button" class="beast-sys-btn ${isEquipped ? 'beast-sys-btn-danger' : 'beast-sys-btn-ok'}"
+                    onclick="toggleEquipBeast('${beast.id}', true)">${isEquipped ? '卸下' : '装备'}</button>
+            <button type="button" class="beast-sys-btn beast-sys-btn-info"
+                    onclick="openBeastActionModal('${beast.id}')">详细</button>
+        </div>
+    </div>`;
     
     return div;
 }
@@ -1551,10 +1630,6 @@ function openBeastActionModal(beastId) {
     
     // 填充神兽信息
     updateSelectedBeastInfo();
-    
-    // 显示共享升级界面
-    document.getElementById('shareUpgradeSection').style.display = 'block';
-    updateShareUpgradeUI();
     
     modal.style.display = 'block';
     overlay.style.display = 'block';
@@ -1584,69 +1659,80 @@ function updateSelectedBeastInfo() {
     
     // 生成词条详细显示
     const affixDetails = beast.affixes.map((affix, index) => {
+        const fx = (typeof getBeastFxColorClass === 'function') ? getBeastFxColorClass('af:' + affix.type) : '';
         return `
-            <div style="padding: 8px; margin: 5px 0; background: rgba(0,0,0,0.3); border-radius: 4px;">
-                <div>
-                    <span style="color: #FFD700;">词条${index + 1}: ${affix.type}</span>
-                    <span style="color: #4CAF50; float: right;">+${(affix.value * 100).toFixed(1)}%</span>
-                </div>
+            <div class="beast-affix-row">
+                <span><span class="${fx}">词条${index + 1} · ${affix.type}</span>
+                <span style="color:#8a97a5;font-size:12px"> · ${getBeastAffixStatLabel(affix.type)}</span></span>
+                <span class="t-ok">+${(affix.value * 100).toFixed(1)}%</span>
             </div>
         `;
     }).join('');
     
-    // 计算总加成
-    const totalBonus = {
-        '生命加成': 0,
-        '攻击加成': 0,
-        '爆伤加成': 0
-    };
+    // 计算总加成（花名词条归并到攻/血/爆伤）
+    const totalBonus = { health: 0, attack: 0, critDamage: 0 };
     beast.affixes.forEach(affix => {
-        totalBonus[affix.type] += affix.value;
+        const t = getBonusType(affix.type);
+        if (totalBonus[t] !== undefined) totalBonus[t] += affix.value;
     });
+
+    const tags = [];
+    if (beast.resonance && typeof formatBeastResonanceTag === 'function') {
+        const rsTag = formatBeastResonanceTag(beast.resonance);
+        if (rsTag) tags.push(`<span class="beast-card-tag">${rsTag}</span>`);
+    }
+    if (beast.bloodline) {
+        tags.push(`<span class="beast-card-tag">${formatAncientBloodlineTag(beast)}</span>`);
+    }
+    if (beast.divinity) {
+        tags.push(`<span class="beast-card-tag">${formatBeastDivinityTag(beast)}</span>`);
+    }
     
     document.getElementById('selectedBeastInfo').innerHTML = `
-        <div style="border-left: 4px solid ${rarityColor}; padding-left: 15px; margin-bottom: 15px;">
-            <h3 style="color: ${rarityColor}; margin: 0 0 5px 0;">
-                ${beast.name} 
-                <span style="font-size: 0.8em; color: #aaa;">[${rarityName}·${beast.sLevel}]</span>
-                ${isEquipped ? '<span style="color: #4CAF50; font-size: 0.8em;">⚡ 已装备</span>' : ''}
-            </h3>
-            <div style="color: #aaa; font-size: 0.9em; margin-bottom: 5px;">
-                ${beast.description || '暂无描述'} · 需${getBeastEquipRequirementLabelBySLevel(beast.sLevel)}
+        <div class="beast-detail-hero" style="border-left-color:${rarityColor}">
+            <div style="flex:1;min-width:0">
+                <h3 style="color:${rarityColor}">${beast.name}
+                    <span style="font-size:0.72em;color:#9aa6b2;font-weight:500">[${rarityName}·${beast.sLevel}]</span>
+                    ${isEquipped ? '<span class="t-ok" style="font-size:0.72em">⚡ 已装备</span>' : ''}
+                </h3>
+                <div class="sub">${beast.description || '暂无描述'} · 需${getBeastEquipRequirementLabelBySLevel(beast.sLevel)}</div>
+                ${tags.length ? `<div class="beast-detail-tags">${tags.join('')}</div>` : ''}
+                ${beast.bloodline && beast.bloodline.desc ? `<div class="sub" style="margin-top:6px">${beast.bloodline.desc}</div>` : ''}
+                ${beast.divinity && beast.divinity.desc ? `<div class="sub" style="margin-top:4px">${beast.divinity.desc}</div>` : ''}
             </div>
         </div>
         
-        <div style="background: rgba(255,215,0,0.1); padding: 15px; border-radius: 5px; margin: 15px 0;">
-            <div style="color: #FFD700; font-size: 0.9em; margin-bottom: 8px;">📖 神兽传说</div>
-            <div style="color: #aaa; font-style: italic;">${beast.lore || '暂无背景故事'}</div>
+        <div class="beast-detail-panel">
+            <div class="ph">📖 神兽传说</div>
+            <div class="beast-detail-lore">${beast.lore || '暂无背景故事'}</div>
         </div>
         
-        <div style="margin: 15px 0;">
-            <div style="color: #4CAF50; font-size: 0.9em; margin-bottom: 8px;">⚡ 词条属性</div>
-            ${affixDetails || '<div style="color: #888; text-align: center;">无词条</div>'}
+        <div class="beast-detail-panel">
+            <div class="ph">⚡ 词条属性</div>
+            ${affixDetails || '<div class="beast-resonance-empty">无词条</div>'}
         </div>
         
-        <div style="background: rgba(138, 43, 226, 0.1); padding: 15px; border-radius: 5px; margin: 15px 0;">
-            <div style="color: #8A2BE2; font-size: 0.9em; margin-bottom: 8px;">📈 总加成效果</div>
-            <div style="display: flex; justify-content: space-around; margin-top: 8px;">
-                ${totalBonus['生命加成'] > 0 ? `<div style="text-align: center;"><div style="color: #aaa; font-size: 0.8em;">生命</div><div style="color: #4CAF50; font-size: 1.2em;">+${(totalBonus['生命加成'] * 100).toFixed(1)}%</div></div>` : ''}
-                ${totalBonus['攻击加成'] > 0 ? `<div style="text-align: center;"><div style="color: #aaa; font-size: 0.8em;">攻击</div><div style="color: #4CAF50; font-size: 1.2em;">+${(totalBonus['攻击加成'] * 100).toFixed(1)}%</div></div>` : ''}
-                ${totalBonus['爆伤加成'] > 0 ? `<div style="text-align: center;"><div style="color: #aaa; font-size: 0.8em;">爆伤</div><div style="color: #4CAF50; font-size: 1.2em;">+${(totalBonus['爆伤加成'] * 100).toFixed(1)}%</div></div>` : ''}
+        <div class="beast-detail-panel">
+            <div class="ph">📈 总加成</div>
+            <div class="beast-detail-totals">
+                ${totalBonus.health > 0 ? `<div class="beast-sys-stat-cell"><span class="lab">生命</span><span class="val">+${(totalBonus.health * 100).toFixed(1)}%</span></div>` : ''}
+                ${totalBonus.attack > 0 ? `<div class="beast-sys-stat-cell"><span class="lab">攻击</span><span class="val">+${(totalBonus.attack * 100).toFixed(1)}%</span></div>` : ''}
+                ${totalBonus.critDamage > 0 ? `<div class="beast-sys-stat-cell"><span class="lab">爆伤</span><span class="val">+${(totalBonus.critDamage * 100).toFixed(1)}%</span></div>` : ''}
             </div>
         </div>
         
-        <div style="font-size: 0.85em; color: #888; border-top: 1px solid #444; padding-top: 15px;">
-        <div><span style="color: #aaa;">🏷️ 原始掉落者:</span> ${beast.owner || '未知'}</div>
-        <div><span style="color: #aaa;">📅 原始掉落时间:</span> ${beast.dropTime || '未知时间'}</div>
-        <div><span style="color: #aaa;">🆔 神兽ID:</span> <span style="font-family: monospace; font-size: 0.8em;">${beast.id}</span></div>
-        ${beast.isLocked ? '<div style="color: gold; margin-top: 5px;">🔒 已锁定（无法丢弃）</div>' : ''}
-    </div>
+        <div class="beast-detail-meta">
+            <div>🏷️ 掉落者：${beast.owner || '未知'}</div>
+            <div>📅 掉落时间：${beast.dropTime || '未知时间'}</div>
+            <div>🆔 ID：<span style="font-family:ui-monospace,monospace;font-size:11px">${beast.id}</span></div>
+            ${beast.isLocked ? '<div class="t-gold">🔒 已锁定（无法丢弃）</div>' : ''}
+        </div>
 `;
     
     // 更新按钮状态
     const lockBtn = document.getElementById('btnLockUnlock');
     lockBtn.textContent = beast.isLocked ? '🔓 解锁' : '🔒 锁定';
-    lockBtn.style.background = beast.isLocked ? '#FF9800' : '#4CAF50';
+    lockBtn.className = 'beast-sys-btn ' + (beast.isLocked ? 'beast-sys-btn-amber' : 'beast-sys-btn-ok');
     
     // 更新丢弃按钮状态
     const discardBtn = document.getElementById('btnDiscard');
@@ -1666,18 +1752,8 @@ function updateEquippedBeastsDisplay() {
     const maxSlots = getMaxBeastSlots();
     const currentCount = player.beasts.equipped.length;
     
-    // 更新标题中的数量
-    const titleElement = equippedSection.querySelector('h4');
-    if (titleElement) {
-        const countSpan = titleElement.querySelector('span:last-child') || 
-                         (() => {
-                             const span = document.createElement('span');
-                             span.style.cssText = 'font-size: 0.8em; background: #8A2BE2; color: white; padding: 2px 8px; border-radius: 10px;';
-                             titleElement.appendChild(span);
-                             return span;
-                         })();
-        countSpan.textContent = `${currentCount}/${maxSlots}`;
-    }
+    const countEl = document.getElementById('equippedBeastSlotCount');
+    if (countEl) countEl.textContent = `${currentCount}/${maxSlots}`;
     
     container.innerHTML = '';
     
@@ -1694,14 +1770,11 @@ function updateEquippedBeastsDisplay() {
                 const rarityColor = beastConfig.rarities[beast.rarity].color;
                 const rarityName = beastConfig.rarities[beast.rarity].chineseName;
                 
-                // 计算总加成
-                const totalBonus = {
-                    '生命加成': 0,
-                    '攻击加成': 0,
-                    '爆伤加成': 0
-                };
+                // 计算总加成（花名词条归并）
+                const totalBonus = { health: 0, attack: 0, critDamage: 0 };
                 beast.affixes.forEach(affix => {
-                    totalBonus[affix.type] += affix.value;
+                    const t = getBonusType(affix.type);
+                    if (totalBonus[t] !== undefined) totalBonus[t] += affix.value;
                 });
                 
                 slotElement.className = 'equipped-beast-card';
@@ -1712,13 +1785,18 @@ function updateEquippedBeastsDisplay() {
                         <span style="color: ${rarityColor};">${beast.name}</span>
                         <span class="beast-rarity" style="color: ${rarityColor};">${beast.sLevel}</span>
                     </div>
-                    <div style="font-size: 0.8em; color: #aaa; margin-bottom: 5px;">
+                    <div style="font-size: 0.8em; color: #9aa6b2; margin-bottom: 5px;">
                         ${rarityName}
+                        ${beast.resonance && typeof formatBeastResonanceTag === 'function'
+                            ? ` · ${formatBeastResonanceTag(beast.resonance)}`
+                            : ''}
+                        ${beast.bloodline ? `<div style="margin-top:2px;">${formatAncientBloodlineTag(beast)}</div>` : ''}
+                        ${beast.divinity ? `<div style="margin-top:2px;">${formatBeastDivinityTag(beast)}</div>` : ''}
                     </div>
                     <div class="beast-stats">
-                        ${totalBonus['生命加成'] > 0 ? `<div style="margin-bottom: 2px;">生命: +${(totalBonus['生命加成'] * 100).toFixed(1)}%</div>` : ''}
-                        ${totalBonus['攻击加成'] > 0 ? `<div style="margin-bottom: 2px;">攻击: +${(totalBonus['攻击加成'] * 100).toFixed(1)}%</div>` : ''}
-                        ${totalBonus['爆伤加成'] > 0 ? `<div>爆伤: +${(totalBonus['爆伤加成'] * 100).toFixed(1)}%</div>` : ''}
+                        ${totalBonus.health > 0 ? `<div style="margin-bottom: 2px;">生命: +${(totalBonus.health * 100).toFixed(1)}%</div>` : ''}
+                        ${totalBonus.attack > 0 ? `<div style="margin-bottom: 2px;">攻击: +${(totalBonus.attack * 100).toFixed(1)}%</div>` : ''}
+                        ${totalBonus.critDamage > 0 ? `<div>爆伤: +${(totalBonus.critDamage * 100).toFixed(1)}%</div>` : ''}
                     </div>
                 `;
                 
@@ -1732,18 +1810,11 @@ function updateEquippedBeastsDisplay() {
             slotElement.className = 'equipped-slot-empty';
             slotElement.innerHTML = `
                 <div style="text-align: center;">
-                    <div style="font-size: 1.5em; margin-bottom: 5px; opacity: 0.5;">⚡</div>
+                    <div style="font-size: 1.35em; margin-bottom: 4px; opacity: 0.45;">◇</div>
                     <div>槽位 ${i + 1}</div>
-                    <div style="font-size: 0.8em; color: #666;">未装备</div>
+                    <div style="font-size: 0.8em; color: #66707a;">未装备</div>
                 </div>
             `;
-            
-            // 点击空槽位可以快速装备筛选中的神兽（可选功能）
-            slotElement.onclick = (e) => {
-                e.stopPropagation();
-                // 可以在这里添加快速装备功能
-                // quickEquipToSlot(i);
-            };
         }
         
         container.appendChild(slotElement);
@@ -1752,10 +1823,10 @@ function updateEquippedBeastsDisplay() {
     // 如果没有已装备的神兽，显示提示
     if (currentCount === 0) {
         container.innerHTML = `
-            <div style="text-align: center; color: #888; width: 100%; padding: 20px; grid-column: 1 / -1;">
-                <div style="font-size: 2em; margin-bottom: 10px; opacity: 0.3;">⚡</div>
-                <div>当前没有已装备的神兽</div>
-                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">点击仓库中的神兽进行装备</div>
+            <div class="beast-resonance-empty" style="grid-column: 1 / -1;">
+                <div style="font-size: 1.6em; margin-bottom: 6px; opacity: 0.35;">◇</div>
+                <div>当前没有出战神兽</div>
+                <div style="font-size: 12px; margin-top: 4px;">从仓库装备神兽即可上阵</div>
             </div>
         `;
     }
@@ -1859,10 +1930,11 @@ function toggleEquipBeast(beastId, autoUnequip = false, event) {
     updateBeastUI();
     updateEquippedBeastsDisplay(); // 更新已装备显示
     updatePlayerBattleStats();
-  // 如果当前筛选的是已装备/未装备状态，更新显示
+  // 如果当前有装备/特殊筛选，刷新列表
     const currentEquipFilter = document.getElementById('beastEquipFilter').value;
-    if (currentEquipFilter === 'equipped' || currentEquipFilter === 'unequipped' || 
-        currentEquipFilter === 'equippable' || currentEquipFilter === 'unequippable') {
+    const specialFilterEl = document.getElementById('beastSpecialFilter');
+    const currentSpecialFilter = specialFilterEl ? specialFilterEl.value : 'all';
+    if (currentEquipFilter !== 'all' || currentSpecialFilter !== 'all') {
         filterBeasts();
     }
 }
@@ -1870,6 +1942,58 @@ function toggleEquipBeast(beastId, autoUnequip = false, event) {
 // 获取最大装备槽位
 function getMaxBeastSlots() {
     return Math.min(6, 1 + Math.floor(player.level.ascentionCounta / 5));
+}
+
+/** 山海共鸣效果面板（对齐轮回装备套装展示） */
+function updateBeastResonanceDisplay() {
+    const container = document.getElementById('beastResonanceContainer');
+    if (!container || !beastConfig || !beastConfig.resonances) return;
+
+    const equipped = (typeof collectEquippedBeastResonances === 'function')
+        ? collectEquippedBeastResonances()
+        : {};
+    const ascMult = (typeof getBeastResonanceAscensionMult === 'function')
+        ? getBeastResonanceAscensionMult()
+        : 1;
+    const nameMap = beastConfig.resonanceStatNames || {
+        health: '生命加成', attack: '攻击加成', critDamage: '爆伤加成'
+    };
+
+    let html = '<div class="beast-resonances">';
+    const keys = Object.keys(equipped);
+    if (!keys.length) {
+        html += '<div class="beast-resonance-empty">未激活山海共鸣（高品质神兽更易附带）</div>';
+    } else {
+        keys.forEach(function (key) {
+            const info = equipped[key];
+            const setCfg = beastConfig.resonances[key];
+            if (!setCfg) return;
+            const avgS = info.sSum / Math.max(1, info.count);
+            const sMult = (typeof getBeastResonanceSLevelMult === 'function')
+                ? getBeastResonanceSLevelMult(avgS)
+                : 1;
+            const scale = ascMult * sMult;
+            html += '<div class="beast-resonance-card">';
+            html += '<h4>' + setCfg.name + ' (' + info.count + '/6)</h4>';
+            html += '<div class="meta">平均S' + avgS.toFixed(1) + ' · S档×' + sMult.toFixed(1) + ' · 含轮回倍率</div>';
+            Object.keys(setCfg.bonuses).forEach(function (pieceKey) {
+                const need = parseInt(pieceKey, 10);
+                const bonuses = setCfg.bonuses[pieceKey];
+                const isActive = info.count >= need;
+                const lines = Object.keys(bonuses).map(function (stat) {
+                    const raw = bonuses[stat];
+                    const shown = isActive ? raw * scale : raw;
+                    return (nameMap[stat] || stat) + ' +' + (shown * 100).toFixed(1) + '%';
+                }).join(', ');
+                html += '<div class="beast-resonance-line ' + (isActive ? 'on' : 'off') + '">';
+                html += '<span>' + need + '只: </span>' + lines;
+                html += '</div>';
+            });
+            html += '</div>';
+        });
+    }
+    html += '</div>';
+    container.innerHTML = html;
 }
 // 锁定/解锁神兽
 function toggleLockBeast() {
@@ -1903,6 +2027,9 @@ function exportBeastCode() {
                 chineseName: beast.chineseName,
                 description: beast.description,
                 affixes: beast.affixes,
+                resonance: beast.resonance || null,
+                bloodline: beast.bloodline || null,
+                divinity: beast.divinity || null,
                 requiredAscention: beast.requiredAscention,
                 lore: beast.lore,
                 owner: beast.owner, // 保留原始掉落者
@@ -1928,17 +2055,16 @@ function exportBeastCode() {
         
         document.getElementById('exportCodeSection').innerHTML = `
             <h4>兑换码分享</h4>
-            <p style="color: #aaa; font-size: 0.9em;">
-                ⏰ 生成时间: ${generatedTime.toLocaleString('zh-CN')}<br>
-                ⏳ 过期时间: ${expiryTime.toLocaleString('zh-CN')}<br>
-                🔑 有效期: 10分钟<br>
-                👤 掉落者: ${beast.owner}<br>
-                📅 掉落时间: ${beast.dropTime}
+            <p class="beast-sys-hint">
+                生成：${generatedTime.toLocaleString('zh-CN')} · 过期：${expiryTime.toLocaleString('zh-CN')}<br>
+                掉落者：${beast.owner || '未知'} · ${beast.dropTime || ''}
             </p>
-            <p style="color: #FFD700; font-size: 0.9em;">请复制下方代码分享给其他玩家：</p>
-            <textarea id="beastCodeOutput" readonly style="width: 100%; height: 60px; background: #333; color: #fff; border: 1px solid #555; padding: 10px; border-radius: 5px; font-family: monospace; margin-bottom: 10px;">${encryptedCode}</textarea>
-            <button onclick="copyBeastCode()" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; margin-right: 10px;">复制代码</button>
-            <button onclick="shareBeastCode()" style="background: #2196F3; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">分享</button>
+            <p class="t-gold" style="font-size:13px;margin:8px 0 4px">复制下方代码分享：</p>
+            <textarea id="beastCodeOutput" readonly>${encryptedCode}</textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+                <button type="button" class="beast-sys-btn beast-sys-btn-ok" onclick="copyBeastCode()">复制代码</button>
+                <button type="button" class="beast-sys-btn beast-sys-btn-info" onclick="shareBeastCode()">分享</button>
+            </div>
         `;
         document.getElementById('exportCodeSection').style.display = 'block';
         
@@ -2047,6 +2173,9 @@ function redeemBeastCode() {
                 chineseName: originalBeastData.chineseName,
                 description: originalBeastData.description,
                 affixes: originalBeastData.affixes,
+                resonance: originalBeastData.resonance || null,
+                bloodline: originalBeastData.bloodline || null,
+                divinity: originalBeastData.divinity || null,
                 requiredAscention: originalBeastData.requiredAscention,
                 lore: originalBeastData.lore,
                 owner: originalBeastData.owner || '未知',
@@ -2159,6 +2288,9 @@ function redeemBeastCodeFromImport() {
                 chineseName: originalBeastData.chineseName,
                 description: originalBeastData.description,
                 affixes: originalBeastData.affixes,
+                resonance: originalBeastData.resonance || null,
+                bloodline: originalBeastData.bloodline || null,
+                divinity: originalBeastData.divinity || null,
                 requiredAscention: originalBeastData.requiredAscention,
                 lore: originalBeastData.lore,
                 owner: originalBeastData.owner || '未知',
@@ -2222,28 +2354,48 @@ function discardBeast() {
     }
 }
 
+/** 当前筛选下是否匹配一只神兽（与仓库筛选一致） */
+function beastMatchesCurrentFilters(beast) {
+    const sLevelFilter = document.getElementById('beastSLevelFilter')?.value || 'all';
+    const rarityFilter = document.getElementById('beastRarityFilter')?.value || 'all';
+    const equipFilter = document.getElementById('beastEquipFilter')?.value || 'all';
+    const specialFilter = document.getElementById('beastSpecialFilter')?.value || 'all';
+
+    if (sLevelFilter !== 'all' && beast.sLevel !== sLevelFilter) return false;
+    if (rarityFilter !== 'all' && beast.rarity !== rarityFilter) return false;
+
+    if (equipFilter !== 'all') {
+        const isEquipped = player.beasts.equipped.includes(beast.id);
+        const canEquip = playerCanEquipBeast(beast);
+        if (equipFilter === 'equipped' && !isEquipped) return false;
+        if (equipFilter === 'unequipped' && isEquipped) return false;
+        if (equipFilter === 'equippable' && !(!isEquipped && canEquip)) return false;
+        if (equipFilter === 'unequippable' && !(!isEquipped && !canEquip)) return false;
+    }
+
+    if (specialFilter !== 'all') {
+        if (specialFilter === 'hasResonance' && !beast.resonance) return false;
+        if (specialFilter === 'noResonance' && beast.resonance) return false;
+        if (specialFilter === 'hasBloodline' && !beast.bloodline) return false;
+        if (specialFilter === 'noBloodline' && beast.bloodline) return false;
+        if (specialFilter === 'hasDivinity' && !beast.divinity) return false;
+        if (specialFilter === 'noDivinity' && beast.divinity) return false;
+    }
+    return true;
+}
+
 // 批量操作功能
 function lockAllFilteredBeasts() {
-    const sLevelFilter = document.getElementById('beastSLevelFilter').value;
-    const rarityFilter = document.getElementById('beastRarityFilter').value;
-    
     let count = 0;
     let equippedCount = 0;
     
     player.beasts.inventory.forEach(beast => {
-        // 检查是否满足筛选条件
-        const matchSLevel = sLevelFilter === 'all' || beast.sLevel === sLevelFilter;
-        const matchRarity = rarityFilter === 'all' || beast.rarity === rarityFilter;
+        if (!beastMatchesCurrentFilters(beast)) return;
         const isEquipped = player.beasts.equipped.includes(beast.id);
-        
-        if (matchSLevel && matchRarity) {
-            if (!beast.isLocked) {
-                beast.isLocked = true;
-                count++;
-                if (isEquipped) {
-                    equippedCount++;
-                }
-            }
+        if (!beast.isLocked) {
+            beast.isLocked = true;
+            count++;
+            if (isEquipped) equippedCount++;
         }
     });
     
@@ -2257,38 +2409,24 @@ function lockAllFilteredBeasts() {
         logAction("没有可锁定的筛选神兽", "info");
     }
     
-    // 更新界面
     updateBeastInventory();
     
-    // 如果当前选中的神兽在弹窗中，更新弹窗显示
     if (player.beasts.selectedId) {
         const selectedBeast = player.beasts.inventory.find(b => b.id === player.beasts.selectedId);
-        if (selectedBeast) {
-            updateSelectedBeastInfo();
-        }
+        if (selectedBeast) updateSelectedBeastInfo();
     }
 }
 function unlockAllFilteredBeasts() {
-    const sLevelFilter = document.getElementById('beastSLevelFilter').value;
-    const rarityFilter = document.getElementById('beastRarityFilter').value;
-    
     let count = 0;
     let equippedCount = 0;
     
     player.beasts.inventory.forEach(beast => {
-        // 检查是否满足筛选条件
-        const matchSLevel = sLevelFilter === 'all' || beast.sLevel === sLevelFilter;
-        const matchRarity = rarityFilter === 'all' || beast.rarity === rarityFilter;
+        if (!beastMatchesCurrentFilters(beast)) return;
         const isEquipped = player.beasts.equipped.includes(beast.id);
-        
-        if (matchSLevel && matchRarity) {
-            if (beast.isLocked) {
-                beast.isLocked = false;
-                count++;
-                if (isEquipped) {
-                    equippedCount++;
-                }
-            }
+        if (beast.isLocked) {
+            beast.isLocked = false;
+            count++;
+            if (isEquipped) equippedCount++;
         }
     });
     
@@ -2302,36 +2440,21 @@ function unlockAllFilteredBeasts() {
         logAction("没有已锁定的筛选神兽", "info");
     }
     
-    // 更新界面
     updateBeastInventory();
     
-    // 如果当前选中的神兽在弹窗中，更新弹窗显示
     if (player.beasts.selectedId) {
         const selectedBeast = player.beasts.inventory.find(b => b.id === player.beasts.selectedId);
-        if (selectedBeast) {
-            updateSelectedBeastInfo();
-        }
+        if (selectedBeast) updateSelectedBeastInfo();
     }
 }
 function discardAllUnlockedFilteredBeasts() {
-    const sLevelFilter = document.getElementById('beastSLevelFilter').value;
-    const rarityFilter = document.getElementById('beastRarityFilter').value;
-    
-    // 先检查是否有符合条件的未锁定神兽
     let unlockedCount = 0;
     let equippedCount = 0;
     
     player.beasts.inventory.forEach(beast => {
-        const matchSLevel = sLevelFilter === 'all' || beast.sLevel === sLevelFilter;
-        const matchRarity = rarityFilter === 'all' || beast.rarity === rarityFilter;
-        const isEquipped = player.beasts.equipped.includes(beast.id);
-        
-        if (matchSLevel && matchRarity && !beast.isLocked) {
-            unlockedCount++;
-            if (isEquipped) {
-                equippedCount++;
-            }
-        }
+        if (!beastMatchesCurrentFilters(beast) || beast.isLocked) return;
+        unlockedCount++;
+        if (player.beasts.equipped.includes(beast.id)) equippedCount++;
     });
     
     if (unlockedCount === 0) {
@@ -2339,7 +2462,6 @@ function discardAllUnlockedFilteredBeasts() {
         return;
     }
     
-    // 显示确认信息，包含已装备的警告
     let confirmMessage = `确定要丢弃${unlockedCount}个未锁定的筛选神兽吗？`;
     
     if (equippedCount > 0) {
@@ -2349,31 +2471,19 @@ function discardAllUnlockedFilteredBeasts() {
     if (!confirm(confirmMessage)) return;
     
     let discardedCount = 0;
-    
-    // 创建新数组，只保留不符合丢弃条件的
     const newInventory = [];
     
     player.beasts.inventory.forEach(beast => {
-        // 检查是否满足筛选条件
-        const matchSLevel = sLevelFilter === 'all' || beast.sLevel === sLevelFilter;
-        const matchRarity = rarityFilter === 'all' || beast.rarity === rarityFilter;
         const isEquipped = player.beasts.equipped.includes(beast.id);
-        
-        // 丢弃条件：筛选条件匹配 + 未锁定 + 未装备
-        if (matchSLevel && matchRarity && !beast.isLocked && !isEquipped) {
-            // 满足丢弃条件
+        if (beastMatchesCurrentFilters(beast) && !beast.isLocked && !isEquipped) {
             discardedCount++;
-            // 注意：这里不需要从装备列表中移除，因为本身就不是装备状态
         } else {
-            // 不满足丢弃条件，保留
             newInventory.push(beast);
         }
     });
     
-    // 更新库存
     player.beasts.inventory = newInventory;
     
-    // 如果当前选中的神兽被丢弃了，清空选择
     if (player.beasts.selectedId && !player.beasts.inventory.find(b => b.id === player.beasts.selectedId)) {
         player.beasts.selectedId = null;
         const actionModal = document.getElementById('beastActionModal');
@@ -2427,11 +2537,19 @@ function calculateEquippedBeastBonus() {
     totalBonus.health *= shareBonus;
     totalBonus.attack *= shareBonus;
     totalBonus.critDamage *= shareBonus;
+
+    // 山海经共鸣（独立于共享等级，倍率规则对齐轮回装备套装）
+    if (typeof calculateBeastResonanceBonuses === 'function') {
+        const res = calculateBeastResonanceBonuses();
+        totalBonus.health += res.health || 0;
+        totalBonus.attack += res.attack || 0;
+        totalBonus.critDamage += res.critDamage || 0;
+    }
     
     return totalBonus;
 }
 
-/** 联网至尊神器：加成与轮回神兽同类词条（生命/攻击/爆伤），无穿戴限制 */
+/** 联网至尊神器：词条加成 + 武魂共鸣套装加成（同名武魂 3/6/9/12 件） */
 function calculateEquippedSupremeArtifactBonus() {
     var totalBonus = { health: 0, attack: 0, critDamage: 0 };
     if (typeof getGoldGameAuthToken !== 'function' || !getGoldGameAuthToken()) return totalBonus;
@@ -2446,17 +2564,30 @@ function calculateEquippedSupremeArtifactBonus() {
             if (totalBonus[bonusType] !== undefined) totalBonus[bonusType] += Number(affix.value) || 0;
         });
     });
+    if (typeof calculateSupremeWuhunResonanceBonuses === 'function') {
+        var wh = calculateSupremeWuhunResonanceBonuses();
+        totalBonus.health += wh.health || 0;
+        totalBonus.attack += wh.attack || 0;
+        totalBonus.critDamage += wh.critDamage || 0;
+    }
     return totalBonus;
 }
 
-// 辅助函数：词条类型映射
+// 辅助函数：词条类型映射（含山海花名词条）
 function getBonusType(chineseType) {
-    const typeMap = {
-        '生命加成': 'health',
-        '攻击加成': 'attack', 
-        '爆伤加成': 'critDamage'
-    };
-    return typeMap[chineseType] || 'health';
+    if (!chineseType) return 'health';
+    const map = (beastConfig && beastConfig.affixTypeMap) || {};
+    if (map[chineseType]) return map[chineseType];
+    if (chineseType.indexOf('生命') >= 0 || chineseType.indexOf('不灭') >= 0 || chineseType.indexOf('固本') >= 0 || chineseType.indexOf('负甲') >= 0) return 'health';
+    if (chineseType.indexOf('攻击') >= 0 || chineseType.indexOf('战意') >= 0 || chineseType.indexOf('裂地') >= 0 || chineseType.indexOf('踏破') >= 0) return 'attack';
+    if (chineseType.indexOf('爆伤') >= 0 || chineseType.indexOf('焚') >= 0 || chineseType.indexOf('夺魄') >= 0 || chineseType.indexOf('嗜血') >= 0) return 'critDamage';
+    return 'health';
+}
+
+function getBeastAffixStatLabel(chineseType) {
+    const stat = getBonusType(chineseType);
+    const labels = (beastConfig && beastConfig.affixStatLabels) || { health: '生命', attack: '攻击', critDamage: '爆伤' };
+    return labels[stat] || stat;
 }
 function getEggsRequiredForNextLevel(currentLevel) {
     // 每级基础消耗20个，每10级额外增加30个

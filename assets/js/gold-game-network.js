@@ -1662,7 +1662,9 @@ function refreshNetworkMarketDialog() {
                 namePart = row.displayName || sa.displayName || sa.name || '至尊神器';
                 var extraS = aff ? (' <span style="color:#ffe082;font-size:12px;">(' + aff + ')</span>') : '';
                 var pricePartS = (row.saleMode === 'auction') ? (networkMarketAuctionTag(row) + ' 币') : (' <span style="color:#ffd700">' + (row.price != null ? row.price : 0) + ' 币</span>');
-                var infoS = '<span style="color:#fff3e0">' + namePart + '</span>' + extraS + ' <span style="color:#b39ddb;font-size:12px;">' + (sa.sLevel || '') + ' · ' + (sa.qualityName || '') + ' · ' + (sa.partLabel || '') + '</span>' + pricePartS + ' 玩家: <span style="color:#81c784">' + sellerNameStr + '</span>' + autoDelistHtml;
+                var infoS = '<span style="color:#fff3e0">' + namePart + '</span>' + extraS + ' <span style="color:#b39ddb;font-size:12px;">' + (sa.sLevel || '') + ' · ' + (sa.qualityName || '') + ' · ' + (sa.partLabel || '') + '</span>' +
+                    (sa.wuhunResonance ? (' <span style="color:#ffe082;font-size:11px;">武魂·' + (sa.wuhunResonanceName || sa.wuhunResonance) + '</span>') : '') +
+                    pricePartS + ' 玩家: <span style="color:#81c784">' + sellerNameStr + '</span>' + autoDelistHtml;
                 var isMineS = (myId && row.sellerId && String(row.sellerId).trim().toLowerCase() === myId) || (row.sellerName && myName && row.sellerName === myName);
                 var btnS = infoBtnSup + networkMarketRowButtons(row, isMineS);
                 div.innerHTML = infoS + btnS;
@@ -1759,6 +1761,7 @@ function openNetworkMarketSupremeArtifactInfoDialog(listingId) {
             ? (supremeEscapeHtml(String(sa.partLabel || '')) + ' · ' + supremeEscapeHtml(String(sa.sLevel || '')) + ' · ' + supremeEscapeHtml(String(sa.qualityName || '')))
             : String([sa.partLabel, sa.sLevel, sa.qualityName].filter(Boolean).join(' · '));
         var affHtml = typeof supremeAffixPillsHtml === 'function' ? supremeAffixPillsHtml(sa.affixes) : '';
+        var whHtml = typeof supremeWuhunBadgeHtml === 'function' ? supremeWuhunBadgeHtml(sa) : '';
         var cmpHtml = typeof supremeBagCompareVsEquippedHtml === 'function' ? supremeBagCompareVsEquippedHtml(sa, equipped) : '';
         var dropHtml = typeof supremeDropMetaHtml === 'function' ? supremeDropMetaHtml(sa) : '';
         var tip = '';
@@ -1767,7 +1770,7 @@ function openNetworkMarketSupremeArtifactInfoDialog(listingId) {
         }
         var html = '<div style="font-weight:800;color:#ffe082;font-size:15px;line-height:1.35;margin-bottom:6px;">' + title + '</div>' +
             '<div style="font-size:12px;color:#b39ddb;margin-bottom:10px;">' + sub + '</div>' +
-            affHtml + cmpHtml + dropHtml + tip;
+            whHtml + affHtml + cmpHtml + dropHtml + tip;
         var content = document.getElementById('networkMarketSupremeInfoContent');
         var ov = document.getElementById('networkMarketSupremeInfoOverlay');
         var dlg = document.getElementById('networkMarketSupremeInfoDialog');

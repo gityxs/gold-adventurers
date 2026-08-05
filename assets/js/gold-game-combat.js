@@ -521,7 +521,13 @@ const ITEM_NAME_TONE_MAP = {
     banlv1: 'tone-soul1', banlv2: 'tone-soul2', banlv3: 'tone-soul3', banlv4: 'tone-soul4',
     banlv5: 'tone-soul5', banlv6: 'tone-soul6', banlv7: 'tone-soul7', banlv8: 'tone-soul8', banlv9: 'tone-soul9',
     zhiye1: 'tone-job', chiban1: 'tone-wing', zuoqi1: 'tone-mount', fuben1: 'tone-dungeon',
-    shenshou1: 'tone-beast', lawPowerMaterial: 'tone-law', fuwen1: 'tone-rune', fuben2: 'tone-secret',
+    shenshou1: 'tone-beast', lawPowerMaterial: 'tone-law',
+    lunhuiSkill1: 'tone-samsara', lunhuiSkill2: 'tone-samsara', lunhuiSkill3: 'tone-samsara',
+    lunhuiSkill4: 'tone-samsara', lunhuiSkill5: 'tone-samsara', lunhuiSkill6: 'tone-samsara',
+    lunhuiSkill7: 'tone-samsara', lunhuiSkill8: 'tone-samsara', lunhuiSkill9: 'tone-samsara',
+    lunhuiSkill10: 'tone-samsara', lunhuiSkill11: 'tone-samsara', lunhuiSkill12: 'tone-samsara',
+    lunhuiSkill13: 'tone-samsara', lunhuiSkill14: 'tone-samsara', lunhuiSkill15: 'tone-samsara',
+    fuwen1: 'tone-rune', fuben2: 'tone-secret',
     danyao1: 'tone-pill1', danyao2: 'tone-pill2', danyao3: 'tone-pill3', danyao4: 'tone-pill4', danyao5: 'tone-pill5',
     fubeng1: 'tone-abyss', cultivationpill: 'tone-cult',
     seed_herb1: 'tone-seed1', seed_herb2: 'tone-seed2', seed_herb3: 'tone-seed3', seed_herb4: 'tone-seed4', seed_herb5: 'tone-seed5'
@@ -1703,6 +1709,7 @@ let wingHealthBonus = 0;
     var networkPetCritDmgPct = (typeof getGoldGameAuthToken === 'function' && getGoldGameAuthToken() && typeof getNetworkArtifactPetCritDmgPct === 'function') ? (getNetworkArtifactPetCritDmgPct() / 100) : 0;
 
     const lawBonuses = (typeof getLawPowerBonuses === 'function') ? getLawPowerBonuses() : { attack: 0, health: 0, critDamage: 0, critRate: 0 };
+    const samsaraSkillBonuses = (typeof getSamsaraSkillBonuses === 'function') ? getSamsaraSkillBonuses() : { attack: 0, health: 0, critDamage: 0 };
 
     var worldMapAbyssFloorMul = (typeof getWorldMapAbyssBestFloorStatMultiplier === 'function') ? getWorldMapAbyssBestFloorStatMultiplier() : 1;
     var worldMapDivineCodexMul = (typeof getNetworkAbyssDivineCodexWorldMapMultiplier === 'function') ? getNetworkAbyssDivineCodexWorldMapMultiplier() : 1;
@@ -1738,6 +1745,7 @@ let wingHealthBonus = 0;
         (1 + networkHpPct),
         (1 + networkPetHpPct),
         (1 + (lawBonuses.health || 0)),
+        (1 + (samsaraSkillBonuses.health || 0)),
         getDongtianAnnihilationHpAtkMultiplier(),
         worldMapAbyssCombinedMul,
         geneTreeHpMul,
@@ -1767,6 +1775,7 @@ let wingHealthBonus = 0;
         (1 + networkAtkPct),
         (1 + networkPetAtkPct),
         (1 + (lawBonuses.attack || 0)),
+        (1 + (samsaraSkillBonuses.attack || 0)),
         getDongtianAnnihilationHpAtkMultiplier(),
         worldMapAbyssCombinedMul,
         geneTreeAtkMul,
@@ -1789,7 +1798,7 @@ let wingHealthBonus = 0;
         classBonuses.critMultiplier * titleBonuses.critMultiplier *
         companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100) *  (1 + techBonuses.critDamage* 10)  *  (1 + mountCritDamageBonus) *
         (1 + runeBonuses.critDamage)*         (1 + (player.mining.gems.amethyst*0.05)) * (1+player.marriage.marriageBonuses.critDamageBonus) *
-       (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage) * (1 + supremeBonus.critDamage) * (1 + pixelBonus.critDamage) * (1+player.fiveElements.water.level * 3.00) * (1 + networkPetCritDmgPct) * (1 + (lawBonuses.critDamage || 0)) * worldMapAbyssCombinedMul * geneTreeCritMul * (1 + ((player.children.childBonuses && player.children.childBonuses.worldCritDmgBonus) || 0)); // 应用伴侣爆伤加成 + 无限深渊最佳层数 + 神兽图鉴 + 地主基因树 + 家族传承爆伤（世界地图）
+       (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage) * (1 + supremeBonus.critDamage) * (1 + pixelBonus.critDamage) * (1+player.fiveElements.water.level * 3.00) * (1 + networkPetCritDmgPct) * (1 + (lawBonuses.critDamage || 0)) * (1 + (samsaraSkillBonuses.critDamage || 0)) * worldMapAbyssCombinedMul * geneTreeCritMul * (1 + ((player.children.childBonuses && player.children.childBonuses.worldCritDmgBonus) || 0)); // 应用伴侣爆伤加成 + 无限深渊最佳层数 + 神兽图鉴 + 地主基因树 + 家族传承爆伤（世界地图） + 轮回技能
 
     // 6. 计算连击次数（应用伴侣连击加成）
     player.battle.playerMultiAttack = Math.max(1, Math.floor(

@@ -38,6 +38,10 @@ function updateCultivationUI() {
     // 获取当前阶段信息
     const stageIndex = player.cultivation.stage;
     const stage = cultivationStages[stageIndex];
+    // 侧栏「XX倍购买」随修仙境界同步
+    if (typeof updateAutoBuySpeedText === 'function') {
+        try { updateAutoBuySpeedText(); } catch (e) { /* ignore */ }
+    }
     
     // 确保阶段信息存在
     if (!stage) {
@@ -1311,7 +1315,9 @@ function checkCultivationBreakthrough() {
             break;
         }
     }
-    
+    if (breakthrough && typeof updateAutoBuySpeedText === 'function') {
+        try { updateAutoBuySpeedText(); } catch (e) { /* ignore */ }
+    }
     return breakthrough;
 }
 // 称号配置（按分支分组）
