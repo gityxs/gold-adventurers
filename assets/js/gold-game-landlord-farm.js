@@ -290,9 +290,14 @@
             const modal = document.getElementById('landlordItemModal');
             const content = document.getElementById('landlordItemModalContent');
             const subtitle = document.getElementById('landlordItemModalSubtitle');
+            const tagsHost = document.getElementById('landlordItemModalTags');
             
             if (subtitle) {
                 subtitle.textContent = `正在为第 ${fieldIndex + 1} 号地块选择道具，点击卡片即可使用`;
+            }
+
+            if (tagsHost) {
+                tagsHost.innerHTML = buildLandlordItemModalTagsHtml(fieldIndex);
             }
             
             content.innerHTML = '';
@@ -325,10 +330,69 @@
             modal.classList.add('is-open');
         }
 
+        /** 道具弹窗顶部：当前地块作物词条 */
+        function buildLandlordItemModalTagsHtml(fieldIndex) {
+            const plant = player.landlord.fields && player.landlord.fields[fieldIndex];
+            if (!plant) {
+                return '<div class="landlord-item-modal-tags-empty">当前地块无作物</div>';
+            }
+            const cropLabel = (typeof getLandlordGeneVariantLabelHtml === 'function')
+                ? getLandlordGeneVariantLabelHtml(plant.type)
+                : String(plant.type || '未知作物').replace(/</g, '&lt;');
+            const entries = (typeof collectLandlordFieldMutationEntries === 'function')
+                ? collectLandlordFieldMutationEntries(plant)
+                : [];
+            let totalMultLabel = '';
+            if (typeof calculateLandlordMultiplier === 'function') {
+                const multNum = Number(calculateLandlordMultiplier(plant)) || 1;
+                if (typeof formatNumber === 'function' && multNum >= 1000) {
+                    totalMultLabel = formatNumber(multNum) + '倍';
+                } else if (Math.abs(multNum - Math.round(multNum)) < 1e-9) {
+                    totalMultLabel = Math.round(multNum) + '倍';
+                } else {
+                    totalMultLabel = multNum.toFixed(1) + '倍';
+                }
+            }
+            let html = '<div class="landlord-item-modal-tags-head">' +
+                '<span class="landlord-item-modal-tags-title">当前词条</span>' +
+                '<span class="landlord-item-modal-tags-crop">' + cropLabel + '</span>';
+            if (totalMultLabel) {
+                html += '<span class="landlord-item-modal-tags-mult" title="词条总倍率">' + totalMultLabel + '</span>';
+            }
+            html += '<span class="landlord-item-modal-tags-count">' + entries.length + ' 条</span>' +
+                '</div>';
+            if (!entries.length) {
+                html += '<div class="landlord-item-modal-tags-empty">暂无词条</div>';
+                return html;
+            }
+            html += '<div class="landlord-item-modal-tags-list">';
+            entries.forEach(function (e) {
+                const colorClass = e.kind === 'special'
+                    ? 'landlord-mutation-rainbow'
+                    : ((typeof getLandlordMutationColorClass === 'function')
+                        ? getLandlordMutationColorClass(e.name)
+                        : 'landlord-mutation-grey');
+                const safeName = String(e.name || '').replace(/</g, '&lt;');
+                const m = Number(e.mult) || 1;
+                let multText;
+                if (Math.abs(m - Math.round(m)) < 1e-9) {
+                    multText = '×' + Math.round(m);
+                } else {
+                    multText = '×' + (Math.round(m * 10) / 10);
+                }
+                html += '<span class="landlord-mutation-tag ' + colorClass + '" title="' + safeName + ' ' + multText + '">' +
+                    safeName + '<em class="landlord-item-modal-tag-mult">' + multText + '</em></span>';
+            });
+            html += '</div>';
+            return html;
+        }
+
         // 关闭道具选择模态框
         function closeLandlordItemModal() {
             const modal = document.getElementById('landlordItemModal');
             if (modal) modal.classList.remove('is-open');
+            const tagsHost = document.getElementById('landlordItemModalTags');
+            if (tagsHost) tagsHost.innerHTML = '';
             player.landlord.selectedFieldIndex = null;
         }
 
@@ -853,7 +917,7 @@
                 .filter(function (w) { return !plant.weatherMutations.includes(w); });
             if (!ultraPool.length) return { message: "已拥有全部超彩天气词条！", refund: true };
             if (!plant.weatherMutations.length) return { message: "没有天气词条，无法使用！", refund: true };
-            if (Math.random() * 100 < 3) {
+            if (Math.random() * 100 < 5) {
                 const uPick = ultraPool[Math.floor(Math.random() * ultraPool.length)];
                 plant.weatherMutations.push(uPick);
                 player.landlord.stats.weatherMutations++;

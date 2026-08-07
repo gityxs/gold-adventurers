@@ -393,6 +393,18 @@
         ui.classList.add('lh-battle-panel', 'lh-battle-panel--grand');
         applyThemeVars(ui, theme);
 
+        // 面板从隐藏→显示时播一次入场；关闭时清标记，下次打开再播
+        var panelVisible = ui.style.display === 'block' ||
+            (ui.style.display !== 'none' && window.getComputedStyle(ui).display !== 'none');
+        if (panelVisible) {
+            if (ui.getAttribute('data-lh-entered') !== '1') {
+                ui.setAttribute('data-lh-entered', '1');
+                playPanelEnter(ui);
+            }
+        } else {
+            ui.removeAttribute('data-lh-entered');
+        }
+
         var shell;
         var frame;
         if (ui.getAttribute('data-lh-enhanced') !== '1') {
@@ -523,13 +535,26 @@
         }, 320);
     }
 
+    function playPanelEnter(ui) {
+        if (!ui) return;
+        ui.classList.remove('lh-panel-enter', 'lh-shake', 'lh-shake-hard');
+        void ui.offsetWidth;
+        ui.classList.add('lh-panel-enter');
+        clearTimeout(ui._lhEnterTimer);
+        ui._lhEnterTimer = setTimeout(function () {
+            ui.classList.remove('lh-panel-enter');
+        }, 520);
+    }
+
     function shakePanel(prefix, hard) {
         var ui = document.getElementById(prefix + 'UI');
         if (!ui) return;
-        ui.classList.remove('lh-shake', 'lh-shake-hard');
+        // 震屏前清掉入场类，避免与 shake 抢 animation，结束后也不会回落到 lhPanelRise
+        ui.classList.remove('lh-shake', 'lh-shake-hard', 'lh-panel-enter');
         void ui.offsetWidth;
         ui.classList.add(hard ? 'lh-shake-hard' : 'lh-shake');
-        setTimeout(function () {
+        clearTimeout(ui._lhShakeTimer);
+        ui._lhShakeTimer = setTimeout(function () {
             ui.classList.remove('lh-shake', 'lh-shake-hard');
         }, hard ? 420 : 280);
     }

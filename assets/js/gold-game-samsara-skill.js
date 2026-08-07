@@ -1,6 +1,6 @@
 // 轮回技能系统：15 个技能，满级 10000
 var SAMSARA_SKILL_MAX_LEVEL = 10000;
-var SAMSARA_SKILL_UNLOCK_REINCARNATION = 1;
+var SAMSARA_SKILL_UNLOCK_REINCARNATION = 0; // 0=无轮回门槛，可直接进入
 
 var SAMSARA_SKILL_MATERIAL_NAMES = [
     '初转轮回晶', '淬魂轮回晶', '破境轮回晶', '灭劫轮回晶', '通幽轮回晶',

@@ -8,7 +8,7 @@
     <script>
         (function () {
             /** 与 gold-game-core.js 的 GAME_VERSION 对齐；发版时同步修改 */
-            var build = "2.0.47";
+            var build = "2.0.48";
             try {
                 var qs = location.search || "";
                 var m = /[?&]v=([^&]+)/.exec(qs);
@@ -113,9 +113,11 @@
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>2.047更新日志</h4>
+            <h4>2.048更新日志</h4>
             <h4>QQ群：902481027    有问题可以进群问（存档异常联系群管理修复）</h4> 
-            <p>2026/08/05: 在线100倍购买加入VIP等级加成，每1级+10倍数量，修复疯狂地主灰色天气词条没生效。增加轮回技能每个技能都能独立触发叠加伤害，次元1-15掉落升级材料。掉落修改轮回装备和轮回神兽界面UI，轮回装备和轮回神兽高ts掉落大量提升以及掉落率，高轮回装备套装属性大量提升附带格外加成，轮回装备增加新词条器灵，魂环，光环属性大量提升，轮回神兽增加词条山海共鸣，上古血脉，神格。轮回副本增加新ts6-ts15副本，修改轮回副本战斗界面UI,轮回副本掉落轮回装备和轮回神器提升原来3倍掉落概率。洞天劫修改升级现在每层等级上限后还是会继续储存经验，增加新副本神墓谷：难度偏高，每层调整成功增加经验保底，后期提升经验速度会加快很多。<p>
+            <p>2026/08/07: 轮回装备和轮回神兽自动丢弃加入各种筛选，修复异常BUG<p>
+            <p>2026/08/06: 轮回副本战斗修复BOSS复活闪屏，增加疯狂地主所有高级道具触发几率。<p>
+            <p>2026/08/05: 在线100倍购买加入VIP等级加成，每1级+10倍数量，修复疯狂地主灰色天气词条没生效。增加轮回技能：每个技能都能独立触发叠加伤害，次元1-15掉落升级材料。增加ts16-20化圣装备，修改轮回装备和轮回神兽界面UI，轮回装备和轮回神兽高ts掉落大量提升以及掉落率，高轮回装备套装属性大量提升附带格外加成，轮回装备增加新词条器灵，魂环，光环属性大量提升，轮回神兽增加词条山海共鸣，上古血脉，神格。轮回副本增加新ts6-ts15副本，修改轮回副本战斗界面UI,轮回副本掉落轮回装备和轮回神器提升原来3倍掉落概率。洞天劫修改升级现在每层等级上限后还是会继续储存经验，增加新副本神墓谷：难度偏高，每层调整成功增加经验保底，后期提升经验速度会加快很多。<p>
             <p>2026/08/01: 洞天劫副本减负可以跳关，藏宝图加入层数筛选丢弃，摸金模式加入大量墓和明器。增加账号密码修改。疯狂地主田地增加倍数显示<p>
             <p>2026/07/31: 更新轮回副本界面UI，更新疯狂地主田地UI，增加更高品质基础词和天气词条，升级土地更新，加入大量新道具，修复道具使用无法减田地时间，抽奖更新，修复打怪模式卡顿和新号属性异常为0BUG，修复星际探索等级变1存档，修复离线奥秘经验没生效，修复世界地图大量经验卡顿问题，转生属性加入离线收益加成可以加快转生，修改装备等级转生后直接生效对应等级属性，世界BOSS系统界面UI更新，自动开启宝箱数量倍率显示，宝石系统界面UI修改显示属性加成，传宗接代界面增加名字筛选<p>
             <p>2026/07/25:老系统更新大量减负，修仙等级加成的100倍自动开宝箱格外在提升3倍数量。自动转生加入离线自动转生效果还是原来1分钟全体1000级（现在加入VIP等级加成每级+200级）离线可以自动转生。打怪模式自动扫荡加入离线功能开启后会自动扫荡（比在线收益会低一点），疯狂地主修复BUG升级后的土地使用道具没效果。传宗接代页面UI加入新的筛选，简单清晰筛选几代，修复培养和打工异常BUG。洞天劫模式灵田药园种植时跳转默认种子BUG。世界地图挂机增加感悟系统：先开启自动攻击在点感悟，会计入1分钟经验收益和掉落，离线后可以享受80%收益。无限深渊装备界面加入一键升级和一键强化功能<p>
@@ -777,7 +779,7 @@
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v2.0.47</div>
+  <div id="footer">版本号: v2.0.48</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -7197,6 +7199,7 @@
                 </div>
                 <button type="button" class="landlord-picker-modal-close" onclick="closeLandlordItemModal()" aria-label="关闭">&times;</button>
             </div>
+            <div id="landlordItemModalTags" class="landlord-item-modal-tags" aria-live="polite"></div>
             <div id="landlordItemModalContent" class="landlord-picker-modal-body">
                 <!-- 道具列表将动态生成 -->
             </div>
@@ -8810,7 +8813,33 @@
                 <button id="toggleReincarnationEquipAutoDiscard" onclick="toggleReincarnationEquipAutoDiscard()" style="padding: 6px 12px; background: #ff9800; color: #111; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold;">自动丢弃：关</button>
                 <button onclick="runReincarnationEquipAutoDiscard(false)" style="padding: 6px 12px; background: #5d4037; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;">立即执行</button>
             </div>
-            <p style="font-size: 11px; color: #888; margin: 8px 0 0;">同时满足品质与 T 等级条件才会丢弃（两项共用，须都达标）。锁定装备不会被丢弃。</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px;">
+                <label style="font-size: 12px; color: #ccc;">器灵</label>
+                <select id="reincarnationEquipAutoSpirit" onchange="setReincarnationEquipAutoThreshold()" title="器灵丢弃条件" style="padding: 5px; background: #1a1a1a; color: #fff; border: 1px solid #666;">
+                    <option value="any">不限</option>
+                    <option value="none">无器灵才丢</option>
+                    <option value="has">有器灵才丢</option>
+                </select>
+                <label style="font-size: 12px; color: #ccc;">魂环</label>
+                <select id="reincarnationEquipAutoSoulRing" onchange="setReincarnationEquipAutoThreshold()" title="魂环丢弃条件" style="padding: 5px; background: #1a1a1a; color: #fff; border: 1px solid #666;">
+                    <option value="any">不限</option>
+                    <option value="none">无魂环才丢</option>
+                    <option value="has">有魂环才丢</option>
+                </select>
+                <label style="font-size: 12px; color: #ccc;">光环</label>
+                <select id="reincarnationEquipAutoAura" onchange="setReincarnationEquipAutoThreshold()" title="光环丢弃条件" style="padding: 5px; background: #1a1a1a; color: #fff; border: 1px solid #666;">
+                    <option value="any">不限</option>
+                    <option value="none">无光环才丢</option>
+                    <option value="has">有光环才丢</option>
+                </select>
+                <label style="font-size: 12px; color: #ccc;">套装</label>
+                <select id="reincarnationEquipAutoSet" onchange="setReincarnationEquipAutoThreshold()" title="套装丢弃条件" style="padding: 5px; background: #1a1a1a; color: #fff; border: 1px solid #666;">
+                    <option value="any">不限</option>
+                    <option value="none">无套装才丢</option>
+                    <option value="has">有套装才丢</option>
+                </select>
+            </div>
+            <p style="font-size: 11px; color: #888; margin: 8px 0 0;">须同时满足品质、T 与所选特殊条件才会丢弃。锁定装备不会被丢弃。</p>
         </div>
         <!-- 筛选条件 -->
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
@@ -8874,6 +8903,30 @@
                     <option value="all">全部</option>
                     <option value="hasSet">有套装</option>
                     <option value="noSet">无套装</option>
+                </select>
+            </div>
+            <div>
+                <label>器灵: </label>
+                <select id="inventoryFilterSpirit" onchange="updateReincarnationEquipmentUI()">
+                    <option value="all">全部</option>
+                    <option value="hasSpirit">有器灵</option>
+                    <option value="noSpirit">无器灵</option>
+                </select>
+            </div>
+            <div>
+                <label>魂环: </label>
+                <select id="inventoryFilterSoulRing" onchange="updateReincarnationEquipmentUI()">
+                    <option value="all">全部</option>
+                    <option value="hasSoulRing">有魂环</option>
+                    <option value="noSoulRing">无魂环</option>
+                </select>
+            </div>
+            <div>
+                <label>光环: </label>
+                <select id="inventoryFilterAura" onchange="updateReincarnationEquipmentUI()">
+                    <option value="all">全部</option>
+                    <option value="hasAura">有光环</option>
+                    <option value="noAura">无光环</option>
                 </select>
             </div>
         </div>
@@ -9161,7 +9214,27 @@
             <button type="button" id="toggleBeastAutoDiscard" class="beast-sys-btn beast-sys-btn-amber beast-sys-btn-sm" onclick="toggleBeastAutoDiscard()">自动丢弃：关</button>
             <button type="button" class="beast-sys-btn beast-sys-btn-sm" onclick="runBeastAutoDiscard(false)">立即执行</button>
         </div>
-        <p class="beast-sys-hint">须同时满足品质与 S；锁定与已装备不会丢弃。</p>
+        <div class="beast-sys-auto-row" style="margin-top:8px">
+            <label>山海共鸣</label>
+            <select id="beastAutoDiscardResonance" onchange="setBeastAutoDiscardThreshold()" title="山海共鸣丢弃条件">
+                <option value="any">不限</option>
+                <option value="none">无共鸣才丢</option>
+                <option value="has">有共鸣才丢</option>
+            </select>
+            <label>上古血脉</label>
+            <select id="beastAutoDiscardBloodline" onchange="setBeastAutoDiscardThreshold()" title="上古血脉丢弃条件">
+                <option value="any">不限</option>
+                <option value="none">无血脉才丢</option>
+                <option value="has">有血脉才丢</option>
+            </select>
+            <label>神格</label>
+            <select id="beastAutoDiscardDivinity" onchange="setBeastAutoDiscardThreshold()" title="神格丢弃条件">
+                <option value="any">不限</option>
+                <option value="none">无神格才丢</option>
+                <option value="has">有神格才丢</option>
+            </select>
+        </div>
+        <p class="beast-sys-hint">须同时满足品质、S 与所选特殊条件；锁定与已装备不会丢弃。</p>
     </details>
 
     <section class="beast-sys-block" id="beastInventoryContainer">
@@ -9196,7 +9269,7 @@
 <div id="beastActionOverlay" class="beast-sys-overlay beast-sys-overlay-top" style="display: none;"></div>
 
 <!-- 在现有弹窗后添加导入兑换码弹窗 -->
-<div id="importCodeModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #9C27B0; border-radius: 10px; z-index: 1003; width: 500px;">
+<div id="importCodeModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; color: white; padding: 20px; border: 3px solid #9C27B0; border-radius: 10px; z-index: 10003; width: 500px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h3 style="color: #9C27B0; margin: 0;">导入兑换码</h3>
         <button onclick="closeImportCodeModal()" style="background: #f44336; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">关闭</button>

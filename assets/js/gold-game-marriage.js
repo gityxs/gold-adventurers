@@ -4355,14 +4355,34 @@ function getReincarnationEquipInventoryCount() {
 function getReincarnationEquipFreeSlots() {
     return Math.max(0, GAME_INVENTORY_MAX - getReincarnationEquipInventoryCount());
 }
+function normalizeReincarnationEquipAutoDiscardSpecialMode(mode) {
+    return (mode === 'none' || mode === 'has') ? mode : 'any';
+}
+function matchReincarnationEquipAutoDiscardSpecial(mode, hasSpecial) {
+    mode = normalizeReincarnationEquipAutoDiscardSpecialMode(mode);
+    if (mode === 'none') return !hasSpecial;
+    if (mode === 'has') return !!hasSpecial;
+    return true;
+}
 function ensureReincarnationEquipAutoDiscardSettings() {
     if (!player.reincarnationEquipment) return;
     if (!player.reincarnationEquipment.autoDiscard) {
-        player.reincarnationEquipment.autoDiscard = { enabled: false, belowRarity: 'common', belowTier: 1 };
+        player.reincarnationEquipment.autoDiscard = {
+            enabled: false,
+            belowRarity: 'common',
+            belowTier: 1,
+            spirit: 'any',
+            soulRing: 'any',
+            aura: 'any',
+            set: 'any'
+        };
     }
-    if (player.reincarnationEquipment.autoDiscard.belowTier == null) {
-        player.reincarnationEquipment.autoDiscard.belowTier = 1;
-    }
+    var ad = player.reincarnationEquipment.autoDiscard;
+    if (ad.belowTier == null) ad.belowTier = 1;
+    ad.spirit = normalizeReincarnationEquipAutoDiscardSpecialMode(ad.spirit);
+    ad.soulRing = normalizeReincarnationEquipAutoDiscardSpecialMode(ad.soulRing);
+    ad.aura = normalizeReincarnationEquipAutoDiscardSpecialMode(ad.aura);
+    ad.set = normalizeReincarnationEquipAutoDiscardSpecialMode(ad.set);
 }
 function isReincarnationEquipLocked(eq) {
     return player.reincarnationEquipment.lockedItems && player.reincarnationEquipment.lockedItems.indexOf(eq.id) >= 0;
@@ -4377,7 +4397,12 @@ function shouldReincarnationEquipAutoDiscard(eq) {
     var rth = REINCARNATION_EQUIP_RARITY_ORDER.indexOf(cfg.belowRarity || 'common');
     var rarityOk = (ri >= 0 ? ri : 0) <= (rth >= 0 ? rth : 0);
     var tierOk = (eq.tier || 1) <= (cfg.belowTier || 1);
-    return rarityOk && tierOk;
+    if (!rarityOk || !tierOk) return false;
+    if (!matchReincarnationEquipAutoDiscardSpecial(cfg.spirit, !!eq.spirit)) return false;
+    if (!matchReincarnationEquipAutoDiscardSpecial(cfg.soulRing, !!eq.soulRing)) return false;
+    if (!matchReincarnationEquipAutoDiscardSpecial(cfg.aura, !!eq.aura)) return false;
+    if (!matchReincarnationEquipAutoDiscardSpecial(cfg.set, !!eq.setBonus)) return false;
+    return true;
 }
 function runReincarnationEquipAutoDiscard(silent) {
     if (!REINCARNATION_EQUIP_RARITY_ORDER || !REINCARNATION_EQUIP_RARITY_ORDER.length) return 0;
@@ -4421,9 +4446,17 @@ function initReincarnationEquipAutoDiscardUI() {
     var cfg = player.reincarnationEquipment.autoDiscard;
     var rSel = document.getElementById('reincarnationEquipAutoRarity');
     var tSel = document.getElementById('reincarnationEquipAutoTier');
+    var spSel = document.getElementById('reincarnationEquipAutoSpirit');
+    var srSel = document.getElementById('reincarnationEquipAutoSoulRing');
+    var auSel = document.getElementById('reincarnationEquipAutoAura');
+    var setSel = document.getElementById('reincarnationEquipAutoSet');
     var btn = document.getElementById('toggleReincarnationEquipAutoDiscard');
     if (rSel) rSel.value = cfg.belowRarity || 'common';
     if (tSel) tSel.value = String(cfg.belowTier || 1);
+    if (spSel) spSel.value = normalizeReincarnationEquipAutoDiscardSpecialMode(cfg.spirit);
+    if (srSel) srSel.value = normalizeReincarnationEquipAutoDiscardSpecialMode(cfg.soulRing);
+    if (auSel) auSel.value = normalizeReincarnationEquipAutoDiscardSpecialMode(cfg.aura);
+    if (setSel) setSel.value = normalizeReincarnationEquipAutoDiscardSpecialMode(cfg.set);
     if (btn) {
         btn.textContent = '自动丢弃：' + (cfg.enabled ? '开' : '关');
         btn.style.background = cfg.enabled ? '#4CAF50' : '#ff9800';
@@ -4433,8 +4466,16 @@ function setReincarnationEquipAutoThreshold() {
     ensureReincarnationEquipAutoDiscardSettings();
     var rSel = document.getElementById('reincarnationEquipAutoRarity');
     var tSel = document.getElementById('reincarnationEquipAutoTier');
+    var spSel = document.getElementById('reincarnationEquipAutoSpirit');
+    var srSel = document.getElementById('reincarnationEquipAutoSoulRing');
+    var auSel = document.getElementById('reincarnationEquipAutoAura');
+    var setSel = document.getElementById('reincarnationEquipAutoSet');
     if (rSel) player.reincarnationEquipment.autoDiscard.belowRarity = rSel.value;
     if (tSel) player.reincarnationEquipment.autoDiscard.belowTier = parseInt(tSel.value, 10) || 1;
+    if (spSel) player.reincarnationEquipment.autoDiscard.spirit = normalizeReincarnationEquipAutoDiscardSpecialMode(spSel.value);
+    if (srSel) player.reincarnationEquipment.autoDiscard.soulRing = normalizeReincarnationEquipAutoDiscardSpecialMode(srSel.value);
+    if (auSel) player.reincarnationEquipment.autoDiscard.aura = normalizeReincarnationEquipAutoDiscardSpecialMode(auSel.value);
+    if (setSel) player.reincarnationEquipment.autoDiscard.set = normalizeReincarnationEquipAutoDiscardSpecialMode(setSel.value);
 }
 function toggleReincarnationEquipAutoDiscard() {
     ensureReincarnationEquipAutoDiscardSettings();
@@ -4492,7 +4533,15 @@ function initReincarnationEquipmentSystem() {
             lockedItems: [],
             batchDiscardMode: false,
             selectedItems: [],
-            autoDiscard: { enabled: false, belowRarity: 'common', belowTier: 1 }
+            autoDiscard: {
+                enabled: false,
+                belowRarity: 'common',
+                belowTier: 1,
+                spirit: 'any',
+                soulRing: 'any',
+                aura: 'any',
+                set: 'any'
+            }
         };
     }
     if (!Array.isArray(player.reincarnationEquipment.inventory)) {
@@ -5506,38 +5555,58 @@ function updateEquippedEquipmentDisplay() {
 }
 
 // 更新装备仓库显示
+function getReincarnationInventoryFilterValues() {
+    var el = function (id) {
+        var node = document.getElementById(id);
+        return node ? node.value : 'all';
+    };
+    return {
+        tier: el('inventoryFilterTier'),
+        rarity: el('inventoryFilterRarity'),
+        slot: el('inventoryFilterSlot'),
+        set: el('inventoryFilterSet'),
+        spirit: el('inventoryFilterSpirit'),
+        soulRing: el('inventoryFilterSoulRing'),
+        aura: el('inventoryFilterAura')
+    };
+}
+function filterReincarnationEquipmentInventory(list) {
+    var f = getReincarnationInventoryFilterValues();
+    var filtered = list || [];
+    if (f.tier !== 'all') {
+        var tierNum = parseInt(f.tier, 10);
+        filtered = filtered.filter(function (eq) { return eq.tier === tierNum; });
+    }
+    if (f.rarity !== 'all') {
+        filtered = filtered.filter(function (eq) { return eq.rarity === f.rarity; });
+    }
+    if (f.slot !== 'all') {
+        filtered = filtered.filter(function (eq) { return eq.slot === f.slot; });
+    }
+    if (f.set !== 'all') {
+        if (f.set === 'hasSet') filtered = filtered.filter(function (eq) { return !!eq.setBonus; });
+        else if (f.set === 'noSet') filtered = filtered.filter(function (eq) { return !eq.setBonus; });
+    }
+    if (f.spirit !== 'all') {
+        if (f.spirit === 'hasSpirit') filtered = filtered.filter(function (eq) { return !!eq.spirit; });
+        else if (f.spirit === 'noSpirit') filtered = filtered.filter(function (eq) { return !eq.spirit; });
+    }
+    if (f.soulRing !== 'all') {
+        if (f.soulRing === 'hasSoulRing') filtered = filtered.filter(function (eq) { return !!eq.soulRing; });
+        else if (f.soulRing === 'noSoulRing') filtered = filtered.filter(function (eq) { return !eq.soulRing; });
+    }
+    if (f.aura !== 'all') {
+        if (f.aura === 'hasAura') filtered = filtered.filter(function (eq) { return !!eq.aura; });
+        else if (f.aura === 'noAura') filtered = filtered.filter(function (eq) { return !eq.aura; });
+    }
+    return filtered;
+}
 function updateEquipmentInventoryDisplay() {
     const container = document.getElementById('equipmentInventoryContainer');
     const config = reincarnationEquipmentConfig;
     
-    // 获取筛选条件
-    const filterTier = document.getElementById('inventoryFilterTier').value;
-    const filterRarity = document.getElementById('inventoryFilterRarity').value;
-    const filterSlot = document.getElementById('inventoryFilterSlot').value;
-    const filterSet = document.getElementById('inventoryFilterSet').value;
-    
     // 筛选装备
-    let filteredEquipment = player.reincarnationEquipment.inventory;
-    
-    if (filterTier !== 'all') {
-        filteredEquipment = filteredEquipment.filter(eq => eq.tier === parseInt(filterTier));
-    }
-    
-    if (filterRarity !== 'all') {
-        filteredEquipment = filteredEquipment.filter(eq => eq.rarity === filterRarity);
-    }
-    
-    if (filterSlot !== 'all') {
-        filteredEquipment = filteredEquipment.filter(eq => eq.slot === filterSlot);
-    }
-    
-    if (filterSet !== 'all') {
-        if (filterSet === 'hasSet') {
-            filteredEquipment = filteredEquipment.filter(eq => eq.setBonus);
-        } else if (filterSet === 'noSet') {
-            filteredEquipment = filteredEquipment.filter(eq => !eq.setBonus);
-        }
-    }
+    let filteredEquipment = filterReincarnationEquipmentInventory(player.reincarnationEquipment.inventory);
     
     // 批量丢弃模式下的控制面板
     let controlPanel = '';
@@ -6346,39 +6415,8 @@ function toggleSelectAll() {
 
 // 获取筛选后的装备ID列表（只包含未锁定的）
 function getFilteredEquipmentIds() {
-    const config = reincarnationEquipmentConfig;
-    
-    // 获取筛选条件
-    const filterTier = document.getElementById('inventoryFilterTier').value;
-    const filterRarity = document.getElementById('inventoryFilterRarity').value;
-    const filterSlot = document.getElementById('inventoryFilterSlot').value;
-    const filterSet = document.getElementById('inventoryFilterSet').value;
-    
-    // 筛选装备
-    let filteredEquipment = player.reincarnationEquipment.inventory;
-    
-    if (filterTier !== 'all') {
-        filteredEquipment = filteredEquipment.filter(eq => eq.tier === parseInt(filterTier));
-    }
-    
-    if (filterRarity !== 'all') {
-        filteredEquipment = filteredEquipment.filter(eq => eq.rarity === filterRarity);
-    }
-    
-    if (filterSlot !== 'all') {
-        filteredEquipment = filteredEquipment.filter(eq => eq.slot === filterSlot);
-    }
-    
-    if (filterSet !== 'all') {
-        if (filterSet === 'hasSet') {
-            filteredEquipment = filteredEquipment.filter(eq => eq.setBonus);
-        } else if (filterSet === 'noSet') {
-            filteredEquipment = filteredEquipment.filter(eq => !eq.setBonus);
-        }
-    }
-    
     // 只返回未锁定的装备ID
-    return filteredEquipment
+    return filterReincarnationEquipmentInventory(player.reincarnationEquipment.inventory)
         .filter(eq => !player.reincarnationEquipment.lockedItems.includes(eq.id))
         .map(eq => eq.id);
 }
@@ -7076,13 +7114,46 @@ function getBeastInventoryCount() {
 function getBeastInventoryFreeSlots() {
     return Math.max(0, GAME_INVENTORY_MAX - getBeastInventoryCount());
 }
+function normalizeBeastAutoDiscardSpecialMode(mode) {
+    return (mode === 'none' || mode === 'has') ? mode : 'any';
+}
+function matchBeastAutoDiscardSpecial(mode, hasSpecial) {
+    mode = normalizeBeastAutoDiscardSpecialMode(mode);
+    if (mode === 'none') return !hasSpecial;
+    if (mode === 'has') return !!hasSpecial;
+    return true;
+}
 function ensureBeastInventorySettings() {
     if (!player.beasts) {
-        player.beasts = { inventory: [], equipped: [], autoDiscard: { enabled: false, belowRarity: '小宠物', belowSLevel: 'S1' } };
+        player.beasts = {
+            inventory: [],
+            equipped: [],
+            autoDiscard: {
+                enabled: false,
+                belowRarity: '小宠物',
+                belowSLevel: 'S1',
+                resonance: 'any',
+                bloodline: 'any',
+                divinity: 'any'
+            }
+        };
     }
     if (!player.beasts.inventory) player.beasts.inventory = [];
     if (!player.beasts.equipped) player.beasts.equipped = [];
-    if (!player.beasts.autoDiscard) player.beasts.autoDiscard = { enabled: false, belowRarity: '小宠物', belowSLevel: 'S1' };
+    if (!player.beasts.autoDiscard) {
+        player.beasts.autoDiscard = {
+            enabled: false,
+            belowRarity: '小宠物',
+            belowSLevel: 'S1',
+            resonance: 'any',
+            bloodline: 'any',
+            divinity: 'any'
+        };
+    }
+    var ad = player.beasts.autoDiscard;
+    ad.resonance = normalizeBeastAutoDiscardSpecialMode(ad.resonance);
+    ad.bloodline = normalizeBeastAutoDiscardSpecialMode(ad.bloodline);
+    ad.divinity = normalizeBeastAutoDiscardSpecialMode(ad.divinity);
 }
 function syncBeastInventoryCaps() {
     if (!player.beasts) return;
@@ -7105,7 +7176,11 @@ function shouldBeastAutoDiscard(beast) {
     var sth = sLevelOrder.indexOf(cfg.belowSLevel || 'S1');
     var rarityOk = (ri >= 0 ? ri : 0) <= (rth >= 0 ? rth : 0);
     var sOk = (si >= 0 ? si : 0) <= (sth >= 0 ? sth : 0);
-    return rarityOk && sOk;
+    if (!rarityOk || !sOk) return false;
+    if (!matchBeastAutoDiscardSpecial(cfg.resonance, !!beast.resonance)) return false;
+    if (!matchBeastAutoDiscardSpecial(cfg.bloodline, !!beast.bloodline)) return false;
+    if (!matchBeastAutoDiscardSpecial(cfg.divinity, !!beast.divinity)) return false;
+    return true;
 }
 function runBeastAutoDiscard(silent) {
     if (!player.beasts) return 0;
@@ -7147,9 +7222,15 @@ function initBeastAutoDiscardUI() {
     var cfg = player.beasts.autoDiscard;
     var rSel = document.getElementById('beastAutoDiscardRarity');
     var sSel = document.getElementById('beastAutoDiscardSLevel');
+    var rsSel = document.getElementById('beastAutoDiscardResonance');
+    var blSel = document.getElementById('beastAutoDiscardBloodline');
+    var dvSel = document.getElementById('beastAutoDiscardDivinity');
     var btn = document.getElementById('toggleBeastAutoDiscard');
     if (rSel) rSel.value = cfg.belowRarity || '小宠物';
     if (sSel) sSel.value = cfg.belowSLevel || 'S1';
+    if (rsSel) rsSel.value = normalizeBeastAutoDiscardSpecialMode(cfg.resonance);
+    if (blSel) blSel.value = normalizeBeastAutoDiscardSpecialMode(cfg.bloodline);
+    if (dvSel) dvSel.value = normalizeBeastAutoDiscardSpecialMode(cfg.divinity);
     if (btn) {
         btn.textContent = '自动丢弃：' + (cfg.enabled ? '开' : '关');
         btn.style.background = cfg.enabled ? '#4CAF50' : '#ff9800';
@@ -7159,8 +7240,14 @@ function setBeastAutoDiscardThreshold() {
     ensureBeastInventorySettings();
     var rSel = document.getElementById('beastAutoDiscardRarity');
     var sSel = document.getElementById('beastAutoDiscardSLevel');
+    var rsSel = document.getElementById('beastAutoDiscardResonance');
+    var blSel = document.getElementById('beastAutoDiscardBloodline');
+    var dvSel = document.getElementById('beastAutoDiscardDivinity');
     if (rSel) player.beasts.autoDiscard.belowRarity = rSel.value;
     if (sSel) player.beasts.autoDiscard.belowSLevel = sSel.value;
+    if (rsSel) player.beasts.autoDiscard.resonance = normalizeBeastAutoDiscardSpecialMode(rsSel.value);
+    if (blSel) player.beasts.autoDiscard.bloodline = normalizeBeastAutoDiscardSpecialMode(blSel.value);
+    if (dvSel) player.beasts.autoDiscard.divinity = normalizeBeastAutoDiscardSpecialMode(dvSel.value);
 }
 function toggleBeastAutoDiscard() {
     ensureBeastInventorySettings();
