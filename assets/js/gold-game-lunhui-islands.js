@@ -101,6 +101,12 @@ function attackLunhuiPenglaiBoss() {
     if (isCrit) damage = multiplyBigByFinite(damage, critDamage);
     player.lunhuiPenglai.bossHealth = bSub(player.lunhuiPenglai.bossHealth, damage);
     addLunhuiPenglaiBattleLog('你对太古玄冥造成了' + formatSci(damage) + '点' + (isCrit ? '暴击 ' : '') + '伤害');
+    if (typeof applySamsaraSkillHits === 'function') {
+        applySamsaraSkillHits(player.lunhuiPenglai, damage, {
+            healthKey: 'bossHealth',
+            logFn: function (msg) { addLunhuiPenglaiBattleLog(msg); }
+        });
+    }
     addLunhuiPenglaiBattleLog('BOSS剩余生命: ' + formatSci(player.lunhuiPenglai.bossHealth) + '/' + formatSci(player.lunhuiPenglai.bossMaxHealth));
     if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx('lunhuiPenglai', { side: 'boss', damage: damage, isCrit: isCrit });
     if (bLteZero(player.lunhuiPenglai.bossHealth)) {
@@ -623,6 +629,12 @@ function attackLunhuiEliteDungeonBoss(idx) {
     if (isCrit) damage = multiplyBigByFinite(damage, critDamage);
     st.bossHealth = bSub(st.bossHealth, damage);
     addLunhuiEliteDungeonBattleLog(idx, '你对' + c.boss + '造成了' + formatSci(damage) + '点' + (isCrit ? '暴击 ' : '') + '伤害');
+    if (typeof applySamsaraSkillHits === 'function') {
+        applySamsaraSkillHits(st, damage, {
+            healthKey: 'bossHealth',
+            logFn: function (msg) { addLunhuiEliteDungeonBattleLog(idx, msg); }
+        });
+    }
     addLunhuiEliteDungeonBattleLog(idx, 'BOSS剩余生命: ' + formatSci(st.bossHealth) + '/' + formatSci(st.bossMaxHealth));
     if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx(c.dom, { side: 'boss', damage: damage, isCrit: isCrit });
     if (bLteZero(st.bossHealth)) {

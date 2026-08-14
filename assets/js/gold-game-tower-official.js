@@ -204,6 +204,11 @@ function attackTowerMonster() {
         if (hitResult.blockedCount > 0) {
             battleLogs.push('怪物抵消了' + hitResult.blockedCount + '次攻击');
         }
+        if (typeof applySamsaraSkillHits === 'function') {
+            applySamsaraSkillHits(monster, hitResult.totalDamage, {
+                logFn: function (msg) { battleLogs.push(msg); }
+            });
+        }
     }
 
     if (bLteZero(monster.health)) {

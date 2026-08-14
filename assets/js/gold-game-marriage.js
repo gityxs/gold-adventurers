@@ -4102,7 +4102,7 @@ const reincarnationEquipmentConfig = {
         '不可思议', '无量大数', '无边海', '无数星', '无知界', '无想天', '无念地', '无相空', '无我境', '无心法'
     ],
 
-    // 器灵：高品质低概率；bonus 1.00=+100% … 5.00=+500%，乘算到本装备全部词条
+    // 器灵：高品质低概率；bonus 0.10=+10% … 10.00=+1000%，乘算到本装备全部词条
     spiritDropChanceByRarity: {
         common: 0.01,
         uncommon: 0.04,
@@ -4116,56 +4116,56 @@ const reincarnationEquipmentConfig = {
         eternal: 0.80
     },
     spirits: {
-        qingfeng:   { name: '青锋器灵', bonus: 1.00, weight: 8.0, desc: '锋芒初露，灵息轻扬' },
-        liuguang:   { name: '流光器灵', bonus: 1.08, weight: 7.5, desc: '流光溢彩，映照器魂' },
-        hanshuang:  { name: '寒霜器灵', bonus: 1.16, weight: 7.2, desc: '霜凝刃心，冷彻九霄' },
-        liedian:    { name: '烈焰器灵', bonus: 1.24, weight: 6.8, desc: '焰心不灭，焚尽虚妄' },
-        xuanbing:   { name: '玄冰器灵', bonus: 1.32, weight: 6.5, desc: '玄冰镇魂，凝神固本' },
-        jinglei:    { name: '惊雷器灵', bonus: 1.40, weight: 6.2, desc: '雷击九天，器鸣破空' },
-        yunyin:     { name: '云隐器灵', bonus: 1.48, weight: 5.9, desc: '云踪隐现，灵机难测' },
-        xingchen:   { name: '星尘器灵', bonus: 1.56, weight: 5.6, desc: '星尘入器，微光不息' },
-        yuehua:     { name: '月华器灵', bonus: 1.64, weight: 5.3, desc: '月华灌注，清辉长明' },
-        riyao:      { name: '日曜器灵', bonus: 1.72, weight: 5.0, desc: '日曜临照，锐不可当' },
-        canglan:    { name: '苍澜器灵', bonus: 1.80, weight: 4.8, desc: '苍澜翻涌，灵势浩瀚' },
-        chixiao:    { name: '赤霄器灵', bonus: 1.88, weight: 4.5, desc: '赤霄裂空，血煞凝锋' },
-        biluo_ql:   { name: '碧落器灵', bonus: 1.96, weight: 4.2, desc: '碧落澄明，涤尽尘垢' },
-        huangquan_ql:{ name: '黄泉器灵', bonus: 2.04, weight: 4.0, desc: '黄泉渡影，阴阳两分' },
-        ziwei_ql:   { name: '紫微器灵', bonus: 2.12, weight: 3.8, desc: '紫微帝星，镇器安魂' },
-        beidou_ql:  { name: '北斗器灵', bonus: 2.20, weight: 3.6, desc: '北斗司命，斩因果线' },
-        nandou_ql:  { name: '南斗器灵', bonus: 2.28, weight: 3.4, desc: '南斗注生，续命延灵' },
-        donghuang_ql:{ name: '东皇器灵', bonus: 2.36, weight: 3.2, desc: '东皇执钟，震荡洪荒' },
-        xiwan_ql:   { name: '西王器灵', bonus: 2.44, weight: 3.0, desc: '西王瑶光，仙泽润器' },
-        zhulong_ql: { name: '烛龙器灵', bonus: 2.52, weight: 2.8, desc: '烛龙睁目，昼夜自明' },
-        yinglong_ql:{ name: '应龙器灵', bonus: 2.60, weight: 2.6, desc: '应龙布雨，器势开疆' },
-        xuanwu_ql:  { name: '玄武器灵', bonus: 2.68, weight: 2.5, desc: '玄武负甲，镇守器核' },
-        qinglong_ql:{ name: '青龙器灵', bonus: 2.76, weight: 2.4, desc: '青龙震爪，东方称雄' },
-        baihu_ql:   { name: '白虎器灵', bonus: 2.84, weight: 2.3, desc: '白虎裂金，杀伐果断' },
-        zhuque_ql:  { name: '朱雀器灵', bonus: 2.92, weight: 2.2, desc: '朱雀焚天，涅槃重生' },
-        qilin_ql:   { name: '麒麟器灵', bonus: 3.00, weight: 2.1, desc: '麒麟现世，祥瑞加身' },
-        fenghuang_ql:{ name: '凤凰器灵', bonus: 3.10, weight: 2.0, desc: '凤凰展翅，万火朝宗' },
-        kunpeng:    { name: '鲲鹏器灵', bonus: 3.20, weight: 1.9, desc: '鲲鹏一击，扶摇九万里' },
-        taotie_ql:  { name: '饕餮器灵', bonus: 3.30, weight: 1.8, desc: '饕餮吞天，欲壑难填' },
-        qiongqi_ql: { name: '穷奇器灵', bonus: 3.40, weight: 1.7, desc: '穷奇裂风，邪煞纵横' },
-        taowu_ql:   { name: '梼杌器灵', bonus: 3.50, weight: 1.6, desc: '梼杌悍勇，刚烈难驯' },
-        hundun_ql:  { name: '混沌器灵', bonus: 3.60, weight: 1.5, desc: '混沌未分，器灵自成' },
-        baize_ql:   { name: '白泽器灵', bonus: 3.70, weight: 1.4, desc: '白泽知万，通晓器理' },
-        bifang_ql:  { name: '毕方器灵', bonus: 3.80, weight: 1.3, desc: '毕方衔火，灾祥自判' },
-        xingtian_ql:{ name: '刑天器灵', bonus: 3.90, weight: 1.2, desc: '刑天舞戚，战意不休' },
-        kuafu_ql:   { name: '夸父器灵', bonus: 4.00, weight: 1.1, desc: '夸父逐日，志贯苍穹' },
-        gonggong_ql:{ name: '共工器灵', bonus: 4.10, weight: 1.0, desc: '共工触山，怒浪滔天' },
-        zhurong_ql: { name: '祝融器灵', bonus: 4.20, weight: 0.95, desc: '祝融司火，炼器成神' },
-        houyi_ql:   { name: '后羿器灵', bonus: 4.30, weight: 0.9, desc: '后羿射日，箭破苍穹' },
-        pantian_ql: { name: '盘天器灵', bonus: 4.40, weight: 0.85, desc: '盘古开天，斧劈混沌' },
-        nuwa_ql:    { name: '娲皇器灵', bonus: 4.50, weight: 0.8, desc: '女娲补天，造化万物' },
-        fuxi_ql:    { name: '羲皇器灵', bonus: 4.58, weight: 0.75, desc: '伏羲演卦，洞彻器机' },
-        shennong_ql:{ name: '神农器灵', bonus: 4.66, weight: 0.7, desc: '神农百草，济世渡劫' },
-        xuanyuan_ql:{ name: '轩辕器灵', bonus: 4.74, weight: 0.65, desc: '轩辕剑鸣，一统山河' },
-        tiandao_ql: { name: '天道器灵', bonus: 4.82, weight: 0.55, desc: '天道昭昭，器随天意' },
-        dadao_ql:   { name: '大道器灵', bonus: 4.88, weight: 0.45, desc: '大道无形，孕养器魂' },
-        hongmeng_ql:{ name: '鸿蒙器灵', bonus: 4.92, weight: 0.35, desc: '鸿蒙未分，灵冠诸天' },
-        taichu_ql:  { name: '太初器灵', bonus: 4.96, weight: 0.25, desc: '太初一念，器灵至极' },
-        wushang_ql: { name: '无上器灵', bonus: 4.98, weight: 0.15, desc: '无上至尊，冠绝器道' },
-        chuangshi_ql:{ name: '创世器灵', bonus: 5.00, weight: 0.08, desc: '创世余辉，重塑轮回' }
+        qingfeng:   { name: '青锋器灵', bonus: 0.10, weight: 8.0, desc: '锋芒初露，灵息轻扬' },
+        liuguang:   { name: '流光器灵', bonus: 0.30, weight: 7.5, desc: '流光溢彩，映照器魂' },
+        hanshuang:  { name: '寒霜器灵', bonus: 0.50, weight: 7.2, desc: '霜凝刃心，冷彻九霄' },
+        liedian:    { name: '烈焰器灵', bonus: 0.69, weight: 6.8, desc: '焰心不灭，焚尽虚妄' },
+        xuanbing:   { name: '玄冰器灵', bonus: 0.89, weight: 6.5, desc: '玄冰镇魂，凝神固本' },
+        jinglei:    { name: '惊雷器灵', bonus: 1.09, weight: 6.2, desc: '雷击九天，器鸣破空' },
+        yunyin:     { name: '云隐器灵', bonus: 1.29, weight: 5.9, desc: '云踪隐现，灵机难测' },
+        xingchen:   { name: '星尘器灵', bonus: 1.49, weight: 5.6, desc: '星尘入器，微光不息' },
+        yuehua:     { name: '月华器灵', bonus: 1.68, weight: 5.3, desc: '月华灌注，清辉长明' },
+        riyao:      { name: '日曜器灵', bonus: 1.88, weight: 5.0, desc: '日曜临照，锐不可当' },
+        canglan:    { name: '苍澜器灵', bonus: 2.08, weight: 4.8, desc: '苍澜翻涌，灵势浩瀚' },
+        chixiao:    { name: '赤霄器灵', bonus: 2.28, weight: 4.5, desc: '赤霄裂空，血煞凝锋' },
+        biluo_ql:   { name: '碧落器灵', bonus: 2.48, weight: 4.2, desc: '碧落澄明，涤尽尘垢' },
+        huangquan_ql:{ name: '黄泉器灵', bonus: 2.67, weight: 4.0, desc: '黄泉渡影，阴阳两分' },
+        ziwei_ql:   { name: '紫微器灵', bonus: 2.87, weight: 3.8, desc: '紫微帝星，镇器安魂' },
+        beidou_ql:  { name: '北斗器灵', bonus: 3.07, weight: 3.6, desc: '北斗司命，斩因果线' },
+        nandou_ql:  { name: '南斗器灵', bonus: 3.27, weight: 3.4, desc: '南斗注生，续命延灵' },
+        donghuang_ql:{ name: '东皇器灵', bonus: 3.47, weight: 3.2, desc: '东皇执钟，震荡洪荒' },
+        xiwan_ql:   { name: '西王器灵', bonus: 3.66, weight: 3.0, desc: '西王瑶光，仙泽润器' },
+        zhulong_ql: { name: '烛龙器灵', bonus: 3.86, weight: 2.8, desc: '烛龙睁目，昼夜自明' },
+        yinglong_ql:{ name: '应龙器灵', bonus: 4.06, weight: 2.6, desc: '应龙布雨，器势开疆' },
+        xuanwu_ql:  { name: '玄武器灵', bonus: 4.26, weight: 2.5, desc: '玄武负甲，镇守器核' },
+        qinglong_ql:{ name: '青龙器灵', bonus: 4.46, weight: 2.4, desc: '青龙震爪，东方称雄' },
+        baihu_ql:   { name: '白虎器灵', bonus: 4.65, weight: 2.3, desc: '白虎裂金，杀伐果断' },
+        zhuque_ql:  { name: '朱雀器灵', bonus: 4.85, weight: 2.2, desc: '朱雀焚天，涅槃重生' },
+        qilin_ql:   { name: '麒麟器灵', bonus: 5.05, weight: 2.1, desc: '麒麟现世，祥瑞加身' },
+        fenghuang_ql:{ name: '凤凰器灵', bonus: 5.30, weight: 2.0, desc: '凤凰展翅，万火朝宗' },
+        kunpeng:    { name: '鲲鹏器灵', bonus: 5.55, weight: 1.9, desc: '鲲鹏一击，扶摇九万里' },
+        taotie_ql:  { name: '饕餮器灵', bonus: 5.79, weight: 1.8, desc: '饕餮吞天，欲壑难填' },
+        qiongqi_ql: { name: '穷奇器灵', bonus: 6.04, weight: 1.7, desc: '穷奇裂风，邪煞纵横' },
+        taowu_ql:   { name: '梼杌器灵', bonus: 6.29, weight: 1.6, desc: '梼杌悍勇，刚烈难驯' },
+        hundun_ql:  { name: '混沌器灵', bonus: 6.54, weight: 1.5, desc: '混沌未分，器灵自成' },
+        baize_ql:   { name: '白泽器灵', bonus: 6.78, weight: 1.4, desc: '白泽知万，通晓器理' },
+        bifang_ql:  { name: '毕方器灵', bonus: 7.03, weight: 1.3, desc: '毕方衔火，灾祥自判' },
+        xingtian_ql:{ name: '刑天器灵', bonus: 7.28, weight: 1.2, desc: '刑天舞戚，战意不休' },
+        kuafu_ql:   { name: '夸父器灵', bonus: 7.53, weight: 1.1, desc: '夸父逐日，志贯苍穹' },
+        gonggong_ql:{ name: '共工器灵', bonus: 7.77, weight: 1.0, desc: '共工触山，怒浪滔天' },
+        zhurong_ql: { name: '祝融器灵', bonus: 8.02, weight: 0.95, desc: '祝融司火，炼器成神' },
+        houyi_ql:   { name: '后羿器灵', bonus: 8.27, weight: 0.9, desc: '后羿射日，箭破苍穹' },
+        pantian_ql: { name: '盘天器灵', bonus: 8.52, weight: 0.85, desc: '盘古开天，斧劈混沌' },
+        nuwa_ql:    { name: '娲皇器灵', bonus: 8.76, weight: 0.8, desc: '女娲补天，造化万物' },
+        fuxi_ql:    { name: '羲皇器灵', bonus: 8.96, weight: 0.75, desc: '伏羲演卦，洞彻器机' },
+        shennong_ql:{ name: '神农器灵', bonus: 9.16, weight: 0.7, desc: '神农百草，济世渡劫' },
+        xuanyuan_ql:{ name: '轩辕器灵', bonus: 9.36, weight: 0.65, desc: '轩辕剑鸣，一统山河' },
+        tiandao_ql: { name: '天道器灵', bonus: 9.55, weight: 0.55, desc: '天道昭昭，器随天意' },
+        dadao_ql:   { name: '大道器灵', bonus: 9.70, weight: 0.45, desc: '大道无形，孕养器魂' },
+        hongmeng_ql:{ name: '鸿蒙器灵', bonus: 9.80, weight: 0.35, desc: '鸿蒙未分，灵冠诸天' },
+        taichu_ql:  { name: '太初器灵', bonus: 9.90, weight: 0.25, desc: '太初一念，器灵至极' },
+        wushang_ql: { name: '无上器灵', bonus: 9.95, weight: 0.15, desc: '无上至尊，冠绝器道' },
+        chuangshi_ql:{ name: '创世器灵', bonus: 10.00, weight: 0.08, desc: '创世余辉，重塑轮回' }
     },
 
     // 魂环：高品质低概率；年份品质越高越稀有；bonus 0.10=+10% … 10.00=+1000%，乘算到本装备全部词条
@@ -4182,14 +4182,14 @@ const reincarnationEquipmentConfig = {
         eternal: 0.75
     },
     soulRingYears: {
-        y1:    { name: '一年',   minBonus: 0.10, maxBonus: 0.50, weight: 42, fx: 0 },
-        y10:   { name: '十年',   minBonus: 0.50, maxBonus: 1.20, weight: 25, fx: 1 },
-        y100:  { name: '百年',   minBonus: 1.20, maxBonus: 2.50, weight: 15, fx: 2 },
-        y1k:   { name: '千年',   minBonus: 2.50, maxBonus: 4.00, weight: 9,  fx: 3 },
-        y10k:  { name: '万年',   minBonus: 4.00, maxBonus: 6.00, weight: 5,  fx: 4 },
-        y100k: { name: '百万年', minBonus: 6.00, maxBonus: 7.50, weight: 2.5,fx: 5 },
-        y1m:   { name: '千万年', minBonus: 7.50, maxBonus: 9.00, weight: 1.2,fx: 6 },
-        y100m: { name: '亿年',   minBonus: 9.00, maxBonus: 10.00,weight: 0.3,fx: 7 }
+        y1:    { name: '一年',   minBonus: 0.10, maxBonus: 1.34, weight: 42, fx: 0 },
+        y10:   { name: '十年',   minBonus: 1.34, maxBonus: 2.58, weight: 25, fx: 1 },
+        y100:  { name: '百年',   minBonus: 2.58, maxBonus: 3.82, weight: 15, fx: 2 },
+        y1k:   { name: '千年',   minBonus: 3.82, maxBonus: 5.06, weight: 9,  fx: 3 },
+        y10k:  { name: '万年',   minBonus: 5.06, maxBonus: 6.30, weight: 5,  fx: 4 },
+        y100k: { name: '百万年', minBonus: 6.30, maxBonus: 7.54, weight: 2.5,fx: 5 },
+        y1m:   { name: '千万年', minBonus: 7.54, maxBonus: 8.78, weight: 1.2,fx: 6 },
+        y100m: { name: '亿年',   minBonus: 8.78, maxBonus: 10.00,weight: 0.3,fx: 7 }
     },
     soulRings: {
         hr_001: { name: '白虎啸月', year: 'y1' },
@@ -4295,7 +4295,7 @@ const reincarnationEquipmentConfig = {
     },
 
     // 光环：高品质低概率；30种唯一名（15伤害倍率 + 15触发上限），绑定对应轮回技能
-    // dmgMult bonus 0.10~3.00 = +10%~+300% 技能伤害倍率；triggerCap bonus 0.05~0.15 = 触发率上限+5%~+15%
+    // dmgMult bonus 0.10~10.00 = +10%~+1000% 技能伤害倍率；triggerCap bonus 0.05~0.30 = 触发率上限+5%~+30%
     auraDropChanceByRarity: {
         common: 0.005,
         uncommon: 0.02,
@@ -4309,38 +4309,38 @@ const reincarnationEquipmentConfig = {
         eternal: 0.50
     },
     auras: {
-        // —— 伤害光环（×1 技能伤害倍率 +10%~+300%）——
-        aura_s1_dmg:  { name: '血海杀意光环', skillId: 's1',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s2_dmg:  { name: '斩劫锋芒光环', skillId: 's2',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s3_dmg:  { name: '万劫裂空光环', skillId: 's3',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s4_dmg:  { name: '仙体破军光环', skillId: 's4',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s5_dmg:  { name: '破虚魔威光环', skillId: 's5',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s6_dmg:  { name: '九幽灭世光环', skillId: 's6',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s7_dmg:  { name: '太初血煞光环', skillId: 's7',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s8_dmg:  { name: '诛仙破界光环', skillId: 's8',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s9_dmg:  { name: '混沌爆灭光环', skillId: 's9',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s10_dmg: { name: '永生道威光环', skillId: 's10', type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s11_dmg: { name: '弑神灭道光环', skillId: 's11', type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s12_dmg: { name: '天崩地裂光环', skillId: 's12', type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s13_dmg: { name: '鸿蒙不灭光环', skillId: 's13', type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s14_dmg: { name: '开天辟地光环', skillId: 's14', type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        aura_s15_dmg: { name: '归墟终焉光环', skillId: 's15', type: 'dmgMult',    minBonus: 0.10, maxBonus: 3.00, weight: 10 },
-        // —— 触发上限光环（触发率上限 +5%~+15%）——
-        aura_s1_rate:  { name: '血海感应光环', skillId: 's1',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s2_rate:  { name: '斩劫破机光环', skillId: 's2',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s3_rate:  { name: '万劫催发光环', skillId: 's3',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s4_rate:  { name: '仙体灵犀光环', skillId: 's4',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s5_rate:  { name: '破虚通玄光环', skillId: 's5',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s6_rate:  { name: '九幽冥感光环', skillId: 's6',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s7_rate:  { name: '太初天启光环', skillId: 's7',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s8_rate:  { name: '诛仙神机光环', skillId: 's8',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s9_rate:  { name: '混沌契机光环', skillId: 's9',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s10_rate: { name: '永生感应光环', skillId: 's10', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s11_rate: { name: '弑神洞见光环', skillId: 's11', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s12_rate: { name: '天崩天机光环', skillId: 's12', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s13_rate: { name: '鸿蒙悟机光环', skillId: 's13', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s14_rate: { name: '开天玄机光环', skillId: 's14', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 },
-        aura_s15_rate: { name: '归墟天启光环', skillId: 's15', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.15, weight: 10 }
+        // —— 伤害光环（×1 技能伤害倍率 +10%~+1000%）——
+        aura_s1_dmg:  { name: '血海杀意光环', skillId: 's1',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s2_dmg:  { name: '斩劫锋芒光环', skillId: 's2',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s3_dmg:  { name: '万劫裂空光环', skillId: 's3',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s4_dmg:  { name: '仙体破军光环', skillId: 's4',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s5_dmg:  { name: '破虚魔威光环', skillId: 's5',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s6_dmg:  { name: '九幽灭世光环', skillId: 's6',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s7_dmg:  { name: '太初血煞光环', skillId: 's7',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s8_dmg:  { name: '诛仙破界光环', skillId: 's8',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s9_dmg:  { name: '混沌爆灭光环', skillId: 's9',  type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s10_dmg: { name: '永生道威光环', skillId: 's10', type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s11_dmg: { name: '弑神灭道光环', skillId: 's11', type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s12_dmg: { name: '天崩地裂光环', skillId: 's12', type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s13_dmg: { name: '鸿蒙不灭光环', skillId: 's13', type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s14_dmg: { name: '开天辟地光环', skillId: 's14', type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        aura_s15_dmg: { name: '归墟终焉光环', skillId: 's15', type: 'dmgMult',    minBonus: 0.10, maxBonus: 10.00, weight: 10 },
+        // —— 触发上限光环（触发率上限 +5%~+30%）——
+        aura_s1_rate:  { name: '血海感应光环', skillId: 's1',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s2_rate:  { name: '斩劫破机光环', skillId: 's2',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s3_rate:  { name: '万劫催发光环', skillId: 's3',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s4_rate:  { name: '仙体灵犀光环', skillId: 's4',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s5_rate:  { name: '破虚通玄光环', skillId: 's5',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s6_rate:  { name: '九幽冥感光环', skillId: 's6',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s7_rate:  { name: '太初天启光环', skillId: 's7',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s8_rate:  { name: '诛仙神机光环', skillId: 's8',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s9_rate:  { name: '混沌契机光环', skillId: 's9',  type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s10_rate: { name: '永生感应光环', skillId: 's10', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s11_rate: { name: '弑神洞见光环', skillId: 's11', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s12_rate: { name: '天崩天机光环', skillId: 's12', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s13_rate: { name: '鸿蒙悟机光环', skillId: 's13', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s14_rate: { name: '开天玄机光环', skillId: 's14', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 },
+        aura_s15_rate: { name: '归墟天启光环', skillId: 's15', type: 'triggerCap', minBonus: 0.05, maxBonus: 0.30, weight: 10 }
     }
 };
 
@@ -7825,6 +7825,7 @@ function refreshSupremeArtifactUI() {
                     '<div style="font-size:11px;color:#d1c4e9;opacity:0.95;">' + subLine + '</div>' +
                     (typeof supremeWuhunBadgeHtml === 'function' ? supremeWuhunBadgeHtml(art) : '') +
                     supremeAffixPillsHtml(art.affixes) +
+                    (typeof supremeSocketRowsHtml === 'function' ? supremeSocketRowsHtml(art, { canOpen: true, canEquip: true, canUnequip: true }) : '') +
                     supremeDropMetaHtml(art) +
                     '<div style="margin-top:auto;padding-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">' +
                     '<button type="button" onclick="goldGameUnequipSupremeArtifact(\'' + def.id + '\').then(function(){ return goldGameGetSupremeArtifacts(); }).then(function(){ refreshSupremeArtifactUI(); if(typeof updatePlayerBattleStats===\'function\')updatePlayerBattleStats(); }).catch(function(e){ alert(e.message); });" style="padding:4px 10px;font-size:12px;border-radius:8px;border:1px solid #9575cd;background:rgba(48,27,80,0.9);color:#ede7f6;cursor:pointer;">卸下</button>' +
@@ -7867,6 +7868,7 @@ function refreshSupremeArtifactUI() {
                     '<div style="font-size:11px;color:#b39ddb;margin-top:4px;opacity:0.95;">' + bagSub + '</div>' +
                     (typeof supremeWuhunBadgeHtml === 'function' ? supremeWuhunBadgeHtml(b) : '') +
                     supremeAffixPillsHtml(b.affixes) +
+                    (typeof supremeSocketRowsHtml === 'function' ? supremeSocketRowsHtml(b, { canOpen: true, canEquip: true, canUnequip: true }) : '') +
                     supremeBagCompareVsEquippedHtml(b, equipped) +
                     supremeDropMetaHtml(b) +
                     '<div style="margin-top:auto;padding-top:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-top:1px solid rgba(255,255,255,0.06);">' +
@@ -7905,7 +7907,9 @@ function toggleSupremeArtifactUI() {
         }
         ov.style.display = 'block';
         ui.style.display = 'block';
+        if (typeof switchSupremeArtifactTab === 'function') switchSupremeArtifactTab(window._supremeArtifactActiveTab || 'artifacts');
         refreshSupremeArtifactUI();
+        if (typeof refreshSupremeGemUI === 'function') refreshSupremeGemUI();
     }).catch(function() {
         alert('加载至尊神器失败');
     });

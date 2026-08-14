@@ -100,6 +100,7 @@
         "assets/js/gold-game-lineage-ui-perf.js",
         "assets/js/gold-game-lineage-subtabs.js",
         "assets/js/gold-game-beast.js",
+        "assets/js/gold-game-supreme-gems.js",
         "assets/js/gold-game-magic-tool.js",
         "assets/js/gold-game-gamble-stone.js",
         "assets/js/gold-game-nian-beast.js",

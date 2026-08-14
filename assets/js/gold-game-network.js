@@ -215,23 +215,37 @@ window.renderAbyssOnlineChat = function(list) {
     if (floatBox) window._applyAbyssOnlineChatListHtml(floatBox, dark.html, locked);
     if (logBox) window._applyAbyssOnlineChatListHtml(logBox, light.html, locked);
 };
+window._abyssOnlineChatPollInFlight = false;
+window._abyssOnlineChatLoopIntervalMs = window._abyssOnlineChatLoopIntervalMs || 0;
 window.pollAbyssOnlineChat = function() {
     if (typeof goldGameGetAbyssChat !== 'function') return;
     if (!window._abyssOnlineChatVisible && !window._gameLogAbyssChatVisible) return;
+    if (typeof document !== 'undefined' && document.hidden) return;
+    if (window._abyssOnlineChatPollInFlight) return;
+    window._abyssOnlineChatPollInFlight = true;
     goldGameGetAbyssChat().then(function(res) {
         if (!res || !res.ok) return;
         window.renderAbyssOnlineChat(res.list || []);
-    }).catch(function() {});
+    }).catch(function() {}).finally(function() {
+        window._abyssOnlineChatPollInFlight = false;
+    });
 };
 window._ensureAbyssOnlineChatLoop = function(needPoll) {
+    // 深渊浮窗可见时稍勤；仅侧栏聊天时拉长间隔，减轻已登录挂机的背景 QPS
+    var intervalMs = window._abyssOnlineChatVisible ? 5000 : 12000;
     if (needPoll) {
-        if (!window._abyssOnlineChatLoopTimer) {
-            window.pollAbyssOnlineChat();
-            window._abyssOnlineChatLoopTimer = setInterval(function() { window.pollAbyssOnlineChat(); }, 4000);
+        if (window._abyssOnlineChatLoopTimer && window._abyssOnlineChatLoopIntervalMs === intervalMs) return;
+        if (window._abyssOnlineChatLoopTimer) {
+            clearInterval(window._abyssOnlineChatLoopTimer);
+            window._abyssOnlineChatLoopTimer = null;
         }
+        window.pollAbyssOnlineChat();
+        window._abyssOnlineChatLoopIntervalMs = intervalMs;
+        window._abyssOnlineChatLoopTimer = setInterval(function() { window.pollAbyssOnlineChat(); }, intervalMs);
     } else if (window._abyssOnlineChatLoopTimer) {
         clearInterval(window._abyssOnlineChatLoopTimer);
         window._abyssOnlineChatLoopTimer = null;
+        window._abyssOnlineChatLoopIntervalMs = 0;
     }
 };
 window._resolveAbyssOnlineChatInput = function(sourceInputId) {
@@ -1195,10 +1209,16 @@ function openNetworkArtifactSellDialog(mode, opts) {
     var minBidInput = document.getElementById('networkArtifactSellMinBid');
     var buyNowInput = document.getElementById('networkArtifactSellBuyNow');
     var modeRow = document.getElementById('networkArtifactSellModeRow');
-    var showAuction = (mode === 'artifact' || mode === 'stone' || mode === 'refineStone' || mode === 'supremeArtifact');
+    var showAuction = (mode === 'artifact' || mode === 'stone' || mode === 'refineStone' || mode === 'supremeArtifact' || mode === 'supremeGem' || mode === 'supremeSocketOpener');
     if (modeRow) modeRow.style.display = showAuction ? 'block' : 'none';
     if (amountRow) amountRow.style.display = (mode === 'artifact' || mode === 'supremeArtifact') ? 'none' : 'block';
-    if (amountInput) { amountInput.value = '1'; amountInput.min = 1; }
+    if (amountInput) {
+        amountInput.value = '1';
+        amountInput.min = 1;
+        if (mode === 'supremeGem' && opts.maxAmount != null) amountInput.max = Math.max(1, opts.maxAmount | 0);
+        else if (mode === 'supremeSocketOpener' && opts.maxAmount != null) amountInput.max = Math.max(1, opts.maxAmount | 0);
+        else amountInput.removeAttribute('max');
+    }
     if (priceInput) { priceInput.value = ''; priceInput.placeholder = '请输入'; }
     if (minBidInput) { minBidInput.value = '1'; }
     if (buyNowInput) { buyNowInput.value = ''; }
@@ -1276,6 +1296,21 @@ function submitNetworkArtifactSell() {
         goldGameMarketSellStone(amount, price, sellOpts).then(function() { refreshNetworkArtifactPanel(); alert('已上架'); }).catch(function(e) { alert(e.message); });
     } else if (mode === 'refineStone') {
         goldGameMarketSellRefineStone(amount, price, sellOpts).then(function() { refreshNetworkArtifactPanel(); alert('已上架'); }).catch(function(e) { alert(e.message); });
+    } else if (mode === 'supremeGem') {
+        if (typeof goldGameMarketSellSupremeGem !== 'function') { alert('未联网'); return; }
+        var gKind = opts.kind;
+        var gLevel = opts.level;
+        if (!gKind || !(gLevel >= 1)) { alert('参数错误'); return; }
+        goldGameMarketSellSupremeGem(gKind, gLevel, amount, price, sellOpts).then(function() {
+            if (typeof refreshSupremeGemUI === 'function') refreshSupremeGemUI();
+            alert('已上架');
+        }).catch(function(e) { alert(e.message || '上架失败'); });
+    } else if (mode === 'supremeSocketOpener') {
+        if (typeof goldGameMarketSellSupremeSocketOpener !== 'function') { alert('未联网'); return; }
+        goldGameMarketSellSupremeSocketOpener(amount, price, sellOpts).then(function() {
+            if (typeof refreshSupremeGemUI === 'function') refreshSupremeGemUI();
+            alert('已上架');
+        }).catch(function(e) { alert(e.message || '上架失败'); });
     }
 }
 (function() {
@@ -1403,10 +1438,12 @@ function syncNetworkMarketFilterRows() {
     var ra = document.getElementById('nmRowArtifact');
     var rm = document.getElementById('nmRowMaterials');
     var rs = document.getElementById('nmRowSupreme');
+    var rg = document.getElementById('nmRowSupremeGems');
     function flexShow(el, on) { if (el) el.style.display = on ? 'flex' : 'none'; }
     flexShow(ra, cat === 'artifact');
     flexShow(rm, cat === 'abyssMaterials');
     flexShow(rs, cat === 'supremeArtifact');
+    flexShow(rg, cat === 'supremeGemMaterials');
 }
 function openNetworkMarketDialog() {
     if (typeof getGoldGameAuthToken !== 'function' || !getGoldGameAuthToken()) {
@@ -1537,6 +1574,12 @@ function refreshNetworkMarketDialog() {
         if (ssv && ssv.value !== '') serverFilters.sLevel = ssv.value;
         var saf = document.getElementById('networkMarketSupremeAffix');
         if (saf && saf.value !== '') serverFilters.supremeAffixType = saf.value;
+    } else if (cat === 'supremeGemMaterials') {
+        var sgk = document.getElementById('networkMarketSupremeGemKind');
+        var sgkv = sgk ? String(sgk.value || '').trim() : '';
+        if (sgkv === 'supremeGem') serverFilters.itemType = 'supremeGem';
+        else if (sgkv === 'supremeSocketOpener') serverFilters.itemType = 'supremeSocketOpener';
+        else serverFilters.itemType = 'supremeGemMaterials';
     }
     goldGameMarketList(window._networkMarketPage, serverFilters).then(function(res) {
         var listEl = document.getElementById('networkMarketList');
@@ -1640,6 +1683,16 @@ function refreshNetworkMarketDialog() {
                 listEl.appendChild(div);
                 return;
             }
+            if (row.itemType === 'supremeGem' || row.itemType === 'supremeSocketOpener') {
+                namePart = row.displayName || row.name || (row.itemType === 'supremeSocketOpener' ? '至尊开孔器' : '至尊宝石');
+                var pricePartG = (row.saleMode === 'auction') ? (networkMarketAuctionTag(row) + ' 币') : (' <span style="color:#ffd700">' + (row.price != null ? row.price : 0) + ' 币</span>');
+                var infoG = '<span style="color:#ffe0b2">' + namePart + '</span>' + pricePartG + ' 玩家: <span style="color:#81c784">' + sellerNameStr + '</span>' + autoDelistHtml;
+                var isMineG = (myId && row.sellerId && String(row.sellerId).trim().toLowerCase() === myId) || (row.sellerName && myName && row.sellerName === myName);
+                var btnG = networkMarketRowButtons(row, isMineG);
+                div.innerHTML = infoG + btnG;
+                listEl.appendChild(div);
+                return;
+            }
             if (row.itemType === 'supremeArtifact') {
                 var sa = row.supremeArtifact || {};
                 window._marketSupremeArtifactCache = window._marketSupremeArtifactCache || {};
@@ -1722,6 +1775,15 @@ function refreshNetworkMarketDialog() {
         if (soldEl) {
             var soldHistory = (res && res.soldHistory) ? res.soldHistory : [];
             soldEl.innerHTML = '';
+            function formatNetworkMarketSoldTime(ts) {
+                var n = Number(ts);
+                if (!Number.isFinite(n) || n <= 0) return '';
+                var d = new Date(n);
+                if (isNaN(d.getTime())) return '';
+                function pad(v) { return v < 10 ? '0' + v : String(v); }
+                return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+                    + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+            }
             for (var i = soldHistory.length - 1; i >= 0; i--) {
                 var s = soldHistory[i];
                 var line = document.createElement('div');
@@ -1732,7 +1794,10 @@ function refreshNetworkMarketDialog() {
                 var soldLv = (s.enhanceLevel != null ? s.enhanceLevel : s.enhance_level);
                 if (soldLv == null || soldLv < 0) { var m = soldBase.match(/强化\s*(\d+)/); if (m) { soldLv = parseInt(m[1], 10); soldBase = soldBase.replace(/\s*强化\s*\d+\s*/g, ' ').trim(); } }
                 var soldName = soldBase + ((soldLv != null && soldLv > 0) ? '+' + soldLv : '');
-                line.textContent = buyerDisplay + ' 购买了 ' + sellerDisplay + ' 的 【' + soldName + '】，' + (s.price != null ? s.price : 0) + ' 联网币';
+                var timeText = formatNetworkMarketSoldTime(s.time || s.soldAt || s.at);
+                var text = buyerDisplay + ' 购买了 ' + sellerDisplay + ' 的 【' + soldName + '】，' + (s.price != null ? s.price : 0) + ' 联网币';
+                if (timeText) text += ' · ' + timeText;
+                line.textContent = text;
                 soldEl.appendChild(line);
             }
             if (soldHistory.length === 0) soldEl.innerHTML = '<div style="color: #888; padding: 12px; text-align: center;">暂无成交记录</div>';
@@ -1893,6 +1958,73 @@ function submitNetworkShopBuy() {
         if (msgEl) { msgEl.style.color = '#ef9a9a'; msgEl.textContent = (e && e.message) ? e.message : '购买失败'; }
     });
 }
+function submitNetworkShopSamsaraSkillPack(packId) {
+    if (typeof hasApi !== 'function' || !hasApi()) { alert('未联网'); return; }
+    var pid = String(packId || '').trim();
+    var qtyElId = pid === 'samsara_skill_9_15' ? 'networkShopSamsaraPackQty915' : 'networkShopSamsaraPackQty18';
+    var msgElId = pid === 'samsara_skill_9_15' ? 'networkShopSamsaraMsg915' : 'networkShopSamsaraMsg18';
+    var qtyEl = document.getElementById(qtyElId);
+    var msgEl = document.getElementById(msgElId);
+    var qty = qtyEl ? Math.floor(Number(qtyEl.value)) : 1;
+    if (!Number.isFinite(qty) || qty < 1) {
+        if (msgEl) { msgEl.style.color = '#ef9a9a'; msgEl.textContent = '请输入正确的礼包数量'; }
+        return;
+    }
+    if (qty > 10000) {
+        if (msgEl) { msgEl.style.color = '#ef9a9a'; msgEl.textContent = '单次购买不能超过 10000'; }
+        return;
+    }
+    var costEach = pid === 'samsara_skill_9_15' ? 20 : 10;
+    var label = pid === 'samsara_skill_9_15' ? '轮回技能9-15材料礼包' : '轮回技能1-8材料礼包';
+    var matRange = pid === 'samsara_skill_9_15' ? '轮回晶9~15 各 ' + qty + ' 个' : '轮回晶1~8 各 ' + qty + ' 个';
+    var totalCost = costEach * qty;
+    var confirmMsg = '消耗 ' + totalCost + ' 联网币\n购买 ' + qty + ' 份「' + label + '」\n获得：' + matRange + '\n\n确定兑换吗？';
+    var doBuy = function() {
+        if (msgEl) { msgEl.style.color = '#c5e1a5'; msgEl.textContent = '正在兑换，请稍候…'; }
+        window.goldGameApiRequest('POST', '/api/network-shop/buy-samsara-skill-pack', { packId: pid, quantity: qty }, true).then(function(res) {
+            if (!res || !res.ok) {
+                if (msgEl) { msgEl.style.color = '#ef9a9a'; msgEl.textContent = (res && res.message) ? res.message : '兑换失败'; }
+                return;
+            }
+            var coinEl = document.getElementById('networkShopCoin');
+            if (coinEl && typeof res.coinAmount === 'number') coinEl.textContent = res.coinAmount;
+            if (typeof goldGameGetNetworkCoin === 'function') {
+                goldGameGetNetworkCoin().then(function(r) {
+                    var display = document.getElementById('goldGameNetworkCoinDisplay');
+                    if (display) display.textContent = (r && r.ok && typeof r.amount === 'number') ? r.amount : '--';
+                });
+            }
+            var afterLoad = function() {
+                if (msgEl) {
+                    msgEl.style.color = '#c5e1a5';
+                    msgEl.textContent = '兑换成功：' + (res.label || label) + ' ×' + (res.quantity || qty) + '，已自动加载云存档。';
+                }
+                if (typeof updateItemDisplay === 'function') updateItemDisplay();
+                if (typeof updateSamsaraSkillUI === 'function') updateSamsaraSkillUI();
+            };
+            if (typeof goldGameDownloadSaveNoCooldown === 'function') {
+                goldGameDownloadSaveNoCooldown().then(afterLoad).catch(function(e) {
+                    if (msgEl) {
+                        msgEl.style.color = '#ef9a9a';
+                        msgEl.textContent = (e && e.message) ? ('兑换成功，但加载云存档失败：' + e.message) : '兑换成功，但加载云存档失败';
+                    }
+                });
+            } else if (msgEl) {
+                msgEl.style.color = '#c5e1a5';
+                msgEl.textContent = '兑换成功：' + (res.label || label) + ' ×' + (res.quantity || qty);
+            }
+        }).catch(function(e) {
+            if (msgEl) { msgEl.style.color = '#ef9a9a'; msgEl.textContent = (e && e.message) ? e.message : '兑换失败'; }
+        });
+    };
+    if (typeof goldGameConfirm === 'function' && document.getElementById('goldGameConfirmDialog')) {
+        goldGameConfirm(confirmMsg, doBuy);
+    } else {
+        if (!window.confirm(confirmMsg.replace(/\n/g, ' '))) return;
+        doBuy();
+    }
+}
+
 function openGoldGameFamilyDialog() {
     if (typeof getGoldGameAuthToken !== 'function' || !getGoldGameAuthToken()) {
         alert('请先登录账号。');

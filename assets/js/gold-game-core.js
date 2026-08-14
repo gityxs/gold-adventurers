@@ -1,4 +1,4 @@
-        const GAME_VERSION = "2.0.48";
+        const GAME_VERSION = "2.0.50";
         const GAME_INVENTORY_MAX = 100;
         var WING_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
         var MOUNT_RARITY_ORDER = ["劣质级", "普通级", "优秀级", "精良级", "卓越级", "史诗级", "传说级", "神圣级", "不朽级", "仙境级", "神域级", "圣域级", "天域级", "无极级", "鸿蒙级", "归墟级"];
@@ -112,9 +112,13 @@
     classSixth: null,
     classSeventh: null,
     classBranches: [], // 已选择的分支 [0, 2, 1] 表示第1排选第0个，第2排选第2个等
+    classSkillBranches: [], // 职业轮回技能分支 [0, 2, 1]
     classBonuses: { // 新增：存储职业分支选择的加成
     soulRingMultiplier: 1,    // 魂环总加成乘数（默认1倍）
-    dungeonEquipMultiplier: 1 // 副本装备总加成乘数（默认1倍）
+    dungeonEquipMultiplier: 1, // 副本装备总加成乘数（默认1倍）
+    samsaraSkillTriggerCap: 0, // 轮回技能触发上限加成（加算，分支）
+    samsaraSkillTriggerRate: 0, // 轮回技能触发率加成（加算，转职）
+    samsaraSkillDamageMultiplier: 1 // 轮回技能伤害倍率（乘算）
   },
 trialTower: {
             currentFloor: 1,

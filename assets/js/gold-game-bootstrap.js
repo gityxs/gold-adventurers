@@ -3388,6 +3388,17 @@ function saveAbyssTowerProgress() {
                 `你造成 ${formatNumber(result.total)} 伤害（${multi}连击）· 普通 ${formatNumber(result.normalDamage)} / 暴击x${result.critCount} ${formatNumber(result.critDamage)}`
             );
 
+            if (typeof applySamsaraSkillHits === 'function') {
+                var skillResult = applySamsaraSkillHits(worldBossData, result.total, {
+                    healthKey: 'bossHealth',
+                    logFn: function (msg) { addBossBattleLog(msg); }
+                });
+                if (skillResult && skillResult.hits > 0 && typeof cmpBigSci === 'function' && cmpBigSci(skillResult.totalDamage, 0) > 0) {
+                    worldBossData.bossHealth = bLteZero(worldBossData.bossHealth) ? 0 : worldBossData.bossHealth;
+                    worldBossData.playerDamage = bigSciToStorageValue(addBigSci(worldBossData.playerDamage || 0, skillResult.totalDamage));
+                }
+            }
+
             wbUpdateCombo(true);
             wbPulseAttackButton();
             wbPlayHitFx({ amount: result.total, crit: isCrit, kind: isCrit ? 'crit' : 'normal' });
@@ -3430,6 +3441,17 @@ function saveAbyssTowerProgress() {
                     ? 0
                     : bSub(worldBossData.bossHealth, batchTotal);
                 worldBossData.playerDamage = bigSciToStorageValue(addBigSci(worldBossData.playerDamage || 0, batchTotal));
+                if (typeof applySamsaraSkillHits === 'function') {
+                    var autoSkillResult = applySamsaraSkillHits(worldBossData, batchTotal, {
+                        healthKey: 'bossHealth',
+                        silent: !isWorldBossUIVisible(),
+                        logFn: function (msg) { addBossBattleLog(msg); }
+                    });
+                    if (autoSkillResult && autoSkillResult.hits > 0 && typeof cmpBigSci === 'function' && cmpBigSci(autoSkillResult.totalDamage, 0) > 0) {
+                        worldBossData.bossHealth = bLteZero(worldBossData.bossHealth) ? 0 : worldBossData.bossHealth;
+                        worldBossData.playerDamage = bigSciToStorageValue(addBigSci(worldBossData.playerDamage || 0, autoSkillResult.totalDamage));
+                    }
+                }
                 if (isWorldBossUIVisible()) {
                     const dpsEl = document.getElementById('wbDpsHint');
                     if (dpsEl) dpsEl.textContent = '自动 DPS ' + formatNumber(batchTotal) + '/秒';

@@ -1723,6 +1723,9 @@ function calculateWorldMapExpReward(zone, dimension) {
         ? (Number(getLandlordGeneTreeWorldMapBonuses().exp) || 1) : 1;
     const seaFishingDexMultiplier = (typeof getSeaFishingDexWorldExpMultiplier === 'function') ? getSeaFishingDexWorldExpMultiplier() : 1;
     const dongtianWorldExpMul = typeof getDongtianWorldMapExpMultiplier === "function" ? getDongtianWorldMapExpMultiplier() : 1;
+    const supremeGemExpBonus = (typeof calculateEquippedSupremeGemBonus === 'function')
+        ? (1 + (Number(calculateEquippedSupremeGemBonus().worldExp) || 0))
+        : 1;
     const totalMultiplier =
         vipMultiplier *
         dimensionExpMultiplier *
@@ -1736,7 +1739,8 @@ function calculateWorldMapExpReward(zone, dimension) {
         skyVineMultiplier *
         geneTreeExpMultiplier *
         seaFishingDexMultiplier *
-        dongtianWorldExpMul;
+        dongtianWorldExpMul *
+        supremeGemExpBonus;
     const finalExp = Math.floor(baseExp * totalMultiplier);
     return Number.isFinite(finalExp) && finalExp > 0 ? finalExp : 0;
 }
@@ -1996,10 +2000,81 @@ function grantWorldMapInsightOfflineDrops(killCount) {
     }
 }
 
-// 世界地图联网币掉落请求保护：限制并发与频率，避免长挂机后请求堆积导致卡顿
+// 世界地图联网掉落：合并为单次批量请求，避免挂机每击杀打 4 个 POST
+window._worldMapNetworkDropRequestInFlight = false;
+window._worldMapNetworkDropLastAt = 0;
+window._networkCoinDropMinIntervalMs = 1200;
+window._worldMapNetworkDropBatchFailed = false;
+
+function tryDropWorldMapNetworkRewardsSafe(dimensionLevel, handlers) {
+    handlers = handlers || {};
+    try {
+        if (!(dimensionLevel >= 1)) return;
+        if (typeof getGoldGameAuthToken !== 'function' || !getGoldGameAuthToken()) return;
+        if (typeof goldGameApiRequest !== 'function') return;
+        var now = Date.now();
+        if (window._worldMapNetworkDropRequestInFlight) return;
+        if ((now - (window._worldMapNetworkDropLastAt || 0)) < (window._networkCoinDropMinIntervalMs || 1200)) return;
+        window._worldMapNetworkDropRequestInFlight = true;
+        window._worldMapNetworkDropLastAt = now;
+
+        function finishMapleHook() {
+            // 枫叶币改由整分循环统一领取，世界地图击杀不再旁路打 minute-tick
+        }
+        function applyBatchRes(res) {
+            if (!res || !res.ok) return;
+            var coin = res.networkCoin || {};
+            var art = res.supremeArtifact || {};
+            var gem = res.supremeGem || {};
+            var sock = res.supremeSocketOpener || {};
+            if (coin.dropped && typeof coin.amount === 'number') window._networkCoinCache = coin.amount;
+            if (coin.ok && coin.dropped && typeof handlers.onNetworkCoin === 'function') handlers.onNetworkCoin(coin);
+            if (art.ok && art.dropped && typeof handlers.onSupremeArtifact === 'function') handlers.onSupremeArtifact(art);
+            if (gem.ok && gem.dropped && typeof handlers.onSupremeGem === 'function') handlers.onSupremeGem(gem);
+            if (sock.ok && sock.dropped && typeof handlers.onSupremeSocketOpener === 'function') handlers.onSupremeSocketOpener(sock);
+        }
+        function legacyFourCalls() {
+            tryDropNetworkCoinSafe(dimensionLevel, handlers.onNetworkCoin);
+            tryDropSupremeArtifactSafe(dimensionLevel, handlers.onSupremeArtifact);
+            tryDropSupremeGemSafe(dimensionLevel, handlers.onSupremeGem);
+            tryDropSupremeSocketOpenerSafe(dimensionLevel, handlers.onSupremeSocketOpener);
+        }
+
+        // 旧 API 未部署时回退四连；一旦成功过批量则不再回退
+        if (window._worldMapNetworkDropBatchFailed) {
+            window._worldMapNetworkDropRequestInFlight = false;
+            legacyFourCalls();
+            return;
+        }
+
+        var playerName = '';
+        try {
+            if (typeof player !== 'undefined' && player && player.name != null) playerName = String(player.name || '').trim();
+        } catch (eName) {}
+        goldGameApiRequest('POST', '/api/world-map/try-drops', {
+            dimensionLevel: dimensionLevel,
+            playerName: playerName || '神秘玩家'
+        }, true).then(function(res) {
+            if (res && res.__httpStatus === 404) {
+                window._worldMapNetworkDropBatchFailed = true;
+                legacyFourCalls();
+                return;
+            }
+            applyBatchRes(res);
+        }).catch(function() {
+            // 网络错误不永久标记失败，下次仍试批量
+        }).finally(function() {
+            window._worldMapNetworkDropRequestInFlight = false;
+            finishMapleHook();
+        });
+    } catch (e) {
+        window._worldMapNetworkDropRequestInFlight = false;
+    }
+}
+
+// 保留分接口封装（批量失败回退 / 其它入口仍可用）
 window._networkCoinDropRequestInFlight = false;
 window._networkCoinDropLastAt = 0;
-window._networkCoinDropMinIntervalMs = 1200;
 function tryDropNetworkCoinSafe(dimensionLevel, onDropped) {
     try {
         if (!(dimensionLevel >= 1)) return;
@@ -2011,11 +2086,10 @@ function tryDropNetworkCoinSafe(dimensionLevel, onDropped) {
         window._networkCoinDropRequestInFlight = true;
         window._networkCoinDropLastAt = now;
         goldGameTryDropNetworkCoin(dimensionLevel).then(function(res) {
-            if (res && res.ok && res.dropped && typeof onDropped === 'function') onDropped();
+            if (res && res.ok && res.dropped && typeof onDropped === 'function') onDropped(res);
         }).catch(function() {
         }).finally(function() {
             window._networkCoinDropRequestInFlight = false;
-            if (typeof window.goldGameMapleCoinWorldMapMaybeTick === 'function') window.goldGameMapleCoinWorldMapMaybeTick();
         });
     } catch (e) {
         window._networkCoinDropRequestInFlight = false;
@@ -2035,14 +2109,59 @@ function tryDropSupremeArtifactSafe(dimensionLevel, onDropped) {
         window._supremeArtifactDropRequestInFlight = true;
         window._supremeArtifactDropLastAt = now;
         goldGameTryDropSupremeArtifact(dimensionLevel).then(function(res) {
-            if (res && res.ok && res.dropped && typeof onDropped === 'function') onDropped();
+            if (res && res.ok && res.dropped && typeof onDropped === 'function') onDropped(res);
         }).catch(function() {
         }).finally(function() {
             window._supremeArtifactDropRequestInFlight = false;
-            if (typeof window.goldGameMapleCoinWorldMapMaybeTick === 'function') window.goldGameMapleCoinWorldMapMaybeTick();
         });
     } catch (e) {
         window._supremeArtifactDropRequestInFlight = false;
+    }
+}
+
+window._supremeGemDropRequestInFlight = false;
+window._supremeGemDropLastAt = 0;
+function tryDropSupremeGemSafe(dimensionLevel, onDropped) {
+    try {
+        if (!(dimensionLevel >= 1)) return;
+        if (typeof goldGameTryDropSupremeGem !== 'function') return;
+        if (typeof getGoldGameAuthToken !== 'function' || !getGoldGameAuthToken()) return;
+        var now = Date.now();
+        if (window._supremeGemDropRequestInFlight) return;
+        if ((now - (window._supremeGemDropLastAt || 0)) < (window._networkCoinDropMinIntervalMs || 1200)) return;
+        window._supremeGemDropRequestInFlight = true;
+        window._supremeGemDropLastAt = now;
+        goldGameTryDropSupremeGem(dimensionLevel).then(function(res) {
+            if (res && res.ok && res.dropped && typeof onDropped === 'function') onDropped(res);
+        }).catch(function() {
+        }).finally(function() {
+            window._supremeGemDropRequestInFlight = false;
+        });
+    } catch (e) {
+        window._supremeGemDropRequestInFlight = false;
+    }
+}
+
+window._supremeSocketOpenerDropRequestInFlight = false;
+window._supremeSocketOpenerDropLastAt = 0;
+function tryDropSupremeSocketOpenerSafe(dimensionLevel, onDropped) {
+    try {
+        if (!(dimensionLevel >= 1)) return;
+        if (typeof goldGameTryDropSupremeSocketOpener !== 'function') return;
+        if (typeof getGoldGameAuthToken !== 'function' || !getGoldGameAuthToken()) return;
+        var now = Date.now();
+        if (window._supremeSocketOpenerDropRequestInFlight) return;
+        if ((now - (window._supremeSocketOpenerDropLastAt || 0)) < (window._networkCoinDropMinIntervalMs || 1200)) return;
+        window._supremeSocketOpenerDropRequestInFlight = true;
+        window._supremeSocketOpenerDropLastAt = now;
+        goldGameTryDropSupremeSocketOpener(dimensionLevel).then(function(res) {
+            if (res && res.ok && res.dropped && typeof onDropped === 'function') onDropped(res);
+        }).catch(function() {
+        }).finally(function() {
+            window._supremeSocketOpenerDropRequestInFlight = false;
+        });
+    } catch (e) {
+        window._supremeSocketOpenerDropRequestInFlight = false;
     }
 }
 
@@ -2231,15 +2350,30 @@ function handleMonsterDefeated() {
            safeWorldMapRewardCall(dropReincarnationEquipment, '轮回装备');
            safeWorldMapRewardCall(tryDropBeastAfterBattle, '轮回神兽');
            safeWorldMapRewardCall(tryDropPixelSkinAfterBattle, '像素皮肤');
-                // 联网币：次元1以上打怪0.1%几率（由服务器发放，存账号）
-                tryDropNetworkCoinSafe(player.dimensionLevel, function() {
-                    addBattleLog('获得 联网币 x1（已存入账号）');
-                    if (typeof logAction === 'function') logAction('获得联网币 x1', 'success');
-                });
-                tryDropSupremeArtifactSafe(player.dimensionLevel, function() {
-                    addBattleLog('获得 至尊神器（已存入账号）');
-                    if (typeof logAction === 'function') logAction('获得至尊神器（已存入账号）', 'legendary');
-                    if (typeof updatePlayerBattleStats === 'function') updatePlayerBattleStats();
+                // 联网掉落：批量一次请求（币/神器/宝石/开孔器）
+                tryDropWorldMapNetworkRewardsSafe(player.dimensionLevel, {
+                    onNetworkCoin: function() {
+                        addBattleLog('获得 联网币 x1（已存入账号）');
+                        if (typeof logAction === 'function') logAction('获得联网币 x1', 'success');
+                    },
+                    onSupremeArtifact: function() {
+                        addBattleLog('获得 至尊神器（已存入账号）');
+                        if (typeof logAction === 'function') logAction('获得至尊神器（已存入账号）', 'legendary');
+                        if (typeof updatePlayerBattleStats === 'function') updatePlayerBattleStats();
+                    },
+                    onSupremeGem: function(res) {
+                        var g = res && res.gem;
+                        var name = (g && typeof getSupremeGemName === 'function') ? getSupremeGemName(g.kind) : '至尊宝石';
+                        addBattleLog('获得 ' + name + ' Lv.' + ((g && g.level) || 1) + '（已存入账号）');
+                        if (typeof logAction === 'function') logAction('获得' + name + '（已存入账号）', 'legendary');
+                        if (typeof refreshSupremeGemUI === 'function') refreshSupremeGemUI();
+                        if (typeof updatePlayerBattleStats === 'function') updatePlayerBattleStats();
+                    },
+                    onSupremeSocketOpener: function() {
+                        addBattleLog('获得 至尊开孔器 x1（已存入账号）');
+                        if (typeof logAction === 'function') logAction('获得至尊开孔器 x1', 'success');
+                        if (typeof refreshSupremeGemUI === 'function') refreshSupremeGemUI();
+                    }
                 });
                 if (!spawnNextWorldMapMonster()) {
                     if (player.worldMapBattle.autoBattle) {
@@ -2520,12 +2654,25 @@ function backgroundHandleMonsterDefeated() {
        safeWorldMapRewardCall(tryDropBeastAfterBattle, '轮回神兽');
        safeWorldMapRewardCall(tryDropPixelSkinAfterBattle, '像素皮肤');
         
-        tryDropNetworkCoinSafe(player.dimensionLevel, function() {
-            if (typeof logAction === 'function') logAction('获得联网币 x1', 'success');
-        });
-        tryDropSupremeArtifactSafe(player.dimensionLevel, function() {
-            if (typeof logAction === 'function') logAction('获得至尊神器（已存入账号）', 'legendary');
-            if (typeof updatePlayerBattleStats === 'function') updatePlayerBattleStats();
+        tryDropWorldMapNetworkRewardsSafe(player.dimensionLevel, {
+            onNetworkCoin: function() {
+                if (typeof logAction === 'function') logAction('获得联网币 x1', 'success');
+            },
+            onSupremeArtifact: function() {
+                if (typeof logAction === 'function') logAction('获得至尊神器（已存入账号）', 'legendary');
+                if (typeof updatePlayerBattleStats === 'function') updatePlayerBattleStats();
+            },
+            onSupremeGem: function(res) {
+                var g = res && res.gem;
+                var name = (g && typeof getSupremeGemName === 'function') ? getSupremeGemName(g.kind) : '至尊宝石';
+                if (typeof logAction === 'function') logAction('获得' + name + '（已存入账号）', 'legendary');
+                if (typeof refreshSupremeGemUI === 'function') refreshSupremeGemUI();
+                if (typeof updatePlayerBattleStats === 'function') updatePlayerBattleStats();
+            },
+            onSupremeSocketOpener: function() {
+                if (typeof logAction === 'function') logAction('获得至尊开孔器 x1', 'success');
+                if (typeof refreshSupremeGemUI === 'function') refreshSupremeGemUI();
+            }
         });
         if (!spawnNextWorldMapMonster({ silent: true })) {
             player.worldMapBattle.autoBattle = false;

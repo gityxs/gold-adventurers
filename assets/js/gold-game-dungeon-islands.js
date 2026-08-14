@@ -111,6 +111,12 @@ function attackBlackDragon() {
     blackDragonAbyss.bossHealth = bSub(blackDragonAbyss.bossHealth, damage);
     
     addBdaBattleLog(`你对黑龙王造成${formatSci(damage)}点${isCrit ? "暴击 " : ""}伤害`);
+    if (typeof applySamsaraSkillHits === 'function') {
+        applySamsaraSkillHits(blackDragonAbyss, damage, {
+            healthKey: 'bossHealth',
+            logFn: function (msg) { addBdaBattleLog(msg); }
+        });
+    }
     if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx('blackDragonAbyss', { side: 'boss', damage: damage, isCrit: isCrit });
     
     // 检查BOSS是否死亡
@@ -661,6 +667,12 @@ function attackHolyBeastBoss() {
     
     // 记录攻击日志
     addHbiBattleLog(`你对上古火麒麟造成了${formatSci(damage)}点${isCrit ? '暴击 ' : ''}伤害`);
+    if (typeof applySamsaraSkillHits === 'function') {
+        applySamsaraSkillHits(player.holyBeastIsland, damage, {
+            healthKey: 'bossHealth',
+            logFn: function (msg) { addHbiBattleLog(msg); }
+        });
+    }
     addHbiBattleLog(`BOSS剩余生命: ${formatSci(player.holyBeastIsland.bossHealth)}/${formatSci(player.holyBeastIsland.bossMaxHealth)}`);
     if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx('holyBeastIsland', { side: 'boss', damage: damage, isCrit: isCrit });
     
@@ -1032,6 +1044,12 @@ function attackPenglaiBoss() {
     
     // 记录攻击日志
     addPenglaiBattleLog(`你对太古饕鬄造成了${formatSci(damage)}点${isCrit ? '暴击 ' : ''}伤害`);
+    if (typeof applySamsaraSkillHits === 'function') {
+        applySamsaraSkillHits(player.penglaiIsland, damage, {
+            healthKey: 'bossHealth',
+            logFn: function (msg) { addPenglaiBattleLog(msg); }
+        });
+    }
     addPenglaiBattleLog(`BOSS剩余生命: ${formatSci(player.penglaiIsland.bossHealth)}/${formatSci(player.penglaiIsland.bossMaxHealth)}`);
     if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx('penglaiIsland', { side: 'boss', damage: damage, isCrit: isCrit });
     
@@ -1321,6 +1339,12 @@ function attackLunhuiFubenBoss() {
     if (isCrit) damage = multiplyBigByFinite(damage, critDamage);
     player.lunhuiFuben.bossHealth = bSub(player.lunhuiFuben.bossHealth, damage);
     addLunhuiFubenBattleLog('你对太古混沌造成了' + formatSci(damage) + '点' + (isCrit ? '暴击 ' : '') + '伤害');
+    if (typeof applySamsaraSkillHits === 'function') {
+        applySamsaraSkillHits(player.lunhuiFuben, damage, {
+            healthKey: 'bossHealth',
+            logFn: function (msg) { addLunhuiFubenBattleLog(msg); }
+        });
+    }
     addLunhuiFubenBattleLog('BOSS剩余生命: ' + formatSci(player.lunhuiFuben.bossHealth) + '/' + formatSci(player.lunhuiFuben.bossMaxHealth));
     if (typeof lunhuiBattleFx === 'function') lunhuiBattleFx('lunhuiFuben', { side: 'boss', damage: damage, isCrit: isCrit });
     if (bLteZero(player.lunhuiFuben.bossHealth)) {

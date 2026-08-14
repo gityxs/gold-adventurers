@@ -1800,6 +1800,264 @@ const classConfig = {
     }
 };
 
+/** 轮回技能触发上限文案 */
+function formatSamsaraTriggerCapDesc(cap) {
+    var p = Math.round(Number(cap) * 1000) / 10;
+    return (p % 1 === 0 ? String(Math.round(p)) : String(p)) + '%';
+}
+
+function makeSamsaraDamageOption(value) {
+    return {
+        desc: '轮回技能伤害倍率提升' + value + '倍',
+        type: 'samsaraSkillDamageMultiplier',
+        value: value
+    };
+}
+
+function makeSamsaraTriggerCapOption(cap) {
+    return {
+        desc: '轮回技能触发上限提升' + formatSamsaraTriggerCapDesc(cap),
+        type: 'samsaraSkillTriggerCap',
+        value: cap
+    };
+}
+
+function makeSamsaraTriggerRateOption(rate) {
+    return {
+        desc: '轮回技能触发率提升' + formatSamsaraTriggerCapDesc(rate),
+        type: 'samsaraSkillTriggerRate',
+        value: rate
+    };
+}
+
+function makeSamsaraHybridOption(rate, damage) {
+    return {
+        desc: '轮回触发率+' + formatSamsaraTriggerCapDesc(rate) + '且伤害提升' + damage + '倍',
+        type: 'samsaraSkillHybrid',
+        value: { triggerRate: rate, damage: damage }
+    };
+}
+
+/** 挂载各职业独立轮回技能分支，并给二~七转叠轮回技能专精加成（保留原有属性） */
+(function attachClassSamsaraSkillSystem() {
+    function mergeBonus(job, extra) {
+        if (!job || !job.bonus || !extra) return;
+        Object.keys(extra).forEach(function (k) {
+            job.bonus[k] = extra[k];
+        });
+    }
+
+    // 前段：仅轮回档；后段：化圣2~10（保留化圣前轮回成长）
+    var skillReq = [
+        { requiredReincarnation: 1 },
+        { requiredReincarnation: 3 },
+        { requiredReincarnation: 5 },
+        { requiredReincarnation: 8 },
+        { requiredReincarnation: 12 },
+        { requiredReincarnation: 16 },
+        { requiredReincarnation: 22 },
+        { requiredReincarnation: 30 },
+        { requiredReincarnation: 35, requiredHuaSheng: 2 },
+        { requiredReincarnation: 40, requiredHuaSheng: 3 },
+        { requiredReincarnation: 45, requiredHuaSheng: 4 },
+        { requiredReincarnation: 50, requiredHuaSheng: 5 },
+        { requiredReincarnation: 55, requiredHuaSheng: 6 },
+        { requiredReincarnation: 60, requiredHuaSheng: 7 },
+        { requiredReincarnation: 65, requiredHuaSheng: 8 },
+        { requiredReincarnation: 70, requiredHuaSheng: 9 },
+        { requiredReincarnation: 75, requiredHuaSheng: 10 }
+    ];
+    // 平衡基准：战士偏伤害、法师偏触发上限、探险家偏混合；第4选项为低额触发率(约0.5%~4%)
+    var balDmg = {
+        warrior:  [1.2, 2.5, 4, 6.5, 10, 16, 28, 45, 70, 110, 170, 270, 420, 650, 1000, 1550, 2400],
+        mage:     [1.1, 2.2, 3.8, 6.5, 11, 17, 28, 45, 72, 110, 175, 275, 430, 670, 1050, 1600, 2500],
+        explorer: [1.3, 2.6, 4.2, 7, 11.5, 18, 30, 48, 75, 115, 180, 285, 450, 700, 1100, 1700, 2650]
+    };
+    var balCap = {
+        warrior:  [0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.07, 0.08, 0.09, 0.10, 0.11, 0.13, 0.15],
+        mage:     [0.022, 0.028, 0.035, 0.045, 0.055, 0.065, 0.075, 0.085, 0.095, 0.11, 0.13, 0.14, 0.16, 0.17, 0.19, 0.21, 0.24],
+        explorer: [0.018, 0.023, 0.03, 0.038, 0.045, 0.052, 0.06, 0.068, 0.075, 0.085, 0.095, 0.11, 0.125, 0.14, 0.155, 0.175, 0.20]
+    };
+    var balRate = {
+        warrior:  [0.004, 0.005, 0.006, 0.007, 0.008, 0.010, 0.012, 0.014, 0.016, 0.018, 0.020, 0.023, 0.026, 0.029, 0.032, 0.036, 0.038],
+        mage:     [0.005, 0.006, 0.007, 0.009, 0.011, 0.013, 0.015, 0.017, 0.019, 0.022, 0.025, 0.028, 0.031, 0.034, 0.037, 0.039, 0.040],
+        explorer: [0.0045, 0.0055, 0.0065, 0.008, 0.0095, 0.0115, 0.0135, 0.0155, 0.0175, 0.020, 0.023, 0.026, 0.029, 0.032, 0.035, 0.0375, 0.039]
+    };
+    // 混合：低触发率 + 较低伤害
+    var balHyb = {
+        warrior:  [[0.002, 0.6], [0.0025, 1.2], [0.003, 2], [0.0035, 3.2], [0.004, 5], [0.005, 8], [0.006, 13], [0.007, 20], [0.008, 32], [0.009, 50], [0.010, 75], [0.011, 120], [0.012, 185], [0.014, 290], [0.016, 450], [0.018, 700], [0.019, 1100]],
+        mage:     [[0.0025, 0.55], [0.003, 1.1], [0.0035, 1.9], [0.0045, 3.2], [0.0055, 5.5], [0.0065, 8.5], [0.0075, 14], [0.0085, 22], [0.0095, 36], [0.011, 55], [0.0125, 88], [0.014, 140], [0.0155, 215], [0.017, 335], [0.0185, 525], [0.0195, 800], [0.020, 1250]],
+        explorer: [[0.0022, 0.65], [0.0028, 1.3], [0.0033, 2.1], [0.004, 3.5], [0.0048, 5.8], [0.0058, 9], [0.0068, 15], [0.0078, 24], [0.0088, 38], [0.010, 58], [0.0115, 90], [0.013, 145], [0.0145, 225], [0.016, 350], [0.0175, 550], [0.0188, 850], [0.0195, 1320]]
+    };
+
+    function buildSkillBranch(req, i, classKey, order) {
+        var dmg = balDmg[classKey][i];
+        var cap = balCap[classKey][i];
+        var rate = balRate[classKey][i];
+        var hyb = balHyb[classKey][i];
+        var opts = {
+            dmg: makeSamsaraDamageOption(dmg),
+            cap: makeSamsaraTriggerCapOption(cap),
+            rate: makeSamsaraTriggerRateOption(rate),
+            hyb: makeSamsaraHybridOption(hyb[0], hyb[1])
+        };
+        var branch = {
+            requiredReincarnation: req.requiredReincarnation,
+            options: order.map(function (k) { return opts[k]; })
+        };
+        if (req.requiredHuaSheng != null) branch.requiredHuaSheng = req.requiredHuaSheng;
+        return branch;
+    }
+
+    classConfig.warrior.skillBranches = skillReq.map(function (req, i) {
+        return buildSkillBranch(req, i, 'warrior', ['dmg', 'cap', 'hyb', 'rate']);
+    });
+    classConfig.mage.skillBranches = skillReq.map(function (req, i) {
+        return buildSkillBranch(req, i, 'mage', ['cap', 'dmg', 'hyb', 'rate']);
+    });
+    classConfig.explorer.skillBranches = skillReq.map(function (req, i) {
+        return buildSkillBranch(req, i, 'explorer', ['hyb', 'cap', 'dmg', 'rate']);
+    });
+
+    // 二~七转轮回技能：三职业同阶同档；触发线改为「触发率」加算（非上限）
+    var jobSamsaraByTier = {
+        2: { dmg: { samsaraSkillDamageMultiplier: 2 }, rate: { samsaraSkillTriggerRate: 0.03 }, mix: { samsaraSkillDamageMultiplier: 1.5, samsaraSkillTriggerRate: 0.02 } },
+        3: { dmg: { samsaraSkillDamageMultiplier: 4 }, rate: { samsaraSkillTriggerRate: 0.05 }, mix: { samsaraSkillDamageMultiplier: 2.5, samsaraSkillTriggerRate: 0.03 } },
+        4: { dmg: { samsaraSkillDamageMultiplier: 8 }, rate: { samsaraSkillTriggerRate: 0.08 }, mix: { samsaraSkillDamageMultiplier: 5, samsaraSkillTriggerRate: 0.05 } },
+        5: { dmg: { samsaraSkillDamageMultiplier: 20 }, rate: { samsaraSkillTriggerRate: 0.12 }, mix: { samsaraSkillDamageMultiplier: 12, samsaraSkillTriggerRate: 0.08 } },
+        6: { dmg: { samsaraSkillDamageMultiplier: 50 }, rate: { samsaraSkillTriggerRate: 0.16 }, mix: { samsaraSkillDamageMultiplier: 30, samsaraSkillTriggerRate: 0.10 } },
+        7: { dmg: { samsaraSkillDamageMultiplier: 120 }, rate: { samsaraSkillTriggerRate: 0.22 }, mix: { samsaraSkillDamageMultiplier: 70, samsaraSkillTriggerRate: 0.14 } }
+    };
+
+    var warriorJobs = classConfig.warrior;
+    mergeBonus(warriorJobs.secondJobs.berserker, jobSamsaraByTier[2].dmg);
+    mergeBonus(warriorJobs.secondJobs.swordSoul, jobSamsaraByTier[2].mix);
+    mergeBonus(warriorJobs.secondJobs.asura, jobSamsaraByTier[2].rate);
+    mergeBonus(warriorJobs.thirdJobs.bloodGod, jobSamsaraByTier[3].dmg);
+    mergeBonus(warriorJobs.thirdJobs.swordSaint, jobSamsaraByTier[3].mix);
+    mergeBonus(warriorJobs.thirdJobs.darkLord, jobSamsaraByTier[3].rate);
+    mergeBonus(warriorJobs.fourthJobs.bloodEmperor, jobSamsaraByTier[4].dmg);
+    mergeBonus(warriorJobs.fourthJobs.swordGod, jobSamsaraByTier[4].mix);
+    mergeBonus(warriorJobs.fourthJobs.heavenlyEmperor, jobSamsaraByTier[4].rate);
+    mergeBonus(warriorJobs.fifthJobs.bloodHeavenLord, jobSamsaraByTier[5].dmg);
+    mergeBonus(warriorJobs.fifthJobs.supremeSwordLord, jobSamsaraByTier[5].mix);
+    mergeBonus(warriorJobs.fifthJobs.nineHeavenLord, jobSamsaraByTier[5].rate);
+    mergeBonus(warriorJobs.sixthJobs.bloodWorldSovereign, jobSamsaraByTier[6].dmg);
+    mergeBonus(warriorJobs.sixthJobs.primordialSwordSaint, jobSamsaraByTier[6].mix);
+    mergeBonus(warriorJobs.sixthJobs.infiniteHeavenEmperor, jobSamsaraByTier[6].rate);
+    mergeBonus(warriorJobs.seventhJobs.chaosBloodEmperor, jobSamsaraByTier[7].dmg);
+    mergeBonus(warriorJobs.seventhJobs.chaosSwordAncestor, jobSamsaraByTier[7].mix);
+    mergeBonus(warriorJobs.seventhJobs.supremeHeavenLord, jobSamsaraByTier[7].rate);
+
+    var mageJobs = classConfig.mage;
+    mergeBonus(mageJobs.secondJobs.elementalist, jobSamsaraByTier[2].rate);
+    mergeBonus(mageJobs.secondJobs.magicScholar, jobSamsaraByTier[2].dmg);
+    mergeBonus(mageJobs.secondJobs.battleMage, jobSamsaraByTier[2].mix);
+    mergeBonus(mageJobs.thirdJobs.archmage, jobSamsaraByTier[3].rate);
+    mergeBonus(mageJobs.thirdJobs.magician, jobSamsaraByTier[3].dmg);
+    mergeBonus(mageJobs.thirdJobs.battleGoddess, jobSamsaraByTier[3].mix);
+    mergeBonus(mageJobs.fourthJobs.darkGod, jobSamsaraByTier[4].rate);
+    mergeBonus(mageJobs.fourthJobs.magicSovereign, jobSamsaraByTier[4].dmg);
+    mergeBonus(mageJobs.fourthJobs.lightGod, jobSamsaraByTier[4].mix);
+    mergeBonus(mageJobs.fifthJobs.abyssArchmage, jobSamsaraByTier[5].rate);
+    mergeBonus(mageJobs.fifthJobs.soulSovereign, jobSamsaraByTier[5].dmg);
+    mergeBonus(mageJobs.fifthJobs.warDeity, jobSamsaraByTier[5].mix);
+    mergeBonus(mageJobs.sixthJobs.chaosDarkGod, jobSamsaraByTier[6].rate);
+    mergeBonus(mageJobs.sixthJobs.eternalMagician, jobSamsaraByTier[6].dmg);
+    mergeBonus(mageJobs.sixthJobs.radiantDeity, jobSamsaraByTier[6].mix);
+    mergeBonus(mageJobs.seventhJobs.primordialDarkLord, jobSamsaraByTier[7].rate);
+    mergeBonus(mageJobs.seventhJobs.omniscientMagician, jobSamsaraByTier[7].dmg);
+    mergeBonus(mageJobs.seventhJobs.ultimateLightGod, jobSamsaraByTier[7].mix);
+
+    var explorerJobs = classConfig.explorer;
+    mergeBonus(explorerJobs.secondJobs.pathfinder, jobSamsaraByTier[2].rate);
+    mergeBonus(explorerJobs.secondJobs.adventurer, jobSamsaraByTier[2].dmg);
+    mergeBonus(explorerJobs.secondJobs.scholar, jobSamsaraByTier[2].mix);
+    mergeBonus(explorerJobs.thirdJobs.explorerKing, jobSamsaraByTier[3].rate);
+    mergeBonus(explorerJobs.thirdJobs.legendAdventurer, jobSamsaraByTier[3].dmg);
+    mergeBonus(explorerJobs.thirdJobs.mysteryMaster, jobSamsaraByTier[3].mix);
+    mergeBonus(explorerJobs.fourthJobs.worldWalker, jobSamsaraByTier[4].rate);
+    mergeBonus(explorerJobs.fourthJobs.immortalExplorer, jobSamsaraByTier[4].dmg);
+    mergeBonus(explorerJobs.fourthJobs.mysteryGod, jobSamsaraByTier[4].mix);
+    mergeBonus(explorerJobs.fifthJobs.cosmicWalker, jobSamsaraByTier[5].rate);
+    mergeBonus(explorerJobs.fifthJobs.fateSeeker, jobSamsaraByTier[5].dmg);
+    mergeBonus(explorerJobs.fifthJobs.lawSovereign, jobSamsaraByTier[5].mix);
+    mergeBonus(explorerJobs.sixthJobs.voidWalker, jobSamsaraByTier[6].rate);
+    mergeBonus(explorerJobs.sixthJobs.destinyGuide, jobSamsaraByTier[6].dmg);
+    mergeBonus(explorerJobs.sixthJobs.supremeLawLord, jobSamsaraByTier[6].mix);
+    mergeBonus(explorerJobs.seventhJobs.chaosWalker, jobSamsaraByTier[7].rate);
+    mergeBonus(explorerJobs.seventhJobs.eternalSeeker, jobSamsaraByTier[7].dmg);
+    mergeBonus(explorerJobs.seventhJobs.primordialLawGod, jobSamsaraByTier[7].mix);
+})();
+
+function getPlayerReincarnationCountForClassSkill() {
+    return (player.level && player.level.ascentionCounta) ? Math.floor(Number(player.level.ascentionCounta) || 0) : 0;
+}
+
+function getPlayerHuaShengCountForClassSkill() {
+    return (player.level && player.level.huaShengCount) ? Math.floor(Number(player.level.huaShengCount) || 0) : 0;
+}
+
+function getClassSkillBranchRequirementText(branch) {
+    var parts = [];
+    if (branch.requiredStage != null) parts.push('关卡 ' + branch.requiredStage);
+    if (branch.requiredTower != null) parts.push('通天塔 ' + branch.requiredTower + '层');
+    if (branch.requiredReincarnation != null) parts.push('轮回 ' + branch.requiredReincarnation + '转');
+    if (branch.requiredHuaSheng != null) parts.push('化圣 ' + branch.requiredHuaSheng + '次');
+    return parts.join(' + ') || '无门槛';
+}
+
+function isClassSkillBranchUnlocked(branch) {
+    if (!branch) return false;
+    if (branch.requiredStage != null && (player.battle.maxStage || 0) < branch.requiredStage) return false;
+    if (branch.requiredTower != null && (player.tower.currentFloor || 0) < branch.requiredTower) return false;
+    if (branch.requiredReincarnation != null && getPlayerReincarnationCountForClassSkill() < branch.requiredReincarnation) return false;
+    if (branch.requiredHuaSheng != null && getPlayerHuaShengCountForClassSkill() < branch.requiredHuaSheng) return false;
+    return true;
+}
+
+function ensureClassSkillBranchesData() {
+    if (!Array.isArray(player.classSkillBranches)) player.classSkillBranches = [];
+}
+
+function applyClassJobBonusToBag(bonuses, jobBonus) {
+    if (!jobBonus) return;
+    Object.keys(jobBonus).forEach(function (key) {
+        var value = jobBonus[key];
+        if (key === 'samsaraSkillTriggerCap' || key === 'samsaraSkillTriggerRate') {
+            bonuses[key] += Number(value) || 0;
+            return;
+        }
+        if (bonuses[key] !== undefined) {
+            bonuses[key] *= value;
+        }
+    });
+}
+
+function applyClassSkillOptionToBag(bonuses, option) {
+    if (!option || !option.type) return;
+    switch (option.type) {
+        case 'samsaraSkillDamageMultiplier':
+            bonuses.samsaraSkillDamageMultiplier *= (1 + option.value);
+            break;
+        case 'samsaraSkillTriggerCap':
+            bonuses.samsaraSkillTriggerCap += Number(option.value) || 0;
+            break;
+        case 'samsaraSkillTriggerRate':
+            bonuses.samsaraSkillTriggerRate += Number(option.value) || 0;
+            break;
+        case 'samsaraSkillHybrid':
+            if (option.value) {
+                bonuses.samsaraSkillTriggerCap += Number(option.value.triggerCap) || 0;
+                bonuses.samsaraSkillTriggerRate += Number(option.value.triggerRate) || 0;
+                if (option.value.damage != null) {
+                    bonuses.samsaraSkillDamageMultiplier *= (1 + option.value.damage);
+                }
+            }
+            break;
+    }
+}
+
 // 切换职业系统界面显示
 function toggleClassSystem() {
     if (player.reincarnationCount < 20) {
@@ -1864,6 +2122,19 @@ function getClassBranchCounts() {
     return { selected, total };
 }
 
+function getClassSkillBranchCounts() {
+    if (!player.class) return { selected: 0, total: 0 };
+    ensureClassSkillBranchesData();
+    const branches = (classConfig[player.class] && classConfig[player.class].skillBranches) || [];
+    const total = branches.length;
+    let selected = 0;
+    branches.forEach((branch, index) => {
+        const opt = player.classSkillBranches[index];
+        if (opt !== undefined && opt !== null && opt !== -1) selected += 1;
+    });
+    return { selected, total };
+}
+
 function updateClassModalSummary() {
     const tier = getClassAdvancementTier();
     const nameEl = document.getElementById('currentClassName');
@@ -1877,16 +2148,19 @@ function updateClassModalSummary() {
         }
     }
     const branchCounts = getClassBranchCounts();
+    const skillCounts = getClassSkillBranchCounts();
     const setText = (id, val) => {
         const el = document.getElementById(id);
         if (el) el.textContent = val;
     };
     setText('classTierStat', `${tier}/7`);
     setText('classBranchStat', `${branchCounts.selected}/${branchCounts.total}`);
+    setText('classSkillBranchStat', `${skillCounts.selected}/${skillCounts.total}`);
     setText('classStageStat', String(player.battle.maxStage || 0));
     setText('classTowerStat', String(player.tower.currentFloor || 0));
     setText('classBookStat', String((player.items && player.items.zhiye1) || 0));
     setText('classBranchCountBadge', `${branchCounts.selected}/${branchCounts.total}`);
+    setText('classSkillBranchCountBadge', `${skillCounts.selected}/${skillCounts.total}`);
     setText('classJobsCountBadge', `${tier}/7`);
 }
 
@@ -1929,6 +2203,7 @@ function performSelectClass(classType, consumeBook) {
     if (consumeBook) {
         player.items.zhiye1 -= 1;
         player.classBranches = [];
+        player.classSkillBranches = [];
         player.classSecond = null;
         player.classThird = null;
         player.classFourth = null;
@@ -1938,6 +2213,7 @@ function performSelectClass(classType, consumeBook) {
         logAction('消耗1职业转换书，更换职业为' + classConfig[classType].name + '，所有转职状态已重置', 'success');
     }
     player.class = classType;
+    ensureClassSkillBranchesData();
     updateClassSystemDisplay();
     updatePlayerClassNameDisplay();
     updateDisplay();
@@ -2053,6 +2329,7 @@ function updateClassSystemDisplay() {
     updateClassSelectionActive();
 
     const branchPointsContainer = document.getElementById('branchPointsContainer');
+    const skillBranchPointsContainer = document.getElementById('skillBranchPointsContainer');
     const jobsContainer = document.getElementById('classJobsContainer');
 
     if (!branchPointsContainer || !jobsContainer) {
@@ -2062,13 +2339,18 @@ function updateClassSystemDisplay() {
 
     if (!player.class) {
         branchPointsContainer.innerHTML = '<div class="class-branch-empty">请先选择本命职业，一转后可在此加点分支</div>';
+        if (skillBranchPointsContainer) {
+            skillBranchPointsContainer.innerHTML = '<div class="class-branch-empty">请先选择本命职业，再学习轮回技能分支加成</div>';
+        }
         jobsContainer.innerHTML = '<div class="class-jobs-empty">请先选择本命职业，通天塔达标后可逐阶转职晋升</div>';
         switchClassBranchTab(window.__classBranchTab || 'all');
         updatePlayerClassNameDisplay();
         return;
     }
 
+    ensureClassSkillBranchesData();
     branchPointsContainer.innerHTML = '';
+    if (skillBranchPointsContainer) skillBranchPointsContainer.innerHTML = '';
     jobsContainer.innerHTML = '';
 
     const branches = classConfig[player.class].branches;
@@ -2107,6 +2389,47 @@ function updateClassSystemDisplay() {
         branchPointsContainer.innerHTML += branchHtml;
 
         if (!isUnlocked) break;
+    }
+
+    // 轮回技能分支（各职业条件不同）
+    if (skillBranchPointsContainer) {
+        const skillBranches = classConfig[player.class].skillBranches || [];
+        if (!skillBranches.length) {
+            skillBranchPointsContainer.innerHTML = '<div class="class-branch-empty">当前职业暂无轮回技能分支</div>';
+        } else {
+            for (let index = 0; index < skillBranches.length; index++) {
+                const branch = skillBranches[index];
+                const isUnlocked = isClassSkillBranchUnlocked(branch);
+                const selectedOption = player.classSkillBranches[index] !== undefined ? player.classSkillBranches[index] : -1;
+                const reqText = getClassSkillBranchRequirementText(branch);
+                const rowClass = isUnlocked ? 'class-branch-row' : 'class-branch-row class-branch-locked';
+                let skillHtml = `<div class="${rowClass}">`;
+                skillHtml += `<div class="class-branch-title">
+                    <span class="class-branch-index">${index + 1}</span>
+                    <span>轮回技能第${index + 1}重</span>
+                    <span class="class-branch-req">${reqText}</span>
+                </div>`;
+                if (!isUnlocked) {
+                    skillHtml += `<div class="class-branch-locked-msg">未解锁，需满足：${reqText}</div>`;
+                } else {
+                    skillHtml += `<div class="class-branch-options">`;
+                    branch.options.forEach((option, optIndex) => {
+                        const isSelected = selectedOption === optIndex;
+                        const optClass = isSelected ? 'class-branch-option class-branch-selected' : 'class-branch-option';
+                        skillHtml += `
+                            <div class="${optClass}" onclick="selectSkillBranch(${index}, ${optIndex})" role="button" tabindex="0">
+                                <span>${option.desc}</span>
+                                <button type="button" onclick="event.stopPropagation(); selectSkillBranch(${index}, ${optIndex})">${isSelected ? '✓ 已选' : '学习'}</button>
+                            </div>
+                        `;
+                    });
+                    skillHtml += `</div>`;
+                }
+                skillHtml += `</div>`;
+                skillBranchPointsContainer.innerHTML += skillHtml;
+                if (!isUnlocked) break;
+            }
+        }
     }
 
     let jobsHtml = '';
@@ -2239,6 +2562,9 @@ function getJobBonusDescription(bonus) {
     if (bonus.worldExpMultiplier) descriptions.push(`世界地图经验${bonus.worldExpMultiplier}倍`);
     if (bonus.cultivationExpMultiplier) descriptions.push(`修仙经验${bonus.cultivationExpMultiplier}倍`);
     if (bonus.mysteryExpMultiplier) descriptions.push(`奥秘经验${bonus.mysteryExpMultiplier}倍`);
+    if (bonus.samsaraSkillTriggerCap) descriptions.push(`轮回技能触发上限+${formatSamsaraTriggerCapDesc(bonus.samsaraSkillTriggerCap)}`);
+    if (bonus.samsaraSkillTriggerRate) descriptions.push(`轮回技能触发率+${formatSamsaraTriggerCapDesc(bonus.samsaraSkillTriggerRate)}`);
+    if (bonus.samsaraSkillDamageMultiplier) descriptions.push(`轮回技能伤害${bonus.samsaraSkillDamageMultiplier}倍`);
     return descriptions.join('，');
 }
 // 选择二转职业
@@ -2389,6 +2715,33 @@ function selectBranch(branchIndex, optionIndex) {
     updatePlayerBattleStats();
 }
 
+/** 学习职业轮回技能分支 */
+function selectSkillBranch(branchIndex, optionIndex) {
+    if (!player.class) {
+        alert('请先选择本命职业！');
+        return;
+    }
+    ensureClassSkillBranchesData();
+    const skillBranches = classConfig[player.class].skillBranches || [];
+    const branch = skillBranches[branchIndex];
+    if (!branch) {
+        alert('无效的轮回技能分支！');
+        return;
+    }
+    if (!isClassSkillBranchUnlocked(branch)) {
+        alert('未满足学习条件：' + getClassSkillBranchRequirementText(branch));
+        return;
+    }
+    if (!branch.options || !branch.options[optionIndex]) {
+        alert('无效的技能选项！');
+        return;
+    }
+    player.classSkillBranches[branchIndex] = optionIndex;
+    logAction(`学习了${classConfig[player.class].name}轮回技能第${branchIndex + 1}重：${branch.options[optionIndex].desc}`, 'success');
+    updateClassSystemDisplay();
+    updatePlayerBattleStats();
+}
+
  
 // 更新玩家名字旁的职业显示
 function updatePlayerClassNameDisplay() {
@@ -2432,7 +2785,10 @@ function calculateClassBonuses() {
         soulRingMultiplier: 1,
         worldExpMultiplier: 1,
         cultivationExpMultiplier: 1,
-        mysteryExpMultiplier: 1
+        mysteryExpMultiplier: 1,
+        samsaraSkillTriggerCap: 0,
+        samsaraSkillTriggerRate: 0,
+        samsaraSkillDamageMultiplier: 1
     };
     
     if (!player.class) return bonuses;
@@ -2479,79 +2835,52 @@ function calculateClassBonuses() {
             case 'mysteryExpMultiplier':
                 bonuses.mysteryExpMultiplier *= (1 + option.value);
                 break;
+            case 'samsaraSkillDamageMultiplier':
+            case 'samsaraSkillTriggerCap':
+            case 'samsaraSkillTriggerRate':
+            case 'samsaraSkillHybrid':
+                applyClassSkillOptionToBag(bonuses, option);
+                break;
         }
     });
+
+    // 轮回技能分支加成
+    ensureClassSkillBranchesData();
+    const skillBranches = Array.isArray(classData.skillBranches) ? classData.skillBranches : [];
+    const skillPicks = Array.isArray(player.classSkillBranches) ? player.classSkillBranches : [];
+    skillPicks.forEach((optionIndex, branchIndex) => {
+        if (optionIndex === undefined || optionIndex === null || optionIndex === -1) return;
+        const branch = skillBranches[branchIndex];
+        if (!branch || !Array.isArray(branch.options)) return;
+        // 已学过的保留生效；未再满足条件时仍保留（避免临时不达标瞬间掉加成）
+        const option = branch.options[optionIndex];
+        applyClassSkillOptionToBag(bonuses, option);
+    });
     
-    // 新增：应用二转职业加成
+    // 应用二~七转职业加成
     if (player.classSecond) {
         const secondJob = classData.secondJobs[player.classSecond];
-        if (secondJob && secondJob.bonus) {
-            for (const [key, value] of Object.entries(secondJob.bonus)) {
-                if (bonuses[key] !== undefined) {
-                    bonuses[key] *= value;
-                }
-            }
-        }
+        if (secondJob && secondJob.bonus) applyClassJobBonusToBag(bonuses, secondJob.bonus);
     }
-    
-    // 新增：应用三转职业加成
     if (player.classThird) {
         const thirdJob = classData.thirdJobs[player.classThird];
-        if (thirdJob && thirdJob.bonus) {
-            for (const [key, value] of Object.entries(thirdJob.bonus)) {
-                if (bonuses[key] !== undefined) {
-                    bonuses[key] *= value;
-                }
-            }
-        }
+        if (thirdJob && thirdJob.bonus) applyClassJobBonusToBag(bonuses, thirdJob.bonus);
     }
-    
-    // 新增：应用四转职业加成
     if (player.classFourth) {
         const fourthJob = classData.fourthJobs[player.classFourth];
-        if (fourthJob && fourthJob.bonus) {
-            for (const [key, value] of Object.entries(fourthJob.bonus)) {
-                if (bonuses[key] !== undefined) {
-                    bonuses[key] *= value;
-                }
-            }
-        }
+        if (fourthJob && fourthJob.bonus) applyClassJobBonusToBag(bonuses, fourthJob.bonus);
     }
-
-    // 新增：应用五转职业加成
     if (player.classFifth) {
         const fifthJob = classData.fifthJobs[player.classFifth];
-        if (fifthJob && fifthJob.bonus) {
-            for (const [key, value] of Object.entries(fifthJob.bonus)) {
-                if (bonuses[key] !== undefined) {
-                    bonuses[key] *= value;
-                }
-            }
-        }
+        if (fifthJob && fifthJob.bonus) applyClassJobBonusToBag(bonuses, fifthJob.bonus);
     }
-
-    // 新增：应用六转职业加成
     if (player.classSixth) {
         const sixthJob = classData.sixthJobs[player.classSixth];
-        if (sixthJob && sixthJob.bonus) {
-            for (const [key, value] of Object.entries(sixthJob.bonus)) {
-                if (bonuses[key] !== undefined) {
-                    bonuses[key] *= value;
-                }
-            }
-        }
+        if (sixthJob && sixthJob.bonus) applyClassJobBonusToBag(bonuses, sixthJob.bonus);
     }
-
-    // 新增：应用七转职业加成
     if (player.classSeventh) {
         const seventhJob = classData.seventhJobs[player.classSeventh];
-        if (seventhJob && seventhJob.bonus) {
-            for (const [key, value] of Object.entries(seventhJob.bonus)) {
-                if (bonuses[key] !== undefined) {
-                    bonuses[key] *= value;
-                }
-            }
-        }
+        if (seventhJob && seventhJob.bonus) applyClassJobBonusToBag(bonuses, seventhJob.bonus);
     }
     
     return bonuses;

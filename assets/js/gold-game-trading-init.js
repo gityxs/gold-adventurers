@@ -867,10 +867,11 @@ window.addEventListener('beforeunload', function() {
         if (window._guildQuestCountdownTimer) { clearInterval(window._guildQuestCountdownTimer); window._guildQuestCountdownTimer = null; }
         if (window._networkMarketCountdownTimer) { clearInterval(window._networkMarketCountdownTimer); window._networkMarketCountdownTimer = null; }
         if (window._goldGameFamilyBuffTimer) { clearInterval(window._goldGameFamilyBuffTimer); window._goldGameFamilyBuffTimer = null; }
-        if (window._abyssOnlineChatLoopTimer) { clearInterval(window._abyssOnlineChatLoopTimer); window._abyssOnlineChatLoopTimer = null; }
+        if (window._abyssOnlineChatLoopTimer) { clearInterval(window._abyssOnlineChatLoopTimer); window._abyssOnlineChatLoopTimer = null; window._abyssOnlineChatLoopIntervalMs = 0; }
         if (window._abyssOnlineChatVisibilityTimer) { clearInterval(window._abyssOnlineChatVisibilityTimer); window._abyssOnlineChatVisibilityTimer = null; }
         if (typeof abyssTeardownUiTimers === 'function') abyssTeardownUiTimers();
         if (typeof window.stopGoldGameNetworkFloatAnnouncementLoop === 'function') window.stopGoldGameNetworkFloatAnnouncementLoop();
+        else if (window._goldGameNetworkFloatSseRetryTimer) { clearTimeout(window._goldGameNetworkFloatSseRetryTimer); window._goldGameNetworkFloatSseRetryTimer = null; }
         if (typeof stopTreasureAutoUseLoop === 'function') stopTreasureAutoUseLoop();
         if (typeof stopTreasureAutoAttackLoop === 'function') stopTreasureAutoAttackLoop();
     } catch (e) {}

@@ -103,43 +103,88 @@ function getSamsaraSkillAuraTriggerCapBonus(skillId) {
     return (auras && auras.triggerCap && auras.triggerCap[skillId]) ? (Number(auras.triggerCap[skillId]) || 0) : 0;
 }
 
+/** 职业加成：轮回技能触发上限（加算，如 0.05=+5%，主要来自技能分支） */
+function getClassSamsaraSkillTriggerCapBonus() {
+    if (typeof calculateClassBonuses !== 'function') return 0;
+    try {
+        var b = calculateClassBonuses();
+        return Math.max(0, Number(b && b.samsaraSkillTriggerCap) || 0);
+    } catch (e) {
+        return 0;
+    }
+}
+
+/** 职业加成：轮回技能触发率（加算，如 0.05=+5%，主要来自二~七转） */
+function getClassSamsaraSkillTriggerRateBonus() {
+    if (typeof calculateClassBonuses !== 'function') return 0;
+    try {
+        var b = calculateClassBonuses();
+        return Math.max(0, Number(b && b.samsaraSkillTriggerRate) || 0);
+    } catch (e) {
+        return 0;
+    }
+}
+
+/** 职业加成：轮回技能伤害倍率（乘算，默认1） */
+function getClassSamsaraSkillDamageMultiplier() {
+    if (typeof calculateClassBonuses !== 'function') return 1;
+    try {
+        var b = calculateClassBonuses();
+        var m = Number(b && b.samsaraSkillDamageMultiplier);
+        return (m > 0) ? m : 1;
+    } catch (e) {
+        return 1;
+    }
+}
+
 /**
- * 触发率 = min(上限, 10% + 等级×0.1%)
- * 上限默认 20%，可被装备光环额外抬高（每条 +5%~+15%）
+ * 触发率 = min(上限, 10% + 等级×0.1%) + 职业触发率
+ * 上限默认 20%，可被装备光环与职业分支抬高；最终不超过 100%
  * @param {number} level
  * @param {string} [skillId] 传入时应用对应光环触发上限
  */
 function getSamsaraSkillTriggerChance(level, skillId) {
     var lv = Math.max(0, Math.floor(Number(level) || 0));
-    var cap = SAMSARA_SKILL_TRIGGER_CAP + getSamsaraSkillAuraTriggerCapBonus(skillId);
-    return Math.min(cap, SAMSARA_SKILL_TRIGGER_BASE + lv * SAMSARA_SKILL_TRIGGER_PER_LEVEL);
+    var cap = SAMSARA_SKILL_TRIGGER_CAP
+        + getSamsaraSkillAuraTriggerCapBonus(skillId)
+        + getClassSamsaraSkillTriggerCapBonus();
+    cap = Math.min(1, Math.max(0, cap));
+    var chance = Math.min(cap, SAMSARA_SKILL_TRIGGER_BASE + lv * SAMSARA_SKILL_TRIGGER_PER_LEVEL);
+    chance += getClassSamsaraSkillTriggerRateBonus();
+    return Math.min(1, Math.max(0, chance));
 }
 
-/** 含光环的实际技能伤害倍率 */
+/** 含光环与职业加成的实际技能伤害倍率 */
 function getSamsaraSkillEffectiveDamagePercent(level, skillId) {
     var base = getSamsaraSkillDamagePercent(level);
     var aura = getSamsaraSkillAuraDmgBonus(skillId);
-    return base * (1 + aura);
+    var classMult = getClassSamsaraSkillDamageMultiplier();
+    var gemBonus = (typeof getSupremeGemSkillDamageBonus === 'function') ? (Number(getSupremeGemSkillDamageBonus(skillId)) || 0) : 0;
+    return base * (1 + aura) * classMult * (1 + gemBonus);
 }
 
 /**
- * 世界地图普攻后结算：已学习的 15 个技能各自独立触发（触发率随等级成长，基础上限20%，光环可抬高）。
- * 单技能伤害 = 该技能倍率 ×(1+光环伤害加成) × 本下普攻伤害（含爆伤）；
- * 多个触发则独立叠加：技能A×普攻 + 技能B×普攻 + …
- * @param {object} monster
+ * 普攻后结算轮回技能：15 技能各自独立触发。
+ * 单技能伤害 = 有效倍率 × 本下普攻伤害；多技能可叠加。
+ * @param {object} target 必须含生命字段（默认 health，可用 healthKey 指定 bossHealth）
  * @param {*} hitDamage 本下已结算的普攻伤害（含暴击）
- * @param {{silent?: boolean}} options
- * @returns {number} 触发次数
+ * @param {{silent?: boolean, healthKey?: string, logFn?: function}} options
+ * @returns {{hits: number, totalDamage: *}} 触发次数与技能总伤害
  */
-function applySamsaraSkillWorldMapHits(monster, hitDamage, options) {
+function applySamsaraSkillHits(target, hitDamage, options) {
     options = options || {};
-    if (!monster || hitDamage == null) return 0;
-    if (typeof ensureSamsaraSkillData !== 'function') return 0;
+    var empty = { hits: 0, totalDamage: (typeof bigSciToStorageValue === 'function') ? bigSciToStorageValue(0) : 0 };
+    if (!target || hitDamage == null) return empty;
+    if (typeof ensureSamsaraSkillData !== 'function') return empty;
     ensureSamsaraSkillData();
-    if (typeof multiplyBigByFinite !== 'function' || typeof bSub !== 'function') return 0;
-    if (typeof cmpBigSci === 'function' && cmpBigSci(hitDamage, 0) <= 0) return 0;
+    if (typeof multiplyBigByFinite !== 'function' || typeof bSub !== 'function') return empty;
+    if (typeof cmpBigSci === 'function' && cmpBigSci(hitDamage, 0) <= 0) return empty;
+    var healthKey = options.healthKey || 'health';
+    if (target[healthKey] == null) return empty;
     var silent = !!options.silent;
+    var logFn = typeof options.logFn === 'function' ? options.logFn : null;
     var hits = 0;
+    var totalSkillDmg = (typeof bigSciToStorageValue === 'function') ? bigSciToStorageValue(0) : 0;
     for (var i = 0; i < SAMSARA_SKILL_DEFS.length; i++) {
         var def = SAMSARA_SKILL_DEFS[i];
         var lv = Math.floor(Number(player.samsaraSkills.levels[def.id]) || 0);
@@ -148,18 +193,30 @@ function applySamsaraSkillWorldMapHits(monster, hitDamage, options) {
         if (Math.random() >= triggerChance) continue;
         var ratio = getSamsaraSkillEffectiveDamagePercent(lv, def.id);
         if (!(ratio > 0)) continue;
-        // 独立技能伤害：技能倍率 ×（普通攻击含爆伤）；光环乘算伤害倍率
         var skillDmg = multiplyBigByFinite(hitDamage, ratio);
         if (typeof cmpBigSci === 'function' && cmpBigSci(skillDmg, 0) <= 0) continue;
-        monster.health = bSub(monster.health, skillDmg);
+        target[healthKey] = bSub(target[healthKey], skillDmg);
+        if (typeof addBigSci === 'function') {
+            totalSkillDmg = (typeof bigSciToStorageValue === 'function')
+                ? bigSciToStorageValue(addBigSci(totalSkillDmg, skillDmg))
+                : addBigSci(totalSkillDmg, skillDmg);
+        }
         hits++;
-        if (!silent && typeof addBattleLog === 'function') {
+        if (!silent) {
             var pct = Math.floor(ratio * 100);
             var dmgText = (typeof formatSci === 'function') ? formatSci(skillDmg) : String(skillDmg);
-            addBattleLog('【' + def.name + '】触发！+' + dmgText + ' 技能伤害（' + pct + '% × 本下普攻）');
+            var msg = '【' + def.name + '】触发！+' + dmgText + ' 技能伤害（' + pct + '% × 本下普攻）';
+            if (logFn) logFn(msg);
+            else if (typeof addBattleLog === 'function') addBattleLog(msg);
         }
     }
-    return hits;
+    return { hits: hits, totalDamage: totalSkillDmg };
+}
+
+/** 世界地图兼容入口（扣 monster.health）；返回触发次数 */
+function applySamsaraSkillWorldMapHits(monster, hitDamage, options) {
+    var r = applySamsaraSkillHits(monster, hitDamage, options);
+    return (r && r.hits) ? r.hits : 0;
 }
 
 function getSamsaraSkillUnlockReincarnation() {
@@ -214,7 +271,17 @@ function updateSamsaraSkillUI() {
             var blv = Math.floor(Number(player.samsaraSkills.levels[SAMSARA_SKILL_DEFS[bi].id]) || 0);
             if (blv > 0) learned++;
         }
-        bonusEl.textContent = '已学 ' + learned + '/15 ｜ 触发率=10%+等级×0.1%（上限20%，光环可抬高）｜ 倍率=等级×10%（光环可乘算）｜ 各自独立，触发后可叠加';
+        var classCap = getClassSamsaraSkillTriggerCapBonus();
+        var classRate = getClassSamsaraSkillTriggerRateBonus();
+        var classDmg = getClassSamsaraSkillDamageMultiplier();
+        var classHint = '';
+        if (classCap > 0 || classRate > 0 || classDmg !== 1) {
+            classHint = '｜ 职业：';
+            if (classCap > 0) classHint += '触发上限+' + (classCap * 100).toFixed(1) + '%';
+            if (classRate > 0) classHint += (classCap > 0 ? '、' : '') + '触发率+' + (classRate * 100).toFixed(1) + '%';
+            if (classDmg !== 1) classHint += ((classCap > 0 || classRate > 0) ? '、' : '') + '伤害×' + (Math.round(classDmg * 100) / 100);
+        }
+        bonusEl.textContent = '已学 ' + learned + '/15 ｜ 触发率=10%+等级×0.1%（上限可由光环/分支抬高，转职可直接加触发率）｜ 倍率=等级×10%（光环/职业可乘算）｜ 各自独立，触发后可叠加' + classHint;
     }
 
     function renderCard(def) {
@@ -225,17 +292,21 @@ function updateSamsaraSkillUI() {
         var nextCost = lv >= SAMSARA_SKILL_MAX_LEVEL ? 0 : getSamsaraSkillUpgradeCost(lv);
         var auraDmg = getSamsaraSkillAuraDmgBonus(def.id);
         var auraCap = getSamsaraSkillAuraTriggerCapBonus(def.id);
+        var classCap = getClassSamsaraSkillTriggerCapBonus();
+        var classRate = getClassSamsaraSkillTriggerRateBonus();
+        var classDmg = getClassSamsaraSkillDamageMultiplier();
         var skillPct = Math.floor(getSamsaraSkillEffectiveDamagePercent(lv, def.id) * 100);
-        var triggerCap = SAMSARA_SKILL_TRIGGER_CAP + auraCap;
+        var triggerCap = Math.min(1, SAMSARA_SKILL_TRIGGER_CAP + auraCap + classCap);
         var triggerPct = (getSamsaraSkillTriggerChance(lv, def.id) * 100).toFixed(1);
         var auraHint = '';
-        if (auraDmg > 0 || auraCap > 0) {
-            var parts = [];
-            if (auraDmg > 0) parts.push('光环伤害+' + (auraDmg * 100).toFixed(0) + '%');
-            if (auraCap > 0) parts.push('光环触发上限+' + (auraCap * 100).toFixed(2) + '%');
-            auraHint = '｜ ' + parts.join('，');
-        }
-        var perText = '独立倍率 ' + skillPct + '%（Lv×10%' + (auraDmg > 0 ? '×光环' : '') + '）｜ 触发率 ' + triggerPct + '%（上限' + (triggerCap * 100).toFixed(2) + '%）' + auraHint;
+        var parts = [];
+        if (auraDmg > 0) parts.push('光环伤害+' + (auraDmg * 100).toFixed(0) + '%');
+        if (auraCap > 0) parts.push('光环触发上限+' + (auraCap * 100).toFixed(2) + '%');
+        if (classCap > 0) parts.push('职业触发上限+' + (classCap * 100).toFixed(1) + '%');
+        if (classRate > 0) parts.push('职业触发率+' + (classRate * 100).toFixed(1) + '%');
+        if (classDmg !== 1) parts.push('职业伤害×' + (Math.round(classDmg * 100) / 100));
+        if (parts.length) auraHint = '｜ ' + parts.join('，');
+        var perText = '独立倍率 ' + skillPct + '%（Lv×10%' + ((auraDmg > 0 || classDmg !== 1) ? '×加成' : '') + '）｜ 触发率 ' + triggerPct + '%（上限' + (triggerCap * 100).toFixed(2) + '%）' + auraHint;
         var maxed = lv >= SAMSARA_SKILL_MAX_LEVEL;
         var btns = maxed
             ? '<div style="margin-top:8px;color:#81c784;font-size:12px;">已满级</div>'

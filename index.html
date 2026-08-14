@@ -8,7 +8,7 @@
     <script>
         (function () {
             /** 与 gold-game-core.js 的 GAME_VERSION 对齐；发版时同步修改 */
-            var build = "2.0.48";
+            var build = "2.0.50";
             try {
                 var qs = location.search || "";
                 var m = /[?&]v=([^&]+)/.exec(qs);
@@ -60,7 +60,7 @@
             <p>11. 功法秘籍：后期比较强，加成属性直接算到玩家属性乘于里面（如果突然没效果了开一个秘法宝箱就好了，正常不会有问题）</p>
             <p>11. 世界BOSS：50转开启。消耗挑战券召唤（上限10，每小时恢复1次）。星级越高血量与转生币奖励越高，按伤害排行结算。</p>
             <p>12. VIP系统：每一级提升大属性，材料宝箱和打怪模式，各种系统掉落。</p>
-            <p>13. 职业系统：20转开启，有法师和战士不同搭配属性，对于关卡解锁属性，选择获得属性，通天塔达到层数2转3转。</p>
+            <p>13. 职业系统：20转开启，有法师和战士和探险家不同搭配属性，对于关卡解锁属性，选择获得属性，通天塔达到层数2转3转及以后。</p>
             <p>14. 称号系统：10转开启，解锁每一个都可以永久获得属性，自由搭配选择称号(不影响属性效果）。</p>
             <p>14. 官职系统：10转开启，增加总和攻击，一共65级。</p>
             <p>15. 伴侣系统：30转开启，大幅度增加属性。 天赋品阶初级→中级→高级→终极→圣级→神级→远古→太古→洪荒→无上→太初→混沌→虚数→永恒→归墟→炁叕， 进阶玩法：每进阶+1倍率加1倍，未锁定状态才能进阶，点进阶自动消耗道具里面的同品质伴侣灵魂，想保留的伴侣记得锁定，史诗以上才能合成洗练！！！（伴侣钥匙和玫瑰花和洗髓丹：打怪或者材料宝箱各种系统掉落）。</p>
@@ -113,8 +113,9 @@
     </div>
     <div class="guide-modal-body">
         <div class="log">
-            <h4>2.048更新日志</h4>
+            <h4>2.0.50更新日志</h4>
             <h4>QQ群：902481027    有问题可以进群问（存档异常联系群管理修复）</h4> 
+            <p>2026/08/13: 职业系统加入轮回技能效果以及加点。至尊神器增加至尊宝石标签：神器最多开3孔（至尊开孔器），宝石可镶嵌/卸下，3同名同级合成升1级；攻击/生命/爆伤与世界经验为独立加成，轮回技能宝石加对应技能伤害；宝石与开孔器掉落同联网币，并可上架联网装备市场。轮回装备器灵魂环光环属性再次大量提升，轮回技能增加任何副本塔战斗都生效，联网超市更新，枫叶币活动获取开启，随缘挂机不要争。洞天劫增加装备砸卷轴：有7次机会分为100%60%10%成功率，不满意加成可以用还原卷轴还原。装备强化卷轴和还原卷轴获取:助战商店和声望商店以及秘境藏宝图和置之不理5轮斗法都有小概率获得。师徒系统加成提升大量属性。宗门人数提升：每级+10人，每3级+1长老。<p>
             <p>2026/08/07: 轮回装备和轮回神兽自动丢弃加入各种筛选，修复异常BUG<p>
             <p>2026/08/06: 轮回副本战斗修复BOSS复活闪屏，增加疯狂地主所有高级道具触发几率。<p>
             <p>2026/08/05: 在线100倍购买加入VIP等级加成，每1级+10倍数量，修复疯狂地主灰色天气词条没生效。增加轮回技能：每个技能都能独立触发叠加伤害，次元1-15掉落升级材料。增加ts16-20化圣装备，修改轮回装备和轮回神兽界面UI，轮回装备和轮回神兽高ts掉落大量提升以及掉落率，高轮回装备套装属性大量提升附带格外加成，轮回装备增加新词条器灵，魂环，光环属性大量提升，轮回神兽增加词条山海共鸣，上古血脉，神格。轮回副本增加新ts6-ts15副本，修改轮回副本战斗界面UI,轮回副本掉落轮回装备和轮回神器提升原来3倍掉落概率。洞天劫修改升级现在每层等级上限后还是会继续储存经验，增加新副本神墓谷：难度偏高，每层调整成功增加经验保底，后期提升经验速度会加快很多。<p>
@@ -779,7 +780,7 @@
     <div id="achievements" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
-  <div id="footer">版本号: v2.0.48</div>
+  <div id="footer">版本号: v2.0.50</div>
 </div><!-- 关闭 game-main -->
 
     <!-- 自定义对话框 -->
@@ -812,7 +813,7 @@
     <div class="title-modal-header">
         <div class="title-modal-heading">
             <h2 id="classModalHeading">职业殿堂</h2>
-            <p class="title-modal-sub">一转后可加点分支，通天塔达标可逐阶转职晋升</p>
+            <p class="title-modal-sub">一转后可加点分支与轮回技能分支，通天塔达标可逐阶转职晋升</p>
         </div>
         <button type="button" class="title-modal-close" onclick="toggleClassSystem()" aria-label="关闭">关闭</button>
     </div>
@@ -823,6 +824,7 @@
         <div class="title-hero-stats" id="classStatsDisplay">
             <span class="title-stat">转职进度 <em id="classTierStat">0/7</em></span>
             <span class="title-stat">分支加点 <em id="classBranchStat">0/0</em></span>
+            <span class="title-stat">轮回技能 <em id="classSkillBranchStat">0/0</em></span>
             <span class="title-stat">最高关卡 <em id="classStageStat">0</em></span>
             <span class="title-stat">通天塔 <em id="classTowerStat">0</em></span>
             <span class="title-stat">转换书 <em id="classBookStat">0</em></span>
@@ -834,6 +836,7 @@
         <button type="button" class="title-tab active" data-branch="all" onclick="switchClassBranchTab('all')">全部</button>
         <button type="button" class="title-tab" data-branch="origin" onclick="switchClassBranchTab('origin')">本命</button>
         <button type="button" class="title-tab" data-branch="branches" onclick="switchClassBranchTab('branches')">分支</button>
+        <button type="button" class="title-tab" data-branch="skills" onclick="switchClassBranchTab('skills')">轮回技能</button>
         <button type="button" class="title-tab" data-branch="jobs" onclick="switchClassBranchTab('jobs')">转职</button>
     </div>
 
@@ -858,7 +861,7 @@
                 </button>
             </div>
             <div id="classChangeCost" class="class-change-hint">
-                更换职业消耗 <strong>1本职业转换书</strong>，所有转职与分支加成将重置
+                更换职业消耗 <strong>1本职业转换书</strong>，所有转职、分支与轮回技能加成将重置
             </div>
         </section>
 
@@ -868,6 +871,17 @@
                 <span class="titleBranch-count" id="classBranchCountBadge">0</span>
             </div>
             <div id="branchPointsContainer" class="class-branch-list"></div>
+        </section>
+
+        <section class="titleBranch class-section" data-branch="skills" id="classSkillBranches">
+            <div class="titleBranch-head">
+                <h3>轮回技能加成</h3>
+                <span class="titleBranch-count" id="classSkillBranchCountBadge">0</span>
+            </div>
+            <div class="class-change-hint" style="margin-bottom:10px;">
+                前段仅需轮回转数；后段需轮回 + 化圣2~10。每重四选一：伤害 / 触发上限 / 混合 / 触发率(约0.5%~4%)。
+            </div>
+            <div id="skillBranchPointsContainer" class="class-branch-list"></div>
         </section>
 
         <section class="titleBranch class-section" data-branch="jobs" id="classJobsSection">
@@ -1413,7 +1427,7 @@
             <button onclick="openGoldGameActivityLeaderboardWithUpload();" style="padding: 10px 16px; font-size: 14px; background: linear-gradient(90deg,#ffb347,#ff8c42); color: #fff; border: 1px solid #ff8a00; border-radius: 6px;">活动排行榜 🍁</button>
         </div>
         <div style="margin-top: 8px; font-size: 13px;">联网币: <span id="goldGameNetworkCoinDisplay">--</span>需登录账号</div>
-        <div style="margin-top: 4px; font-size: 13px; color: #d46a00;">枫叶币🍁: <span id="goldGameMapleCoinDisplay">--</span>需登录（活动已结束，不再新增发放）</div>
+        <div style="margin-top: 4px; font-size: 13px; color: #d46a00;">枫叶币🍁: <span id="goldGameMapleCoinDisplay">--</span>需登录（在线可获得）</div>
         <div style="margin-top: 6px; display: flex; gap: 8px; flex-wrap: wrap;">            
             <button onclick="if(typeof hasApi==='function'&amp;&amp;hasApi()&amp;&amp;typeof goldGameUploadSave==='function'){ goldGameUploadSave().then(function(){ if(typeof openNetworkMarketDialog==='function')openNetworkMarketDialog(); }).catch(function(e){ alert(e.message||'上传失败'); }); } else { if(typeof openNetworkMarketDialog==='function')openNetworkMarketDialog(); }" style="padding: 8px 14px; font-size: 13px;">联网装备市场</button>
             <button onclick="if(typeof hasApi==='function'&amp;&amp;hasApi()&amp;&amp;typeof goldGameUploadSave==='function'){ goldGameUploadSave().then(function(){ if(typeof openNetworkShopDialog==='function')openNetworkShopDialog(); }).catch(function(e){ alert(e.message||'上传失败'); }); } else { if(typeof openNetworkShopDialog==='function')openNetworkShopDialog(); }" style="padding: 8px 14px; font-size: 13px;">联网小超市</button>
@@ -1593,10 +1607,10 @@
                 <div style="border-radius:14px;padding:14px 14px 12px 14px;background:linear-gradient(135deg,#ede7f6,#d1c4e9);border:1px solid #b39ddb;box-shadow:inset 0 1px 0 rgba(255,255,255,0.8);display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px;">
                     <div style="flex:1;min-width:200px;">
                         <div style="font-size:15px;font-weight:800;color:#38285c;margin-bottom:4px;">🐉 深渊神兽惊喜盒</div>
-                        <div style="font-size:12px;color:#512da8;line-height:1.55;">按 120 层掉落规则生成，<b>宝宝品质</b>（非野生/变异/闪光/超级后缀），品种与技能随机；需神兽栏有空位。</div>
+                        <div style="font-size:12px;color:#512da8;line-height:1.55;">按 200 层掉落规则生成，<b>宝宝品质</b>（非野生/变异/闪光/超级后缀），品种与技能随机；需神兽栏有空位。</div>
                         <div style="margin-top:8px;font-size:13px;color:#4527a0;font-weight:700;">288 🍁 → 随机 1 只</div>
                     </div>
-                    <button type="button" onclick="if(typeof goldGameMapleShopExchange==='function')goldGameMapleShopExchange('random_beast_120_normal');" style="align-self:center;padding:10px 16px;border:none;border-radius:10px;background:linear-gradient(180deg,#5e35b1,#4527a0);color:#fff;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(69,39,160,0.4);white-space:nowrap;">兑换</button>
+                    <button type="button" onclick="if(typeof goldGameMapleShopExchange==='function')goldGameMapleShopExchange('random_beast_200_normal');" style="align-self:center;padding:10px 16px;border:none;border-radius:10px;background:linear-gradient(180deg,#5e35b1,#4527a0);color:#fff;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(69,39,160,0.4);white-space:nowrap;">兑换</button>
                 </div>
             </div>
             <p style="margin:14px 0 0 0;font-size:11px;color:#8d6e63;line-height:1.5;">兑换记录以服务器为准；若提示需要先上传云存档，请先在设置中登录并同步云存档后再试。</p>
@@ -1829,6 +1843,7 @@
                     <option value="abyssPetNeidan">深渊宠物内丹</option>
                     <option value="abyssPetShoujue">深渊宠物兽决</option>
                     <option value="supremeArtifact">至尊神器</option>
+                    <option value="supremeGemMaterials">至尊宝石/开孔器</option>
                 </select>
             </label>
             <button type="button" onclick="window._networkMarketPage=1; refreshNetworkMarketDialog();" style="padding: 8px 16px; background: #ffd700; color: #1a1a2e; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">筛选 / 刷新</button>
@@ -1876,6 +1891,15 @@
                     <option value="">全部（强化石+洗练石）</option>
                     <option value="stone">深渊强化石</option>
                     <option value="refineStone">深渊洗练石</option>
+                </select>
+            </label>
+        </div>
+        <div id="nmRowSupremeGems" style="display: none; flex-wrap: wrap; gap: 12px; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 6px;">种类
+                <select id="networkMarketSupremeGemKind" style="padding: 6px 10px; min-width: 200px; background: #2a2a4a; border: 1px solid #555; color: #fff; border-radius: 4px;">
+                    <option value="">全部（宝石+开孔器）</option>
+                    <option value="supremeGem">至尊宝石</option>
+                    <option value="supremeSocketOpener">至尊开孔器</option>
                 </select>
             </label>
         </div>
@@ -1963,9 +1987,9 @@
     </div>
     <div id="networkMarketSupremeInfoContent"></div>
 </div>
-<!-- 联网小超市弹窗：联网币兑换宝藏金币 -->
+<!-- 联网小超市弹窗：联网币兑换宝藏金币 / 轮回技能材料礼包 -->
 <div id="networkShopOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); z-index: 1001;"></div>
-<div id="networkShopDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: radial-gradient(circle at top, #2d1b4f 0%, #100818 45%, #050308 100%); color: #f5f5f5; padding: 24px 26px; border-radius: 18px; z-index: 1002; width: 520px; max-width: 94%; max-height: 88vh; overflow: hidden; border: 2px solid rgba(255,215,0,0.8); box-shadow: 0 0 40px rgba(255,215,0,0.25); box-sizing: border-box;">
+<div id="networkShopDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: radial-gradient(circle at top, #2d1b4f 0%, #100818 45%, #050308 100%); color: #f5f5f5; padding: 24px 26px; border-radius: 18px; z-index: 1002; width: 560px; max-width: 94%; max-height: 88vh; overflow-y: auto; border: 2px solid rgba(255,215,0,0.8); box-shadow: 0 0 40px rgba(255,215,0,0.25); box-sizing: border-box;">
     <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px;">
         <div>
             <h4 style="margin:0; font-size:20px; color:#ffeb3b; letter-spacing:1px;">联网小超市</h4>
@@ -1997,10 +2021,29 @@
             <button type="button" onclick="submitNetworkShopBuy()" style="padding:7px 16px; border-radius:999px; border:none; background:linear-gradient(135deg,#ffca28,#ffb300); color:#212121; font-size:13px; font-weight:bold; cursor:pointer; box-shadow:0 0 12px rgba(255,193,7,0.55);">确认购买</button>
         </div>
         <div id="networkShopMessage" style="margin-top:8px; font-size:12px; min-height:16px; color:#c5e1a5;"></div>
-        <div style="margin-top:10px; font-size:11px; color:#90a4ae; line-height:1.5;">
-            提示：<br>            
-            · 请合理使用联网币，后续版本可能增加更多超市商品。
+    </div>
+    <div style="margin-top:12px; padding:14px 12px; border-radius:12px; background:rgba(0,0,0,0.32); border:1px solid rgba(212,106,122,0.55); box-shadow: inset 0 0 18px rgba(0,0,0,0.4);">
+        <div style="font-size:15px; font-weight:bold; color:#ffcdd2; margin-bottom:4px;">轮回技能1-8材料礼包</div>
+        <div style="font-size:12px; color:#b0bec5; line-height:1.5; margin-bottom:8px;">消耗 <b style="color:#ffeb3b;">10</b> 联网币，获得轮回晶 1~8（初转~焚天）各 <b style="color:#ffeb3b;">1</b> 个，写入云存档。</div>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span style="font-size:13px; color:#cfd8dc;">礼包数量：</span>
+            <input id="networkShopSamsaraPackQty18" type="number" min="1" step="1" value="1" style="width:80px; padding:6px 8px; border-radius:6px; border:1px solid rgba(144,164,174,0.9); background:rgba(10,14,24,0.9); color:#eceff1; font-size:13px; outline:none; box-sizing:border-box;">
+            <button type="button" onclick="submitNetworkShopSamsaraSkillPack('samsara_skill_1_8')" style="padding:7px 16px; border-radius:999px; border:none; background:linear-gradient(135deg,#ef9a9a,#c62828); color:#fff; font-size:13px; font-weight:bold; cursor:pointer;">兑换</button>
         </div>
+        <div id="networkShopSamsaraMsg18" style="margin-top:8px; font-size:12px; min-height:16px; color:#c5e1a5;"></div>
+    </div>
+    <div style="margin-top:12px; padding:14px 12px; border-radius:12px; background:rgba(0,0,0,0.32); border:1px solid rgba(171,71,188,0.55); box-shadow: inset 0 0 18px rgba(0,0,0,0.4);">
+        <div style="font-size:15px; font-weight:bold; color:#e1bee7; margin-bottom:4px;">轮回技能9-15材料礼包</div>
+        <div style="font-size:12px; color:#b0bec5; line-height:1.5; margin-bottom:8px;">消耗 <b style="color:#ffeb3b;">20</b> 联网币，获得轮回晶 9~15（葬神~永恒）各 <b style="color:#ffeb3b;">1</b> 个，写入云存档。</div>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span style="font-size:13px; color:#cfd8dc;">礼包数量：</span>
+            <input id="networkShopSamsaraPackQty915" type="number" min="1" step="1" value="1" style="width:80px; padding:6px 8px; border-radius:6px; border:1px solid rgba(144,164,174,0.9); background:rgba(10,14,24,0.9); color:#eceff1; font-size:13px; outline:none; box-sizing:border-box;">
+            <button type="button" onclick="submitNetworkShopSamsaraSkillPack('samsara_skill_9_15')" style="padding:7px 16px; border-radius:999px; border:none; background:linear-gradient(135deg,#ce93d8,#8e24aa); color:#fff; font-size:13px; font-weight:bold; cursor:pointer;">兑换</button>
+        </div>
+        <div id="networkShopSamsaraMsg915" style="margin-top:8px; font-size:12px; min-height:16px; color:#c5e1a5;"></div>
+    </div>
+    <div style="margin-top:12px; font-size:11px; color:#90a4ae; line-height:1.5;">
+        提示：兑换后会自动下载云存档到本地；请合理使用联网币。
     </div>
 </div>
 <!-- 联网家族弹窗（z-index 提高以在手机版显示） -->
@@ -2107,7 +2150,7 @@
 <!-- 通用确认弹窗（手机版兼容，替代 confirm） -->
 <div id="goldGameConfirmOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10002;"></div>
 <div id="goldGameConfirmDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2a2a4a; color: #e0e0e0; padding: 20px; border-radius: 12px; z-index: 10003; width: 320px; max-width: 92%; border: 2px solid #9c27b0; box-shadow: 0 0 24px rgba(156,39,176,0.4);">
-    <p id="goldGameConfirmMessage" style="margin: 0 0 20px 0; font-size: 15px; line-height: 1.5;"></p>
+    <p id="goldGameConfirmMessage" style="margin: 0 0 20px 0; font-size: 15px; line-height: 1.6; white-space: pre-line;"></p>
     <div style="display: flex; gap: 12px; justify-content: center;">
         <button type="button" id="goldGameConfirmOk" style="padding: 10px 24px; background: #4caf50; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 15px;">确定</button>
         <button type="button" id="goldGameConfirmCancel" style="padding: 10px 24px; background: #666; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 15px;">取消</button>
@@ -8989,6 +9032,11 @@
         </div>
         <button type="button" onclick="toggleSupremeArtifactUI()" style="padding:8px 16px; border-radius:10px; border:1px solid rgba(255,183,77,0.5); background:rgba(40,24,8,0.85); color:#ffe0b2; cursor:pointer; font-weight:600;">关闭</button>
     </div>
+    <div style="display:flex; gap:8px; padding:10px 16px 0; flex-wrap:wrap;">
+        <button type="button" id="supremeTabBtnArtifacts" onclick="switchSupremeArtifactTab('artifacts')" style="padding:8px 16px; border-radius:10px; border:1px solid #ffc107; background:linear-gradient(180deg,#5c4318,#3d2a0c); color:#fff8e1; cursor:pointer; font-weight:700; font-size:13px;">至尊神器</button>
+        <button type="button" id="supremeTabBtnGems" onclick="switchSupremeArtifactTab('gems')" style="padding:8px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); background:rgba(30,20,40,0.85); color:#b0a0d0; cursor:pointer; font-weight:700; font-size:13px;">至尊宝石</button>
+    </div>
+    <div id="supremeArtifactTabArtifacts" style="display:flex; flex-direction:column; min-height:0;">
     <div style="display:flex; flex-wrap:wrap; gap:10px; padding:10px 16px; font-size:13px; color:#c9b8e8;">
         <span>背包 <strong id="supremeArtifactBagCount" style="color:#ffd54f;">0</strong> / <span id="supremeArtifactBagMax">150</span></span>
         <span id="supremeArtifactBagFilteredHint" style="color:#9575cd;font-size:12px;"></span>
@@ -8997,8 +9045,8 @@
         <span style="opacity:0.5;">|</span>
         <span style="color:#ffecb3;">武魂共鸣：低概率掉落，品质越高越易出，同名3/6/9/12件套装</span>
     </div>
-    <div style="padding:0 16px 12px; max-height:calc(90vh - 100px); overflow-y:auto; display:flex; flex-direction:column; gap:0; min-height:0;">
-            <div style="font-size:13px; color:#9fa8da; margin-bottom:10px;">十二灵阙（卡片式；已锁定不可丢弃、不可上架；词条为加成百分比）</div>
+    <div style="padding:0 16px 12px; max-height:calc(90vh - 160px); overflow-y:auto; display:flex; flex-direction:column; gap:0; min-height:0;">
+            <div style="font-size:13px; color:#9fa8da; margin-bottom:10px;">十二灵阙（卡片式；已锁定不可丢弃、不可上架；词条为加成百分比；最多开3孔镶嵌至尊宝石）</div>
         <div id="supremeArtifactSlotGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px;"></div>
         <div id="supremeWuhunResonancePanel"></div>
         <div style="margin-top:18px; font-size:14px; color:#e1bee7; font-weight:600; border-top:1px solid rgba(255,255,255,0.06); padding-top:12px;">背包容器（卡片网格）</div>
@@ -9071,6 +9119,20 @@
         <div id="supremeArtifactBagScrollWrap" style="min-height:min(52vh,520px); max-height:min(72vh,820px); overflow-y:auto; overflow-x:hidden; margin-top:2px; padding:4px 6px 8px 2px; -webkit-overflow-scrolling:touch; scrollbar-gutter:stable;">
             <div id="supremeArtifactBagList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(288px, 1fr)); gap:14px;"></div>
         </div>
+    </div>
+    </div>
+    <div id="supremeArtifactTabGems" style="display:none; padding:0 16px 16px; max-height:calc(90vh - 140px); overflow-y:auto;">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;padding:12px 0;font-size:13px;color:#c9b8e8;align-items:center;">
+            <span>至尊开孔器 <strong id="supremeSocketOpenerCount" style="color:#ffb74d;">0</strong></span>
+            <button type="button" onclick="openNetworkArtifactSellDialog('supremeSocketOpener');" style="padding:4px 12px;font-size:12px;border-radius:8px;border:1px solid #ffb74d;background:#5d4037;color:#fff3e0;cursor:pointer;">上架开孔器</button>
+            <span style="opacity:0.5;">|</span>
+            <span style="color:#a188d6;font-size:12px;">每件神器最多 3 孔 · 3 枚同名同级合成升 1 级 · 掉落概率同联网币 · 可上架联网装备市场</span>
+        </div>
+        <div id="supremeGemBonusSummary" style="padding:10px 12px;border-radius:12px;border:1px solid rgba(255,193,7,0.28);background:rgba(0,0,0,0.28);margin-bottom:12px;"></div>
+        <div style="font-size:14px;color:#e1bee7;font-weight:600;margin:8px 0;">宝石背包</div>
+        <div id="supremeGemBagList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:18px;"></div>
+        <div style="font-size:14px;color:#e1bee7;font-weight:600;margin:8px 0;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;">开孔 / 镶嵌（穿戴与背包神器）</div>
+        <div id="supremeGemSocketTargetList"></div>
     </div>
 </div>
 <!-- 轮回神兽系统覆盖层和主界面 -->

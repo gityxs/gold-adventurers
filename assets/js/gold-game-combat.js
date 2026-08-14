@@ -414,6 +414,12 @@ function attackMonster() {
     if (hitResult.blockedCount > 0) logParts.push('抵消x' + hitResult.blockedCount);
     logBattleAction(logParts.join(' - '));
 
+    if (typeof applySamsaraSkillHits === 'function') {
+        applySamsaraSkillHits(monster, hitResult.totalDamage, {
+            logFn: function (msg) { logBattleAction(msg); }
+        });
+    }
+
     var monsterDefeated = bLteZero(monster.health);
     if (monsterDefeated) {
         logBattleAction('你击败了' + monster.name + '，通关第' + (player.battle.currentStage + 1) + '关！');
@@ -1699,6 +1705,7 @@ let wingHealthBonus = 0;
    const equipmentStats = calculateTotalEquipmentStats();
    const beastBonus = calculateEquippedBeastBonus();
    const supremeBonus = (typeof calculateEquippedSupremeArtifactBonus === 'function') ? calculateEquippedSupremeArtifactBonus() : { health: 0, attack: 0, critDamage: 0 };
+   const supremeGemBonus = (typeof calculateEquippedSupremeGemBonus === 'function') ? calculateEquippedSupremeGemBonus() : { health: 0, attack: 0, critDamage: 0 };
    const pixelBonus = getPixelPlayerBonus ? getPixelPlayerBonus() : { health: 0, attack: 0, critRate: 0, critDamage: 0 };
     // 联网深渊神器永久加成（仅联网登录时生效，数据在服务器）
     var networkHpPct = (typeof getGoldGameAuthToken === 'function' && getGoldGameAuthToken() && typeof getNetworkArtifactHealthPct === 'function') ? (getNetworkArtifactHealthPct() / 100) : 0;
@@ -1740,6 +1747,7 @@ let wingHealthBonus = 0;
         (1 + equipmentStats.health),
         (1 + beastBonus.health),
         (1 + supremeBonus.health),
+        (1 + (supremeGemBonus.health || 0)),
         (1 + pixelBonus.health),
         (1 + player.fiveElements.fire.level * 3.00),
         (1 + networkHpPct),
@@ -1771,6 +1779,7 @@ let wingHealthBonus = 0;
         (1 + equipmentStats.attack),
         (1 + beastBonus.attack),
         (1 + supremeBonus.attack),
+        (1 + (supremeGemBonus.attack || 0)),
         (1 + pixelBonus.attack),
         (1 + networkAtkPct),
         (1 + networkPetAtkPct),
@@ -1798,7 +1807,7 @@ let wingHealthBonus = 0;
         classBonuses.critMultiplier * titleBonuses.critMultiplier *
         companionBonuses.critDamageMultiplier * (1 + artifactBonuses.critDamage) * (1 + bonuses.critDamage / 100) *  (1 + techBonuses.critDamage* 10)  *  (1 + mountCritDamageBonus) *
         (1 + runeBonuses.critDamage)*         (1 + (player.mining.gems.amethyst*0.05)) * (1+player.marriage.marriageBonuses.critDamageBonus) *
-       (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage) * (1 + supremeBonus.critDamage) * (1 + pixelBonus.critDamage) * (1+player.fiveElements.water.level * 3.00) * (1 + networkPetCritDmgPct) * (1 + (lawBonuses.critDamage || 0)) * (1 + (samsaraSkillBonuses.critDamage || 0)) * worldMapAbyssCombinedMul * geneTreeCritMul * (1 + ((player.children.childBonuses && player.children.childBonuses.worldCritDmgBonus) || 0)); // 应用伴侣爆伤加成 + 无限深渊最佳层数 + 神兽图鉴 + 地主基因树 + 家族传承爆伤（世界地图） + 轮回技能
+       (1 +equipmentStats.critDamage) * (1 +beastBonus.critDamage) * (1 + supremeBonus.critDamage) * (1 + (supremeGemBonus.critDamage || 0)) * (1 + pixelBonus.critDamage) * (1+player.fiveElements.water.level * 3.00) * (1 + networkPetCritDmgPct) * (1 + (lawBonuses.critDamage || 0)) * (1 + (samsaraSkillBonuses.critDamage || 0)) * worldMapAbyssCombinedMul * geneTreeCritMul * (1 + ((player.children.childBonuses && player.children.childBonuses.worldCritDmgBonus) || 0)); // 应用伴侣爆伤加成 + 无限深渊最佳层数 + 神兽图鉴 + 地主基因树 + 家族传承爆伤（世界地图） + 轮回技能 + 至尊宝石
 
     // 6. 计算连击次数（应用伴侣连击加成）
     player.battle.playerMultiAttack = Math.max(1, Math.floor(

@@ -3008,6 +3008,9 @@ function renderActionLogsToDom() {
                 window._goldGamePendingCloudSave = null;
                 window._goldGameCloudHydratedForAccountId = '';
                 window._goldGameLocalSaveReadyForAccountId = '';
+                window._goldGameLastUploadedSaveFp = null;
+                window._goldGameMapleNextTickAt = 0;
+                window._goldGameMapleTickInFlight = false;
                 if (window._goldGameCloudUploadDebounceTimer) {
                     clearTimeout(window._goldGameCloudUploadDebounceTimer);
                     window._goldGameCloudUploadDebounceTimer = null;
@@ -3642,6 +3645,18 @@ function renderActionLogsToDom() {
                     return Object.keys(o).length >= 10;
                 } catch (e) { return false; }
             }
+            /** 大存档指纹：用长度+抽样哈希，避免每次全量比对卡主线程 */
+            function goldGameSaveRawFingerprint(raw) {
+                var s = String(raw || '');
+                var len = s.length;
+                var h = len | 0;
+                var step = Math.max(1, Math.floor(len / 96));
+                for (var i = 0; i < len; i += step) {
+                    h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+                }
+                if (len > 0) h = ((h << 5) - h + s.charCodeAt(len - 1)) | 0;
+                return len + '_' + (h >>> 0);
+            }
             function runGoldGameUploadSaveOnce(opts) {
                 opts = opts || {};
                 if (!hasApi()) {
@@ -3681,8 +3696,16 @@ function renderActionLogsToDom() {
                                 return;
                             }
                         } catch (eParse) {}
+                        var fp = goldGameSaveRawFingerprint(raw);
+                        // 静默自动上传：内容未变则跳过，避免每分钟重复传大存档砸带宽
+                        if (!opts.force && opts.silentInvalid && fp && fp === window._goldGameLastUploadedSaveFp) {
+                            resolve({ ok: true, skipped: true });
+                            return;
+                        }
                         apiRequest('POST', '/api/save', raw, true, opts.uploadTimeoutMs).then(function(res) {
                             if (!res.ok) throw new Error(res.message || '上传失败');
+                            window._goldGameLastUploadedSaveFp = fp;
+                            return res;
                         }).then(resolve).catch(reject);
                     }, 0);
                 });
@@ -3798,7 +3821,7 @@ function renderActionLogsToDom() {
                     });
                 }, delayMs || 8000);
             }
-            /** 关页/切后台：用 keepalive 尽力把当前本地档 POST 出去（beforeunload 里 6 秒 debounce 来不及完成） */
+            /** 关页/切后台：用 keepalive 尽力把当前本地档 POST 出去（beforeunload 里 debounce 来不及完成） */
             function flushGoldGameCloudSaveKeepalive() {
                 if (!canUploadGoldGameCloudSave() || !hasApi()) return false;
                 try {
@@ -3815,6 +3838,8 @@ function renderActionLogsToDom() {
                     var curAid = String(getAccountId() || '').trim();
                     if (parsed && parsed.accountId && curAid && parsed.accountId !== curAid) return false;
                 } catch (eParse) {}
+                var fp = goldGameSaveRawFingerprint(raw);
+                if (fp && fp === window._goldGameLastUploadedSaveFp) return false;
                 var base = apiBase();
                 var token = getToken();
                 if (!base || !token) return false;
@@ -3823,6 +3848,8 @@ function renderActionLogsToDom() {
                     headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
                     body: raw,
                     keepalive: true
+                }).then(function() {
+                    window._goldGameLastUploadedSaveFp = fp;
                 }).catch(function() {});
                 return true;
             }
@@ -3835,7 +3862,8 @@ function renderActionLogsToDom() {
                     flushGoldGameCloudSaveKeepalive();
                 });
             }
-            var GOLD_GAME_AUTO_UPLOAD_MS = 60 * 1000;
+            // 3 分钟一轮；配合「内容未变跳过」，显著降低大存档重复上传
+            var GOLD_GAME_AUTO_UPLOAD_MS = 3 * 60 * 1000;
             function isDongtianJiePanelOpen() {
                 try {
                     var ui = document.getElementById('dongtianJieUI');
@@ -3846,6 +3874,7 @@ function renderActionLogsToDom() {
                 if (!getToken() || !hasApi() || typeof goldGameUploadSave !== 'function') return;
                 if (!canUploadGoldGameCloudSave()) return;
                 if (isDongtianJiePanelOpen()) return;
+                if (typeof document !== 'undefined' && document.hidden) return;
                 setTimeout(function() {
                     goldGameUploadSave({ silentInvalid: true }).catch(function(e) {
                         logGoldGameAutoUploadFailureThrottled(e);
@@ -3870,7 +3899,7 @@ function renderActionLogsToDom() {
                         logGoldGameAutoUploadFailureThrottled(e);
                         if (shouldRetryGoldGameAutoUpload(e)) retryGoldGameAutoUploadOnce(6000);
                     });
-                }, 6000);
+                }, 12000);
             };
             window.getGoldGameNetworkFloatAnnouncementEnabled = function() {
                 return localStorage.getItem('goldGameNetworkFloatAnnouncementEnabled') !== 'false';
@@ -3889,9 +3918,44 @@ function renderActionLogsToDom() {
             };
             window._goldGameNetworkFloatLoopTimer = window._goldGameNetworkFloatLoopTimer || null;
             window._goldGameNetworkFloatEventSource = window._goldGameNetworkFloatEventSource || null;
+            window._goldGameNetworkFloatPollInFlight = false;
+            window._goldGameNetworkFloatSseRetryTimer = window._goldGameNetworkFloatSseRetryTimer || null;
+            window._goldGameNetworkFloatSseRetryAttempt = window._goldGameNetworkFloatSseRetryAttempt || 0;
+            window._goldGameNetworkFloatWanted = !!window._goldGameNetworkFloatWanted;
+            window._clearGoldGameNetworkFloatPollTimer = function() {
+                if (!window._goldGameNetworkFloatLoopTimer) return;
+                clearInterval(window._goldGameNetworkFloatLoopTimer);
+                window._goldGameNetworkFloatLoopTimer = null;
+            };
+            window._clearGoldGameNetworkFloatSseRetry = function() {
+                if (!window._goldGameNetworkFloatSseRetryTimer) return;
+                clearTimeout(window._goldGameNetworkFloatSseRetryTimer);
+                window._goldGameNetworkFloatSseRetryTimer = null;
+            };
+            window._ensureGoldGameNetworkFloatPollTimer = function() {
+                if (window._goldGameNetworkFloatLoopTimer) return;
+                window._goldGameNetworkFloatLoopTimer = setInterval(function() {
+                    window.pollGoldGameNetworkFloatAnnouncements();
+                }, 8000);
+            };
+            window._scheduleGoldGameNetworkFloatSseRetry = function() {
+                if (!window._goldGameNetworkFloatWanted) return;
+                if (window._goldGameNetworkFloatSseRetryTimer) return;
+                var attempt = Math.max(0, Number(window._goldGameNetworkFloatSseRetryAttempt) || 0);
+                var delay = Math.min(60000, 3000 * Math.pow(2, Math.min(4, attempt)));
+                window._goldGameNetworkFloatSseRetryAttempt = attempt + 1;
+                window._goldGameNetworkFloatSseRetryTimer = setTimeout(function() {
+                    window._goldGameNetworkFloatSseRetryTimer = null;
+                    if (!window._goldGameNetworkFloatWanted) return;
+                    window._connectGoldGameNetworkFloatSse(true);
+                }, delay);
+            };
             window.pollGoldGameNetworkFloatAnnouncements = function() {
                 if (!hasApi() || !getToken()) return Promise.resolve({ ok: false, list: [] });
                 if (localStorage.getItem('goldGameNetworkFloatAnnouncementEnabled') === 'false') return Promise.resolve({ ok: true, list: [] });
+                if (typeof document !== 'undefined' && document.hidden) return Promise.resolve({ ok: true, list: [], skipped: true });
+                if (window._goldGameNetworkFloatPollInFlight) return Promise.resolve({ ok: true, list: [], skipped: true });
+                window._goldGameNetworkFloatPollInFlight = true;
                 var since = 0;
                 try { since = parseInt(localStorage.getItem('goldGameNetworkFloatLastSeenId') || '0', 10) || 0; } catch (e) { since = 0; }
                 return apiRequest('GET', '/api/network-float-announcements?sinceId=' + encodeURIComponent(String(since)), undefined, true).then(function(res) {
@@ -3912,53 +3976,79 @@ function renderActionLogsToDom() {
                     }
                     localStorage.setItem('goldGameNetworkFloatLastSeenId', String(nextId));
                     return res;
-                }).catch(function() { return { ok: false, list: [] }; });
+                }).catch(function() { return { ok: false, list: [] }; }).finally(function() {
+                    window._goldGameNetworkFloatPollInFlight = false;
+                });
+            };
+            window._connectGoldGameNetworkFloatSse = function(isRetry) {
+                if (!window._goldGameNetworkFloatWanted) return;
+                if (!hasApi() || !getToken()) {
+                    window._ensureGoldGameNetworkFloatPollTimer();
+                    return;
+                }
+                if (window._goldGameNetworkFloatEventSource) {
+                    var rs = window._goldGameNetworkFloatEventSource.readyState;
+                    if (rs === 0 || rs === 1) return; // CONNECTING / OPEN
+                    try { window._goldGameNetworkFloatEventSource.close(); } catch (eClose) {}
+                    window._goldGameNetworkFloatEventSource = null;
+                }
+                if (!isRetry) window.pollGoldGameNetworkFloatAnnouncements();
+                if (typeof EventSource !== 'function') {
+                    window._ensureGoldGameNetworkFloatPollTimer();
+                    return;
+                }
+                try {
+                    var url = apiBase() + '/api/network-float-stream?token=' + encodeURIComponent(getToken());
+                    var es = new EventSource(url);
+                    window._goldGameNetworkFloatEventSource = es;
+                    es.onopen = function() {
+                        window._goldGameNetworkFloatSseRetryAttempt = 0;
+                        window._clearGoldGameNetworkFloatSseRetry();
+                        window._clearGoldGameNetworkFloatPollTimer();
+                    };
+                    es.onmessage = function(ev) {
+                        try {
+                            var a = JSON.parse(ev.data || '{}');
+                            var idNum = Number(a.id || 0);
+                            var since = 0;
+                            try { since = parseInt(localStorage.getItem('goldGameNetworkFloatLastSeenId') || '0', 10) || 0; } catch (e) { since = 0; }
+                            if (idNum > since) {
+                                localStorage.setItem('goldGameNetworkFloatLastSeenId', String(idNum));
+                                if (typeof window.showNetworkFloatAnnouncementBar === 'function') window.showNetworkFloatAnnouncementBar(a);
+                            }
+                        } catch (e) {}
+                    };
+                    es.onerror = function() {
+                        if (window._goldGameNetworkFloatEventSource === es) {
+                            try { es.close(); } catch (e2) {}
+                            window._goldGameNetworkFloatEventSource = null;
+                        }
+                        // 临时用轮询兜底，并按退避重试 SSE，避免永久 4s 短请求砸服务器
+                        window._ensureGoldGameNetworkFloatPollTimer();
+                        window._scheduleGoldGameNetworkFloatSseRetry();
+                    };
+                } catch (e) {
+                    window._ensureGoldGameNetworkFloatPollTimer();
+                    window._scheduleGoldGameNetworkFloatSseRetry();
+                }
             };
             window.startGoldGameNetworkFloatAnnouncementLoop = function() {
-                if (window._goldGameNetworkFloatEventSource || window._goldGameNetworkFloatLoopTimer) return;
-                // 先拉一次历史，避免连接建立前漏显示
-                window.pollGoldGameNetworkFloatAnnouncements();
-                if (typeof EventSource === 'function' && hasApi() && getToken()) {
-                    try {
-                        var url = apiBase() + '/api/network-float-stream?token=' + encodeURIComponent(getToken());
-                        var es = new EventSource(url);
-                        window._goldGameNetworkFloatEventSource = es;
-                        es.onmessage = function(ev) {
-                            try {
-                                var a = JSON.parse(ev.data || '{}');
-                                var idNum = Number(a.id || 0);
-                                var since = 0;
-                                try { since = parseInt(localStorage.getItem('goldGameNetworkFloatLastSeenId') || '0', 10) || 0; } catch (e) { since = 0; }
-                                if (idNum > since) {
-                                    localStorage.setItem('goldGameNetworkFloatLastSeenId', String(idNum));
-                                    if (typeof window.showNetworkFloatAnnouncementBar === 'function') window.showNetworkFloatAnnouncementBar(a);
-                                }
-                            } catch (e) {}
-                        };
-                        es.onerror = function() {
-                            if (window._goldGameNetworkFloatEventSource) {
-                                try { window._goldGameNetworkFloatEventSource.close(); } catch (e) {}
-                            }
-                            window._goldGameNetworkFloatEventSource = null;
-                            if (!window._goldGameNetworkFloatLoopTimer) {
-                                window._goldGameNetworkFloatLoopTimer = setInterval(function() { window.pollGoldGameNetworkFloatAnnouncements(); }, 4000);
-                            }
-                        };
-                        return;
-                    } catch (e) {}
+                window._goldGameNetworkFloatWanted = true;
+                if (window._goldGameNetworkFloatEventSource) {
+                    var rs0 = window._goldGameNetworkFloatEventSource.readyState;
+                    if (rs0 === 0 || rs0 === 1) return;
                 }
-                if (!window._goldGameNetworkFloatLoopTimer) {
-                    window._goldGameNetworkFloatLoopTimer = setInterval(function() { window.pollGoldGameNetworkFloatAnnouncements(); }, 4000);
-                }
+                window._connectGoldGameNetworkFloatSse(false);
             };
             window.stopGoldGameNetworkFloatAnnouncementLoop = function() {
+                window._goldGameNetworkFloatWanted = false;
+                window._goldGameNetworkFloatSseRetryAttempt = 0;
+                window._clearGoldGameNetworkFloatSseRetry();
                 if (window._goldGameNetworkFloatEventSource) {
                     try { window._goldGameNetworkFloatEventSource.close(); } catch (e) {}
                     window._goldGameNetworkFloatEventSource = null;
                 }
-                if (!window._goldGameNetworkFloatLoopTimer) return;
-                clearInterval(window._goldGameNetworkFloatLoopTimer);
-                window._goldGameNetworkFloatLoopTimer = null;
+                window._clearGoldGameNetworkFloatPollTimer();
             };
             if (getToken()) {
                 setTimeout(function() {
@@ -4114,7 +4204,7 @@ function renderActionLogsToDom() {
                 var statusEl = document.getElementById('goldGameActivityTimeStatus');
                 if (!contentEl) return;
                 var fallback = [
-                    '活动状态：枫叶币获取已结束，在线随机与保底均已关闭（历史余额与排行仍保留）',
+                    '活动状态：枫叶币获取已开启（在线每分钟 10% 概率 +1，连续 10 分钟未获得则保底 +1）',
                     '排行规则：按枫叶币数量从高到低排名，展示前10名',
                     '温馨提示：打开活动排行榜会自动上传云存档，确保数据最新',
                 ];
@@ -4280,8 +4370,8 @@ function renderActionLogsToDom() {
                 var body = { productId: pid };
                 if (pid === 'random_shoujue') {
                     if (!confirm('消耗 88 枫叶币🍁，随机获得 1 本深渊宠物兽决？')) return;
-                } else if (pid === 'random_beast_120_normal') {
-                    if (!confirm('消耗 288 枫叶币🍁，随机获得 1 只 120 层宝宝品质深渊神兽？\n请确认神兽列表有空位。')) return;
+                } else if (pid === 'random_beast_120_normal' || pid === 'random_beast_200_normal') {
+                    if (!confirm('消耗 288 枫叶币🍁，随机获得 1 只 200 层宝宝品质深渊神兽？\n请确认神兽列表有空位。')) return;
                 } else if (pid === 'network_coin') {
                     var qEl = document.getElementById('goldGameMapleShopNetworkCoinQty');
                     var netQty = qEl ? Math.floor(Number(qEl.value)) : 1;
@@ -4369,16 +4459,19 @@ function renderActionLogsToDom() {
             }
 
             window.goldGameGetSupremeArtifacts = function() {
-                if (!hasApi()) return Promise.resolve({ ok: true, equipped: {}, bag: [] });
+                if (!hasApi()) return Promise.resolve({ ok: true, equipped: {}, bag: [], gems: {}, socketOpeners: 0 });
                 return apiRequest('GET', '/api/supreme-artifacts', undefined, true).then(function(res) {
                     if (res && res.ok) {
                         window._supremeArtifactsCache = {
                             equipped: (res.equipped != null && typeof res.equipped === 'object') ? res.equipped : {},
-                            bag: Array.isArray(res.bag) ? res.bag : []
+                            bag: Array.isArray(res.bag) ? res.bag : [],
+                            gems: (res.gems != null && typeof res.gems === 'object') ? res.gems : {},
+                            socketOpeners: Math.max(0, Math.floor(Number(res.socketOpeners) || 0))
                         };
+                        if (typeof applySupremeArtifactsGemCache === 'function') applySupremeArtifactsGemCache(res);
                     }
                     return res;
-                }).catch(function() { return { ok: false, equipped: {}, bag: [] }; });
+                }).catch(function() { return { ok: false, equipped: {}, bag: [], gems: {}, socketOpeners: 0 }; });
             };
             window.goldGameTryDropSupremeArtifact = function(dimensionLevel) {
                 if (!hasApi() || !getToken() || dimensionLevel < 2) return Promise.resolve({ ok: false, dropped: false });
@@ -4390,6 +4483,60 @@ function renderActionLogsToDom() {
                     }
                     return res;
                 }).catch(function() { return { ok: false, dropped: false }; });
+            };
+            window.goldGameTryDropSupremeGem = function(dimensionLevel) {
+                if (!hasApi() || !getToken() || !(dimensionLevel >= 1)) return Promise.resolve({ ok: false, dropped: false });
+                return apiRequest('POST', '/api/supreme-artifacts/try-drop-gem', { dimensionLevel: dimensionLevel }, true).then(function(res) {
+                    if (res && res.ok && typeof applySupremeArtifactsGemCache === 'function') applySupremeArtifactsGemCache(res);
+                    return res;
+                }).catch(function() { return { ok: false, dropped: false }; });
+            };
+            window.goldGameTryDropSupremeSocketOpener = function(dimensionLevel) {
+                if (!hasApi() || !getToken() || !(dimensionLevel >= 1)) return Promise.resolve({ ok: false, dropped: false });
+                return apiRequest('POST', '/api/supreme-artifacts/try-drop-socket-opener', { dimensionLevel: dimensionLevel }, true).then(function(res) {
+                    if (res && res.ok && typeof applySupremeArtifactsGemCache === 'function') applySupremeArtifactsGemCache(res);
+                    return res;
+                }).catch(function() { return { ok: false, dropped: false }; });
+            };
+            window.goldGameOpenSupremeSocket = function(artifactId) {
+                if (!hasApi()) return Promise.reject(new Error('未联网'));
+                return apiRequest('POST', '/api/supreme-artifacts/open-socket', { artifactId: artifactId }, true).then(function(res) {
+                    if (!res.ok) throw new Error(res.message || '开孔失败');
+                    return window.goldGameGetSupremeArtifacts().then(function() { return res; });
+                });
+            };
+            window.goldGameEquipSupremeGem = function(artifactId, socketIndex, kind, level) {
+                if (!hasApi()) return Promise.reject(new Error('未联网'));
+                return apiRequest('POST', '/api/supreme-artifacts/equip-gem', {
+                    artifactId: artifactId,
+                    socketIndex: socketIndex,
+                    kind: kind,
+                    level: level
+                }, true).then(function(res) {
+                    if (!res.ok) throw new Error(res.message || '镶嵌失败');
+                    return window.goldGameGetSupremeArtifacts().then(function() { return res; });
+                });
+            };
+            window.goldGameUnequipSupremeGem = function(artifactId, socketIndex) {
+                if (!hasApi()) return Promise.reject(new Error('未联网'));
+                return apiRequest('POST', '/api/supreme-artifacts/unequip-gem', {
+                    artifactId: artifactId,
+                    socketIndex: socketIndex
+                }, true).then(function(res) {
+                    if (!res.ok) throw new Error(res.message || '卸下失败');
+                    return window.goldGameGetSupremeArtifacts().then(function() { return res; });
+                });
+            };
+            window.goldGameUpgradeSupremeGem = function(kind, level, times) {
+                if (!hasApi()) return Promise.reject(new Error('未联网'));
+                return apiRequest('POST', '/api/supreme-artifacts/upgrade-gem', {
+                    kind: kind,
+                    level: level,
+                    times: times || 1
+                }, true).then(function(res) {
+                    if (!res.ok) throw new Error(res.message || '合成失败');
+                    return window.goldGameGetSupremeArtifacts().then(function() { return res; });
+                });
             };
             window.goldGameEquipSupremeArtifact = function(artifactId) {
                 if (!hasApi()) return Promise.reject(new Error('未联网'));
@@ -4504,17 +4651,82 @@ function renderActionLogsToDom() {
                     return res;
                 }).catch(function() { return { ok: false, dropped: false }; });
             };
-            // 与服务器 MAPLE_COIN_ACTIVITY_GRANT_ENABLED 同步；活动重开时可置 undefined，由 GET /api/maple-coin 更新
-            window._goldGameMapleGrantEnabled = false;
-            window.goldGameMapleCoinMinuteTick = function() {
+            // 与服务器 MAPLE_COIN_ACTIVITY_GRANT_ENABLED 同步；活动重开时置 undefined，由 GET /api/maple-coin 或 minute-tick 更新
+            window._goldGameMapleGrantEnabled = undefined;
+            window._goldGameMapleTickInFlight = false;
+            window._goldGameMapleNextTickAt = 0;
+            function goldGameMapleTickJitterMs() {
+                var aid = '';
+                try {
+                    if (typeof getAccountId === 'function') aid = String(getAccountId() || '');
+                    if (!aid && typeof getToken === 'function') aid = String(getToken() || '').slice(-16);
+                } catch (eJ) {}
+                var h = 2166136261;
+                for (var i = 0; i < aid.length; i++) {
+                    h ^= aid.charCodeAt(i);
+                    h = Math.imul(h, 16777619);
+                }
+                // 0～14.9s，把整点尖峰摊开，避免全服同一秒打 minute-tick
+                return Math.abs(h >>> 0) % 15000;
+            }
+            function goldGameApplyMapleTickResult(res) {
+                if (!res) return res;
+                if (res.grantDisabled === true || res.grantEnabled === false) {
+                    window._goldGameMapleGrantEnabled = false;
+                    if (typeof window.stopGoldGameMapleCoinMinuteLoop === 'function') window.stopGoldGameMapleCoinMinuteLoop();
+                } else if (res.grantEnabled === true) {
+                    window._goldGameMapleGrantEnabled = true;
+                }
+                if (res.ok && typeof res.amount === 'number') {
+                    window._mapleCoinCache = res.amount;
+                    var el = document.getElementById('goldGameMapleCoinDisplay');
+                    if (el) el.textContent = res.amount;
+                }
+                if (res.ok && res.dropped && typeof logAction === 'function') {
+                    logAction('获得枫叶币🍁 x1（在线发放）', 'success');
+                }
+                var waitMs = Number(res.waitMs);
+                if (Number.isFinite(waitMs) && waitMs >= 0) {
+                    window._goldGameMapleNextTickAt = Date.now() + Math.max(1500, waitMs + 800 + goldGameMapleTickJitterMs());
+                } else if (res.ok && !res.skipped && !res.throttled) {
+                    // 本分钟已结算：对齐到下一分钟 + 账号抖动
+                    var now = Date.now();
+                    var toNextMin = 60000 - (now % 60000);
+                    window._goldGameMapleNextTickAt = now + toNextMin + 800 + goldGameMapleTickJitterMs();
+                }
+                return res;
+            }
+            window.goldGameMapleCoinMinuteTick = function(opts) {
+                opts = opts || {};
                 if (window._goldGameMapleGrantEnabled === false) {
                     return Promise.resolve({ ok: true, dropped: false, grantDisabled: true });
                 }
                 if (!hasApi() || !getToken()) return Promise.resolve({ ok: false });
+                if (!opts.force && typeof document !== 'undefined' && document.hidden) {
+                    return Promise.resolve({ ok: true, dropped: false, skipped: true });
+                }
+                if (window._goldGameMapleTickInFlight) {
+                    return Promise.resolve({ ok: true, dropped: false, skipped: true, inFlight: true });
+                }
+                var now = Date.now();
+                if (!opts.force && window._goldGameMapleNextTickAt && now < window._goldGameMapleNextTickAt) {
+                    return Promise.resolve({
+                        ok: true,
+                        dropped: false,
+                        skipped: true,
+                        waitMs: Math.max(0, window._goldGameMapleNextTickAt - now)
+                    });
+                }
+                window._goldGameMapleTickInFlight = true;
                 return apiRequest('POST', '/api/maple-coin/minute-tick', {}, true).then(function(res) {
-                    if (res.ok && typeof res.amount === 'number') window._mapleCoinCache = res.amount;
-                    return res;
-                }).catch(function() { return { ok: false }; });
+                    return goldGameApplyMapleTickResult(res || { ok: false });
+                }).catch(function() {
+                    // 失败稍后重试，避免整点失败后立刻连打
+                    window._goldGameMapleNextTickAt = Date.now() + 8000 + goldGameMapleTickJitterMs();
+                    return { ok: false };
+                }).finally(function() {
+                    window._goldGameMapleTickInFlight = false;
+                });
             };
             function scheduleGoldGameMapleCoinAlignedTick() {
                 if (window._goldGameMapleGrantEnabled === false) return;
@@ -4524,16 +4736,21 @@ function renderActionLogsToDom() {
                 }
                 if (typeof getGoldGameAuthToken !== 'function' || !getGoldGameAuthToken()) return;
                 var now = Date.now();
-                var delay = 60000 - (now % 60000) + 500;
-                if (delay < 1500) delay += 60000;
+                var delay;
+                if (window._goldGameMapleNextTickAt && window._goldGameMapleNextTickAt > now) {
+                    delay = Math.max(1500, window._goldGameMapleNextTickAt - now);
+                } else {
+                    delay = 60000 - (now % 60000) + 800 + goldGameMapleTickJitterMs();
+                    if (delay < 2000) delay += 60000;
+                }
+                // 上限 70s，防止异常 nextTickAt 拖太久
+                if (delay > 70000) delay = 70000;
                 window._goldGameMapleCoinMinuteTimeoutId = setTimeout(function() {
                     window._goldGameMapleCoinMinuteTimeoutId = null;
                     if (typeof getGoldGameAuthToken !== 'function' || !getGoldGameAuthToken()) return;
-                    window.goldGameMapleCoinMinuteTick().then(function(res) {
-                        if (res && res.ok && res.dropped && typeof logAction === 'function') logAction('获得枫叶币🍁 x1（在线发放）', 'success');
-                        var el = document.getElementById('goldGameMapleCoinDisplay');
-                        if (el && res && res.ok && typeof res.amount === 'number') el.textContent = res.amount;
-                    }).catch(function() {}).finally(function() { scheduleGoldGameMapleCoinAlignedTick(); });
+                    window.goldGameMapleCoinMinuteTick().finally(function() {
+                        scheduleGoldGameMapleCoinAlignedTick();
+                    });
                 }, delay);
             }
             window.startGoldGameMapleCoinMinuteLoop = function() {
@@ -4541,30 +4758,24 @@ function renderActionLogsToDom() {
                 if (typeof window.goldGameMapleCoinMinuteTick !== 'function') return;
                 if (typeof getGoldGameAuthToken !== 'function' || !getGoldGameAuthToken()) return;
                 if (typeof window.stopGoldGameMapleCoinMinuteLoop === 'function') window.stopGoldGameMapleCoinMinuteLoop();
-                window.goldGameMapleCoinMinuteTick().then(function(res) {
-                    if (res && res.grantDisabled) {
-                        window._goldGameMapleGrantEnabled = false;
-                        if (typeof window.stopGoldGameMapleCoinMinuteLoop === 'function') window.stopGoldGameMapleCoinMinuteLoop();
-                        return;
-                    }
-                    var el = document.getElementById('goldGameMapleCoinDisplay');
-                    if (el && res && res.ok && typeof res.amount === 'number') el.textContent = res.amount;
-                    if (res && res.ok && res.dropped && typeof logAction === 'function') logAction('获得枫叶币🍁 x1（在线发放）', 'success');
-                }).catch(function() {}).finally(function() { scheduleGoldGameMapleCoinAlignedTick(); });
+                if (!window._goldGameMapleVisibilityHooked && typeof document !== 'undefined') {
+                    window._goldGameMapleVisibilityHooked = true;
+                    document.addEventListener('visibilitychange', function() {
+                        if (document.visibilityState !== 'visible') return;
+                        if (window._goldGameMapleGrantEnabled === false) return;
+                        if (typeof getGoldGameAuthToken !== 'function' || !getGoldGameAuthToken()) return;
+                        // 仅在已到点时补领，避免切前台就额外打一枪
+                        window.goldGameMapleCoinMinuteTick().finally(function() {
+                            scheduleGoldGameMapleCoinAlignedTick();
+                        });
+                    });
+                }
+                window.goldGameMapleCoinMinuteTick().finally(function() {
+                    scheduleGoldGameMapleCoinAlignedTick();
+                });
             };
-            window.goldGameMapleCoinWorldMapMaybeTick = function() {
-                if (window._goldGameMapleGrantEnabled === false) return;
-                if (!hasApi() || typeof getGoldGameAuthToken !== 'function' || !getGoldGameAuthToken()) return;
-                if (typeof window.goldGameMapleCoinMinuteTick !== 'function') return;
-                var t = Date.now();
-                if (t - (window._goldGameMapleWorldMapHookLast || 0) < 28000) return;
-                window._goldGameMapleWorldMapHookLast = t;
-                window.goldGameMapleCoinMinuteTick().then(function(res) {
-                    var el = document.getElementById('goldGameMapleCoinDisplay');
-                    if (el && res && res.ok && typeof res.amount === 'number') el.textContent = res.amount;
-                    if (res && res.ok && res.dropped && typeof logAction === 'function') logAction('获得枫叶币🍁 x1（在线发放）', 'success');
-                }).catch(function() {});
-            };
+            // 世界地图旁路已废弃：统一走整分循环，避免挂机额外打 minute-tick
+            window.goldGameMapleCoinWorldMapMaybeTick = function() {};
             window.stopGoldGameMapleCoinMinuteLoop = function() {
                 if (window._goldGameMapleCoinMinuteIntervalId != null) {
                     clearInterval(window._goldGameMapleCoinMinuteIntervalId);
@@ -4574,6 +4785,7 @@ function renderActionLogsToDom() {
                     clearTimeout(window._goldGameMapleCoinMinuteTimeoutId);
                     window._goldGameMapleCoinMinuteTimeoutId = null;
                 }
+                window._goldGameMapleNextTickAt = 0;
             };
             window.goldGameEquipNetworkArtifact = function(slot, artifactId) {
                 if (!hasApi()) return Promise.reject(new Error('未联网'));
@@ -4682,16 +4894,19 @@ function renderActionLogsToDom() {
             }
 
             window.goldGameGetSupremeArtifacts = function() {
-                if (!hasApi()) return Promise.resolve({ ok: true, equipped: {}, bag: [] });
+                if (!hasApi()) return Promise.resolve({ ok: true, equipped: {}, bag: [], gems: {}, socketOpeners: 0 });
                 return apiRequest('GET', '/api/supreme-artifacts', undefined, true).then(function(res) {
                     if (res && res.ok) {
                         window._supremeArtifactsCache = {
                             equipped: (res.equipped != null && typeof res.equipped === 'object') ? res.equipped : {},
-                            bag: Array.isArray(res.bag) ? res.bag : []
+                            bag: Array.isArray(res.bag) ? res.bag : [],
+                            gems: (res.gems != null && typeof res.gems === 'object') ? res.gems : {},
+                            socketOpeners: Math.max(0, Math.floor(Number(res.socketOpeners) || 0))
                         };
+                        if (typeof applySupremeArtifactsGemCache === 'function') applySupremeArtifactsGemCache(res);
                     }
                     return res;
-                }).catch(function() { return { ok: false, equipped: {}, bag: [] }; });
+                }).catch(function() { return { ok: false, equipped: {}, bag: [], gems: {}, socketOpeners: 0 }; });
             };
             window.goldGameTryDropSupremeArtifact = function(dimensionLevel) {
                 if (!hasApi() || !getToken() || dimensionLevel < 2) return Promise.resolve({ ok: false, dropped: false });
@@ -4703,6 +4918,60 @@ function renderActionLogsToDom() {
                     }
                     return res;
                 }).catch(function() { return { ok: false, dropped: false }; });
+            };
+            window.goldGameTryDropSupremeGem = function(dimensionLevel) {
+                if (!hasApi() || !getToken() || !(dimensionLevel >= 1)) return Promise.resolve({ ok: false, dropped: false });
+                return apiRequest('POST', '/api/supreme-artifacts/try-drop-gem', { dimensionLevel: dimensionLevel }, true).then(function(res) {
+                    if (res && res.ok && typeof applySupremeArtifactsGemCache === 'function') applySupremeArtifactsGemCache(res);
+                    return res;
+                }).catch(function() { return { ok: false, dropped: false }; });
+            };
+            window.goldGameTryDropSupremeSocketOpener = function(dimensionLevel) {
+                if (!hasApi() || !getToken() || !(dimensionLevel >= 1)) return Promise.resolve({ ok: false, dropped: false });
+                return apiRequest('POST', '/api/supreme-artifacts/try-drop-socket-opener', { dimensionLevel: dimensionLevel }, true).then(function(res) {
+                    if (res && res.ok && typeof applySupremeArtifactsGemCache === 'function') applySupremeArtifactsGemCache(res);
+                    return res;
+                }).catch(function() { return { ok: false, dropped: false }; });
+            };
+            window.goldGameOpenSupremeSocket = function(artifactId) {
+                if (!hasApi()) return Promise.reject(new Error('未联网'));
+                return apiRequest('POST', '/api/supreme-artifacts/open-socket', { artifactId: artifactId }, true).then(function(res) {
+                    if (!res.ok) throw new Error(res.message || '开孔失败');
+                    return window.goldGameGetSupremeArtifacts().then(function() { return res; });
+                });
+            };
+            window.goldGameEquipSupremeGem = function(artifactId, socketIndex, kind, level) {
+                if (!hasApi()) return Promise.reject(new Error('未联网'));
+                return apiRequest('POST', '/api/supreme-artifacts/equip-gem', {
+                    artifactId: artifactId,
+                    socketIndex: socketIndex,
+                    kind: kind,
+                    level: level
+                }, true).then(function(res) {
+                    if (!res.ok) throw new Error(res.message || '镶嵌失败');
+                    return window.goldGameGetSupremeArtifacts().then(function() { return res; });
+                });
+            };
+            window.goldGameUnequipSupremeGem = function(artifactId, socketIndex) {
+                if (!hasApi()) return Promise.reject(new Error('未联网'));
+                return apiRequest('POST', '/api/supreme-artifacts/unequip-gem', {
+                    artifactId: artifactId,
+                    socketIndex: socketIndex
+                }, true).then(function(res) {
+                    if (!res.ok) throw new Error(res.message || '卸下失败');
+                    return window.goldGameGetSupremeArtifacts().then(function() { return res; });
+                });
+            };
+            window.goldGameUpgradeSupremeGem = function(kind, level, times) {
+                if (!hasApi()) return Promise.reject(new Error('未联网'));
+                return apiRequest('POST', '/api/supreme-artifacts/upgrade-gem', {
+                    kind: kind,
+                    level: level,
+                    times: times || 1
+                }, true).then(function(res) {
+                    if (!res.ok) throw new Error(res.message || '合成失败');
+                    return window.goldGameGetSupremeArtifacts().then(function() { return res; });
+                });
             };
             window.goldGameEquipSupremeArtifact = function(artifactId) {
                 if (!hasApi()) return Promise.reject(new Error('未联网'));
@@ -4864,14 +5133,27 @@ function renderActionLogsToDom() {
                 if (!hasApi()) return Promise.reject(new Error('未联网'));
                 var playerName = (typeof player !== 'undefined' && player && player.name) ? player.name : '';
                 return apiRequest('POST', '/api/network-market/buy', { listingId: listingId, playerName: playerName }, true).then(function(res) {
-                    if (res.ok) { window.goldGameGetNetworkArtifacts(); window.goldGameGetNetworkCoin(); if (typeof window.goldGameGetUpgradeStones === 'function') window.goldGameGetUpgradeStones(); return res; }
+                    if (res.ok) {
+                        window.goldGameGetNetworkArtifacts();
+                        window.goldGameGetNetworkCoin();
+                        if (typeof window.goldGameGetUpgradeStones === 'function') window.goldGameGetUpgradeStones();
+                        if (typeof window.goldGameGetRefineStones === 'function') window.goldGameGetRefineStones();
+                        if (typeof window.goldGameGetSupremeArtifacts === 'function') window.goldGameGetSupremeArtifacts();
+                        return res;
+                    }
                     throw new Error(res.message || '购买失败');
                 });
             };
             window.goldGameMarketDelist = function(listingId) {
                 if (!hasApi()) return Promise.reject(new Error('未联网'));
                 return apiRequest('POST', '/api/network-market/delist', { listingId: listingId }, true).then(function(res) {
-                    if (res.ok) { window.goldGameGetNetworkArtifacts(); if (typeof window.goldGameGetUpgradeStones === 'function') window.goldGameGetUpgradeStones(); return res; }
+                    if (res.ok) {
+                        window.goldGameGetNetworkArtifacts();
+                        if (typeof window.goldGameGetUpgradeStones === 'function') window.goldGameGetUpgradeStones();
+                        if (typeof window.goldGameGetRefineStones === 'function') window.goldGameGetRefineStones();
+                        if (typeof window.goldGameGetSupremeArtifacts === 'function') window.goldGameGetSupremeArtifacts();
+                        return res;
+                    }
                     throw new Error(res.message || '下架失败');
                 });
             };
@@ -4967,6 +5249,42 @@ function renderActionLogsToDom() {
                 return apiRequest('POST', '/api/network-market/sell-refine-stone', body, true).then(function(res) {
                     if (res.ok) { window.goldGameGetRefineStones(); return res; }
                     throw new Error(res.message || '上架失败');
+                });
+            };
+            window.goldGameMarketSellSupremeGem = function(kind, level, amount, price, opts) {
+                if (!hasApi()) return Promise.reject(new Error('未联网'));
+                opts = opts || {};
+                var playerName = (typeof player !== 'undefined' && player && player.name) ? player.name : '';
+                var body = { kind: kind, level: level, amount: amount, playerName: playerName };
+                if (opts.saleMode === 'auction') {
+                    body.saleMode = 'auction';
+                    body.minBid = opts.minBid;
+                    if (opts.buyNowPrice != null && opts.buyNowPrice !== '' && !isNaN(Number(opts.buyNowPrice))) body.buyNowPrice = Number(opts.buyNowPrice);
+                } else {
+                    body.price = price;
+                }
+                return apiRequest('POST', '/api/network-market/sell-supreme-gem', body, true).then(function(res) {
+                    if (!res.ok) throw new Error(res.message || '上架失败');
+                    if (typeof window.goldGameGetSupremeArtifacts === 'function') return window.goldGameGetSupremeArtifacts().then(function() { return res; });
+                    return res;
+                });
+            };
+            window.goldGameMarketSellSupremeSocketOpener = function(amount, price, opts) {
+                if (!hasApi()) return Promise.reject(new Error('未联网'));
+                opts = opts || {};
+                var playerName = (typeof player !== 'undefined' && player && player.name) ? player.name : '';
+                var body = { amount: amount, playerName: playerName };
+                if (opts.saleMode === 'auction') {
+                    body.saleMode = 'auction';
+                    body.minBid = opts.minBid;
+                    if (opts.buyNowPrice != null && opts.buyNowPrice !== '' && !isNaN(Number(opts.buyNowPrice))) body.buyNowPrice = Number(opts.buyNowPrice);
+                } else {
+                    body.price = price;
+                }
+                return apiRequest('POST', '/api/network-market/sell-supreme-socket-opener', body, true).then(function(res) {
+                    if (!res.ok) throw new Error(res.message || '上架失败');
+                    if (typeof window.goldGameGetSupremeArtifacts === 'function') return window.goldGameGetSupremeArtifacts().then(function() { return res; });
+                    return res;
                 });
             };
             // ========== 深渊神兽（联网） ==========
